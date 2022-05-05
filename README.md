@@ -22,7 +22,7 @@ Currently this package is not available on CRAN, but can be installed easily usi
 ```R
 library(devtools)
 
-devtools::install_github("RobinDenz1/simDAG")
+devtools::install_github("RUB-AMIB/simDAG")
 ```
 
 or the `remotes` R-Package:
@@ -30,7 +30,7 @@ or the `remotes` R-Package:
 ```R
 library(remotes)
 
-remotes::install_github("RobinDenz1/simDAG")
+remotes::install_github("RUB-AMIB/simDAG")
 ```
 
 ## Bug Reports and Feature Requests
@@ -58,7 +58,7 @@ root_nodes <- list(list(dist="rnorm",
                         params=list(p=0.5),
                         name="sex"))
 child_nodes <- list(list(parents=c("sex", "age"),
-                         type="linear",
+                         type="gaussian",
                          name="bmi",
                          betas=c(1.1, 0.4),
                          intercept=12,
