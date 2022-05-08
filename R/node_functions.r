@@ -1,10 +1,4 @@
 
-## efficient bernoulli trials
-#' @export
-rbernoulli <- function(n, p=0.5) {
-  as.numeric(stats::runif(n) > (1 - p))
-}
-
 ## simulate survival time according to Bender et al. (2005)
 sim_surv_time <- function(row, betas, dist, lambda, gamma) {
   U <- stats::runif(1, min=0, max=1)

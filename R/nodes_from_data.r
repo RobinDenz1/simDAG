@@ -81,23 +81,36 @@ model_node_poisson <- function(name, parents, data, return_model=FALSE,
   return(out)
 }
 
-# TODO: write these functions
-root_gaussian <- function(x) {
-  return(list("PLACEHOLDER"))
+## gaussian root node from data
+root_gaussian <- function(data, name, na.rm) {
+  out <- list(name=name,
+              dist="rnorm",
+              params=list(mean=mean(data[, name], na.rm=na.rm),
+                          sd=sd(data[, name], na.rm=na.rm)))
+  return(out)
 }
 
-root_binomial <- function(x) {
-  return(list("PLACEHOLDER"))
+## binomial root node from data
+root_binomial <- function(data, name, na.rm) {
+  out <- list(name=name,
+              dist="rbernoulli",
+              params=list(p=mean(data[, name], na.rm=na.rm)))
+  return(out)
 }
 
-root_poisson <- function(x) {
-  return(list("PLACEHOLDER"))
+## multinomial root node from data
+root_multinomial <- function(data, name, na.rm) {
+  tab <- prop.table(table(data[, name]))
+  out <- list(name=name,
+              dist="rcategorical",
+              params=list(labels=names(tab), probs=tab))
 }
 
 ## given minimal information on node type and the causal structure,
 ## create lists for the root_nodes and child_nodes from observed data
 ## by fitting appropriate models
-nodes_from_data <- function(data, nodes, return_models=FALSE) {
+nodes_from_data <- function(data, nodes, return_models=FALSE,
+                            na.rm=FALSE) {
 
   # count number of children, roots
   n_roots <- sum(vapply(nodes, FUN=function(x){is.null(x$parents)},
@@ -116,7 +129,7 @@ nodes_from_data <- function(data, nodes, return_models=FALSE) {
     if (is.null(nodes[[i]]$parents)) {
       # call associated root function
       root_fun <- get(paste0("root_", nodes[[i]]$type))
-      root_nodes[[root_count]] <- root_fun(data[, node[[i]]$name])
+      root_nodes[[root_count]] <- root_fun(data, name=node[[i]]$name)
 
       root_count <- root_count + 1
     } else {
@@ -135,20 +148,23 @@ nodes_from_data <- function(data, nodes, return_models=FALSE) {
     }
   }
 
-  out <- list(root_nodes=root_nodes,
-              child_nodes=child_nodes)
-
   if (return_models) {
     # extract models from children
     models <- lapply(child_nodes, FUN=function(x){x$model})
     names(models) <- vapply(child_nodes, FUN=function(x){x$name},
                             FUN.VALUE=character(1))
-    out$models <- models
 
-    # remove from children
+    # remove model from children
     for (i in seq_len(length(child_nodes))) {
-      child_nodes[[i]] <- NULL
+      child_nodes[[i]]$model <- NULL
     }
+
+    out <- list(root_nodes=root_nodes,
+                child_nodes=child_nodes,
+                models=models)
+  } else {
+    out <- list(root_nodes=root_nodes,
+                child_nodes=child_nodes)
   }
   return(out)
 }
@@ -158,11 +174,12 @@ nodes_from_data <- function(data, nodes, return_models=FALSE) {
 # - document it
 # - allow more node types
 
+library(adjustedCurves)
 inp_data <- sim_confounded_surv(n=500)
 
 nodes <- list(list(parents=NULL,
                    name="x1",
-                   type="gaussian"),
+                   type="binomial"),
               list(parents=NULL,
                    name="x2",
                    type="gaussian"),
@@ -174,5 +191,4 @@ nodes <- list(list(parents=NULL,
                    type="gaussian"))
 
 test <- nodes_from_data(data=inp_data, nodes=nodes, return_models=TRUE)
-
-
+test$child_nodes
