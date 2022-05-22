@@ -25,7 +25,7 @@ A single number specifying the intercept that should be used when generating the
   }
 }
 \details{
-More explanation
+Using the normal form a logistic regression model, the observation specific event probability is generated for every observation in the dataset. Using the \code{rbernoulli} function, this probability is used to take one bernoulli sample for each observation in the dataset.
 }
 \examples{
 \dontrun{

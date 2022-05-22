@@ -25,7 +25,11 @@ Whether to remove missing values or not.
   }
 }
 \details{
-More explanation
+It can be cumbersone to specify all the node information needed for the simulation, especially when there are a lot of nodes to consider. Additionally, if data is available, it is natural to fit appropriate models to the data to get an empirical estimate of the node information for the simulation. This function automates this process.
+
+All the user has to do is create a list of \code{nodes} including information on the \code{parents}, the \code{name} and the node \code{type}. For root nodes, the required distribution parameters are extracted from the data. For child nodes, regression models corresponding to the specified \code{type} are fit to the data using the \code{parents} as independent covariates and the \code{name} as dependent variable. All required information is extracted from these models and added to the respective node. The output contains lists for the \code{root_nodes} and \code{child_nodes} which can be used directly in the \code{sim_from_DAG} function. It may also include the fit models for further inspection, if \code{return_models=TRUE}.
+
+If the user has a reasonable DAG and knows the node types, this is a very fast way to generate synthetic data that corresponds well to the empirical data. Missing values, however, are ignored and not simulated.
 }
 \examples{
 \dontrun{

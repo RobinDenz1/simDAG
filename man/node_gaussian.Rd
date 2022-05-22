@@ -28,7 +28,7 @@ A single number specifying the sigma error that should be used when generating t
   }
 }
 \details{
-More explanation
+Using the general linear regression equation, the observation-specific value that would be expected given the model is generated for every observation in the dataset generarted thus far. We could stop here, but this would create a perfect fit for the node, which is unrealistic. Instead, we add an error term by taking one sample of a normal distribution for each observation with mean zero and standard deviation \code{error}. This error term is then added to the predicted mean.
 }
 \examples{
 \dontrun{

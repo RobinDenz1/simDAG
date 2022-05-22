@@ -28,7 +28,7 @@ Whether to topologically sort the DAG before starting the simulation or not. If 
 
 \strong{\emph{How it Works}}:
 
-First, \code{n_sim} i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, \code{age} and \code{sex}. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node \code{height} is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (residual error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge u v, vertex u comes before v in the ordering. By using \code{sort_dag=TRUE} it is ensured that the nodes in \code{child_nodes} are processed in such an ordering.
+First, \code{n_sim} i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, \code{age} and \code{sex}. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node \code{height} is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (random error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge u v, vertex u comes before v in the ordering. By using \code{sort_dag=TRUE} it is ensured that the nodes in \code{child_nodes} are processed in such an ordering.
 
 This procedure is simple in theory, but can get very complex when manually coded. This function offers a simplified workflow by only requiring the user to define the \code{root_nodes} and \code{child_nodes} with appropriate information (see below). A sample of size \code{n_sim} is then generated from the DAG specified by those two arguments.
 
@@ -44,7 +44,7 @@ If no \code{data.frame} is supplied directly to this argument, it should be a li
 
 \strong{\emph{Specifying the \code{child_nodes} Argument}}:
 
-Each list inside of \code{child_nodes} needs to include at least the following named parameters:
+Each list inside of the \code{child_nodes} list needs to include at least the following named parameters:
 
 \itemize{
   \item{\code{parents}: A character vector containing the names of all parents of that node}
@@ -68,7 +68,7 @@ Currently, the following node types are available:
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
 }
 
-It is however, very simple to write a new custom \code{node_function}. All that is required is, that it takes the inputs \code{data} (the sample as generated so far), \code{parents} (a character vector specifying the parents) and \code{betas} (the causal coefficients) and outputs either a numeric vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows. See examples.
+It is however, very simple to write a new custom \code{node_function}. All that is required is, that it takes the inputs \code{data} (the sample as generated so far), \code{parents} (a character vector specifying the parents) and \code{betas} (the causal coefficients) and outputs either a numeric vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows. More information about this can be found on the \code{node_custom} documentation page.
 }
 \examples{
 \dontrun{
