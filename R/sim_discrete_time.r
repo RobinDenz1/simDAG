@@ -1,29 +1,17 @@
 
-## small helper function to obtain colnames that have not yet been
-## initialized in data
-get_missing_colnames <- function(data, tx_nodes) {
-  tx_node_names <- vapply(tx_nodes, function(x){x$name},
-                          FUN.VALUE=character(1))
-  tx_node_types <- vapply(tx_nodes, function(x){x$type},
-                          FUN.VALUE=character(1))
-  tte_names <- apply(expand.grid(tx_node_names[tx_node_types=="time_to_event"],
-                                 c("event", "time", "past_times")), 1, paste, collapse="_")
-  init_colnames <- c(tx_node_names[tx_node_types!="time_to_event"], tte_names)
-  return(init_colnames)
-}
-
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
 # TODO:
 #   - this function desperately needs tests!
 #   - also needs documentation + examples
 #   - also needs (probably a lot of) input checks
-#   - correct handling of past event times using hash tables
 #' @export
-sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
-                              t0_sort_dag, t0_data, t0_transform_fun,
-                              t0_transform_args, max_t,
-                              tx_nodes, tx_nodes_order,
+sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
+                              t0_child_nodes=NULL, t0_sort_dag=TRUE,
+                              t0_data=NULL,
+                              t0_transform_fun=NULL,
+                              t0_transform_args=list(), max_t,
+                              tx_nodes, tx_nodes_order=NULL,
                               tx_transform_fun=NULL,
                               tx_transform_args=list(),
                               save_states="last", save_states_at=NULL,
@@ -35,7 +23,7 @@ sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
                          child_nodes=t0_child_nodes,
                          sort_dag=t0_sort_dag)
   } else {
-    data <- t0_data
+    data <- as.data.frame(t0_data)
   }
   data$id <- seq(1, nrow(data))
 
@@ -46,7 +34,7 @@ sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
   }
 
   # initialize list for saving past states of the simulation
-  if (save_stats=="last") {
+  if (save_states=="last") {
     past_states <- NULL
   } else if (save_states=="all") {
     past_states <- vector(mode="list", length=max_t)
@@ -61,21 +49,30 @@ sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
     tx_nodes_order <- seq_len(length(tx_nodes))
   }
 
-  # start the main loop
-  for (t in seq_len(max_t)) {
+  # get relevant node names
+  tx_node_names <- vapply(tx_nodes, function(x){x$name},
+                          FUN.VALUE=character(1))
+  tx_node_types <- vapply(tx_nodes, function(x){x$type},
+                          FUN.VALUE=character(1))
+  tte_names <- apply(expand.grid(tx_node_names[tx_node_types=="time_to_event"],
+                                 c("event", "time", "past_event_times")), 1,
+                     paste, collapse="_")
 
-    # initialize columns for each node not already in data
-    if (t==1) {
-      # get relevant names
-      missing_colnames <- get_missing_colnames(data, tx_nodes)
-
-      existing_colnames <- colnames(data)
-      for (i in seq_len(length(missing_colnames))) {
-        if (!missing_colnames[i] %in% existing_colnames) {
-          data[, missing_colnames[i]] <- NA
-        }
+  # add missing columns to data
+  init_colnames <- c(tx_node_names[tx_node_types!="time_to_event"], tte_names)
+  existing_colnames <- colnames(data)
+  for (i in seq_len(length(init_colnames))) {
+    if (!init_colnames[i] %in% existing_colnames) {
+      if (endsWith(init_colnames[i], "_event")) {
+        data[, init_colnames[i]] <- FALSE
+      } else {
+        data[, init_colnames[i]] <- NA
       }
     }
+  }
+
+  # start the main loop
+  for (t in seq_len(max_t)) {
 
     # execute each node function one by one
     for (i in tx_nodes_order) {
@@ -83,14 +80,20 @@ sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
       args <- tx_nodes[[i]]
       args$data <- data
       args$type <- NULL
-      args$name <- NULL
 
       # get function
       node_type_fun <- get(paste0("node_", tx_nodes[[i]]$type))
+      fun_pos_args <- names(formals(node_type_fun))
 
-      # add simulation time to arguments if needed
-      if ("sim_time" %in% names(formals(node_type_fun))) {
+      # add or remove internal arguments if needed
+      if ("sim_time" %in% fun_pos_args) {
         args$sim_time <- t
+      }
+      if (!"name" %in% fun_pos_args) {
+        args$name <- NULL
+      }
+      if (!"parents" %in% fun_pos_args) {
+        args$parents <- NULL
       }
 
       # call needed node function
@@ -106,7 +109,7 @@ sim_discrete_time <- function(n_sim, t0_root_nodes, t0_child_nodes,
     }
 
     # save intermediate simulation states, if specified
-    if (save_state=="all") {
+    if (save_states=="all") {
       data$simulation_time <- t
       past_states[[t]] <- data
     } else if (save_states=="at_t" & t %in% save_states_at) {

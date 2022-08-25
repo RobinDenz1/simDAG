@@ -63,12 +63,12 @@ child_nodes <- list(list(parents=c("sex", "age"),
                          betas=c(1.1, 0.4),
                          intercept=12,
                          error=2),
-					list(parents=c("age", "bmi"),
-						 type="binomial",
-						 name="death",
-						 betas=c(0.1, 0.3),
-						 intercept=-15))
-sim_dat <- sim_from_DAG(n_sim=10000, root_nodes=root_nodes,
+                    list(parents=c("age", "bmi"),
+                         type="binomial",
+                         name="death",
+                         betas=c(0.1, 0.3),
+                         intercept=-15))
+sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
                         child_nodes=child_nodes)
 ```
 

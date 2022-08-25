@@ -1,0 +1,247 @@
+---
+title: "Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation"
+output: rmarkdown::html_vignette
+author: "Robin Denz"
+vignette: >
+  %\VignetteIndexEntry{Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>"
+)
+```
+
+# Introduction
+
+Data at t0:
+
+```{r}
+library(Rfast)
+library(truncnorm)
+library(devtools)
+library(xlsx)
+library(truncnorm)
+library(stringr)
+
+load_all()
+
+## node kreis
+generate_kreis <- function(n) {
+  
+  probs_kreis <- rbeta(n=400, shape1=1.4, shape2=0.6)
+  probs_kreis <- probs_kreis / sum(probs_kreis)
+  
+  kreis <- sample(c(1:400), size=n, replace=TRUE, prob=probs_kreis)
+  
+  return(kreis)
+}
+
+## node age
+node_generate_age <- function(data, parents, betas=NULL) {
+  age <- rep(NA, nrow(data))
+  for (i in seq_len(400)) {
+    dist_mean <- rtruncnorm(n=1, a=40, b=70, sd=10, mean=55)
+    dist_sd <- rtruncnorm(n=1, a=2, b=25, mean=15, sd=10)
+    age[data$kreis==i] <- rtruncnorm(n=sum(data$kreis==i),
+                                     a=0, b=100,
+                                     mean=dist_mean,
+                                     sd=dist_sd)
+  }
+  return(age)
+}
+
+t0_root_nodes <- list(list(name="kreis",
+                           dist="generate_kreis",
+                           params=list()),
+                      list(name="sex",
+                           dist="rbernoulli",
+                           params=list(p=0.5)),
+                      list(name="vacc_type",
+                           dist="rcategorical",
+                           params=list(probs=c(0.73919444, 0.17035600,
+                                               0.06936522, 0.02032859),
+                                       labels=c(1, 2, 3, 4))))
+t0_child_nodes <- list(list(name="age",
+                            parents="kreis",
+                            type="generate_age"))
+
+start_data <- sim_from_dag(n_sim=10, root_nodes=t0_root_nodes, child_nodes=t0_child_nodes)
+head(start_data)
+
+```
+
+Specifying the nodes after that:
+
+```{r}
+
+## node age (to increase it as the simulation goes on)
+node_advance_age <- function(data) {
+  return(data$age + 1/365)
+}
+
+## probability of first vaccination
+prob_first_vacc <- function(data, sim_time, start_vaccinations,
+                            impf_dat, beta_age) {
+  
+  if (sim_time < start_vaccinations) {
+    return(0)
+  }
+  
+  p <- impf_dat$impf_prob[impf_dat$time==(sim_time - start_vaccinations)]
+  p <-  p + data$age * beta_age
+  
+  return(p)
+}
+
+## time of second vaccination
+node_generate_vacc_2 <- function(data) {
+  vacc_2 <- data$vacc_1_time + ((data$vacc_type <= 2) * 42 + 
+                                (data$vacc_type==3) * 84) * 
+    NA^(data$vacc_type==4)
+  return(vacc_2)
+}
+
+## individual vaccination effect at t
+vacc_eff_triangle <- function(vacc_time, vacc_delay, dur_vacc,
+                              rr_vacc_start, sim_time) {
+  
+  if (is.na(vacc_time)) {
+    rr_vacc <- 1
+  } else {
+    rr_vacc <- stats::approx(x=c((vacc_time + vacc_delay),
+                               (vacc_time + vacc_delay + dur_vacc)),
+                             y=c(rr_vacc_start, 1),
+                             yleft=1,
+                             yright=1,
+                             xout=sim_time,
+                             method="linear")$y
+  }
+  return(rr_vacc)
+}
+
+## base probability of getting covid 19 depending on time
+base_p_covid <- function(sim_time) {
+  # where do we get this?
+  return(0.001)
+}
+
+## probability of getting covid 19, depending on time, age and previous vaccine
+prob_covid <- function(data, sim_time, start_covid, rr_vacc_start,
+                       dur_vacc, vacc_delay, beta_age) {
+  
+  if (sim_time < start_covid) {
+    return(0)
+  }
+  
+  vacc_reduction <- vapply(data$vacc_2, FUN=vacc_eff_triangle,
+                           FUN.VALUE=numeric(1),
+                           vacc_delay=vacc_delay,
+                           dur_vacc=dur_vacc,
+                           rr_vacc_start=rr_vacc_start,
+                           sim_time=sim_time)
+  p <- (base_p_covid(sim_time) + data$age * beta_age) * vacc_reduction
+  return(p)
+}
+
+## probability of getting sickness
+prob_sickness <- function(data, sim_time, rr_vacc_1, rr_vacc_2,
+                          rr_covid, risk_dur_vacc, risk_dur_covid,
+                          beta_age, base_p) {
+  
+  # check if in risk periods
+  in_vacc_1_risk <- ifelse(is.na(data$vacc_1_time), FALSE,
+                           ifelse((sim_time - data$vacc_1_time) < 
+                                  risk_dur_vacc, TRUE, FALSE))
+  in_vacc_2_risk <- ifelse(is.na(data$vacc_2), FALSE,
+                           ifelse(((sim_time - data$vacc_2) < risk_dur_vacc) & 
+                                  ((sim_time - data$vacc_2) > 0), TRUE, FALSE))
+  in_covid_risk <- ifelse(is.na(data$covid_time), FALSE,
+                           ifelse((sim_time - data$covid_time) < 
+                                  risk_dur_covid, TRUE, FALSE))
+  
+  # choose which relative risk to apply to baseline risk
+  time_dep_risk <- ifelse(!in_vacc_1_risk & !in_vacc_2_risk & !in_covid_risk, 1,
+                          ifelse(in_covid_risk, rr_covid,
+                          ifelse(in_vacc_1_risk, rr_vacc_1[data$vacc_type],
+                                 rr_vacc_2[data$vacc_type])))
+  
+  # put all risks together
+  p <- (base_p + data$age * beta_age) * time_dep_risk
+    
+  return(p)
+}
+
+# read and clean Impfdata
+impf_dat <- read.xlsx("P:/BMG_Covid19Impfen/Auswertung/Auswertungsplan_Stufen/Simulation_Testdaten/Impfquotenmonitoring.xlsx", sheetIndex=4)
+impf_dat <- impf_dat[1:(nrow(impf_dat)-4),]
+impf_dat$Datum <- as.Date(impf_dat$Datum, format="%d.%m.%Y")
+impf_dat$NA. <- NULL
+
+# probability of first vaccination
+impf_dat$time <- 1:nrow(impf_dat)
+impf_dat$cumsum <- cumsum(impf_dat$Erstimpfung)
+impf_dat$cumsum <- c(0, impf_dat$cumsum[1:(nrow(impf_dat)-1)])
+
+impf_dat$impf_prob <- impf_dat$Erstimpfung / (83020000 - impf_dat$cumsum)
+
+# definition of time-dependent nodes
+tx_nodes <- list(list(name="age",
+                      parents="age",
+                      type="advance_age"),
+                 list(name="vacc_1",
+                      parents=c("age"),
+                      type="time_to_event",
+                      prob_fun=prob_first_vacc,
+                      prob_fun_args=list(start_vaccinations=200,
+                                         impf_dat=impf_dat,
+                                         beta_age=0.0001),
+                      event_duration=Inf,
+                      save_past_events=FALSE),
+                 list(name="vacc_2",
+                      parents=c("vacc_1_event", "vacc_1_time", "vacc_type"),
+                      type="generate_vacc_2"),
+                 list(name="covid",
+                      parents=c("vacc_2", "age"),
+                      type="time_to_event",
+                      prob_fun=prob_covid,
+                      prob_fun_args=list(start_covid=100,
+                                         rr_vacc_start=0.5,
+                                         dur_vacc=30*3,
+                                         vacc_delay=14,
+                                         beta_age=0.000001),
+                      event_duration=21,
+                      immunity_duration=90,
+                      save_past_events=FALSE),
+                 list(name="sickness",
+                      parents=c("vacc_1_event", "vacc_1_time", "vacc_2",
+                                "age", "covid_event", "covid_time",
+                                "vacc_type"),
+                      type="time_to_event",
+                      prob_fun=prob_sickness,
+                      prob_fun_args=list(rr_vacc_1=c(3.24, 3.24, 1, 1),
+                                         rr_vacc_2=c(3.24, 3.24, 1, 1),
+                                         rr_covid=3,
+                                         risk_dur_vacc=21,
+                                         risk_dur_covid=21,
+                                         beta_age=0.00001,
+                                         base_p=0.0000000000000000001),
+                      event_duration=21,
+                      immunity_duration=50,
+                      save_past_events=FALSE))
+
+
+out <- sim_discrete_time(n_sim=10000,
+                         t0_root_nodes=t0_root_nodes,
+                         t0_child_nodes=t0_child_nodes,
+                         t0_sort_dag=TRUE,
+                         max_t=365*3,
+                         tx_nodes=tx_nodes,
+                         save_states="last")
+
+```
+
+

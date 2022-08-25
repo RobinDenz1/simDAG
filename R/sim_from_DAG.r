@@ -42,8 +42,10 @@ nodes2adjacency_mat <- function(child_nodes, root_nodes=NULL) {
 ## add output of a node function to data.frame
 add_node_to_data <- function(data, new, name) {
   if (is.data.frame(new)) {
-    colnames(new) <- paste0(name, "_", colnames(new))
-    data <- cbind(data, new)
+    new_names <- colnames(new)
+    for (i in seq_len(length(new_names))) {
+      data[, new_names[i]] <- new[, new_names[i]]
+    }
   } else {
     data[, name] <- new
   }
@@ -91,7 +93,9 @@ sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
     args <- child_nodes[[i]]
     args$data <- data
     args$type <- NULL
-    args$name <- NULL
+    if (child_nodes[[i]]$type!="cox") {
+      args$name <- NULL
+    }
 
     # call needed node function
     node_out <- do.call(get(paste0("node_", child_nodes[[i]]$type)), args)

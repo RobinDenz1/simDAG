@@ -8,7 +8,7 @@ rbernoulli <- function(n, p=0.5) {
 ## generate draws from discrete distribution
 #' @export
 rcategorical <- function(n, labels, probs) {
-  sample(x=labels, size=n, prob=prob, replace=TRUE)
+  sample(x=labels, size=n, prob=probs, replace=TRUE)
 }
 
 ## simply assign a single constant value
