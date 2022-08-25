@@ -41,7 +41,7 @@ child_nodes <- list(list(parents=c("sex", "age"),
                          name="UICC",
                          betas=matrix(c(0.2, 0.4, 0.1, 0.5, 1.1, 1.2),
                                       ncol=2)))
-sim_dat <- sim_from_DAG(n_sim=10000, root_nodes=root_nodes,
+sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
                         child_nodes=child_nodes)
 }
 }

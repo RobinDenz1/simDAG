@@ -54,7 +54,7 @@ child_nodes <- list(list(parents=c("sex", "age"),
                          name="death",
                          betas=c(1.1, 0.4),
                          intercept=-2))
-sim_dat <- sim_from_DAG(n_sim=10000, root_nodes=root_nodes,
+sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
                         child_nodes=child_nodes)
 }
 }

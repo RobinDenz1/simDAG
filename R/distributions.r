@@ -10,3 +10,9 @@ rbernoulli <- function(n, p=0.5) {
 rcategorical <- function(n, labels, probs) {
   sample(x=labels, size=n, prob=prob, replace=TRUE)
 }
+
+## simply assign a single constant value
+#' @export
+constant <- function(constant) {
+  return(constant)
+}

@@ -1,5 +1,5 @@
-\name{sim_from_DAG}
-\alias{sim_from_DAG}
+\name{sim_from_dag}
+\alias{sim_from_dag}
 
 \title{
 Simulate Data from a Given DAG and Node Information
@@ -8,7 +8,7 @@ Simulate Data from a Given DAG and Node Information
 This function can be used to generate data from a given DAG. It additionally requires information on node distributions, beta coefficients and, depending on the node type, more parameters such as intercepts.
 }
 \usage{
-sim_from_DAG(n_sim, root_nodes, child_nodes, sort_dag=TRUE)
+sim_from_dag(n_sim, root_nodes, child_nodes, sort_dag=TRUE)
 }
 \arguments{
   \item{n_sim}{
@@ -85,7 +85,7 @@ child_nodes <- list(list(parents=c("sex", "age"),
                          betas=c(1.1, 0.4),
                          intercept=12,
                          error=2))
-sim_dat <- sim_from_DAG(n_sim=10000, root_nodes=root_nodes,
+sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
                         child_nodes=child_nodes)
 }
 }

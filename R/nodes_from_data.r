@@ -174,21 +174,21 @@ nodes_from_data <- function(data, nodes, return_models=FALSE,
 # - document it
 # - allow more node types
 
-library(adjustedCurves)
-inp_data <- sim_confounded_surv(n=500)
-
-nodes <- list(list(parents=NULL,
-                   name="x1",
-                   type="binomial"),
-              list(parents=NULL,
-                   name="x2",
-                   type="gaussian"),
-              list(parents=c("x1", "x2"),
-                   name="group",
-                   type="binomial"),
-              list(parents=c("x1", "x2", "group"),
-                   name="x3",
-                   type="gaussian"))
-
-test <- nodes_from_data(data=inp_data, nodes=nodes, return_models=TRUE)
-test$child_nodes
+#library(adjustedCurves)
+#inp_data <- sim_confounded_surv(n=500)
+#
+#nodes <- list(list(parents=NULL,
+#                   name="x1",
+#                   type="binomial"),
+#              list(parents=NULL,
+#                   name="x2",
+#                   type="gaussian"),
+#              list(parents=c("x1", "x2"),
+#                   name="group",
+#                   type="binomial"),
+#              list(parents=c("x1", "x2", "group"),
+#                   name="x3",
+#                   type="gaussian"))
+#
+#test <- nodes_from_data(data=inp_data, nodes=nodes, return_models=TRUE)
+#test$child_nodes

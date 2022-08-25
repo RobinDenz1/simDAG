@@ -5,7 +5,7 @@
 Create a List of Fully Specified Nodes From Data
 }
 \description{
-Given a list of nodes, where only the name, type and the parents are specified plus a \code{data.frame} containing realizations of these nodes, return a list of fully specified nodes (with beta-coefficients, intercepts, errors, ...). The returned list can be used directly to simulate data with the \code{sim_from_DAG} function.
+Given a list of nodes, where only the name, type and the parents are specified plus a \code{data.frame} containing realizations of these nodes, return a list of fully specified nodes (with beta-coefficients, intercepts, errors, ...). The returned list can be used directly to simulate data with the \code{\link{sim_from_dag}} function.
 }
 \usage{
 nodes_from_data(data, nodes, return_models=FALSE,  na.rm=FALSE)
@@ -33,6 +33,6 @@ If the user has a reasonable DAG and knows the node types, this is a very fast w
 }
 \examples{
 \dontrun{
-
+# TODO: add examples
 }
 }

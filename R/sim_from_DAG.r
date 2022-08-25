@@ -1,4 +1,44 @@
 
+## obtain an adjacency matrix of the causal DAG from the
+## specified node lists
+nodes2adjacency_mat <- function(child_nodes, root_nodes=NULL) {
+  # extract node names
+  names_children <- vapply(child_nodes, function(x){x$name},
+                           FUN.VALUE=character(1))
+
+  if (!is.null(root_nodes)) {
+    names_roots <- vapply(root_nodes, function(x){x$name},
+                          FUN.VALUE=character(1))
+    all_names <- c(names_roots, names_children)
+  }
+
+  # initialize adjacency matrix
+  if (is.null(root_nodes)) {
+    adjacency_mat <- matrix(data=FALSE,
+                            nrow=length(names_children),
+                            ncol=length(names_children))
+    rownames(adjacency_mat) <- names_children
+    colnames(adjacency_mat) <- names_children
+  } else {
+    adjacency_mat <- matrix(data=FALSE,
+                            nrow=length(all_names),
+                            ncol=length(all_names))
+    rownames(adjacency_mat) <- all_names
+    colnames(adjacency_mat) <- all_names
+  }
+
+  # populate it according to the lists
+  for (i in seq_len(length(child_nodes))) {
+    i_parents <- child_nodes[[i]]$parents
+    for (j in seq_len(length(i_parents))) {
+      if (!is.null(root_nodes) | (i_parents[j] %in% names_children)) {
+        adjacency_mat[i_parents[j], child_nodes[[i]]$name] <- 1
+      }
+    }
+  }
+  return(adjacency_mat)
+}
+
 ## add output of a node function to data.frame
 add_node_to_data <- function(data, new, name) {
   if (is.data.frame(new)) {
@@ -12,7 +52,7 @@ add_node_to_data <- function(data, new, name) {
 
 ## generate data from a DAG with defined nodes
 #' @export
-sim_from_DAG <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
+sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
 
   # sample from root nodes
   if (!is.data.frame(root_nodes)) {
@@ -36,27 +76,8 @@ sim_from_DAG <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
   # if not already ordered properly, use topological
   # sorting to get the right data generation sequence
   if (sort_dag) {
-    # extract node names
-    names_children <- vapply(child_nodes, function(x){x$name},
-                             FUN.VALUE=character(1))
-
-    # initialize adjacency matrix
-    adjacency_mat <- matrix(data=FALSE,
-                            nrow=length(names_children),
-                            ncol=length(names_children))
-    rownames(adjacency_mat) <- names_children
-    colnames(adjacency_mat) <- names_children
-
-    # populate it according to the lists
-    for (i in seq_len(length(child_nodes))) {
-      i_parents <- child_nodes[[i]]$parents
-      for (j in seq_len(length(i_parents))) {
-        if (i_parents[j] %in% names_children) {
-          adjacency_mat[i_parents[j], child_nodes[[i]]$name] <- 1
-        }
-      }
-    }
-
+    adjacency_mat <- nodes2adjacency_mat(child_nodes=child_nodes,
+                                         root_nodes=NULL)
     # use topological sorting
     requireNamespace("Rfast")
     index_children <- Rfast::topological_sort(adjacency_mat)
