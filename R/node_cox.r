@@ -17,7 +17,7 @@ sim_surv_time <- function(row, betas, dist, lambda, gamma) {
 node_cox <- function(data, parents, betas, surv_dist, lambda, gamma,
                      cens_dist, cens_args, name) {
   # generate survival times
-  time <- apply(as.data.frame(data[, parents]), MARGIN=1,
+  time <- apply(as.data.frame(data[, parents, with=FALSE]), MARGIN=1,
                 FUN=sim_surv_time, betas=betas, dist=surv_dist,
                 lambda=lambda, gamma=gamma)
 
@@ -31,7 +31,7 @@ node_cox <- function(data, parents, betas, surv_dist, lambda, gamma,
     status <- 1
   }
 
-  out_data <- data.frame(time=time, status=status)
+  out_data <- data.table(time=time, status=status)
   colnames(out_data) <- c(paste0(name, "_time"), paste0(name, "_status"))
 
   return(out_data)

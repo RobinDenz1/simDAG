@@ -13,7 +13,8 @@ Author: Robin Denz
 `simDAG` is an R-Package which can be used to generate data from a known directed acyclic graph (DAG) with associated information
 on distributions and causal coefficients. The root nodes are sampled first and each subsequent child node is generated according to a
 regression model (linear, logistic, multinomial, cox, ...). The result is a dataset that has the same causal structure as the
-specified DAG and by expectation the same distributions and regression coefficients as initially specified.
+specified DAG and by expectation the same distributions and regression coefficients as initially specified. It also implements a
+comprehensive framework for conducting discrete-time simulations in a similar fashion.
 
 ## Installation
 

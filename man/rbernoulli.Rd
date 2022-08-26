@@ -22,11 +22,9 @@ A numeric vector of probabilities, used when drawing the trials.
 Internally, it uses only a single call to \code{runif}, making it much faster and more memory efficient than using \code{rbinomial}.
 }
 \examples{
-\dontrun{
 # generating 5 bernoulli random draws from an unbiased coin
 rbernoulli(n=5, p=0.5)
 
 # using different probabilities for each coin throw
 rbernoulli(n=5, p=c(0.1, 0.2, 0.3, 0.2, 0.7))
-}
 }

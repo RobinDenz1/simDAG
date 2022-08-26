@@ -17,7 +17,36 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Data at t0:
+# How it generally works
+
+All variables in a discrete-time simulation can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
+
+* *t0_root_nodes*: Variables that are completely independent of all other variables and are only generated once are called *t0_root_nodes*. This could be something like sex or geographic entities. They are generally simply sampled from some previously defined distribution, but they could also be sampled directly from existing data. The prefix *t0_* indicates that these variables are created only once in the beginning.
+
+* *t0_child_nodes*: Much like *t0_root_nodes*, the *t0_child_nodes* are also variables that are generated only once in the beginning of the discrete-time simulation. The only difference is, that these variables are not simply sampled from a defined distribution. Instead they causally depend in some way on other variables. Those other variables can be root nodes or other child nodes, as long as the underlying causal structure can be described as a directed acyclic graph.
+
+* *tx_nodes*: This type of node is more complex and is the reason to use discrete-time simulations. Variables in this category are updated at each step in time of the simulation process. These updates can be fairly easy, such as increasing the age of a person by one time unit on each step, or they can be very complex. For example, if we want to model the occurrence of some kind of time-dependent-event, we can generate the probability of that occurrence at each step depending on other variables in the simulation model or past states of the variable itself.
+
+As a natural consequence, the simulation model follows the following steps:
+
+* **1**: Sampling from the *t0_root_nodes*
+* **2**: Generating the *t0_child_nodes* based on root nodes and other child nodes
+* **3**: Increasing the simulation time by 1
+* **4**: Generating / updating *tx_nodes*
+* **5**: Repeating steps 3 and 4 until a previously defined maximum time point is reached.
+
+# Simple Example
+
+## Data at t0
+
+## Data at tx
+
+
+# Complex Example
+
+## Data at t0
+
+In our case, the data at the beginning of the simulation contains only the geographic entity `kreis`, the age of the person `sex` and the sex of the person `sex`. The `kreis` and `sex` are treated as root nodes, while the age distribution is generated to be different in each `kreis`, making `age` a child node with `kreis` as a single parent. The `sim_from_dag` function is used to directly generate a dataset using these specifications:
 
 ```{r}
 library(Rfast)
@@ -25,7 +54,7 @@ library(truncnorm)
 library(devtools)
 library(xlsx)
 library(truncnorm)
-library(stringr)
+library(data.table)
 
 load_all()
 
@@ -70,11 +99,17 @@ t0_child_nodes <- list(list(name="age",
                             type="generate_age"))
 
 start_data <- sim_from_dag(n_sim=10, root_nodes=t0_root_nodes, child_nodes=t0_child_nodes)
-head(start_data)
-
 ```
 
-Specifying the nodes after that:
+This is how the resulting data looks:
+
+```{r}
+head(start_data)
+```
+
+## Data at tx:
+
+Our next task is to define what kind of time-dependent nodes we want to use and how exactly they should work.
 
 ```{r}
 
@@ -90,9 +125,14 @@ prob_first_vacc <- function(data, sim_time, start_vaccinations,
   if (sim_time < start_vaccinations) {
     return(0)
   }
+  # There is only so much data yet, afterwards simply return a small but
+  # constant value.
+  if (sim_time - start_vaccinations >= 600) {
+    return(0.000000001)
+  }
   
-  p <- impf_dat$impf_prob[impf_dat$time==(sim_time - start_vaccinations)]
-  p <-  p + data$age * beta_age
+  p <- impf_dat$impf_prob[impf_dat$time==(sim_time - start_vaccinations + 1)]
+  p <- p + data$age * beta_age
   
   return(p)
 }
@@ -103,24 +143,6 @@ node_generate_vacc_2 <- function(data) {
                                 (data$vacc_type==3) * 84) * 
     NA^(data$vacc_type==4)
   return(vacc_2)
-}
-
-## individual vaccination effect at t
-vacc_eff_triangle <- function(vacc_time, vacc_delay, dur_vacc,
-                              rr_vacc_start, sim_time) {
-  
-  if (is.na(vacc_time)) {
-    rr_vacc <- 1
-  } else {
-    rr_vacc <- stats::approx(x=c((vacc_time + vacc_delay),
-                               (vacc_time + vacc_delay + dur_vacc)),
-                             y=c(rr_vacc_start, 1),
-                             yleft=1,
-                             yright=1,
-                             xout=sim_time,
-                             method="linear")$y
-  }
-  return(rr_vacc)
 }
 
 ## base probability of getting covid 19 depending on time
@@ -137,13 +159,22 @@ prob_covid <- function(data, sim_time, start_covid, rr_vacc_start,
     return(0)
   }
   
-  vacc_reduction <- vapply(data$vacc_2, FUN=vacc_eff_triangle,
-                           FUN.VALUE=numeric(1),
-                           vacc_delay=vacc_delay,
-                           dur_vacc=dur_vacc,
-                           rr_vacc_start=rr_vacc_start,
-                           sim_time=sim_time)
+  # Alternatively we could use the linear equation defined by the two points:
+  # y = ((y2-y1) / (x2-x1)) * x + ((x2*y1-x1*y2) / (x2-x1))
+  # to find the person and time specific RR
+  # y2 <- 1
+  # y1 <- rr_vacc_start
+  x1 <- fifelse(data$vacc_type==4, data$vacc_1_time, data$vacc_2) + vacc_delay
+  x2 <- x1 + dur_vacc
+  
+  vacc_reduction <- rr_vacc_start^pmax((1-(sim_time-x1)/x2)*(sim_time-x1 >=0),0)
+  
+  # set to 1 if NA
+  vacc_reduction[is.na(vacc_reduction)] <- 1
+  
+  # get probability
   p <- (base_p_covid(sim_time) + data$age * beta_age) * vacc_reduction
+  
   return(p)
 }
 
@@ -153,21 +184,22 @@ prob_sickness <- function(data, sim_time, rr_vacc_1, rr_vacc_2,
                           beta_age, base_p) {
   
   # check if in risk periods
-  in_vacc_1_risk <- ifelse(is.na(data$vacc_1_time), FALSE,
-                           ifelse((sim_time - data$vacc_1_time) < 
-                                  risk_dur_vacc, TRUE, FALSE))
-  in_vacc_2_risk <- ifelse(is.na(data$vacc_2), FALSE,
-                           ifelse(((sim_time - data$vacc_2) < risk_dur_vacc) & 
-                                  ((sim_time - data$vacc_2) > 0), TRUE, FALSE))
-  in_covid_risk <- ifelse(is.na(data$covid_time), FALSE,
-                           ifelse((sim_time - data$covid_time) < 
-                                  risk_dur_covid, TRUE, FALSE))
+  in_vacc_1_risk <- fifelse(is.na(data$vacc_1_time), FALSE,
+                            fifelse((sim_time - data$vacc_1_time) < 
+                                    risk_dur_vacc, TRUE, FALSE))
+  in_vacc_2_risk <- fifelse(is.na(data$vacc_2), FALSE,
+                           fifelse(((sim_time - data$vacc_2) < risk_dur_vacc) & 
+                                   ((sim_time - data$vacc_2) > 0), TRUE, FALSE))
+  in_covid_risk <- fifelse(is.na(data$covid_time), FALSE,
+                           fifelse((sim_time - data$covid_time) < 
+                                   risk_dur_covid, TRUE, FALSE))
   
   # choose which relative risk to apply to baseline risk
-  time_dep_risk <- ifelse(!in_vacc_1_risk & !in_vacc_2_risk & !in_covid_risk, 1,
-                          ifelse(in_covid_risk, rr_covid,
-                          ifelse(in_vacc_1_risk, rr_vacc_1[data$vacc_type],
-                                 rr_vacc_2[data$vacc_type])))
+  time_dep_risk <- fifelse(!in_vacc_1_risk & !in_vacc_2_risk &
+                           !in_covid_risk, 1,
+                          fifelse(in_covid_risk, rr_covid,
+                          fifelse(in_vacc_1_risk, rr_vacc_1[data$vacc_type],
+                                  rr_vacc_2[data$vacc_type])))
   
   # put all risks together
   p <- (base_p + data$age * beta_age) * time_dep_risk
@@ -193,7 +225,7 @@ tx_nodes <- list(list(name="age",
                       parents="age",
                       type="advance_age"),
                  list(name="vacc_1",
-                      parents=c("age"),
+                      parents=c("age", "vacc_1_time", "vacc_1_event"),
                       type="time_to_event",
                       prob_fun=prob_first_vacc,
                       prob_fun_args=list(start_vaccinations=200,
@@ -205,7 +237,8 @@ tx_nodes <- list(list(name="age",
                       parents=c("vacc_1_event", "vacc_1_time", "vacc_type"),
                       type="generate_vacc_2"),
                  list(name="covid",
-                      parents=c("vacc_2", "age"),
+                      parents=c("vacc_1_time", "vacc_2", "vacc_type", "age",
+                                "covid_event", "covid_time"),
                       type="time_to_event",
                       prob_fun=prob_covid,
                       prob_fun_args=list(start_covid=100,
@@ -219,7 +252,8 @@ tx_nodes <- list(list(name="age",
                  list(name="sickness",
                       parents=c("vacc_1_event", "vacc_1_time", "vacc_2",
                                 "age", "covid_event", "covid_time",
-                                "vacc_type"),
+                                "vacc_type", "sickness_event", "sickness_time",
+                                "sickness_past_event_times"),
                       type="time_to_event",
                       prob_fun=prob_sickness,
                       prob_fun_args=list(rr_vacc_1=c(3.24, 3.24, 1, 1),
@@ -231,10 +265,9 @@ tx_nodes <- list(list(name="age",
                                          base_p=0.0000000000000000001),
                       event_duration=21,
                       immunity_duration=50,
-                      save_past_events=FALSE))
+                      save_past_events=TRUE))
 
-
-out <- sim_discrete_time(n_sim=10000,
+out <- sim_discrete_time(n_sim=100000,
                          t0_root_nodes=t0_root_nodes,
                          t0_child_nodes=t0_child_nodes,
                          t0_sort_dag=TRUE,
@@ -242,6 +275,34 @@ out <- sim_discrete_time(n_sim=10000,
                          tx_nodes=tx_nodes,
                          save_states="last")
 
+```
+
+Using parallel processing to speed things up:
+
+```{r}
+library(doParallel)
+library(foreach)
+library(doRNG)
+library(doSNOW)
+
+n_cores <- 8
+
+cl <- parallel::makeCluster(n_cores, outfile="")
+doParallel::registerDoParallel(cl)
+parallel::clusterExport(cl, ls())
+pkgs <- (.packages())
+
+out <- foreach::foreach(i=1:n_cores, .packages=pkgs) %dorng% {
+                          
+  temp <- sim_discrete_time(n_sim=100000,
+                            t0_root_nodes=t0_root_nodes,
+                            t0_child_nodes=t0_child_nodes,
+                            t0_sort_dag=TRUE,
+                            max_t=365*3,
+                            tx_nodes=tx_nodes,
+                            save_states="last")$data
+}
+parallel::stopCluster(cl)
 ```
 
 

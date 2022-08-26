@@ -1,4 +1,27 @@
 
+## small function to get a valid list of node arguments
+clean_node_args <- function(node) {
+
+  # get function
+  node_type_fun <- get(paste0("node_", node$type))
+  fun_pos_args <- names(formals(node_type_fun))
+
+  # change parents arguments if time_to_event node
+  if (node$type=="time_to_event") {
+    parents <- c(node$parents,
+                 paste0(node$name, c("_event", "_time", "_past_event_times")))
+    node$parents <- parents
+  }
+
+  # add or remove internal arguments if needed
+  if (!"name" %in% fun_pos_args) {
+    node$name <- NULL
+  }
+  node$type <- NULL
+
+  return(node)
+}
+
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
 # TODO:
@@ -22,8 +45,9 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                          root_nodes=t0_root_nodes,
                          child_nodes=t0_child_nodes,
                          sort_dag=t0_sort_dag)
+    data <- data.table::setDT(data)
   } else {
-    data <- as.data.frame(t0_data)
+    data <- data.table::setDT(t0_data)
   }
   data$id <- seq(1, nrow(data))
 
@@ -66,31 +90,33 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
       if (endsWith(init_colnames[i], "_event")) {
         data[, init_colnames[i]] <- FALSE
       } else {
-        data[, init_colnames[i]] <- NA
+        data[, init_colnames[i]] <- NA_integer_
       }
     }
   }
+
+  # define a list of arguments once so it doesn't have to be changed
+  # inside the double for loop
+  arg_list <- lapply(tx_nodes, clean_node_args)
+  fun_list <- lapply(tx_nodes, FUN=function(x){get(paste0("node_", x$type))})
 
   # start the main loop
   for (t in seq_len(max_t)) {
 
     # execute each node function one by one
     for (i in tx_nodes_order) {
+
       # get relevant arguments
-      args <- tx_nodes[[i]]
-      args$data <- data
-      args$type <- NULL
+      args <- arg_list[[i]]
+      args$data <- data[, args$parents, with=FALSE]
 
       # get function
-      node_type_fun <- get(paste0("node_", tx_nodes[[i]]$type))
+      node_type_fun <- fun_list[[i]]
       fun_pos_args <- names(formals(node_type_fun))
 
       # add or remove internal arguments if needed
       if ("sim_time" %in% fun_pos_args) {
         args$sim_time <- t
-      }
-      if (!"name" %in% fun_pos_args) {
-        args$name <- NULL
       }
       if (!"parents" %in% fun_pos_args) {
         args$parents <- NULL

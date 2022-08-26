@@ -2,7 +2,7 @@
 ## efficient bernoulli trials
 #' @export
 rbernoulli <- function(n, p=0.5) {
-  as.numeric(stats::runif(n) > (1 - p))
+  stats::runif(n) > (1 - p)
 }
 
 ## generate draws from discrete distribution
