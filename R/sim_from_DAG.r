@@ -39,10 +39,9 @@ sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
   # if not already ordered properly, use topological
   # sorting to get the right data generation sequence
   if (sort_dag) {
+    requireNamespace("Rfast")
     adjacency_mat <- nodes2adjacency_mat(child_nodes=child_nodes,
                                          root_nodes=NULL)
-    # use topological sorting
-    requireNamespace("Rfast")
     index_children <- Rfast::topological_sort(adjacency_mat)
   } else {
     index_children <- seq_len(length(child_nodes))

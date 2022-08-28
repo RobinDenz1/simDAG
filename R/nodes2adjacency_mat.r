@@ -1,7 +1,6 @@
 
 ## obtain an adjacency matrix of the causal DAG from the
 ## specified node lists
-# TODO: Do I actually need to include root nodes?
 #' @export
 nodes2adjacency_mat <- function(child_nodes, root_nodes=NULL) {
   # extract node names

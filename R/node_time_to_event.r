@@ -1,5 +1,6 @@
 
-## a node format to generate arbitrary time-to-event data
+## A node to generate arbitrary time-to-event data in
+## discrete-time simulations
 #' @export
 node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                prob_fun_args=list(), event_duration=0,
@@ -38,26 +39,23 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
 
   # update event time
   event_time <- fifelse(is.na(data[[name_time]]) & event, sim_time,
-                       fifelse(is.na(data[[name_time]]) &
-                                 !event, NA_integer_,
-                       fifelse(!is.na(data[[name_time]]) &
-                               days_since_event <= immunity_duration,
-                               data[[name_time]], NA_integer_)))
+                        fifelse(is.na(data[[name_time]]) &
+                                !event, NA_integer_,
+                        fifelse(!is.na(data[[name_time]]) &
+                                days_since_event <= immunity_duration,
+                                data[[name_time]], NA_integer_)))
 
   # update past event times
   # NOTE: I don't like this but I have not yet figured out a better way to
   #       do this. Hash tables were actually much slower.
   if (save_past_events) {
     past_events <- data[[name_past_event_times]]
-    past_events[!is.na(event_time) &
-                  event_time==sim_time &
-                  !is.na(past_events)] <-
-      paste(past_events[!is.na(event_time) &
-                        event_time==sim_time &
+    past_events[!is.na(event_time) & event_time==sim_time &
+                !is.na(past_events)] <-
+      paste(past_events[!is.na(event_time) & event_time==sim_time &
                         !is.na(past_events)], sim_time)
-    past_events[!is.na(event_time) &
-                  event_time==sim_time &
-                  is.na(past_events)] <- as.character(sim_time)
+    past_events[!is.na(event_time) & event_time==sim_time &
+                is.na(past_events)] <- as.character(sim_time)
   } else {
     past_events <- NA
   }

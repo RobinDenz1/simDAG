@@ -46,7 +46,7 @@ A single integer specifying the final point in time to which the simulation shou
 
   }
   \item{tx_nodes_order}{
-
+A numeric vector specifying the order in which the nodes defined by the \code{tx_nodes} object should be executed at each time step. If \code{NULL} (default), the nodes will be generated in the order of appearance defined by the \code{tx_nodes} object.
   }
   \item{tx_transform_fun}{
 An optional function that takes the data created after every point in time > 0 as the first argument and the simulation time as the second argument. The function will be applied to that data after all node functions at that point in time have been executed and its output will replace the previous \code{data.frame}. Can be used to perform arbitrary data transformations at every point in time. Set to \code{NULL} to not use this functionality.
@@ -66,11 +66,17 @@ Either a single character string specifying the filename of a \code{.Rds} file o
 }
 \details{
 
+Sometimes it is neccessary to simulate complex data that cannot be described easily with a single DAG and node information. This may be the case if the desired data should contain multiple time-dependent variables or time-to-event variables in which the event has time-dependent effects on other events. An example for this is data on vaccinations and their effects on the occurence of adverse events (see vignette). Discrete-Time Simulation can be an effective tool to generate these kinds of datasets.
+
 \strong{\emph{How it Works}}:
 
 # TODO: write this
 
+\strong{\emph{A Few Words of Caution}}:
+
+In most cases it will be neccessary for the user to write their own functions in order to actually use the \code{sim_discrete_time} function. Unlike the \code{sim_from_dag} function, in which many popular node types can be implemented in a re-usable way, discrete-time simulation will always require some custom input by the user. This is the price users have to pay for the almost unlimited flexibility offered by this simulation methodology.
+
 }
 \examples{
-# Write something here
+# TODO: give very simple example
 }

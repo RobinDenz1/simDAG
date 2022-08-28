@@ -2,7 +2,7 @@
 \alias{nodes2adjacency_mat}
 
 \title{
-Create a List of Fully Specified Nodes From Data
+Obtain a Adjacency Matrix from Node Lists
 }
 \description{
 The \code{\link{sim_from_dag}} function requires the user to specify the causal relationships by using two lists of further list containing node information. This function takes these node lists as input and outputs the underlying adjacency matrix. This can be usefull to plot the theoretical DAG or to check if the nodes have been specified correctly.
