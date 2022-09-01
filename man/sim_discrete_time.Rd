@@ -14,8 +14,7 @@ sim_discrete_time(n_sim, t0_root_nodes, t0_child_nodes,
                   tx_nodes, tx_nodes_order,
                   tx_transform_fun=NULL,
                   tx_transform_args=list(),
-                  save_states="last", save_states_at=NULL,
-                  filename=NULL)
+                  save_states="last", save_states_at=NULL)
 }
 \arguments{
   \item{n_sim}{
@@ -43,7 +42,7 @@ A named list of additional arguments passed to the \code{t0_transform_fun}. Igno
 A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at t = 1 (after creating the starting data with the arguments above) and will continue with until \code{max_t} by increasing the time by one unit at every step.
   }
   \item{tx_nodes}{
-
+A list of lists containing information about all nodes that change over time. Each list inside this object should contain a \code{name} object (singular string with the unique name of the variable), a \code{parents} object (character vector specifying the names of the variables in \code{data} that the respective node relies on) and a \code{type} object (name of a node function which creates the variable when called). May include aribitrary number of additional arguments which will be passed to the function specified by \code{type}. See examples and vignettes for more information.
   }
   \item{tx_nodes_order}{
 A numeric vector specifying the order in which the nodes defined by the \code{tx_nodes} object should be executed at each time step. If \code{NULL} (default), the nodes will be generated in the order of appearance defined by the \code{tx_nodes} object.
@@ -60,8 +59,8 @@ Specifys the amount of simulation states that should be saved in the output obje
   \item{save_states_at}{
 The specific points in time at which the simulated \code{data.frame} should be saved. Ignored if \code{save_states!="at_t"}.
   }
-  \item{filename}{
-Either a single character string specifying the filename of a \code{.Rds} file or \code{NULL}. If a filename is supplied, the output object will be written to it.
+  \item{verbose}{
+If \code{TRUE} prints a one line at every point in time before a node function is executed. This can be useful when debugging custom node functions. Defaults to \code{FALSE}.
   }
 }
 \details{
@@ -71,6 +70,8 @@ Sometimes it is neccessary to simulate complex data that cannot be described eas
 \strong{\emph{How it Works}}:
 
 # TODO: write this
+
+\strong{\emph{Specifying the root_nodes, child_nodes and tx_nodes arguments}}:
 
 \strong{\emph{A Few Words of Caution}}:
 

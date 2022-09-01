@@ -38,7 +38,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                               tx_transform_fun=NULL,
                               tx_transform_args=list(),
                               save_states="last", save_states_at=NULL,
-                              filename=NULL) {
+                              verbose=FALSE) {
   # get initial data
   if (is.null(t0_data)) {
     data <- sim_from_dag(n_sim=n_sim,
@@ -49,7 +49,6 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   } else {
     data <- data.table::setDT(t0_data)
   }
-  data$id <- seq(1, nrow(data))
 
   # perform an arbitrary data transformation right at the start
   if (!is.null(t0_transform_fun)) {
@@ -102,9 +101,12 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
 
   # start the main loop
   for (t in seq_len(max_t)) {
-
     # execute each node function one by one
     for (i in tx_nodes_order) {
+
+      if (verbose) {
+        cat("t = ", t, "node = ", tx_nodes[[i]]$name, "\n")
+      }
 
       # get relevant arguments
       args <- arg_list[[i]]
@@ -136,10 +138,12 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
 
     # save intermediate simulation states, if specified
     if (save_states=="all") {
-      data$simulation_time <- t
+      data$.id <- seq(1, nrow(data))
+      data$.simulation_time <- t
       past_states[[t]] <- data
     } else if (save_states=="at_t" & t %in% save_states_at) {
-      data$simulation_time <- t
+      data$.id <- seq(1, nrow(data))
+      data$.simulation_time <- t
       past_states[[state_count]] <- data
       state_count <- state_count + 1
     }
@@ -147,10 +151,6 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
 
   out <- list(past_states=past_states,
               data=data)
-
-  if (!is.null(filename)) {
-    saveRDS(out, filename)
-  }
 
   return(out)
 }
