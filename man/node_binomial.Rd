@@ -8,7 +8,8 @@ Simulate a Node Using Logistic Regression
 Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a bernoulli distribution accordingly.
 }
 \usage{
-node_binomial(data, parents, betas, intercept)
+node_binomial(data, parents, betas, intercept,
+              return_prob=FALSE)
 }
 \arguments{
   \item{data}{
@@ -23,9 +24,12 @@ A numeric vector with length equal to \code{parents}, specifying the causal beta
   \item{intercept}{
 A single number specifying the intercept that should be used when generating the node.
   }
+  \item{return_prob}{
+Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the calculated probability is returned instead of the results of bernoulli trials.
+  }
 }
 \details{
-Using the normal form a logistic regression model, the observation specific event probability is generated for every observation in the dataset. Using the \code{rbernoulli} function, this probability is used to take one bernoulli sample for each observation in the dataset.
+Using the normal form a logistic regression model, the observation specific event probability is generated for every observation in the dataset. Using the \code{rbernoulli} function, this probability is then used to take one bernoulli sample for each observation in the dataset. If only the probability should be returned \code{return_prob} should be set to \code{TRUE}.
 }
 \examples{
 \dontrun{

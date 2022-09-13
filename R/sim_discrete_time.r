@@ -26,7 +26,8 @@ clean_node_args <- function(node) {
 ## previously defined functions and nodes
 # TODO:
 #   - this function desperately needs tests!
-#   - also needs documentation + examples
+#   - also needs more documentation + examples
+#   - multiple detailed vignettes
 #   - also needs (probably a lot of) input checks
 #' @export
 sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,

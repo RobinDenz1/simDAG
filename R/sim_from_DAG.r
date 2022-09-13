@@ -31,9 +31,9 @@ sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
       data[[i]] <- out
     }
     data <- dplyr::bind_cols(data)
-    data <- setDT(data)
+    data <- data.table::setDT(data)
   } else {
-    data <- setDT(root_nodes)
+    data <- data.table::setDT(root_nodes)
   }
 
   # if not already ordered properly, use topological
