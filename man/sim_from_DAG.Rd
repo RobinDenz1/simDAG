@@ -23,6 +23,9 @@ A list containing one list for each child node in the DAG of interest. See detai
   \item{sort_dag}{
 Whether to topologically sort the DAG before starting the simulation or not. If the nodes in \code{child_nodes} are already topologically sorted, this argument can be set to \code{FALSE} to safe some computation time. This usually won't safe too much time though, because it internally uses the \code{topological_sort} function from the \pkg{Rfast} package, which is very fast.
   }
+  \item{check_inputs}{
+Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
+  }
 }
 \details{
 
@@ -37,9 +40,9 @@ This procedure is simple in theory, but can get very complex when manually coded
 If no \code{data.frame} is supplied directly to this argument, it should be a list. The lists inside this list correspond to one root node each and should contain exactly three named parameters:
 
 \itemize{
+  \item{\code{name}: A single character string specifying the name of the root node.}
   \item{\code{dist}: The name of the function (as string) that should be called to generate the values (for example \code{rnorm}).}
   \item{\code{params}: A named list of arguments passed to the function specified by \code{dist}.}
-  \item{\code{name}: A single character string specifying the name of the root node.}
 }
 
 \strong{\emph{Specifying the \code{child_nodes} Argument}}:
@@ -47,10 +50,10 @@ If no \code{data.frame} is supplied directly to this argument, it should be a li
 Each list inside of the \code{child_nodes} list needs to include at least the following named parameters:
 
 \itemize{
+  \item{\code{name}: A single character string specifying the name of the root node.}
   \item{\code{parents}: A character vector containing the names of all parents of that node}
   \item{\code{type}: A character string specifying which type of \code{node_function} should be used to generate data for this node.}
   \item{\code{betas}: The causal coefficients used to generate the data from this node. Usually (but not always) this should be a numeric vector with one entry for each parent node.}
-  \item{\code{name}: A single character string specifying the name of the root node.}
   \item{\code{...}: Further named arguments passed to the respective \code{node_function}.}
 }
 
@@ -80,7 +83,7 @@ root_nodes <- list(list(dist="rnorm",
                         params=list(p=0.5),
                         name="sex"))
 child_nodes <- list(list(parents=c("sex", "age"),
-                         type="linear",
+                         type="gaussian",
                          name="bmi",
                          betas=c(1.1, 0.4),
                          intercept=12,

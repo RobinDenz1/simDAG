@@ -1,0 +1,42 @@
+---
+title: "Simulating Data from a Static DAG"
+output: rmarkdown::html_vignette
+author: "Robin Denz"
+vignette: >
+  %\VignetteIndexEntry{Simulating Data from a Static DAG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>"
+)
+```
+
+# Introduction
+
+In this small vignette, we introduce the `sim_from_dag` function, which can be used to simulate complex data from arbitrary causal directed acyclic graphs (DAGs). The simulated data may include continuous, binary, categorical, count or time-to-event variables. This function is most useful if the DAG is static, meaning that there are no time-varying variables. It is theoretically possible to use this function to simulate data from DAGs with a time structure as well, but there are some difficulties associated with it that will be discussed later.
+
+# What are DAGS?
+
+# Defining the node lists
+
+## Manually
+
+## From existing data
+
+If the data should resemble a specific real dataset, it makes sense to base the values for the causal coefficients on that specific dataset. This can be done by fitting a single model for each child node, extracting the estimated coefficients from the fitted models and putting those into an appropriate node list. If the assumed DAG is big, this can be a time-extensive task. The `nodes_from_data` function automates this process. This function takes a node list containing only minimal information about the causal structure and node type and outputs fully specified `root_nodes` and `child_nodes` objects.
+
+
+# A small DAG
+
+# A big DAG
+
+# Time-varying covariates
+
+# References
+
+
+

@@ -106,7 +106,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
     for (i in tx_nodes_order) {
 
       if (verbose) {
-        cat("t = ", t, "node = ", tx_nodes[[i]]$name, "\n")
+        cat("t = ", t, "node = ", tx_nodes[[i]]$name, "\n", sep="")
       }
 
       # get relevant arguments

@@ -14,7 +14,13 @@ add_node_to_data <- function(data, new, name) {
 
 ## generate data from a DAG with defined nodes
 #' @export
-sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
+sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE,
+                         check_inputs=TRUE) {
+
+  if (check_inputs) {
+    check_inputs_sim_from_dag(n_sim=n_sim, root_nodes=root_nodes,
+                              child_nodes=child_nodes, sort_dag=sort_dag)
+  }
 
   # sample from root nodes
   if (!is.data.frame(root_nodes)) {
@@ -36,12 +42,16 @@ sim_from_dag <- function(n_sim, root_nodes, child_nodes, sort_dag=TRUE) {
     data <- data.table::setDT(root_nodes)
   }
 
+  if (length(child_nodes)==0) {
+    return(data)
+  }
+
   # if not already ordered properly, use topological
   # sorting to get the right data generation sequence
   if (sort_dag) {
     requireNamespace("Rfast")
-    adjacency_mat <- nodes2adjacency_mat(child_nodes=child_nodes,
-                                         root_nodes=NULL)
+    adjacency_mat <- nodes2adjacency_mat(root_nodes=NULL,
+                                         child_nodes=child_nodes)
     index_children <- Rfast::topological_sort(adjacency_mat)
   } else {
     index_children <- seq_len(length(child_nodes))

@@ -2,7 +2,7 @@
 ## obtain an adjacency matrix of the causal DAG from the
 ## specified node lists
 #' @export
-nodes2adjacency_mat <- function(child_nodes, root_nodes=NULL) {
+nodes2adjacency_mat <- function(root_nodes=NULL, child_nodes) {
   # extract node names
   names_children <- vapply(child_nodes, function(x){x$name},
                            FUN.VALUE=character(1))

@@ -8,14 +8,14 @@ Obtain a Adjacency Matrix from Node Lists
 The \code{\link{sim_from_dag}} function requires the user to specify the causal relationships by using two lists of further list containing node information. This function takes these node lists as input and outputs the underlying adjacency matrix. This can be usefull to plot the theoretical DAG or to check if the nodes have been specified correctly.
 }
 \usage{
-nodes2adjacency_mat(child_nodes, root_nodes=NULL)
+nodes2adjacency_mat(root_nodes=NULL, child_nodes)
 }
 \arguments{
-  \item{child_nodes}{
-A list of child nodes as described in the \code{\link{sim_from_dag}} function.
-  }
   \item{root_nodes}{
 A list of root nodes as described in the \code{\link{sim_from_dag}} function or NULL.
+  }
+  \item{child_nodes}{
+A list of child nodes as described in the \code{\link{sim_from_dag}} function.
   }
 }
 \details{

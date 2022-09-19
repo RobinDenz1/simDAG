@@ -67,11 +67,23 @@ If \code{TRUE} prints a one line at every point in time before a node function i
 
 Sometimes it is neccessary to simulate complex data that cannot be described easily with a single DAG and node information. This may be the case if the desired data should contain multiple time-dependent variables or time-to-event variables in which the event has time-dependent effects on other events. An example for this is data on vaccinations and their effects on the occurence of adverse events (see vignette). Discrete-Time Simulation can be an effective tool to generate these kinds of datasets.
 
+\strong{\emph{What is Discrete-Time Simulation?}}:
+
+In a discrete-time simulation, there are entities who have certain states associated with them that only change at discrete points in time. For example, the entities could be people and the state could be alive or dead. In this example we could generate 100 people with some covariates such as age, sex etc.. We then start by increasing the simulation time by one day. For each person we now check if the person has died using a bernoulli trial, where the probability of dying is generated at each point in time based on some of the covariates. The simulation time is then increased again and the process is repeated until we reach \code{max_t}.
+
+Due to the iterative process it is very easy to simulate arbitrarily complex data. The covariates may change over time in arbitrary ways, the event probability can have any functional relationship with the covariates and so on. If we want to model an event type that is not terminal, such as occurence of cardiovascular disease, events can easily be simulated to be dependent on the timing and number of previous events. Since Discrete-Time Simulation is a special case of Discrete-Event Simulation, introductory textbooks on the latter can be of great help in getting a better understanding of the former.
+
 \strong{\emph{How it Works}}:
 
-# TODO: write this
+Internally, this function works by first simulating data using the \code{\link{sim_from_dag}} function. Alternatively, the user can supply a custom \code{data.frame} using the \code{t0_data} argument. This data defines the state of all entities at \eqn{t = 0}. Afterwards, the simulation time is increased by one unit and the data is transformed in place by calling each node function defined by the \code{tx_nodes} argument (either in turn or by the order defined by the \code{tx_nodes_order} argument). Usually, each transformation changes the state of the entities in some way. For example if there is an \code{age} variable, we would probably increase the age of each person by one time unit at every step. Once \code{max_t} is reached, the resulting \code{data.table} will be returned. It contains the state of all entities at the last step with additional information of when they experienced some events (if \code{\link{node_time_to_event}} was used in \code{tx_nodes}). Multiple in-depth examples can be found in the vignettes of this package.
 
 \strong{\emph{Specifying the root_nodes, child_nodes and tx_nodes arguments}}:
+
+Since the \code{t0_root_nodes} and \code{t0_child_nodes} arguments are simply passed to the \code{\link{sim_from_dag}} function, the documentation of that function is sufficient to explain how these arguments should be specified.
+
+\strong{\emph{Speed Considerations}}:
+
+All functions in this package rely on the \code{data.table} structure in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional nodes in \code{tx_nodes}. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow.
 
 \strong{\emph{A Few Words of Caution}}:
 
@@ -79,5 +91,58 @@ In most cases it will be neccessary for the user to write their own functions in
 
 }
 \examples{
-# TODO: give very simple example
+library(simDAG)
+
+## simulating death dependent on age, sex, bmi
+## NOTE: this example is explained in detail in one of the vignettes
+
+# nodes for generating data at t0
+root_nodes <- list(list(name="age",
+                        dist="rnorm",
+                        params=list(mean=50, sd=4)),
+                   list(name="sex",
+                        dist="rbernoulli",
+                        params=list(p=0.5)))
+child_nodes <- list(list(name="bmi",
+                         parents=c("sex", "age"),
+                         type="gaussian",
+                         betas=c(1.1, 0.4),
+                         intercept=12,
+                         error=2))
+
+# a function that increases age as time goes on
+node_advance_age <- function(data) {
+  return(data$age + 1/365)
+}
+
+# a function to calculate the probability of death as a
+# linear combination of age, sex and bmi on the log scale
+prob_death <- function(data, beta_age, beta_sex, beta_bmi, intercept) {
+  prob <- intercept + data$age*beta_age + data$sex*beta_sex + data$bmi*beta_bmi
+  prob <- 1/(1 + exp(-prob))
+  return(prob)
+}
+
+# defining the time-varying nodes
+tx_nodes <- list(list(name="age",
+                      type="advance_age",
+                      parents="age"),
+                 list(name="death",
+                      type="time_to_event",
+                      parents=c("age", "sex", "bmi"),
+                      prob_fun=prob_death,
+                      prob_fun_args=list(beta_age=0.1,
+                                         beta_bmi=0.3,
+                                         beta_sex=-0.2,
+                                         intercept=-20),
+                      event_duration=Inf,
+                      save_past_events=FALSE))
+
+# run simulation for 100 people, 50 days long
+sim_dat <- sim_discrete_time(n_sim=100,
+                             t0_root_nodes=root_nodes,
+                             t0_child_nodes=child_nodes,
+                             tx_nodes=tx_nodes,
+                             max_t=50,
+                             verbose=FALSE)$data
 }
