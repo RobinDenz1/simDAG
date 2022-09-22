@@ -5,9 +5,6 @@ is_node_name <- function(name) {
 }
 
 # check whether a node type is appropriate
-type <- "linear"
-call_from <- "sim_from_dag"
-
 is_node_type <- function(type, call_from) {
   length(type)==1 && is.character(type) &&
     exists(paste0("node_", type), mode="function") &&
@@ -27,7 +24,6 @@ is_node_parents <- function(parents) {
 ## checking the inputs of the sim_from_dag function
 check_inputs_sim_from_dag <- function(n_sim, root_nodes, child_nodes,
                                       sort_dag) {
-
   # rudimentary type checks
   if (!(length(n_sim)==1 && is.numeric(n_sim) && n_sim > 0)) {
     stop("'n_sim' must be a single integer > 0.")

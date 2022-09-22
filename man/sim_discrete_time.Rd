@@ -14,7 +14,8 @@ sim_discrete_time(n_sim, t0_root_nodes, t0_child_nodes,
                   tx_nodes, tx_nodes_order,
                   tx_transform_fun=NULL,
                   tx_transform_args=list(),
-                  save_states="last", save_states_at=NULL)
+                  save_states="last", save_states_at=NULL,
+                  verbose=FALSE)
 }
 \arguments{
   \item{n_sim}{
