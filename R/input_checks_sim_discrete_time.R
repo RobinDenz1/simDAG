@@ -102,15 +102,6 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
           "Elements of type 'time_to_event' must have a prob_fun_args." =
             !is.null(tx_nodes[[i]]$prob_fun_args))
         stopifnot(
-          "Elements of type 'time_to_event' must have a event_duration." =
-            !is.null(tx_nodes[[i]]$event_duration) ||
-            tx_nodes[[i]]$event_duration == 0)
-        stopifnot(
-          "Elements of type 'time_to_event' must have a immunity_duration." =
-            !is.null(tx_nodes[[i]]$immunity_duration) ||
-            identical(tx_nodes[[i]]$immunity_duration,
-                      tx_nodes[[i]]$event_duration + 0))
-        stopifnot(
           "Elements of type 'time_to_event' must have defined
           whether past events should be saved or not." =
             !is.null(tx_nodes[[i]]$save_past_events))
