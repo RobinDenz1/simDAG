@@ -21,6 +21,9 @@ A list of child nodes as described in the \code{\link{sim_from_dag}} function.
 \details{
 An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain \code{TRUE} in the spot \code{matrix["A", "B"]}.
 }
+\author{
+Robin Denz
+}
 \examples{
 root_nodes <- list(list(dist="rnorm",
                         params=list(mean=50, sd=4),

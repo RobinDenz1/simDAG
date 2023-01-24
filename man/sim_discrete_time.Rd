@@ -15,7 +15,7 @@ sim_discrete_time(n_sim, t0_root_nodes, t0_child_nodes,
                   tx_transform_fun=NULL,
                   tx_transform_args=list(),
                   save_states="last", save_states_at=NULL,
-                  verbose=FALSE)
+                  verbose=FALSE, check_inputs=TRUE)
 }
 \arguments{
   \item{n_sim}{
@@ -63,6 +63,9 @@ The specific points in time at which the simulated \code{data.frame} should be s
   \item{verbose}{
 If \code{TRUE} prints a one line at every point in time before a node function is executed. This can be useful when debugging custom node functions. Defaults to \code{FALSE}.
   }
+  \item{check_inputs}{
+Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
+  }
 }
 \details{
 
@@ -90,6 +93,9 @@ All functions in this package rely on the \code{data.table} structure in order t
 
 In most cases it will be neccessary for the user to write their own functions in order to actually use the \code{sim_discrete_time} function. Unlike the \code{sim_from_dag} function, in which many popular node types can be implemented in a re-usable way, discrete-time simulation will always require some custom input by the user. This is the price users have to pay for the almost unlimited flexibility offered by this simulation methodology.
 
+}
+\author{
+Robin Denz, Katharina Meiszl
 }
 \examples{
 library(simDAG)

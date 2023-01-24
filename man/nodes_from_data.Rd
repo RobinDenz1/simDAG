@@ -31,6 +31,9 @@ All the user has to do is create a list of \code{nodes} including information on
 
 If the user has a reasonable DAG and knows the node types, this is a very fast way to generate synthetic data that corresponds well to the empirical data. Missing values, however, are ignored and not simulated.
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # TODO: add examples

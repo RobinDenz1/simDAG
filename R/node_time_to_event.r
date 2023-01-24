@@ -5,7 +5,17 @@
 node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                prob_fun_args=list(), event_duration=0,
                                immunity_duration=event_duration + 0,
-                               save_past_events=TRUE) {
+                               save_past_events=TRUE, check_inputs=TRUE) {
+
+  if (check_inputs) {
+    check_inputs_node_time_to_event(data=data, parents=parents,
+                                    sim_time=sim_time, name=name,
+                                    prob_fun=prob_fun,
+                                    prob_fun_args=prob_fun_args,
+                                    event_duration=event_duration,
+                                    immunity_duration=immunity_duration,
+                                    save_past_events=save_past_events)
+  }
 
   # get list of arguments
   prob_fun_args$data <- data

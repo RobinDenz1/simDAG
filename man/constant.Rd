@@ -15,6 +15,9 @@ constant(constant)
 A single value of any kind which is used as the only value of the resulting variable.
   }
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 constant(7)

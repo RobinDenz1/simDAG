@@ -8,7 +8,8 @@ Simulate Data from a Given DAG and Node Information
 This function can be used to generate data from a given DAG. It additionally requires information on node distributions, beta coefficients and, depending on the node type, more parameters such as intercepts.
 }
 \usage{
-sim_from_dag(n_sim, root_nodes, child_nodes, sort_dag=TRUE)
+sim_from_dag(n_sim, root_nodes, child_nodes, sort_dag=TRUE,
+             check_inputs=TRUE)
 }
 \arguments{
   \item{n_sim}{
@@ -72,6 +73,9 @@ Currently, the following node types are available:
 }
 
 It is however, very simple to write a new custom \code{node_function}. All that is required is, that it takes the inputs \code{data} (the sample as generated so far), \code{parents} (a character vector specifying the parents) and \code{betas} (the causal coefficients) and outputs either a numeric vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows. More information about this can be found on the \code{node_custom} documentation page.
+}
+\author{
+Robin Denz
 }
 \examples{
 \dontrun{

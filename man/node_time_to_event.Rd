@@ -11,7 +11,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 node_time_to_event(data, parents, sim_time, name, prob_fun,
                    prob_fun_args=list(), event_duration=0,
                    immunity_duration=event_duration + 0,
-                   save_past_events=TRUE)
+                   save_past_events=TRUE, check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
@@ -41,6 +41,9 @@ A single number >= \code{event_duration} specifying how long the person should b
   \item{save_past_events}{
 When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{paste0(name, _past_event_times)} variable using a string for each person. For example, if the person experienced an event at t = 10 and t = 54, the value of that person would be \code{"10 54"}. This can slow down the simulation considerably, so if you are not interested in the timing of previous events this can be turned off by setting this argument to \code{FALSE}.
   }
+  \item{check_inputs}{
+Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
+  }
 }
 \details{
 When performing discrete-time simulation using the \code{\link{sim_discrete_time}} function, the standard node functions implemented in this package are usually not sufficient because they don't capture the time-dependent nature of some very interesting variables. Often, the variable that should be modelled has some probability of occurring at each point in time. Once it does occurr, it has some kind of influence on other variables for a period of time until it goes back to normal (or doesn't). This could be a car crash, a surgery, a vaccination etc. The \code{time_to_event} node function can be used to model these kinds of nodes in a fairly straightforward fashion.
@@ -61,6 +64,9 @@ This type of node naturally support the implementation of terminal and recurrent
 
 Currently this function only allows binary events. Categorical event types may be implemented in the future using a similar methodology. However, this will probably be done in a separate function.
 
+}
+\author{
+Robin Denz, Katharina Meiszl
 }
 \examples{
 # TODO: Add examples

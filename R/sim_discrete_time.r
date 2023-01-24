@@ -24,11 +24,6 @@ clean_node_args <- function(node) {
 
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
-# TODO:
-#   - this function desperately needs tests!
-#   - also needs more documentation + examples
-#   - multiple detailed vignettes
-#   - also needs (probably a lot of) input checks
 #' @export
 sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                               t0_child_nodes=NULL, t0_sort_dag=TRUE,
@@ -39,13 +34,30 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                               tx_transform_fun=NULL,
                               tx_transform_args=list(),
                               save_states="last", save_states_at=NULL,
-                              verbose=FALSE) {
+                              verbose=FALSE, check_inputs=TRUE) {
+
+  if (check_inputs) {
+    check_inputs_sim_discrete_time(n_sim=n_sim, t0_root_nodes=t0_root_nodes,
+                                   t0_child_nodes=t0_child_nodes,
+                                   t0_sort_dag=t0_sort_dag, t0_data=t0_data,
+                                   t0_transform_fun=t0_transform_fun,
+                                   t0_transform_args=t0_transform_args,
+                                   max_t=max_t, tx_nodes=tx_nodes,
+                                   tx_nodes_order=tx_nodes_order,
+                                   tx_transform_fun=tx_transform_fun,
+                                   tx_transform_args=tx_transform_args,
+                                   save_states=save_states,
+                                   save_states_at=save_states_at,
+                                   verbose=verbose)
+  }
+
   # get initial data
   if (is.null(t0_data)) {
     data <- sim_from_dag(n_sim=n_sim,
                          root_nodes=t0_root_nodes,
                          child_nodes=t0_child_nodes,
-                         sort_dag=t0_sort_dag)
+                         sort_dag=t0_sort_dag,
+                         check_inputs=check_inputs)
     data <- data.table::setDT(data)
   } else {
     data <- data.table::setDT(t0_data)

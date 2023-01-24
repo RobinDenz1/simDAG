@@ -40,6 +40,9 @@ A list of named arguments which will be passed to the function specified by the 
 \details{
 More explanation
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # 2 root nodes, 1 child node

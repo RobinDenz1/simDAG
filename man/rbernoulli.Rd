@@ -21,6 +21,9 @@ A numeric vector of probabilities, used when drawing the trials.
 \details{
 Internally, it uses only a single call to \code{runif}, making it much faster and more memory efficient than using \code{rbinomial}.
 }
+\author{
+Robin Denz
+}
 \examples{
 # generating 5 bernoulli random draws from an unbiased coin
 rbernoulli(n=5, p=0.5)

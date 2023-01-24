@@ -27,6 +27,9 @@ A single number specifying the intercept that should be used when generating the
 \details{
 More explanation
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # 2 root nodes, 1 child node

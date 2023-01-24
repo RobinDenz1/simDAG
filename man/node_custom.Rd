@@ -31,6 +31,9 @@ The function may include any amount of additional arguments specified by the use
 
 Some simple examples for custom nodes are given below.
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # create a custom node function, which is just a gaussian node that

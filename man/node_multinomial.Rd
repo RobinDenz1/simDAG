@@ -27,6 +27,9 @@ An optional character vector giving the factor levels of the generated classes. 
 \details{
 More explanation
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # 2 root nodes, 1 child node

@@ -31,6 +31,9 @@ Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the calculated pro
 \details{
 Using the normal form a logistic regression model, the observation specific event probability is generated for every observation in the dataset. Using the \code{rbernoulli} function, this probability is then used to take one bernoulli sample for each observation in the dataset. If only the probability should be returned \code{return_prob} should be set to \code{TRUE}.
 }
+\author{
+Robin Denz
+}
 \examples{
 \dontrun{
 # 2 root nodes, 1 child node
