@@ -24,6 +24,12 @@ clean_node_args <- function(node) {
 
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
+# NOTES:
+#   - currently this function spits out data that is pretty much unusable
+#   - write some function that automatically transforms the data into
+#     a useful format, such as start, stop data or the wide format etc.
+#   - a function that automatically plots a flow chart based on the
+#     node information would also be great
 #' @export
 sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                               t0_child_nodes=NULL, t0_sort_dag=TRUE,
