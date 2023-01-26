@@ -15,9 +15,9 @@ plot_dag <- function(root_nodes, child_nodes) {
 
   # plot it
   ggraph::ggraph(adj_graph, layout="graphopt") +
-    ggraph::geom_edge_link(ggplot2::aes(
-      start_cap=ggraph::label_rect(.data$node1.name),
-      end_cap=ggraph::label_rect(.data$node2.name)),
-      arrow=ggplot2::arrow(length=unit(4, "mm"))) +
-    ggraph::geom_node_label(aes(label=.data$name))
+    ggraph::geom_edge_link(
+      ggplot2::aes(start_cap=ggraph::label_rect(.data$node1.name),
+                   end_cap=ggraph::label_rect(.data$node2.name)),
+                   arrow=ggplot2::arrow(length=ggplot2::unit(4, "mm"))) +
+    ggraph::geom_node_label(ggplot2::aes(label=.data$name))
 }

@@ -1,0 +1,48 @@
+---
+title: "Simulating Data using Discrete-Time Simulation"
+output: rmarkdown::html_vignette
+author: "Robin Denz"
+vignette: >
+  %\VignetteIndexEntry{Simulating Data using Discrete-Time Simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>"
+)
+```
+
+# Introduction
+
+
+# What is discrete-time simulation and why use it?
+
+All variables in a discrete-time simulation can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
+
+* *t0_root_nodes*: Variables that are completely independent of all other variables and are only generated once are called *t0_root_nodes*. This could be something like sex or geographic entities. They are generally simply sampled from some previously defined distribution, but they could also be sampled directly from existing data. The prefix *t0_* indicates that these variables are created only once in the beginning.
+
+* *t0_child_nodes*: Much like *t0_root_nodes*, the *t0_child_nodes* are also variables that are generated only once in the beginning of the discrete-time simulation. The only difference is, that these variables are not simply sampled from a defined distribution. Instead they causally depend in some way on other variables. Those other variables can be root nodes or other child nodes, as long as the underlying causal structure can be described as a directed acyclic graph.
+
+* *tx_nodes*: This type of node is more complex and is the reason to use discrete-time simulations. Variables in this category are updated at each step in time of the simulation process. These updates can be fairly easy, such as increasing the age of a person by one time unit on each step, or they can be very complex. For example, if we want to model the occurrence of some kind of time-dependent-event, we can generate the probability of that occurrence at each step depending on other variables in the simulation model or past states of the variable itself.
+
+As a natural consequence, the simulation model follows the following steps:
+
+* **1**: Sampling from the *t0_root_nodes*
+* **2**: Generating the *t0_child_nodes* based on root nodes and other child nodes
+* **3**: Increasing the simulation time by 1
+* **4**: Generating / updating *tx_nodes*
+* **5**: Repeating steps 3 and 4 until a previously defined maximum time point is reached.
+
+# A simple example
+
+
+# Extending the simple example
+
+
+# References
+
+
+

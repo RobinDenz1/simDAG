@@ -65,7 +65,7 @@ Depending on the type of node used, more arguments might be required. More infor
 Currently, the following node types are available:
 
 \itemize{
-  \item{"\link[=node_linear]{linear}": A node based on linear regression.}
+  \item{"\link[=node_gaussian]{gaussian}": A node based on linear regression.}
   \item{"\link[=node_binomial]{binomial}": A node based on logistic regression.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
   \item{"\link[=node_poisson]{poisson}": A node based on poisson regression.}

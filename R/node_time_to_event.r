@@ -1,12 +1,6 @@
 
 ## A node to generate arbitrary time-to-event data in
 ## discrete-time simulations
-# NOTE:
-#   Some ideas to make this function better:
-#     - allow multiple competing event types, by using a multinomial trial
-#       instead of bernoulli trials at each step (see rcategorical)
-#     - find a better way to store past_event_times. In theory a hash table
-#       should be the best option here but I couldn't make it work well
 #' @export
 node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                prob_fun_args=list(), event_duration=0,

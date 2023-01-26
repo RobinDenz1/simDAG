@@ -41,7 +41,7 @@ model_node_binomial <- function(name, parents, data, return_model=FALSE,
   # fit model
   model <- do.call(glm, args)
 
-  # extract coef, intercept, sigma
+  # extract coef, intercept
   out <- list(name=name,
               parents=parents,
               type="binomial",
@@ -68,7 +68,7 @@ model_node_poisson <- function(name, parents, data, return_model=FALSE,
   # fit model
   model <- do.call(glm, args)
 
-  # extract coef, intercept, sigma
+  # extract coef, intercept
   out <- list(name=name,
               parents=parents,
               type="poisson",
@@ -85,8 +85,8 @@ model_node_poisson <- function(name, parents, data, return_model=FALSE,
 root_gaussian <- function(data, name, na.rm) {
   out <- list(name=name,
               dist="rnorm",
-              params=list(mean=mean(data[, name], na.rm=na.rm),
-                          sd=sd(data[, name], na.rm=na.rm)))
+              params=list(mean=mean(data[[name]], na.rm=na.rm),
+                          sd=stats::sd(data[[name]], na.rm=na.rm)))
   return(out)
 }
 
@@ -94,13 +94,13 @@ root_gaussian <- function(data, name, na.rm) {
 root_binomial <- function(data, name, na.rm) {
   out <- list(name=name,
               dist="rbernoulli",
-              params=list(p=mean(data[, name], na.rm=na.rm)))
+              params=list(p=mean(data[[name]], na.rm=na.rm)))
   return(out)
 }
 
 ## multinomial root node from data
 root_multinomial <- function(data, name, na.rm) {
-  tab <- prop.table(table(data[, name]))
+  tab <- prop.table(table(data[[name]]))
   out <- list(name=name,
               dist="rcategorical",
               params=list(labels=names(tab), probs=tab))
@@ -129,7 +129,8 @@ nodes_from_data <- function(data, nodes, return_models=FALSE,
     if (is.null(nodes[[i]]$parents)) {
       # call associated root function
       root_fun <- get(paste0("root_", nodes[[i]]$type))
-      root_nodes[[root_count]] <- root_fun(data, name=node[[i]]$name)
+      root_nodes[[root_count]] <- root_fun(data, name=nodes[[i]]$name,
+                                           na.rm=na.rm)
 
       root_count <- root_count + 1
     } else {

@@ -1,9 +1,9 @@
 ---
-title: "Simulating Data from a Static DAG"
+title: "Simulating Data from a known DAG"
 output: rmarkdown::html_vignette
 author: "Robin Denz"
 vignette: >
-  %\VignetteIndexEntry{Simulating Data from a Static DAG}
+  %\VignetteIndexEntry{Simulating Data from a known DAG}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -31,15 +31,32 @@ knitr::include_graphics("./images_v_sim_from_dag/simple_dag.png")
 
 Nodes $A$ and $B$ are root nodes because they do not have any directed edges pointing into them. Nodes $C$ and $D$ on the other hand are child nodes. The parents of node $C$ are both $A$ and $B$ because both of these nodes have directed edge towards $C$. Note that node $B$ is not a parent of node $D$ because there is no edge from $B$ to $D$.
 
-As the name implies, DAGs do not have cycles. Therefore every DAG has at least one root node. Generating data for these nodes is the first step to simulate data for the whole DAG. Since root nodes have no parents, we can simply generate random data from them using an appropriate distribution. Once we have data for all root nodes, we can generate their directly connected child nodes next as a function of the root nodes (and perhaps additional random error). These direct child nodes are then used as input for the next child nodes in line and so on. This continues until every node has been generated. Since every DAG can be topologically sorted (ZITAT), this will *always* work. All we need is to specify the DAG and the functional relationship between each node and its parents. 
+As the name implies, DAGs do not have cycles. Therefore every DAG has at least one root node. Generating data for these nodes is the first step to simulate data for the whole DAG. Since root nodes have no parents, we can simply generate random data from them using an appropriate distribution. Once we have data for all root nodes, we can generate their directly connected child nodes next as a function of the root nodes (and perhaps additional random error). These direct child nodes are then used as input for the next child nodes in line and so on. This continues until every node has been generated. Since every DAG can be topologically sorted (Chickering 1995), this will *always* work. All we need is to specify the DAG and the functional relationship between each node and its parents. 
+
 
 # Defining the node lists
 
-Because the `sim_from_dag()` function uses the method described above, it requires information about the causal structure and the exact form of the relationship between child nodes and their parents. All of this information has to included in the `root_nodes` and `child_nodes` arguments. This can be done completely manually (which is the usual strategy when conducting simulation studies) or partially using existing data (which may be useful when the interest is in getting a toy dataset resembling real data as closely as possible).
+Because the `sim_from_dag` function uses the method described above, it requires information about the causal structure and the exact form of the relationship between child nodes and their parents. All of this information has to included in the `root_nodes` and `child_nodes` arguments. This can be done manually (which is the usual strategy when conducting simulation studies) or (partially) using existing data (which may be useful when the interest is in getting a toy dataset resembling real data as closely as possible).
 
-## Manually
+## Root node types
 
-Suppose that node $A$ in the figure above stands for `age`, $B$ stands for `sex`, $C$ stands for the Body-Mass-Index (`BMI`) and $D$ stands for `death`. We have to start by defining what the root nodes should look like. The values for these nodes are simply sampled from some defined distributions. Popular alternatives for continuous data are the normal-, beta-, gamma-distributions which are implemented in base R inside the `rnorm()`, `rbeta()` and `rgamma()` functions. For binary or categorical data we could use `rbernoulli()` or `rcategorical()` instead. We use the following code to define `age` and `sex`:
+The values for the `root_nodes` are simply sampled from some defined distributions. Therefore, any function that generates random draws from some distribution may be used here. Popular alternatives for continuous data are the normal-, beta-, gamma-distributions which are implemented in base R inside the `rnorm()`, `rbeta()` and `rgamma()` functions. For binary or categorical data we could use the custom functions `rbernoulli()` or `rcategorical()` instead.
+
+## Child node types
+
+The `simDAG` package implements the following types of `child_nodes` directly:
+
+* `node_gaussian`: A node based on linear regression (continuous data).
+* `node_binomial`: A node based on logistic regression (binary data).
+* `node_multinomial`: A node based on multinomial logistic regression (categorical data).
+* `node_poisson`: A node based on poisson regression (count data).
+* `node_cox`: A node based on cox regression (time-to-event data).
+
+All of these nodes have their own documentation page containing a detailed description on how data is generated from them. Although this collection of nodes covers a lot of data types, it is still a somewhat limited collection. If, for example, we wanted to add a node that is normally distributed but also truncated at specific values, we could not do this using just the offered node functions. For this reason, the `sim_from_dag` function also allows the user to use custom functions as nodes, which makes it possible to model any kind of data and any kind of relationship.
+
+## Defining nodes manually
+
+Suppose that node $A$ in the figure above stands for `age`, $B$ stands for `sex`, $C$ stands for the Body-Mass-Index (`BMI`) and $D$ stands for `death`. We have to start by defining what the root nodes should look like. We use the following code to define `age` and `sex`:
 
 ```{r}
 root_nodes <- list(list(dist="rnorm",
@@ -50,7 +67,7 @@ root_nodes <- list(list(dist="rnorm",
                         name="sex"))
 ```
 
-Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `rnorm`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
+Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `rnorm`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a Bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
 
 Next, we have to define what the relationship between the child nodes and their parents should look like. We may use the following code:
 
@@ -122,22 +139,95 @@ summary(mod_death)
 
 Evidently, the coefficients do match the causal coefficients we specified earlier.
 
-## From existing data
+## Defining nodes using existing data
 
 If the data should resemble a specific real dataset, it makes sense to base the values for the causal coefficients on that specific dataset. This can be done by fitting a single model for each child node, extracting the estimated coefficients from the fitted models and putting those into an appropriate node list. If the assumed DAG is big, this can be a time-extensive task. The `nodes_from_data` function automates this process. This function takes a node list containing only minimal information about the causal structure and node type and outputs fully specified `root_nodes` and `child_nodes` objects.
 
+For example, lets assume that the data we just generated (`sim_dat`) was our dataset of interest. Let us also assume that we know the true underlying causal diagram and have a rough idea about the nature of the relationship between the nodes (e.g. we know or can reasonably guess the node type). Now all we have to do is create a node lists in accordance to these assumptions first:
 
-# Custom node functions
+```{r}
+empty_nodes <- list(list(parents=NULL,
+                         type="gaussian",
+                         name="age"),
+                    list(parents=NULL,
+                         type="binomial",
+                         name="sex"),
+                    list(parents=c("sex", "age"),
+                         type="gaussian",
+                         name="bmi"),
+                    list(parents=c("age", "bmi"),
+                         type="binomial",
+                         name="death"))
+```
 
+This looks a lot like the code used above, except that we are not explicitly defining the actual beta coefficients. We only define the causal structure and the node types. Now we can call the `nodes_from_data` function:
+
+```{r}
+nodes <- nodes_from_data(sim_dat, nodes=empty_nodes)
+```
+
+It returns an object that includes both a completely defined list of the `root_nodes` and the `child_nodes`, which can be used directly in the `sim_from_dag` function:
+
+```{r}
+sim_dat2 <- sim_from_dag(n_sim=10000, root_nodes=nodes$root_nodes,
+                         child_nodes=nodes$child_nodes)
+```
+
+The `nodes_from_data` function essentially just fits the corresponding models one by one for each node and extracts the relevant data from the models to fill in the gaps in the empty node lists. If we set `return_models` to `TRUE` in the `nodes_from_data` function call above, we can actually see that it used the exact same models we fit earlier to check if the simulation was valid.
 
 
 # Time-varying covariates
+
+Most real datasets include time-varying covariates, e.g. variables that are measured at multiple points in time that are subject to changes. It is possible to generate this type of data using the `sim_from_dag` function as well. All we need to do is to define an appropriate DAG that directly specifies how the variables change over time. For example, we can extend the simple DAG from above to include a dimension of time:
 
 ```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with four nodes"), echo=FALSE, out.width=700}
 knitr::include_graphics("./images_v_sim_from_dag/time_dep_dag.png")
 ```
 
+Here, nodes $A$ and $B$ are time-constant variables that only have a causal effect on the initial state of $C$ and $D$, while nodes $C$ and $D$ change over time interdependently. If we want to simulate data from a DAG that looks like this using the `sim_from_dag` function, we have to add a node to the `child_nodes` list for every point in time that we want to consider.
+
+We will quickly go through a somewhat simpler example, considering only 2 points in time. We define our nodes in the following way:
+
+```{r}
+root_nodes <- list(list(dist="rnorm",
+                        params=list(mean=50, sd=4),
+                        name="age"),
+                   list(dist="rbernoulli",
+                        params=list(p=0.5),
+                        name="sex"))
+
+child_nodes <- list(list(parents=c("sex", "age"),
+                         type="gaussian",
+                         name="bmi_t1",
+                         betas=c(1.1, 0.4),
+                         intercept=12,
+                         error=2),
+                    list(parents=c("age", "bmi_t1"),
+                         type="binomial",
+                         name="death_t1",
+                         betas=c(0.1, 0.3),
+                         intercept=-15),
+                    list(parents=c("bmi_t1"),
+                         type="gaussian",
+                         name="bmi_t2",
+                         betas=c(1.1),
+                         intercept=0,
+                         error=2),
+                    list(parents=c("age", "bmi_t2"),
+                         type="binomial",
+                         name="death_t2",
+                         betas=c(0.1, 0.3),
+                         intercept=-15))
+```
+
+In this example, the `bmi` at $t = 1$ is a function of both `sex` and `age`, but the `bmi` at $t = 2$ is only a function of the previous `bmi`. The `death` node is determined by the initial `age` and by the time-varying `bmi`. This surely is not the most realistic example. It is only meant to show how the `sim_from_dag` function may be used to incorporate time-dependent covariates. If many points in time should be considered or there are very complex time-dependent structures that may not be easily described using a DAG like the one above, the `sim_discrete_time` function also included in this package may be used instead.
+
+
 # References
 
+Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd ed. Cambridge: Cambridge University Press
 
+Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation, Prediction, and Search. 2nd ed. The MIT Press, Cambridge 
+
+Chickering, D.M. (1995). A transformational characterization of equivalent Bayesian network structures. Proceedings of the 11th Conference on Uncertainty in Artificial Intelligence, Montreal, Canada, 87-98.
 

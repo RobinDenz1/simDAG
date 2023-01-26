@@ -1,0 +1,46 @@
+
+General Stuff:
+	- finish vignettes
+	- perform build checks and bring package in order
+	- add pkgdown site, badges etc.
+	- create a package logo
+	- update README
+
+sim_from_dag:
+	- allow categorical data to be parents of other nodes
+	- finish tests and checks
+	- implement more node types:
+		- negative binomial regression
+		- other types of survival regression
+		- ordinal regression
+		- allow different link functions in binomial / gaussian
+		- whatever models one can find may be nice
+
+nodes_from_data:
+	- should also allow more node types
+	- needs tests
+	- needs examples
+	- needs input checks
+	- maybe a different kind of input? just a DAG and node type list
+
+plot_dag:
+	- would be nice if it had at least some options and was a little prettier
+	- needs tests
+	- needs only limited input checks
+
+node_time_to_event:
+	- allow multiple competing event types, by using a multinomial trial
+	  instead of bernoulli trials at each step (see rcategorical)
+	- find a better way to store past_event_times. In theory a hash table
+	  should be the best option here but I couldn't make it work well
+	- anything that makes this function faster would be awesome
+	
+sim_discrete_time:
+	- make this function faster
+
+NEW needed functions:
+	- currently the sim_discrete_time function spits out data that is pretty much unusable.
+	  needs some function that automatically transforms the data into
+	  a useful format, such as start, stop data or the wide format etc.
+	- a function that automatically plots a flow chart for the sim_discrete_time function based on the
+	  node information would also be great
