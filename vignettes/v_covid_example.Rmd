@@ -17,19 +17,8 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-# How it generally works
 
-
-# Simple Example
-
-## Data at t0
-
-## Data at tx
-
-
-# Complex Example
-
-## Data at t0
+# Data at t0
 
 In our case, the data at the beginning of the simulation contains only the geographic entity `kreis`, the age of the person `sex` and the sex of the person `sex`. The `kreis` and `sex` are treated as root nodes, while the age distribution is generated to be different in each `kreis`, making `age` a child node with `kreis` as a single parent. The `sim_from_dag` function is used to directly generate a dataset using these specifications:
 
