@@ -101,7 +101,7 @@ test_that("tx_nodes_order working", {
                                   tx_nodes = tx_nodes,
                                   tx_nodes_order = c(2, 1),
                                   verbose = TRUE),
-                "t = 1node = sickness2\\nt = 1node = sickness1")
+                "t = 1 node = sickness2\\nt = 1 node = sickness1")
 })
 
 test_that("save_states working", {
@@ -131,5 +131,5 @@ test_that("verbose working", {
                                   max_t = 365,
                                   tx_nodes = tx_nodes,
                                   verbose = TRUE),
-                "t = 365node = sickness1")
+                "t = 365 node = sickness1")
 })

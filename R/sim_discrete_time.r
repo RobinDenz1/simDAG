@@ -11,6 +11,11 @@ clean_node_args <- function(node) {
     parents <- c(node$parents,
                  paste0(node$name, c("_event", "_time", "_past_event_times")))
     node$parents <- parents
+  } else if (node$type=="competing_events") {
+    parents <- c(node$parents,
+                 paste0(node$name, c("_event", "_time", "_past_event_times",
+                                     "_past_event_kind")))
+    node$parents <- parents
   }
 
   # add or remove internal arguments if needed
@@ -93,9 +98,14 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   tte_names <- apply(expand.grid(tx_node_names[tx_node_types=="time_to_event"],
                                  c("event", "time", "past_event_times")), 1,
                      paste, collapse="_")
+  ce_names <- apply(expand.grid(
+    tx_node_names[tx_node_types=="competing_events"],
+                  c("event", "time", "past_event_times", "past_event_kind")),
+    1, paste, collapse="_")
 
   # add missing columns to data
-  init_colnames <- c(tx_node_names[tx_node_types!="time_to_event"], tte_names)
+  init_colnames <- c(tx_node_names[tx_node_types!="time_to_event" &
+                      tx_node_types!="competing_events"], tte_names, ce_names)
   existing_colnames <- colnames(data)
   for (i in seq_len(length(init_colnames))) {
     if (!init_colnames[i] %in% existing_colnames) {
@@ -118,7 +128,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
     for (i in tx_nodes_order) {
 
       if (verbose) {
-        cat("t = ", t, "node = ", tx_nodes[[i]]$name, "\n", sep="")
+        cat("t = ", t, " node = ", tx_nodes[[i]]$name, "\n", sep="")
       }
 
       # get relevant arguments

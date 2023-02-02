@@ -5,10 +5,7 @@
 Create Your Own Function to Simulate a Node
 }
 \description{
-This page describes in detail how to extend this code to allow the usage of nodes that are not directly implemented here.
-}
-\usage{
-node_custom(data, parents, betas, ...)
+This page describes in detail how to extend this code to allow the usage of nodes that are not directly implemented here. A custom node function may be created by the user. It has to have the following arguments:
 }
 \arguments{
   \item{data}{

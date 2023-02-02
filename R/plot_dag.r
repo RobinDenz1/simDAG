@@ -1,5 +1,6 @@
 
 ## a quick and dirty way to plot the DAG using the node lists
+#' @importFrom rlang .data
 #' @export
 plot_dag <- function(root_nodes, child_nodes) {
 

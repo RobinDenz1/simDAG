@@ -1,10 +1,11 @@
 
 ## A node to generate arbitrary time-to-event data in
 ## discrete-time simulations
+#' @importFrom data.table fifelse
 #' @export
 node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                prob_fun_args=list(), event_duration=0,
-                               immunity_duration=event_duration + 0,
+                               immunity_duration=event_duration,
                                save_past_events=TRUE, check_inputs=TRUE) {
 
   if (check_inputs) {

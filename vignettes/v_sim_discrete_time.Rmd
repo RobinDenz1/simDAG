@@ -20,9 +20,9 @@ knitr::opts_chunk$set(
 In this small vignette, we introduce the `sim_discrete_time` function, which can be used to generate arbitrarily complex longitudinal data with discrete points in time. Just as the `sim_from_dag` function contained in this package, it allows any mixture of continuous, binary, categorical, count, or time-to-event data. The main advantage of the `sim_discrete_time` function is that it naturally generates longitudinal data without the need to define a node for each variable at each point in time. It also makes the generation of complex time-to-event data a lot easier. Features such as time-dependent effects, time-dependent covariates, any form of censoring, recurrent-events and competing events may be included in a straightforward fashion.
 
 
-# What is discrete-time simulation and why use it?
+# What is Discrete-Time Simulation and Why Use it?
 
-A discrete-time simulation (DTS) consists of two steps. First, a bunch of entities (usually but not necessarily people) are created. Afterwards, the change of the states of these entities over time is simulated by increasing the simulation time iteratively in discrete steps, updating the states at each step (ZITAT). For example, suppose that the entities are people and that we are interested in the states `age` and `death`. Every time the simulation time increases, the `age` of each person increases with it, raising the probability of death. At every step we check if each person is still alive. If they die, the state of `death` changes from 0 to 1. If everyone is dead, we stop the simulation. The schematic flow of DTS is shown in the figure below.
+A discrete-time simulation (DTS) consists of two steps. First, a bunch of entities (usually but not necessarily people) are created. Afterwards, the change of the states of these entities over time is simulated by increasing the simulation time iteratively in discrete steps, updating the states at each step (Tang et al. 2020). For example, suppose that the entities are people and that we are interested in the states `age` and `death`. Every time the simulation time increases, the `age` of each person increases with it, raising the probability of death. At every step we check if each person is still alive. If they die, the state of `death` changes from 0 to 1. If everyone is dead, we stop the simulation. The schematic flow of DTS is shown in the figure below.
 
 ```{r, include=TRUE, fig.align="center", fig.cap=c("A generalized flow-chart of the discrete-time simulation approach"), echo=FALSE, out.width=500}
 knitr::include_graphics("./images_v_sim_discrete_time/flow_chart.png")
@@ -30,10 +30,10 @@ knitr::include_graphics("./images_v_sim_discrete_time/flow_chart.png")
 
 The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$ is either simulated using the `sim_from_dag` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the nodes defined by the `tx_nodes` defined by the user. Below we give a short example on how this works in practice. A more realistic (and therefore more complex) example can be found in a different vignette.
 
-A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (ZITAT), *discrete-event simulation* (ZITAT) and *agent-based modeling* (ZITAT). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
+A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
 
 
-# Defining the node lists
+# Defining the Node Lists
 
 Similar to the `sim_from_dag` function, the user needs to specify the nodes of the underlying causal DAG to use this function.  All variables in a DTS can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
 
@@ -46,7 +46,7 @@ Similar to the `sim_from_dag` function, the user needs to specify the nodes of t
 The `t0_root_nodes` and `t0_child_nodes` arguments are exactly the same as in the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify those nodes can be found in the documentation of the `sim_from_dag` function or the associated vignette.
 
 
-# A simple example
+# A Simple Example - One Terminal Event
 
 Let us consider a very simple example first. Suppose we want to generate data according to the following causal DAG:
 
@@ -102,7 +102,6 @@ tx_nodes <- list(list(name="age",
                       type="time_to_event",
                       parents=c("age", "sex"),
                       prob_fun=prob_death,
-                      #prob_fun_args=list(),
                       event_duration=Inf,
                       save_past_events=FALSE,
                       check_inputs=FALSE))
@@ -113,6 +112,7 @@ We simply pass the `node_advance_age` function to the `type` argument of the `ag
 To finally generate the desired data, we simply call the `sim_discrete_time` function:
 
 ```{r}
+set.seed(43)
 sim_dat <- sim_discrete_time(n_sim=10,
                              t0_root_nodes=t0_root_nodes,
                              t0_child_nodes=t0_child_nodes,
@@ -127,15 +127,76 @@ By setting `max_t=50`, we are letting this simulation run for 50 (simulated) yea
 head(sim_dat$data)
 ```
 
-It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died.
+It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died. Because `death` is a terminal event and we set `save_past_event=FALSE`, the `death_past_event_times` columns only contains `NA` values and can be ignored.
 
 This particular example could be simulated in a much easier fashion, without relying on a discrete-time approach, because `age` increases linearly and the model for `death` is exactly the same regardless of time. DTS is more useful when truly complex data structures are required. Below we will extend this simple example a little bit, but we will still keep it relatively simple. 
 
 
-# Extending the simple example
+# Extending the Simple Example - Recurrent Events
 
+Suppose that the event of interest wasn't `death`, but a cardiovascular event (`cve`). For the case of simplicity we will assume that the same causal structure and causal coefficients from above still apply, but that the event is now no longer terminal and my reoccur arbitrary number of times. First, let's redefine the nodes to get the new name right:
+
+```{r}
+t0_root_nodes <- list(list(name="age",
+                           dist="rnorm",
+                           params=list(mean=30, sd=5)),
+                      list(name="sex",
+                           dist="rbernoulli",
+                           params=list(p=0.5)))
+t0_child_nodes <- list(list(name="cve",
+                            parents=c("age", "sex"),
+                            type="binomial",
+                            betas=c(0.15, 0.25),
+                            intercept=-15))
+```
+
+We also redefine the function that generates the required event probabilities:
+
+```{r}
+prob_cve <- function(data) {
+  score <- -15 + 0.15 * data$age + 0.25 * data$sex
+  prob <- 1/(1 + exp(-score))
+  return(prob)
+}
+```
+
+Now, all we have to do in this case is change some arguments of the `node_time_to_event` function:
+
+```{r}
+tx_nodes <- list(list(name="age",
+                      type="advance_age",
+                      parents="age"),
+                 list(name="cve",
+                      type="time_to_event",
+                      parents=c("age", "sex"),
+                      prob_fun=prob_cve,
+                      event_duration=1,
+                      save_past_events=TRUE,
+                      check_inputs=FALSE))
+```
+
+Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time` function as before:
+
+```{r}
+sim_dat <- sim_discrete_time(n_sim=10,
+                             t0_root_nodes=t0_root_nodes,
+                             t0_child_nodes=t0_child_nodes,
+                             tx_nodes=tx_nodes,
+                             max_t=50,
+                             check_inputs=FALSE)
+head(sim_dat$data)
+```
+
+In this case, the data is a little more complex. At time $t = 50$, no person is currently experiencing a cardiovascular event, which is why the `cve_event` column is `FALSE` in all rows and the `cve_time` column is `NA` in all rows. However, looking at the `cve_past_event_times` column, one can clearly see that patient 2 experienced two events: the first at $t = 42$ and the second at $t = 48$ etc.
+
+The simulation done here assumes that the time and number of previous events has no effect on any further events of the patient. This assumption may be relaxed by explicitly formulating the `prob_cve` function in a way that it uses the `cve_past_event_times` column to change the probability of further events.
 
 # References
 
+Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
 
+Bilge, Ugur and Osman Saka (2006). "Agent Based Simulations in Healthcare". In: Ubiquity: Technologies for Better Health in Aging Societies - Proceedings of MIE2006. Ed. by Arie Hassman, Reinhold Haux, Johan van der Lei, Etienne De Clercq, and Francis H. Roger France. IOS Press.
 
+Spooner, Fiona, Jesse F. Abrams, Karyn Morrissey, Gavin Shaddick, Michael Batty, Richard Milton, Adam Dennett, Nik Lomax, Nick Malleson, Natalie Nelissen, Alex Coleman, Jamil Nur, Ying Jin, Rory Greig, Charlie Shenton, and Mark Birkin (2021). "A Dynamic Microsimulation Model for Epidemics". In: Social Science & Medicine 291.114461.
+
+Tang, Jiangjun, George Leu, und Hussein A. Abbass. 2020. Simulation and Computational Red Teaming for Problem Solving. Hoboken: IEEE Press.

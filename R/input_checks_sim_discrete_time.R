@@ -23,7 +23,8 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
                 !is.null(t0_sort_dag))
   }
   if (!is.null(t0_transform_fun)) {
-    stopifnot("'t0_transform_fun' must be a function." = is.function(prob_fun))
+    stopifnot("'t0_transform_fun' must be a function." =
+                is.function(t0_transform_fun))
   }
   stopifnot("'t0_transform_args' must be a list." = is.list(t0_transform_args))
   stopifnot("'max_t' must be a single integer." =

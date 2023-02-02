@@ -1,5 +1,5 @@
 library(simDAG)
-library(survival)
 library(testthat)
+library(data.table)
 
 test_check("simDAG")

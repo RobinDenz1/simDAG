@@ -18,7 +18,8 @@ Depends:
 	data.table
 Imports:
 	dplyr,
-	Rfast
+	Rfast,
+	rlang
 Suggests:
     knitr,
     rmarkdown,
@@ -33,4 +34,4 @@ Config/testthat/edition: 3
 Contact: <robin.denz@rub.de>
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

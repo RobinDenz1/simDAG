@@ -11,7 +11,7 @@ model_node_gaussian <- function(name, parents, data, return_model=FALSE,
   args <- c(args, ...)
 
   # fit model
-  model <- do.call(glm, args)
+  model <- do.call(stats::glm, args)
 
   # extract coef, intercept, sigma
   out <- list(name=name,
@@ -19,7 +19,7 @@ model_node_gaussian <- function(name, parents, data, return_model=FALSE,
               type="gaussian",
               betas=as.vector(model$coefficients[-1]),
               intercept=as.vector(model$coefficients[1]),
-              error=sd(model$residuals))
+              error=stats::sd(model$residuals))
 
   if (return_model) {
     out$model <- model
@@ -39,7 +39,7 @@ model_node_binomial <- function(name, parents, data, return_model=FALSE,
   args <- c(args, ...)
 
   # fit model
-  model <- do.call(glm, args)
+  model <- do.call(stats::glm, args)
 
   # extract coef, intercept
   out <- list(name=name,
@@ -66,7 +66,7 @@ model_node_poisson <- function(name, parents, data, return_model=FALSE,
   args <- c(args, ...)
 
   # fit model
-  model <- do.call(glm, args)
+  model <- do.call(stats::glm, args)
 
   # extract coef, intercept
   out <- list(name=name,
@@ -109,6 +109,7 @@ root_multinomial <- function(data, name, na.rm) {
 ## given minimal information on node type and the causal structure,
 ## create lists for the root_nodes and child_nodes from observed data
 ## by fitting appropriate models
+#' @export
 nodes_from_data <- function(data, nodes, return_models=FALSE,
                             na.rm=FALSE) {
 
@@ -169,27 +170,3 @@ nodes_from_data <- function(data, nodes, return_models=FALSE,
   }
   return(out)
 }
-
-# TODO:
-# - finish this stuff
-# - document it
-# - allow more node types
-
-#library(adjustedCurves)
-#inp_data <- sim_confounded_surv(n=500)
-#
-#nodes <- list(list(parents=NULL,
-#                   name="x1",
-#                   type="binomial"),
-#              list(parents=NULL,
-#                   name="x2",
-#                   type="gaussian"),
-#              list(parents=c("x1", "x2"),
-#                   name="group",
-#                   type="binomial"),
-#              list(parents=c("x1", "x2", "group"),
-#                   name="x3",
-#                   type="gaussian"))
-#
-#test <- nodes_from_data(data=inp_data, nodes=nodes, return_models=TRUE)
-#test$child_nodes

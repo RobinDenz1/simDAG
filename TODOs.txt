@@ -29,11 +29,16 @@ plot_dag:
 	- needs only limited input checks
 
 node_time_to_event:
-	- allow multiple competing event types, by using a multinomial trial
-	  instead of bernoulli trials at each step (see rcategorical)
 	- find a better way to store past_event_times. In theory a hash table
 	  should be the best option here but I couldn't make it work well
 	- anything that makes this function faster would be awesome
+
+node_competing_events:
+	- allow vector input in immunity_duration: this would require me to augment
+	  the probability matrix, because then other events would still be possible
+	- add tests
+	- add input checks (could probably use most of the checks for node_time_to_event)
+	- has the same "event-storage" problem as the node_time_to_event function
 	
 sim_discrete_time:
 	- make this function faster

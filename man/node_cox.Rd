@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using cox-regression using th
 }
 \usage{
 node_cox(data, parents, betas, surv_dist, lambda, gamma,
-         cens_dist, cens_args)
+         cens_dist, cens_args, name)
 }
 \arguments{
   \item{data}{
@@ -35,6 +35,9 @@ A single character naming the distribution function that should be used to gener
   }
   \item{cens_args}{
 A list of named arguments which will be passed to the function specified by the \code{cens_dist} argument.
+  }
+  \item{name}{
+A single character string specifying the name of the node.
   }
 }
 \details{

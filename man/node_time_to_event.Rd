@@ -10,7 +10,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 \usage{
 node_time_to_event(data, parents, sim_time, name, prob_fun,
                    prob_fun_args=list(), event_duration=0,
-                   immunity_duration=event_duration + 0,
+                   immunity_duration=event_duration,
                    save_past_events=TRUE, check_inputs=TRUE)
 }
 \arguments{
@@ -27,7 +27,7 @@ The current time of the simulation.
 The name of the node. This will be used as prefix before the \code{_event}, \code{_time} and \code{_past_event_times} columns.
   }
   \item{prob_fun}{
-A function that returns a numeric vector of size \code{nrow(data)} containing only number between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{rbernoulli} function.
+A function that returns a numeric vector of size \code{nrow(data)} containing only number between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function.
   }
   \item{prob_fun_args}{
 A named list of arguments passed to \code{prob_fun}. Set to \code{list()} if you do not want to pass any arguments.
@@ -62,7 +62,7 @@ This type of node naturally support the implementation of terminal and recurrent
 
 \strong{\emph{What can't be done with it}}:
 
-Currently this function only allows binary events. Categorical event types may be implemented in the future using a similar methodology. However, this will probably be done in a separate function.
+Currently this function only allows binary events. Categorical event types may be implemented using the \code{\link{node_competing_events}} function, which works in a very similar fashion.
 
 }
 \author{

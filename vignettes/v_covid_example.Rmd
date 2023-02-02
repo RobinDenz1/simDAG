@@ -17,20 +17,16 @@ knitr::opts_chunk$set(
 
 # Introduction
 
+This vignette contains an in-depth example on how to use the `sim_discrete_time` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a simple example here. Instead, our aim is to generate realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe the data generation part here to give a detailed example on how the `sim_discrete_time` function may be used effectively.
 
 # Data at t0
 
-In our case, the data at the beginning of the simulation contains only the geographic entity `kreis`, the age of the person `sex` and the sex of the person `sex`. The `kreis` and `sex` are treated as root nodes, while the age distribution is generated to be different in each `kreis`, making `age` a child node with `kreis` as a single parent. The `sim_from_dag` function is used to directly generate a dataset using these specifications:
+In our case, the data at the beginning of the simulation contains only the geographic entity `kreis`, the age of the person `sex` and the sex of the person `sex`. The `kreis` and `sex` are treated as root nodes, while the age distribution is generated to be different in each `kreis`, making `age` a child node with `kreis` as a single parent. The `sim_from_dag` function is used to directly generate a data set using these specifications:
 
 ```{r}
+library(simDAG)
 library(Rfast)
-library(truncnorm)
-library(devtools)
-library(xlsx)
-library(truncnorm)
 library(data.table)
-
-load_all()
 
 ## node kreis
 generate_kreis <- function(n) {
@@ -47,12 +43,11 @@ generate_kreis <- function(n) {
 node_generate_age <- function(data, parents, betas=NULL) {
   age <- rep(NA, nrow(data))
   for (i in seq_len(400)) {
-    dist_mean <- rtruncnorm(n=1, a=40, b=70, sd=10, mean=55)
-    dist_sd <- rtruncnorm(n=1, a=2, b=25, mean=15, sd=10)
-    age[data$kreis==i] <- rtruncnorm(n=sum(data$kreis==i),
-                                     a=0, b=100,
-                                     mean=dist_mean,
-                                     sd=dist_sd)
+    dist_mean <- rnorm(n=1, sd=10, mean=55)
+    dist_sd <- rnorm(n=1, mean=15, sd=10)
+    age[data$kreis==i] <- rnorm(n=sum(data$kreis==i),
+                                mean=dist_mean,
+                                sd=dist_sd)
   }
   return(age)
 }
@@ -182,101 +177,71 @@ prob_sickness <- function(data, sim_time, rr_vacc_1, rr_vacc_2,
 }
 
 # read and clean Impfdata
-impf_dat <- read.xlsx("P:/BMG_Covid19Impfen/Auswertung/Auswertungsplan_Stufen/Simulation_Testdaten/Impfquotenmonitoring.xlsx", sheetIndex=4)
-impf_dat <- impf_dat[1:(nrow(impf_dat)-4),]
-impf_dat$Datum <- as.Date(impf_dat$Datum, format="%d.%m.%Y")
-impf_dat$NA. <- NULL
-
-# probability of first vaccination
-impf_dat$time <- 1:nrow(impf_dat)
-impf_dat$cumsum <- cumsum(impf_dat$Erstimpfung)
-impf_dat$cumsum <- c(0, impf_dat$cumsum[1:(nrow(impf_dat)-1)])
-
-impf_dat$impf_prob <- impf_dat$Erstimpfung / (83020000 - impf_dat$cumsum)
-
-# definition of time-dependent nodes
-tx_nodes <- list(list(name="age",
-                      parents="age",
-                      type="advance_age"),
-                 list(name="vacc_1",
-                      parents=c("age", "vacc_1_time", "vacc_1_event"),
-                      type="time_to_event",
-                      prob_fun=prob_first_vacc,
-                      prob_fun_args=list(start_vaccinations=365*2,
-                                         impf_dat=impf_dat,
-                                         beta_age=0.000001),
-                      event_duration=Inf,
-                      save_past_events=FALSE),
-                 list(name="vacc_2",
-                      parents=c("vacc_1_event", "vacc_1_time", "vacc_type"),
-                      type="generate_vacc_2"),
-                 list(name="covid",
-                      parents=c("vacc_1_time", "vacc_2", "vacc_type", "age",
-                                "covid_event", "covid_time"),
-                      type="time_to_event",
-                      prob_fun=prob_covid,
-                      prob_fun_args=list(start_covid=365,
-                                         rr_vacc_start=0.8,
-                                         dur_vacc=180,
-                                         vacc_delay=14,
-                                         beta_age=0.000000001),
-                      event_duration=21,
-                      immunity_duration=150,
-                      save_past_events=TRUE),
-                 list(name="sickness",
-                      parents=c("vacc_1_event", "vacc_1_time", "vacc_2",
-                                "age", "covid_event", "covid_time",
-                                "vacc_type", "sickness_event", "sickness_time",
-                                "sickness_past_event_times"),
-                      type="time_to_event",
-                      prob_fun=prob_sickness,
-                      prob_fun_args=list(rr_vacc_1=c(3.24, 3.24, 1, 1),
-                                         rr_vacc_2=c(3.24, 3.24, 1, 1),
-                                         rr_covid=3,
-                                         risk_dur_vacc=21,
-                                         risk_dur_covid=21,
-                                         beta_age=0.00000001,
-                                         base_p=0.00000001),
-                      event_duration=21,
-                      immunity_duration=50,
-                      save_past_events=TRUE))
-
-out <- sim_discrete_time(n_sim=100000,
-                         t0_root_nodes=t0_root_nodes,
-                         t0_child_nodes=t0_child_nodes,
-                         t0_sort_dag=TRUE,
-                         max_t=365*3,
-                         tx_nodes=tx_nodes,
-                         save_states="last")$data
-
+#impf_dat <- read.xlsx("P:/BMG_Covid19Impfen/Auswertung/Auswertungsplan_Stufen/Simulation_Testdaten/Impfquotenmonitoring.xlsx", sheetIndex=4)
+#impf_dat <- impf_dat[1:(nrow(impf_dat)-4),]
+#impf_dat$Datum <- as.Date(impf_dat$Datum, format="%d.%m.%Y")
+#impf_dat$NA. <- NULL
+#
+## probability of first vaccination
+#impf_dat$time <- 1:nrow(impf_dat)
+#impf_dat$cumsum <- cumsum(impf_dat$Erstimpfung)
+#impf_dat$cumsum <- c(0, impf_dat$cumsum[1:(nrow(impf_dat)-1)])
+#
+#impf_dat$impf_prob <- impf_dat$Erstimpfung / (83020000 - impf_dat$cumsum)
+#
+## definition of time-dependent nodes
+#tx_nodes <- list(list(name="age",
+#                      parents="age",
+#                      type="advance_age"),
+#                 list(name="vacc_1",
+#                      parents=c("age", "vacc_1_time", "vacc_1_event"),
+#                      type="time_to_event",
+#                      prob_fun=prob_first_vacc,
+#                      prob_fun_args=list(start_vaccinations=365*2,
+#                                         impf_dat=impf_dat,
+#                                         beta_age=0.000001),
+#                      event_duration=Inf,
+#                      save_past_events=FALSE),
+#                 list(name="vacc_2",
+#                      parents=c("vacc_1_event", "vacc_1_time", "vacc_type"),
+#                      type="generate_vacc_2"),
+#                 list(name="covid",
+#                      parents=c("vacc_1_time", "vacc_2", "vacc_type", "age",
+#                                "covid_event", "covid_time"),
+#                      type="time_to_event",
+#                      prob_fun=prob_covid,
+#                      prob_fun_args=list(start_covid=365,
+#                                         rr_vacc_start=0.8,
+#                                         dur_vacc=180,
+#                                         vacc_delay=14,
+#                                         beta_age=0.000000001),
+#                      event_duration=21,
+#                      immunity_duration=150,
+#                      save_past_events=TRUE),
+#                 list(name="sickness",
+#                      parents=c("vacc_1_event", "vacc_1_time", "vacc_2",
+#                                "age", "covid_event", "covid_time",
+#                                "vacc_type", "sickness_event", "sickness_time",
+#                                "sickness_past_event_times"),
+#                      type="time_to_event",
+#                      prob_fun=prob_sickness,
+#                      prob_fun_args=list(rr_vacc_1=c(3.24, 3.24, 1, 1),
+#                                         rr_vacc_2=c(3.24, 3.24, 1, 1),
+#                                         rr_covid=3,
+#                                         risk_dur_vacc=21,
+#                                         risk_dur_covid=21,
+#                                         beta_age=0.00000001,
+#                                         base_p=0.00000001),
+#                      event_duration=21,
+#                      immunity_duration=50,
+#                      save_past_events=TRUE))
+#
+#out <- sim_discrete_time(n_sim=100000,
+#                         t0_root_nodes=t0_root_nodes,
+#                         t0_child_nodes=t0_child_nodes,
+#                         t0_sort_dag=TRUE,
+#                         max_t=365*3,
+#                         tx_nodes=tx_nodes,
+#                         save_states="last")$data
+#
 ```
-
-Using parallel processing to speed things up:
-
-```{r}
-library(doParallel)
-library(foreach)
-library(doRNG)
-library(doSNOW)
-
-n_cores <- 8
-
-cl <- parallel::makeCluster(n_cores, outfile="")
-doParallel::registerDoParallel(cl)
-parallel::clusterExport(cl, ls())
-pkgs <- (.packages())
-
-out <- foreach::foreach(i=1:n_cores, .packages=pkgs) %dorng% {
-                          
-  temp <- sim_discrete_time(n_sim=100000,
-                            t0_root_nodes=t0_root_nodes,
-                            t0_child_nodes=t0_child_nodes,
-                            t0_sort_dag=TRUE,
-                            max_t=365*3,
-                            tx_nodes=tx_nodes,
-                            save_states="last")$data
-}
-parallel::stopCluster(cl)
-```
-
-

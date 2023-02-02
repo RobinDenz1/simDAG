@@ -31,7 +31,7 @@ node_cox <- function(data, parents, betas, surv_dist, lambda, gamma,
     status <- 1
   }
 
-  out_data <- data.table(time=time, status=status)
+  out_data <- data.table::data.table(time=time, status=status)
   colnames(out_data) <- c(paste0(name, "_time"), paste0(name, "_status"))
 
   return(out_data)
