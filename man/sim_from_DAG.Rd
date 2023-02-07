@@ -69,6 +69,7 @@ Currently, the following node types are available:
   \item{"\link[=node_binomial]{binomial}": A node based on logistic regression.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
   \item{"\link[=node_poisson]{poisson}": A node based on poisson regression.}
+  \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
 }
 

@@ -8,8 +8,8 @@ Simulate a Node Using Multinomial Regression
 Data from the parents is used to generate the node using multinomial regression by predicting the covariate specific probability of each class and sampling from a multinomial distribution accordingly.
 }
 \usage{
-node_multinomial(data, parents, betas, class_labels=NULL,
-                 return_prob=FALSE)
+node_multinomial(data, parents, betas, intercepts,
+                 class_labels=NULL, return_prob=FALSE)
 }
 \arguments{
   \item{data}{
@@ -20,6 +20,9 @@ A character vector specifying the names of the parents that this particular chil
   }
   \item{betas}{
 A numeric matrix with \code{length(parents)} columns and one row for each class that should be simulated, specifying the causal beta coefficients used to generate the node.
+  }
+  \item{betas}{
+A numeric vector with one entry for each class that should be simulated, specifying the intercepts used to generate the node.
   }
   \item{class_labels}{
 An optional character vector giving the factor levels of the generated classes. If \code{NULL} (default), the integers are simply used as factor levels.
