@@ -38,14 +38,23 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
                 length(body(prob_fun)) != 0)
 
     # check content of prob_fun_args
-    for(i in 1:length(setdiff(names(formals(prob_fun)),
-                              c("data", "sim_time")))) {
+    if (length(setdiff(names(formals(prob_fun)),
+                       c("data", "sim_time"))) == 0) {
       stopifnot(
-        "All parameters of 'prob_fun' except 'data' and 'sim_time' must be
-        defined in 'prob_fun_args'." =
-                  is.element(setdiff(names(formals(prob_fun)),
-                                     c("data", "sim_time"))[i],
-                             names(prob_fun_args)))
+        "Defined parameters in 'prob_fun_args' are not used for 'prob_fun'." =
+          identical(length(setdiff(names(formals(prob_fun)),
+                                   c("data", "sim_time"))),
+                    length(names(prob_fun_args))))
+    } else {
+      for (i in 1:length(setdiff(names(formals(prob_fun)),
+                                 c("data", "sim_time")))) {
+        if(!is.element(setdiff(names(formals(prob_fun)),
+                              c("data", "sim_time"))[i],
+                      names(prob_fun_args))) {
+          stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
+               " must be defined in 'prob_fun_args'.")
+        }
+      }
     }
   }
 }

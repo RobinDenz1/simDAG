@@ -15,11 +15,11 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
     ## 't0_child_nodes' and 't0_sort_dag' in
     ## function 'check_inputs_sim_from_dag'
     stopifnot("''n_sim' must be a single integer > 0." = !is.null(n_sim))
-    stopifnot("'root_nodes' must be either a data.frame or a list." =
+    stopifnot("'t0_root_nodes' must be either a data.frame or a list." =
                 !is.null(t0_root_nodes))
-    stopifnot("'child_nodes' must be a list." =
+    stopifnot("'t0_child_nodes' must be a list." =
                 !is.null(t0_child_nodes))
-    stopifnot("'sort_dag' must be either TRUE or FALSE." =
+    stopifnot("'t0_sort_dag' must be either TRUE or FALSE." =
                 !is.null(t0_sort_dag))
   }
   if (!is.null(t0_transform_fun)) {
@@ -38,18 +38,16 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
     stopifnot("'tx_transform_fun' must be a function." =
                 is.function(tx_transform_fun))
   }
-  if (!is.null(tx_transform_args)) {
-    stopifnot("'tx_transform_args' must be a list." =
-                is.list(tx_transform_args))
-  }
+  stopifnot("'tx_transform_args' must be a list." =
+              is.list(tx_transform_args))
   stopifnot("'save_states' must be a single character." =
               (length(save_states) == 1 && is.character(save_states)))
   if (!is.null(save_states_at)) {
-    stopifnot(
-      "'save_states_at' must be either a single integer
-      or a vector of type numeric." =
-                ((length(save_states_at) == 1 && is.numeric(save_states_at)) ||
-                   is.vector(save_states_at, mode = "numeric")))
+    if (!(length(save_states_at) == 1 && is.numeric(save_states_at)) ||
+         !(is.vector(save_states_at, mode = "numeric")))  {
+      stop("'save_states_at' must be either a single integer",
+           " or a vector of type numeric.")
+    }
   }
   stopifnot("'verbose' must be logical." = is.logical(verbose))
 
@@ -68,12 +66,20 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
         length(body(t0_transform_fun)) != 0)
 
     # check content of t0_transform_args
-    for (i in 1:length(names(formals(t0_transform_fun)))) {
-      stopifnot(
-        "All parameters of 't0_transform_fun' must be defined
-        in 't0_transform_args'." =
-                  is.element(names(formals(t0_transform_fun))[i],
-                             names(t0_transform_args)))
+    if (length(names(formals(t0_transform_fun))) == 0) {
+      if (!identical(length(names(formals(t0_transform_fun))),
+          length(names(t0_transform_args)))) {
+        stop("Defined parameters in 't0_transform_args' are not used",
+             " for 't0_transform_fun'.")
+      }
+    } else {
+      for (i in 1:length(names(formals(t0_transform_fun)))) {
+        if (!is.element(names(formals(t0_transform_fun))[i],
+                        names(t0_transform_args))) {
+          stop("All parameters of 't0_transform_fun' must be defined",
+               " in 't0_transform_args'.")
+        }
+      }
     }
   }
 
@@ -99,27 +105,22 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
         stopifnot(
           "Elements of type 'time_to_event' must have a prob_fun." =
             !is.null(tx_nodes[[i]]$prob_fun))
-        stopifnot(
-          "Elements of type 'time_to_event' must have a prob_fun_args." =
-            !is.null(tx_nodes[[i]]$prob_fun_args))
-        stopifnot(
-          "Elements of type 'time_to_event' must have defined
-          whether past events should be saved or not." =
-            !is.null(tx_nodes[[i]]$save_past_events))
+      ## variables 'prob_fun_args', 'event_duration', 'immunity_duration'
+      ## and 'save_past_events' have default values
       }
     }
   }
 
   # check content of tx_nodes_order
   if (is.vector(tx_nodes_order)) {
-    stopifnot(
-      "'tx_nodes_order' must be the same length as
-      the number of nodes of 'tx_nodes." =
-        identical(length(tx_nodes_order), length(tx_nodes)))
-    stopifnot(
-      "'tx_nodes_order' must contain the same elements as
-      elements in 'tx_nodes'." =
-        is.element(tx_nodes_order, seq_len(length(tx_nodes))))
+    if (!identical(length(tx_nodes_order), length(tx_nodes))) {
+      stop("'tx_nodes_order' must be the same length as",
+           " the number of nodes of 'tx_nodes.")
+    }
+    if (!is.element(tx_nodes_order, seq_len(length(tx_nodes)))) {
+      stop("'tx_nodes_order' must contain the same elements as",
+           " elements in 'tx_nodes'.")
+    }
   }
 
   # check content of tx_transform_fun
@@ -127,13 +128,21 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
     stopifnot("'tx_transform_fun' needs to include at least one line." =
                 length(body(tx_transform_fun)) != 0)
 
-      # check content of tx_transform_args
-    for(i in 1:length(names(formals(tx_transform_fun)))) {
-      stopifnot(
-      "All parameters of 'tx_transform_fun' must be defined
-      in 'tx_transform_args'." =
-                  is.element(names(formals(tx_transform_fun))[i],
-                             names(tx_transform_args)))
+    # check content of tx_transform_args
+    if (length(names(formals(tx_transform_fun))) == 0) {
+      if (!identical(length(names(formals(tx_transform_fun))),
+                     length(names(tx_transform_args)))) {
+        stop("Defined parameters in 'tx_transform_args' are not used",
+             " for 'tx_transform_fun'.")
+      }
+    } else {
+      for(i in 1:length(names(formals(tx_transform_fun)))) {
+        if (!is.element(names(formals(tx_transform_fun))[i],
+                        names(tx_transform_args))) {
+          stop("All parameters of 'tx_transform_fun' must be defined",
+               " in 'tx_transform_args'.")
+        }
+      }
     }
   }
 

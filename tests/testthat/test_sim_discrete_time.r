@@ -1,4 +1,3 @@
-options(warn = -1)
 set.seed(42)
 
 dt <- data.table::data.table("age" = rnorm(n = 200, mean = 30, sd = 7.5),
@@ -87,21 +86,26 @@ test_that("tx_nodes_order working", {
                         event_duration = 14,
                         immunity_duration = 100,
                         save_past_events = TRUE))
-  sim_dat <- sim_discrete_time(t0_data = dt,
-                               max_t = 5,
-                               tx_nodes = tx_nodes,
-                               tx_nodes_order = c(2, 1),
-                               verbose = TRUE)$data
+  sim_dat <- suppressWarnings({
+    sim_discrete_time(t0_data = dt,
+                      max_t = 5,
+                      tx_nodes = tx_nodes,
+                      tx_nodes_order = c(2, 1),
+                      verbose = TRUE)$data
+    })
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
   expect_true(ncol(sim_dat) == 8)
-  expect_output(sim_discrete_time(t0_data = dt,
-                                  max_t = 5,
-                                  tx_nodes = tx_nodes,
-                                  tx_nodes_order = c(2, 1),
-                                  verbose = TRUE),
-                "t = 1 node = sickness2\\nt = 1 node = sickness1")
+  expect_output(
+    suppressWarnings({
+      sim_discrete_time(t0_data = dt,
+                        max_t = 5,
+                        tx_nodes = tx_nodes,
+                        tx_nodes_order = c(2, 1),
+                        verbose = TRUE)
+      }),
+    "t = 1 node = sickness2\\nt = 1 node = sickness1")
 })
 
 test_that("save_states working", {

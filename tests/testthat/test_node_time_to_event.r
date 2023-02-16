@@ -1,4 +1,3 @@
-options(warn = -1)
 set.seed(42)
 
 dt <- data.table::data.table("age"=rnorm(n=200, mean=30, sd=7.5),
