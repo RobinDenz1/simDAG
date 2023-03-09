@@ -122,6 +122,9 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   arg_list <- lapply(tx_nodes, clean_node_args)
   fun_list <- lapply(tx_nodes, FUN=function(x){get(paste0("node_", x$type))})
 
+  # create id
+  id <- seq(1, nrow(data))
+
   # start the main loop
   for (t in seq_len(max_t)) {
     # execute each node function one by one
@@ -159,21 +162,24 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
       data <- do.call(tx_transform_fun, args=tx_transform_args)
     }
 
+    # assign time and id
+    data$.id <- id
+    data$.simulation_time <- t
+
     # save intermediate simulation states, if specified
     if (save_states=="all") {
-      data$.id <- seq(1, nrow(data))
-      data$.simulation_time <- t
       past_states[[t]] <- data
     } else if (save_states=="at_t" & t %in% save_states_at) {
-      data$.id <- seq(1, nrow(data))
-      data$.simulation_time <- t
       past_states[[state_count]] <- data
       state_count <- state_count + 1
     }
   }
 
   out <- list(past_states=past_states,
-              data=data)
+              save_states=save_states,
+              data=data,
+              tx_nodes=tx_nodes,
+              max_t=max_t)
 
   return(out)
 }

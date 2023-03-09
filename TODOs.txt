@@ -1,7 +1,6 @@
 
 General Stuff:
 	- finish vignettes
-	- perform build checks and bring package in order
 	- add pkgdown site, badges etc.
 	- create a package logo
 	- update README
@@ -10,7 +9,6 @@ sim_from_dag:
 	- allow categorical data to be parents of other nodes
 	- finish tests and checks
 	- implement more node types:
-		- negative binomial regression
 		- other types of survival regression
 		- ordinal regression
 		- allow different link functions in binomial / gaussian
@@ -43,9 +41,16 @@ node_competing_events:
 sim_discrete_time:
 	- make this function faster
 
+sim2long:
+	- should work with save_states="at_t" as well
+	- the code for creating it based on save_states="last" is very inefficient and should be improved
+	- should contain support for competing event nodes
+
+sim2start_stop:
+	- currently only based on sim2long, which is RAM inefficient if save_states="last" was used,
+	  should contain support for directly using the last state to build the start-stop data somehow
+	- should contain support for competing event nodes
+
 NEW needed functions:
-	- currently the sim_discrete_time function spits out data that is pretty much unusable.
-	  needs some function that automatically transforms the data into
-	  a useful format, such as start, stop data or the wide format etc.
 	- a function that automatically plots a flow chart for the sim_discrete_time function based on the
 	  node information would also be great

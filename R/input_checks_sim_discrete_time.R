@@ -117,7 +117,7 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
       stop("'tx_nodes_order' must be the same length as",
            " the number of nodes of 'tx_nodes.")
     }
-    if (!is.element(tx_nodes_order, seq_len(length(tx_nodes)))) {
+    if (!all(is.element(tx_nodes_order, seq_len(length(tx_nodes))))) {
       stop("'tx_nodes_order' must contain the same elements as",
            " elements in 'tx_nodes'.")
     }

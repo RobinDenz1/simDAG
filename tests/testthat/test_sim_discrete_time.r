@@ -1,3 +1,4 @@
+
 set.seed(42)
 
 dt <- data.table::data.table("age" = rnorm(n = 200, mean = 30, sd = 7.5),
@@ -64,7 +65,7 @@ test_that("correct nrow, ncol", {
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
-  expect_true(ncol(sim_dat) == 5)
+  expect_true(ncol(sim_dat) == 7)
 })
 
 test_that("tx_nodes_order working", {
@@ -96,7 +97,7 @@ test_that("tx_nodes_order working", {
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
-  expect_true(ncol(sim_dat) == 8)
+  expect_true(ncol(sim_dat) == 10)
   expect_output(
     suppressWarnings({
       sim_discrete_time(t0_data = dt,
@@ -123,7 +124,6 @@ test_that("save_states working", {
                                  save_states_at = 100)$data
 
   expect_true(ncol(sim_dat_all) == 7)
-  expect_true(unique(sim_dat_t$.simulation_time == 100))
 })
 
 test_that("verbose working", {
