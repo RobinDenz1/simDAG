@@ -36,6 +36,7 @@ sim2start_stop <- function(sim, tte_name, warn=TRUE) {
 
 ## function taken (and slightly changed) from
 ## https://github.com/larmarange/JLutils/
+#' @importFrom magrittr %>%
 long_to_periods <- function(data, .id, .start, .by=NULL) {
 
   start <- .grp <- .prev_grp <- .prev_stop <- .next_prev_stop <- .last_stop <-

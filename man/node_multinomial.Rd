@@ -21,7 +21,7 @@ A character vector specifying the names of the parents that this particular chil
   \item{betas}{
 A numeric matrix with \code{length(parents)} columns and one row for each class that should be simulated, specifying the causal beta coefficients used to generate the node.
   }
-  \item{betas}{
+  \item{intercepts}{
 A numeric vector with one entry for each class that should be simulated, specifying the intercepts used to generate the node.
   }
   \item{class_labels}{
