@@ -19,6 +19,66 @@ knitr::opts_chunk$set(
 
 This vignette contains an in-depth example on how to use the `sim_discrete_time` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a simple example here. Instead, our aim is to generate realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe the data generation part here to give a detailed example on how the `sim_discrete_time` function may be used effectively.
 
+We strongly recommend reading the other two vignettes of this package first.
+
+# How to get started
+
+Simulating data that is reasonably close to a complex real system is not a trivial task, even when using this package. Dividing the big task of obtaining a valid data generation model into multiple sub-tasks is a great first step in the right direction. We suggest following the 7 steps below:
+
+## **1.)** Formulate the goal of your research project in a detailed fashion.
+
+If you haven't done this yet, now is the time. Try to make your goal as explicit as possible. This will help you in deciding which aspects of the system are important to you and which can be safely ignored.
+
+## **2.)** Build a theoretical model of the system you want to simulate.
+
+This entails reading up on relevant literature and writing down any assumptions you may already have about the system. Perhaps (and usually most likely) other researchers have tried to build a simulation model for the same system (or a very similar system). A great way to encode your causal assumptions of the system is time-dependent DAG, as discussed in the other vignettes.
+
+## **3.)** Identify the parts of the system that you are most interested in.
+
+Real systems are incredibly complex. Any simulation will have to make some simplifying assumptions. After building a moderately detailed version of the theoretical model, you will have to decide which aspects are of interest to your research project and which aren't.
+
+## **4.)** Obtain and analyze real data.
+
+If the simulated data should correspond to real data, it is crucial to base the input of the model on actual empirical data. Using the empirical data, you may be able to derive appropriate distributions for the root nodes and appropriate functional forms of the relationship between the considered variables.
+
+## **5.)** Simulate data for $t = 0$.
+
+After having specified suitable distributions and relationships, generate the initial data used in the simulation process. It is important to check this data thoroughly, as it will be used as a basis for all subsequent steps of the simulation. The `sim_from_dag` function might be very helpful for this step.
+
+## **6.)** Write functions for each time-varying node, one at a time.
+
+Each time-varying node requires a user written function that transforms the data at $t$ to the data at $t + 1$. It might be helpful to add one time-varying node at a time and proceeding to step **7.)** before adding other variables, if possible.
+
+## **7.)** Inspect the resulting data for inconsistencies.
+
+Validating your simulation code is important to ensure that no mistakes slipped through. This may be done by fitting models relying on your modeling assumptions to the generated data and checking whether those models produce the expected results.
+
+
+# Our research goal and the theoretical model
+
+Since this vignette is mostly concerned with the practical implementation of the discrete-time simulation approach using this R-package, we will not spend too much time on the first 4 steps of the process mentioned in the previous section. We only briefly present the most important points.
+
+## Research goal
+
+Our main goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately.
+
+## Theoretical model
+
+There is a seemingly endless amount of literature describing models for the Covid-19 pandemic and the associated Covid-19 vaccines (see for example ZITATE). Trying to include all relevant aspects would be an unfeasible task. After deliberating on this literature we decided to include only a few key variables:
+
+* `age`: The age of the individual in years.
+* `sex`: The biological sex (male/female) of the individual.
+* `region`: An identifier of a geographical region.
+* `vacc_type`: The type of vaccine the person received.
+* `vacc_1`: The time at which the person received the first vaccine.
+* `vacc_2`: The time at which the person received the second vaccine.
+* `covid`: Whether a Covid-19 infection occurred.
+* `sickness`: Whether the person has developed the sickness of interest.
+
+For our first tryouts, we decided to use the following causal DAG to represent our causal assumptions:
+
+
+
 # Data at t0
 
 In our case, the data at the beginning of the simulation contains only the geographic entity `kreis`, the age of the person `sex` and the sex of the person `sex`. The `kreis` and `sex` are treated as root nodes, while the age distribution is generated to be different in each `kreis`, making `age` a child node with `kreis` as a single parent. The `sim_from_dag` function is used to directly generate a data set using these specifications:

@@ -26,10 +26,9 @@ rcategorical <- function(n, probs, labels=NULL, coerce2factor=FALSE) {
     }
   }
 
-  if (coerce2factor) {
-    if (is.null(labels)) {
-      labels <- seq(0, (length(probs)-1))
-    }
+  if (coerce2factor & is.null(labels)) {
+    out <- factor(out)
+  } else if (coerce2factor) {
     out <- factor(out, labels=labels)
   }
 
