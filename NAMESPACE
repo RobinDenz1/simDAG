@@ -3,6 +3,7 @@
 export(constant)
 export(node_binomial)
 export(node_competing_events)
+export(node_conditional_prob)
 export(node_cox)
 export(node_gaussian)
 export(node_multinomial)

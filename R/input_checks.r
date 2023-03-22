@@ -109,3 +109,24 @@ check_inputs_sim_from_dag <- function(n_sim, root_nodes, child_nodes,
   #   - check if data generation possible or if there are missing node definitions
 
 }
+
+## check the inputs of the node_conditional_probs function
+check_inputs_node_conditional_probs <- function(data, parents, probs) {
+
+  dep_probs_length <- unlist(lapply(probs, length))
+  if (min(dep_probs_length, na.rm=TRUE) != max(dep_probs_length, na.rm=TRUE)) {
+    stop("There must be an equal number of probabilities for each",
+         " possible value in 'probs'.")
+  } else if (is.null(names(probs))) {
+    stop("All elements in 'probs' must be named using levels of 'parents'.")
+  } else if (length(parents) == 1 &&
+             !all(unique(data[[parents]]) %in% names(probs))) {
+    stop("All levels of variable ", parents, " need to be included in argument",
+         " 'probs'.")
+  } else if (length(parents) > 1 &&
+             !all(unique(interaction(data[, parents, with=FALSE]))
+                  %in% names(probs))) {
+    stop("All levels of the interaction between all 'parents' need to be",
+         " included in argument 'probs'.")
+  }
+}
