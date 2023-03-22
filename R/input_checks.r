@@ -42,7 +42,7 @@ check_inputs_sim_from_dag <- function(n_sim, root_nodes, child_nodes,
            " at least one variable.")
     } else if (nrow(root_nodes)==0) {
       stop("If a data.frame is supplied to 'root_nodes' it needs to include",
-           " at leats one row.")
+           " at least one row.")
     }
   } else {
     # correct node names

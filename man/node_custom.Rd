@@ -14,17 +14,14 @@ A \code{data.frame} containing all columns specified by \code{parents}.
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has.
   }
-  \item{betas}{
-Some object that includes the needed beta-coefficients for your node. Needed in \code{\link{sim_from_dag}} but not neccessarily in \code{\link{sim_discrete_time}}.
-  }
   \item{...}{
 Any amount of additional arguments.
   }
 }
 \details{
-The number of available types of nodes is limited, but this package allows the user to easily implement their own node types by writing a single custom function. Only three things are required for this to work properly: (1) the function name should start with \code{node_}, (2) the function should contain the arguments \code{data}, \code{parents} and \code{betas} (when using \code{sim_from_dag}) as described above and (3) it should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
+The number of available types of nodes is limited, but this package allows the user to easily implement their own node types by writing a single custom function. Only three things are required for this to work properly: (1) the function name should start with \code{node_}, (2) the function should contain the arguments \code{data} and \code{parents} as described above and (3) it should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
 
-The function may include any amount of additional arguments specified by the user. If you think that your custom node type might be useful to others, please add the code to this R-package. This can be done by putting it in a separate .r file into the "R" folder. In this case, a documentation page should also be created and saved under the "man" folder. Following the conventions used in this package would be appreciated. Adding automated unit-tests under the "tests" folder would also be very nice, to ensure the validity of your code.
+The function may include any amount of additional arguments specified by the user. If you think that your custom node type might be useful to others, please contact the maintainer of this package via the supplied e-mail address or github and we might add it to this package.
 
 Some simple examples for custom nodes are given below.
 }
@@ -46,7 +43,7 @@ node_gaussian_trunc <- function(data, parents, betas, intercept, error,
 
 # another custom node function, which simply returns a sum of the parents
 node_parents_sum <- function(data, parents, betas=NULL) {
-  out <- rowSums(data[, parents])
+  out <- rowSums(data[, parents, with=FALSE])
   return(out)
 }
 

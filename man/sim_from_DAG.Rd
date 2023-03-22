@@ -54,7 +54,6 @@ Each list inside of the \code{child_nodes} list needs to include at least the fo
   \item{\code{name}: A single character string specifying the name of the root node.}
   \item{\code{parents}: A character vector containing the names of all parents of that node}
   \item{\code{type}: A character string specifying which type of \code{node_function} should be used to generate data for this node.}
-  \item{\code{betas}: The causal coefficients used to generate the data from this node. Usually (but not always) this should be a numeric vector with one entry for each parent node.}
   \item{\code{...}: Further named arguments passed to the respective \code{node_function}.}
 }
 
@@ -67,13 +66,14 @@ Currently, the following node types are available:
 \itemize{
   \item{"\link[=node_gaussian]{gaussian}": A node based on linear regression.}
   \item{"\link[=node_binomial]{binomial}": A node based on logistic regression.}
+  \item{"\link[=node_conditional_prob]{conditional_prob}": A node based on conditional probabilities.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
   \item{"\link[=node_poisson]{poisson}": A node based on poisson regression.}
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
 }
 
-It is however, very simple to write a new custom \code{node_function}. All that is required is, that it takes the inputs \code{data} (the sample as generated so far), \code{parents} (a character vector specifying the parents) and \code{betas} (the causal coefficients) and outputs either a numeric vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows. More information about this can be found on the \code{node_custom} documentation page.
+It is however, very simple to write a new custom \code{node_function}. All that is required is, that it takes the inputs \code{data} (the sample as generated so far) and \code{parents} (a character vector specifying the parents) and outputs either a numeric vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found on the \code{node_custom} documentation page.
 }
 \author{
 Robin Denz
