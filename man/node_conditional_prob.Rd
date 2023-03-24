@@ -8,8 +8,8 @@ Simulate a Node Using Conditional Probabilities
 This function can be used to generate dichotomous or categorical variables dependent on one or more categorical variables where the probabilities of occurence in each strata defined by those variables is known.
 }
 \usage{
-node_coniditional_prob(data, parents, probs, labels=NULL,
-                       coerce2factor=FALSE, check_inputs=TRUE)
+node_conditional_prob(data, parents, probs, labels=NULL,
+                      coerce2factor=FALSE, check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
