@@ -111,7 +111,9 @@ check_inputs_sim_from_dag <- function(n_sim, root_nodes, child_nodes,
 }
 
 ## check the inputs of the node_conditional_probs function
-check_inputs_node_conditional_probs <- function(data, parents, probs) {
+# TODO: add checks for default_val and default_probs
+check_inputs_node_conditional_probs <- function(data, parents, probs,
+                                                default_val, default_probs) {
 
   dep_probs_length <- unlist(lapply(probs, length))
   if (min(dep_probs_length, na.rm=TRUE) != max(dep_probs_length, na.rm=TRUE)) {
@@ -120,13 +122,16 @@ check_inputs_node_conditional_probs <- function(data, parents, probs) {
   } else if (is.null(names(probs))) {
     stop("All elements in 'probs' must be named using levels of 'parents'.")
   } else if (length(parents) == 1 &&
-             !all(unique(data[[parents]]) %in% names(probs))) {
-    stop("All levels of variable ", parents, " need to be included in argument",
-         " 'probs'.")
+             !all(names(probs) %in% unique(data[[parents]]))) {
+    stop("All elements in 'probs' must correspond to levels in ", parents,
+         ". The following elements are not: ",
+         names(probs)[!names(probs) %in% unique(data[[parents]])])
   } else if (length(parents) > 1 &&
-             !all(unique(interaction(data[, parents, with=FALSE]))
-                  %in% names(probs))) {
-    stop("All levels of the interaction between all 'parents' need to be",
-         " included in argument 'probs'.")
+             !all(names(probs) %in%
+                  unique(interaction(data[, parents, with=FALSE])))) {
+    stop("All elements in 'probs' must correspond to levels defined by the",
+         "combined strata of all 'parents'. The following elements are not: ",
+         names(probs)[!names(probs) %in%
+                      unique(interaction(data[, parents, with=FALSE]))])
   }
 }
