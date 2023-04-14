@@ -6,7 +6,7 @@
 node_competing_events <- function(data, parents, sim_time, name, prob_fun,
                                   prob_fun_args=list(), event_duration=c(0, 0),
                                   immunity_duration=max(event_duration),
-                                  save_past_events=TRUE) {
+                                  save_past_events=TRUE, envir) {
   # get list of arguments
   prob_fun_args$data <- data
 
@@ -24,7 +24,7 @@ node_competing_events <- function(data, parents, sim_time, name, prob_fun,
   name_event <- paste0(name, "_event")
   name_time <- paste0(name, "_time")
   name_past_event_times <- paste0(name, "_past_event_times")
-  name_past_event_kind <- paste0(name, "_past_event_kind")
+  name_past_event_causes <- paste0(name, "_past_event_causes")
 
   days_since_event <- sim_time - data[[name_time]]
 
@@ -57,38 +57,38 @@ node_competing_events <- function(data, parents, sim_time, name, prob_fun,
                                 days_since_event <= immunity_duration,
                                 data[[name_time]], NA_integer_)))
 
-  # update past event times and kinds
+  # update past event times and kinds, see node_time_to_event function
   if (save_past_events) {
-    # times
-    past_events <- data[[name_past_event_times]]
-    past_events[!is.na(event_time) & event_time==sim_time &
-                !is.na(past_events)] <-
-      paste(past_events[!is.na(event_time) & event_time==sim_time &
-                        !is.na(past_events)], sim_time)
-    past_events[!is.na(event_time) & event_time==sim_time &
-                is.na(past_events)] <- as.character(sim_time)
+    ## times
+    cond <- (data[[name_event]] != event) & event!=0
+    ids_new_event <- data$.id[cond]
 
-    # kinds
-    past_events_kind <- data[[name_past_event_kind]]
+    if (!is.null(ids_new_event)) {
+      # assign id vector to environment of sim_discrete_time function
+      assign(x="ids_new_comp_event", value=ids_new_event, envir=envir)
 
-    cond <- !is.na(event_time) & event_time==sim_time & !is.na(past_events_kind)
-    past_events_kind[cond] <- paste(past_events_kind[cond], event[cond])
+      # this vector is then assigned to the respective list
+      assign2list(name="past_comp_events_list",
+                  i=name_past_event_times,
+                  j=sim_time,
+                  value="ids_new_comp_event",
+                  envir=envir)
 
-    cond <- !is.na(event_time) & event_time==sim_time & is.na(past_events_kind)
-    past_events_kind[cond] <- as.character(event[cond])
-
-  } else {
-    past_events <- NA
-    past_events_kind <- NA
+      ## causes
+      new_comp_causes <- event[cond]
+      assign(x="new_comp_causes", value=new_comp_causes, envir=envir)
+      assign2list(name="past_comp_causes_list",
+                  i=name_past_event_causes,
+                  j=sim_time,
+                  value="new_comp_causes",
+                  envir=envir)
+    }
   }
 
   # put together
   out <- data.table::data.table(event=event,
-                                event_time=event_time,
-                                past_events=past_events,
-                                past_events_kind=past_events_kind)
-  colnames(out) <- c(name_event, name_time, name_past_event_times,
-                     name_past_event_kind)
+                                event_time=event_time)
+  colnames(out) <- c(name_event, name_time)
 
   return(out)
 }

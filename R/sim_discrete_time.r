@@ -7,14 +7,9 @@ clean_node_args <- function(node) {
   fun_pos_args <- names(formals(node_type_fun))
 
   # change parents arguments if time_to_event node
-  if (node$type=="time_to_event") {
-    parents <- c(node$parents,
-                 paste0(node$name, c("_event", "_time", "_past_event_times")))
-    node$parents <- parents
-  } else if (node$type=="competing_events") {
-    parents <- c(node$parents,
-                 paste0(node$name, c("_event", "_time", "_past_event_times",
-                                     "_past_event_kind")))
+  if (node$type=="time_to_event" | node$type=="competing_events") {
+    parents <- c(".id", node$parents,
+                 paste0(node$name, c("_event", "_time")))
     node$parents <- parents
   }
 
@@ -25,6 +20,22 @@ clean_node_args <- function(node) {
   node$type <- NULL
 
   return(node)
+}
+
+## create an empty list of list with the right dimensions
+## one element each for every tte_node containing max_t empty spaces each
+setup_past_events_list <- function(names, max_t, kind="_past_event_times") {
+
+  if (length(names)==0) {
+    out <- list()
+  } else {
+    out <- vector(mode="list", length=length(names))
+    names(out) <- paste0(names, kind)
+    for (i in seq_len(length(out))) {
+      out[[i]] <- vector(mode="list", length=max_t)
+    }
+  }
+  return(out)
 }
 
 ## perform a discrete time simulation based on
@@ -95,13 +106,12 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                           FUN.VALUE=character(1))
   tx_node_types <- vapply(tx_nodes, function(x){x$type},
                           FUN.VALUE=character(1))
-  tte_names <- apply(expand.grid(tx_node_names[tx_node_types=="time_to_event"],
-                                 c("event", "time", "past_event_times")), 1,
-                     paste, collapse="_")
+  tte_names <- apply(expand.grid(
+    tx_node_names[tx_node_types=="time_to_event"], c("event", "time")), 1,
+    paste, collapse="_")
   ce_names <- apply(expand.grid(
-    tx_node_names[tx_node_types=="competing_events"],
-                  c("event", "time", "past_event_times", "past_event_kind")),
-    1, paste, collapse="_")
+    tx_node_names[tx_node_types=="competing_events"], c("event", "time")), 1,
+    paste, collapse="_")
 
   # add missing columns to data
   init_colnames <- c(tx_node_names[tx_node_types!="time_to_event" &
@@ -122,8 +132,23 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   arg_list <- lapply(tx_nodes, clean_node_args)
   fun_list <- lapply(tx_nodes, FUN=function(x){get(paste0("node_", x$type))})
 
-  # create id
-  id <- seq(1, nrow(data))
+  # get current environment
+  envir <- environment()
+
+  # setup lists for storing the past events of all time_to_event nodes
+  # time_to_event nodes
+  past_events_list <- setup_past_events_list(names=tx_node_names[
+    tx_node_types=="time_to_event"], max_t=max_t, kind="_past_event_times")
+
+  # competing_events nodes
+  past_comp_events_list <- setup_past_events_list(names=tx_node_names[
+    tx_node_types=="competing_events"], max_t=max_t, kind="_past_event_times")
+
+  past_comp_causes_list <- setup_past_events_list(names=tx_node_names[
+    tx_node_types=="competing_events"], max_t=max_t, kind="_past_event_causes")
+
+  # create and assign id
+  data$.id <- seq(1, nrow(data))
 
   # start the main loop
   for (t in seq_len(max_t)) {
@@ -149,6 +174,10 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
       if (!"parents" %in% fun_pos_args) {
         args$parents <- NULL
       }
+      if (tx_node_types[i]=="time_to_event" |
+          tx_node_types[i]=="competing_events") {
+        args$envir <- envir
+      }
 
       # call needed node function
       node_out <- do.call(node_type_fun, args)
@@ -162,8 +191,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
       data <- do.call(tx_transform_fun, args=tx_transform_args)
     }
 
-    # assign time and id
-    data$.id <- id
+    # assign time
     data$.simulation_time <- t
 
     # save intermediate simulation states, if specified
@@ -178,6 +206,9 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   out <- list(past_states=past_states,
               save_states=save_states,
               data=data,
+              tte_past_events=past_events_list,
+              ce_past_events=past_comp_events_list,
+              ce_past_causes=past_comp_causes_list,
               tx_nodes=tx_nodes,
               max_t=max_t)
 

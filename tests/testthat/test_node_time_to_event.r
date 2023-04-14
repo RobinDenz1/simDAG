@@ -1,13 +1,14 @@
 set.seed(42)
 
-dt <- data.table::data.table("age"=rnorm(n=200, mean=30, sd=7.5),
+dt <- data.table::data.table(.id=seq(1, 200),
+                             "age"=rnorm(n=200, mean=30, sd=7.5),
                              "sex"=rbinom(n=200, size=1, prob=0.7))
 dt <- dt %>%
   dplyr::mutate(
     smoking = ifelse(dt$sex == 0,
                      rbinom(n=nrow(dt[dt$sex == 0,]), size=1, prob=0.26),
                      rbinom(n=nrow(dt[dt$sex == 1,]), size=1, prob=0.20)),
-    sickness_event = NA_integer_,
+    sickness_event = FALSE,
     sickness_time = NA_integer_,
     sickness_past_event_times = NA_integer_)
 
@@ -39,62 +40,55 @@ prob_sick <- function(data, rr_smoke0, rr_smoke1) {
 
 test_that("correct nrow, ncol", {
   out <- node_time_to_event(dt,
-                            parents = c("age", "sex", "smoking"),
-                            sim_time = 100,
-                            name = "sickness",
-                            prob_fun = prob_sick,
-                            prob_fun_args = list(rr_smoke0=1,
-                                                 rr_smoke1=5),
-                            event_duration = 1,
-                            immunity_duration = 100,
-                            save_past_events = TRUE)
+                            parents=c("age", "sex", "smoking"),
+                            sim_time=100,
+                            name="sickness",
+                            prob_fun=prob_sick,
+                            prob_fun_args=list(rr_smoke0=1, rr_smoke1=5),
+                            event_duration=1,
+                            immunity_duration=100,
+                            save_past_events=FALSE,
+                            envir=NULL)
 
   expect_true(data.table::is.data.table(out))
   expect_true(nrow(out) == 200)
-  expect_true(ncol(out) == 3)
-  expect_equal(colnames(out), c("sickness_event", "sickness_time",
-                                "sickness_past_event_times"))
+  expect_true(ncol(out) == 2)
+  expect_equal(colnames(out), c("sickness_event", "sickness_time"))
 })
 
 test_that("correct sim_time", {
   out <- node_time_to_event(dt,
-                            parents = c("age", "sex", "smoking"),
-                            sim_time = 50,
-                            name = "sickness",
-                            prob_fun = prob_sick,
-                            prob_fun_args = list(rr_smoke0 = 1,
-                                                 rr_smoke1 = 5),
-                            event_duration = 1,
-                            immunity_duration = 100,
-                            save_past_events = TRUE)
+                            parents=c("age", "sex", "smoking"),
+                            sim_time=50,
+                            name="sickness",
+                            prob_fun=prob_sick,
+                            prob_fun_args=list(rr_smoke0=1, rr_smoke1=5),
+                            event_duration=1,
+                            immunity_duration=100,
+                            save_past_events=FALSE,
+                            envir=NULL)
 
   expect_true(unique(out[sickness_event == TRUE]$sickness_time) == 50)
 })
 
 test_that("save_past_events working", {
+
+  # setup that would usually happen in sim_discrete_time
+  envir <- environment()
+  past_events_list <- list(
+    sickness_past_event_times=vector(mode="list", length=100))
+
+  # calling the function once
   out1 <- node_time_to_event(dt,
-                             parents = c("age", "sex", "smoking"),
-                             sim_time = 100,
-                             name = "sickness",
-                             prob_fun = prob_sick,
-                             prob_fun_args = list(rr_smoke0 = 1,
-                                                  rr_smoke1 = 5),
+                             parents=c("age", "sex", "smoking"),
+                             sim_time=100,
+                             name="sickness",
+                             prob_fun=prob_sick,
+                             prob_fun_args=list(rr_smoke0=10, rr_smoke1=15),
                              event_duration=1,
                              immunity_duration=100,
-                             save_past_events=TRUE)
-  out2 <- node_time_to_event(dt,
-                             parents = c("age", "sex", "smoking"),
-                             sim_time = 100,
-                             name = "sickness",
-                             prob_fun = prob_sick,
-                             prob_fun_args = list(rr_smoke0 = 1,
-                                                  rr_smoke1 = 5),
-                             event_duration = 1,
-                             immunity_duration = 100,
-                             save_past_events = FALSE)
-
-  expect_true(typeof(
-    out1[sickness_event == TRUE]$sickness_past_event_time) == "character")
-  expect_true(is.na(
-    unique(out2[sickness_event == TRUE]$sickness_past_event_time)))
+                             save_past_events=TRUE,
+                             envir=envir)
+  expect_true(!is.null(past_events_list$sickness_past_event_times[[100]]))
+  expect_true(is.null(past_events_list$sickness_past_event_times[[1]]))
 })

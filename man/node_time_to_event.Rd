@@ -5,13 +5,14 @@
 Simulate a Time-to-Event Node in Discrete-Time Simulation
 }
 \description{
-This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds three columns to \code{data}: \code{name_event} (whether the person currently has an event), \code{name_time} (the time at which the current event started) and \code{name_past_event_times} (a string containing the times at which previous events happened). See details.
+This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. See details.
 }
 \usage{
 node_time_to_event(data, parents, sim_time, name, prob_fun,
                    prob_fun_args=list(), event_duration=0,
                    immunity_duration=event_duration,
-                   save_past_events=TRUE, check_inputs=TRUE)
+                   save_past_events=TRUE, check_inputs=TRUE,
+                   envir)
 }
 \arguments{
   \item{data}{
@@ -39,10 +40,13 @@ A single number >= 0 specifying how long the event should last.
 A single number >= \code{event_duration} specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{event_duration + 10} should be used.
   }
   \item{save_past_events}{
-When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{paste0(name, _past_event_times)} variable using a string for each person. For example, if the person experienced an event at t = 10 and t = 54, the value of that person would be \code{"10 54"}. This can slow down the simulation considerably, so if you are not interested in the timing of previous events this can be turned off by setting this argument to \code{FALSE}.
+When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{tte_past_events} list which is included in the output of the \code{sim_discrete_time} function. This extends the runtime and increases RAM usage, so if you are not interested in the timing of previous events or if you are using \code{save_states="all"} this functionality can be turned off by setting this argument to \code{FALSE}.
   }
   \item{check_inputs}{
 Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
+  }
+  \item{envir}{
+Only used internally to efficiently store the past event times. Cannot be used by the user.
   }
 }
 \details{
@@ -50,7 +54,9 @@ When performing discrete-time simulation using the \code{\link{sim_discrete_time
 
 \strong{\emph{How it Works}}:
 
-At \eqn{t = 1}, this node will be initialized for the first time. It adds three columns to the data: \code{name_event} (whether the person currently has an event), \code{name_time} (the time at which the current event started) and \code{name_past_event_times} (a string containing the times at which previous events happened) where \code{name} is the name of the node. In a nutshell, it simply models the occurrence of some event by calculating the probability of occurence at \eqn{t} and drawing a single bernoulli trial from this probability. If the trial is a "success", the corresponding event column will be set to \code{TRUE}, the time column will be set to the current simulation time \eqn{t} and the column storing the past event times will receive an entry.
+At \eqn{t = 1}, this node will be initialized for the first time. It adds two columns to the data: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started) where \code{name} is the name of the node. Additionally, it adds a list with \code{max_t} entries to the \code{tte_past_events} list returned by the \code{sim_discrete_time} function, which records which individuals experienced a new event at each point in time.
+
+In a nutshell, it simply models the occurrence of some event by calculating the probability of occurence at \eqn{t} and drawing a single bernoulli trial from this probability. If the trial is a "success", the corresponding event column will be set to \code{TRUE}, the time column will be set to the current simulation time \eqn{t} and the column storing the past event times will receive an entry.
 
 The event column will stay \code{TRUE} until the event is over. The duration for that is controlled by the \code{event_duration} parameter. When modeling terminal events such as death, one can simply set this parameter to \code{Inf}, making the event eternal. In many cases it will also be neccessary to implement some kind of immunity after the event, which can be done using the \code{immunity_duration} argument. This effectively sets the probability of another occurence of the event to 0 in the next \code{immunity_duration} time steps. During the immunity duration, the event may be \code{TRUE} (if the event is still ongoing) or \code{FALSE} (if the \code{event_duration} has already passed).
 

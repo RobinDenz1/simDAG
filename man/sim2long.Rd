@@ -5,6 +5,8 @@
 Transform \code{sim_discrete_time} output into the long-format
 }
 \description{
+CURRENTLY MAY NOT WORK AS DESCRIBED
+
 This function transforms the output of the \code{\link{sim_discrete_time}} function into a single \code{data.table} structured in the long-format. See details.
 }
 \usage{

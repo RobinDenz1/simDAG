@@ -5,13 +5,13 @@
 Simulate a Time-to-Event Node with Multiple Mutually Exclusive Events in Discrete-Time Simulation
 }
 \description{
-This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds four columns to \code{data}: \code{name_event} (whether the person currently has an event), \code{name_time} (the time at which the current event started), \code{name_past_event_times} (a string containing the times at which previous events happened) and \code{name_past_event_kind} (a string containing the kind of previous events happened). See details.
+This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (which type of event the person is currently experiencing) and \code{name_time} (the time at which the current event started). Past events and their kind are stored in two lists. See details.
 }
 \usage{
 node_competing_events(data, parents, sim_time, name, prob_fun,
                       prob_fun_args=list(), event_duration=c(0, 0),
                       immunity_duration=max(event_duration),
-                      save_past_events=TRUE)
+                      save_past_events=TRUE, envir)
 }
 \arguments{
   \item{data}{
@@ -36,10 +36,13 @@ A named list of arguments passed to \code{prob_fun}. Set to \code{list()} (defau
 A numeric vector containing one positive integer for each type of event of interest, specifying how long that event should last. For example, if we are interested in modelling the time to a cardiovascular event with death as competing event, this argument would need 2 entries. One would specify the duration of the cardiovascular event and the other would be \code{Inf} (because death is a terminal event).
   }
   \item{immunity_duration}{
-A single number >= \code{max(event_duration)} specifying how long the person should be immune to all events after experiencin one. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{max(event_duration) + 10} should be used.
+A single number >= \code{max(event_duration)} specifying how long the person should be immune to all events after experiencing one. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{max(event_duration) + 10} should be used.
   }
   \item{save_past_events}{
-When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{paste0(name, _past_event_times)} variable and the \code{paste0(name, _past_event_kind)} variable using a string for each person. For example, if the person experienced event "1"" at t = 10 and event "2" at t = 54, the value of that person would be \code{"10 54"} in the \code{paste0(name, _past_event_times)} column and \code{"1 2"} in the \code{paste0(name, _past_event_kind)} column. This can slow down the simulation considerably, so if you are not interested in the timing of previous events this can be turned off by setting this argument to \code{FALSE}.
+When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{ce_past_events} list and \code{ce_past_causes} list which are included in the output of the \code{sim_discrete_time} function. This extends the runtime and increases RAM usage, so if you are not interested in the timing of previous events or if you are using \code{save_states="all"} this functionality can be turned off by setting this argument to \code{FALSE}
+  }
+  \item{envir}{
+Only used internally to efficiently store the past event times. Cannot be used by the user.
   }
 }
 \details{
@@ -49,7 +52,9 @@ This function is an extended version of the \code{\link{node_time_to_event}} fun
 
 \strong{\emph{How it Works}}:
 
-At \eqn{t = 1}, this node will be initialized for the first time. It adds four columns to the data: \code{name_event} (whether the person currently has an event), \code{name_time} (the time at which the current event started), \code{name_past_event_times} (a string containing the times at which previous events happened) and \code{name_past_event_kind} (a string containing the kind of previous events happened) where \code{name} is the name of the node. In a nutshell, it simply models the occurrence of some event by calculating the probability of occurence at \eqn{t} and drawing a single multinomial trial from this probability. If the trial is a "success", the corresponding event column will be set to the drawn event type (described using integers, where 0 is no event and all other events are numbered consecutively), the time column will be set to the current simulation time \eqn{t} and the columns storing the past event times and types will receive an entry.
+At \eqn{t = 1}, this node will be initialized for the first time. It adds two columns to the data: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started) where \code{name} is the name of the node. Additionally, it adds a list with \code{max_t} entries to the \code{ce_past_events} list returned by the \code{sim_discrete_time} function, which records which individuals experienced a new event at each point in time. The \code{ce_past_causes} list additionally records which kind of event happened at that time.
+
+In a nutshell, it simply models the occurrence of some event by calculating the probability of occurence at \eqn{t} and drawing a single multinomial trial from this probability. If the trial is a "success", the corresponding event column will be set to the drawn event type (described using integers, where 0 is no event and all other events are numbered consecutively), the time column will be set to the current simulation time \eqn{t} and the columns storing the past event times and types will receive an entry.
 
 The event column will stay at its new integer value until the event is over. The duration for that is controlled by the \code{event_duration} parameter. When modeling terminal events such as death, one can simply set this parameter to \code{Inf}, making the event eternal. In many cases it will also be neccessary to implement some kind of immunity after the event, which can be done using the \code{immunity_duration} argument. This effectively sets the probability of another occurence of the event to 0 in the next \code{immunity_duration} time steps. During the immunity duration, the event may be \code{> 0} (if the event is still ongoing) or \code{0} (if the \code{event_duration} for that event type has already passed).
 

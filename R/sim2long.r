@@ -27,15 +27,13 @@ sim2long <- function(sim, warn=TRUE) {
     data <- data[order(.id, .simulation_time)]
 
     # remove leftover columns
-    tte_names_full <- c(paste0(tte_names, "_time"),
-                        paste0(tte_names, "_past_event_times"))
+    tte_names_full <- paste0(tte_names, "_time")
     data <- data[, !tte_names_full, with=FALSE]
 
   } else if (sim$save_states=="last"){
     # extract data for other nodes
     tte_names_full <- c(paste0(tte_names, "_event"),
                         paste0(tte_names, "_time"),
-                        paste0(tte_names, "_past_event_times"),
                         ".simulation_time")
 
     data_fixed <- sim$data[, !tte_names_full, with=FALSE]
@@ -61,6 +59,7 @@ sim2long <- function(sim, warn=TRUE) {
 ## transforms the output of the sim_discrete_time function of a single
 ## time-to-event node into the long format, if only the last state
 ## was saved
+# TODO: this no longer works due to changes in past events storage
 sim2long.tte_node <- function(sim, tte_node) {
 
   .id <- .simulation_time <- NULL

@@ -1,7 +1,8 @@
 
 set.seed(42)
 
-dt <- data.table::data.table("age" = rnorm(n = 200, mean = 30, sd = 7.5),
+dt <- data.table::data.table(.id=seq(1, 200),
+                             "age" = rnorm(n = 200, mean = 30, sd = 7.5),
                              "sex" = rbinom(n = 200, size = 1, prob = 0.7))
 
 prob_sick1 <- function(data, rr_sex0, rr_sex1) {
@@ -56,7 +57,7 @@ tx_nodes <- list(list(name = "sickness1",
                                            rr_sex1 = 1),
                       event_duration = 14,
                       immunity_duration = 30,
-                      save_past_events = TRUE))
+                      save_past_events = FALSE))
 
 test_that("correct nrow, ncol", {
   sim_dat <- sim_discrete_time(t0_data = dt,
@@ -65,7 +66,7 @@ test_that("correct nrow, ncol", {
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
-  expect_true(ncol(sim_dat) == 7)
+  expect_true(ncol(sim_dat) == 6)
 })
 
 test_that("tx_nodes_order working", {
@@ -77,7 +78,7 @@ test_that("tx_nodes_order working", {
                                              rr_sex1 = 1),
                         event_duration = 14,
                         immunity_duration = 30,
-                        save_past_events = TRUE),
+                        save_past_events = FALSE),
                    list(name = "sickness2",
                         parents = c("age", "sex"),
                         type = "time_to_event",
@@ -86,7 +87,7 @@ test_that("tx_nodes_order working", {
                                              rr_sex1 = 2),
                         event_duration = 14,
                         immunity_duration = 100,
-                        save_past_events = TRUE))
+                        save_past_events = FALSE))
   sim_dat <- suppressWarnings({
     sim_discrete_time(t0_data = dt,
                       max_t = 5,
@@ -97,7 +98,7 @@ test_that("tx_nodes_order working", {
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
-  expect_true(ncol(sim_dat) == 10)
+  expect_true(ncol(sim_dat) == 8)
   expect_output(
     suppressWarnings({
       sim_discrete_time(t0_data = dt,
@@ -115,7 +116,7 @@ test_that("save_states working", {
                                    tx_nodes = tx_nodes,
                                    save_states = "all")$data
 
-  expect_true(ncol(sim_dat_all) == 7)
+  expect_true(ncol(sim_dat_all) == 6)
 
   sim_dat_t <- sim_discrete_time(t0_data = dt,
                                  max_t = 365,
@@ -123,7 +124,7 @@ test_that("save_states working", {
                                  save_states = "at_t",
                                  save_states_at = 100)$data
 
-  expect_true(ncol(sim_dat_all) == 7)
+  expect_true(ncol(sim_dat_all) == 6)
 })
 
 test_that("verbose working", {

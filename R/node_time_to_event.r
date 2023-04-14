@@ -6,7 +6,8 @@
 node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                prob_fun_args=list(), event_duration=0,
                                immunity_duration=event_duration,
-                               save_past_events=TRUE, check_inputs=TRUE) {
+                               save_past_events=TRUE, check_inputs=TRUE,
+                               envir) {
 
   if (check_inputs) {
     check_inputs_node_time_to_event(data=data, parents=parents,
@@ -57,25 +58,40 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                 data[[name_time]], NA_integer_)))
 
   # update past event times
-  # NOTE: I don't like this but I have not yet figured out a better way to
-  #       do this. Hash tables were actually much slower.
+  # NOTE: Looks weird, but is super efficient because the list does not have
+  #       to be copied and the assignment is based on a single index, meaning
+  #       no searching, looping etc.
   if (save_past_events) {
-    past_events <- data[[name_past_event_times]]
-    past_events[!is.na(event_time) & event_time==sim_time &
-                !is.na(past_events)] <-
-      paste(past_events[!is.na(event_time) & event_time==sim_time &
-                        !is.na(past_events)], sim_time)
-    past_events[!is.na(event_time) & event_time==sim_time &
-                is.na(past_events)] <- as.character(sim_time)
-  } else {
-    past_events <- NA
+
+    # ids with a new event at this point in time
+    ids_new_event <- data$.id[!data[[name_event]] & event]
+
+    if (!is.null(ids_new_event)) {
+      # assign id vector to environment of sim_discrete_time function
+      assign(x="ids_new_event", value=ids_new_event, envir=envir)
+
+      # this vector is then assigned to the respective list
+      assign2list(name="past_events_list",
+                  i=name_past_event_times,
+                  j=sim_time,
+                  value="ids_new_event",
+                  envir=envir)
+    }
   }
 
   # put together
   out <- data.table::data.table(event=event,
-                                event_time=event_time,
-                                past_events=past_events)
-  colnames(out) <- c(name_event, name_time, name_past_event_times)
+                                event_time=event_time)
+  colnames(out) <- c(name_event, name_time)
 
   return(out)
+}
+
+## special assign function which assigns a vector of person ids to a list
+## storing previous events for all time_to_event nodes
+# NOTE: i is a string specifying which variable, j is the time index
+assign2list <- function(name, i, j, value, envir){
+  paste0(name, "[['", i, "']][[", j, "]] <- ", value) |>
+    str2lang() |>
+    eval(envir=envir)
 }

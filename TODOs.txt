@@ -1,9 +1,12 @@
 
 General Stuff:
-	- finish vignettes
+	- finish & update vignettes
 	- add pkgdown site, badges etc.
 	- create a package logo
 	- update README
+	- I want to re-write most of the syntax for this package
+	  Actually growing a DAG using `+` and a node() function seems more R like
+        See simcausal R-package
 
 sim_from_dag:
 	- allow categorical data to be parents of other nodes
@@ -27,23 +30,18 @@ plot_dag:
 	- needs only limited input checks
 
 node_time_to_event:
-	- find a better way to store past_event_times. In theory a hash table
-	  should be the best option here but I couldn't make it work well
-	- anything that makes this function faster would be awesome
+	- allow user access to past_event_times list in some way
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment
 	  the probability matrix, because then other events would still be possible
 	- add tests
 	- add input checks (could probably use most of the checks for node_time_to_event)
-	- has the same "event-storage" problem as the node_time_to_event function
-	
-sim_discrete_time:
-	- make this function faster
+	- allow user access to past_event_times and past_event_causes list
 
 sim2long:
 	- should work with save_states="at_t" as well
-	- the code for creating it based on save_states="last" is very inefficient and should be improved
+	- the code for creating it based on save_states="last" does not work anymore, needs update
 	- should contain support for competing event nodes
 
 sim2start_stop:

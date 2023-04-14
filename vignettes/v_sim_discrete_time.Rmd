@@ -127,7 +127,7 @@ By setting `max_t=50`, we are letting this simulation run for 50 (simulated) yea
 head(sim_dat$data)
 ```
 
-It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died. Because `death` is a terminal event and we set `save_past_event=FALSE`, the `death_past_event_times` columns only contains `NA` values and can be ignored.
+It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died.
 
 This particular example could be simulated in a much easier fashion, without relying on a discrete-time approach, because `age` increases linearly and the model for `death` is exactly the same regardless of time. DTS is more useful when truly complex data structures are required. Below we will extend this simple example a little bit, but we will still keep it relatively simple. 
 
