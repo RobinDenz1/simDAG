@@ -36,12 +36,12 @@ node_competing_events <- function(data, parents, sim_time, name, prob_fun,
   # rows where the probability should be one
   ids <- seq_len(nrow(data))
   ids_1 <- ids[!is.na(data[[name_time]]) &
-               (days_since_event <= event_duration[event_chr])]
+               (days_since_event < event_duration[event_chr])]
 
   # rows where the probability should be zero
   ids_0 <- ids[!is.na(data[[name_time]]) &
-               (days_since_event <= immunity_duration) &
-               !days_since_event <= event_duration[event_chr]]
+               (days_since_event < immunity_duration) &
+               !days_since_event < event_duration[event_chr]]
 
   # set to past event if ongoing
   event[ids_1] <- data[[name_event]][ids_1]
@@ -54,7 +54,7 @@ node_competing_events <- function(data, parents, sim_time, name, prob_fun,
                         fifelse(is.na(data[[name_time]]) &
                                 event==0, NA_integer_,
                         fifelse(!is.na(data[[name_time]]) &
-                                days_since_event <= immunity_duration,
+                                days_since_event < immunity_duration,
                                 data[[name_time]], NA_integer_)))
 
   # update past event times and kinds, see node_time_to_event function

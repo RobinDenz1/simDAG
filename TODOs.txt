@@ -31,6 +31,7 @@ plot_dag:
 
 node_time_to_event:
 	- allow user access to past_event_times list in some way
+	- add options to directly add "days_since_event", "number_of_previous_events" and similar stuff to data
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment
@@ -40,14 +41,16 @@ node_competing_events:
 	- allow user access to past_event_times and past_event_causes list
 
 sim2long:
-	- should work with save_states="at_t" as well
-	- the code for creating it based on save_states="last" does not work anymore, needs update
-	- should contain support for competing event nodes
+	- add support for save_states="at_t" and save_states="last"
+	- needs unit tests
 
 sim2start_stop:
-	- currently only based on sim2long, which is RAM inefficient if save_states="last" was used,
-	  should contain support for directly using the last state to build the start-stop data somehow
-	- should contain support for competing event nodes
+	- add support for competing event nodes
+	- fix bugs when using save_states="all" (maybe even re-write entire function)
+	- add needed arguments when using save_states="all"
+	- add support for save_states="at_t"
+	- needs unit tests
+	- needs input checks
 
 NEW needed functions:
 	- a function that automatically plots a flow chart for the sim_discrete_time function based on the

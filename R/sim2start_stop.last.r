@@ -22,6 +22,7 @@ merge_nested_lists <- function(nested_list) {
   n_sim <- length(nested_list[[1]])
 
   out <- vector(mode="list", length=n_sim)
+
   for (i in seq_len(length(nested_list))) {
     for (j in seq_len(n_sim)) {
       # do nothing if NULL
@@ -89,7 +90,7 @@ get_event_duration <- function(node) {
 ## takes the output of the sim_discrete_time function called with
 ## save_states="last" and outputs a data.table in the start / stop format
 # NOTE: mostly memory efficient, but not optimized for speed yet
-sim2start_stop.from_last <- function(sim) {
+sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
 
   n_sim <- nrow(sim$data)
   max_t <- sim$max_t
@@ -101,6 +102,7 @@ sim2start_stop.from_last <- function(sim) {
   tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
   tx_type <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$type}))
   tte_names <- tx_names[tx_type=="time_to_event"]
+  non_tte_names <- tx_names[tx_type!="time_to_event"]
 
   # get durations of each time-to-event node
   event_durations <- vapply(sim$tx_nodes[tx_type=="time_to_event"],
@@ -139,7 +141,30 @@ sim2start_stop.from_last <- function(sim) {
   }
   out <- data.table::rbindlist(out)
 
-  # TODO: merge other variables to the output
+  out <- out[out$start!=max_t, ]
+
+  # extract other variables
+  if (include_tx_nodes) {
+    remove_vars <- c(paste0(tte_names, "_event"),
+                     paste0(tte_names, "_time"),
+                     ".simulation_time")
+  } else {
+    remove_vars <- c(paste0(tte_names, "_event"),
+                     paste0(tte_names, "_time"),
+                     non_tte_names, ".simulation_time")
+  }
+
+  data_t0 <- sim$data[, !remove_vars, with=FALSE]
+
+  # merge with start / stop data
+  out <- out[data_t0, on=".id"]
+
+  # how to code the intervals
+  if (interval=="stop_minus_1") {
+    out$stop[out$stop < max_t] <- out$stop[out$stop < max_t] - 1
+  } else if (interval=="start_plus_1") {
+    out$start[out$start > 0] <- out$start[out$start > 0] + 1
+  }
 
   return(out)
 }

@@ -1,41 +1,61 @@
 
-## transform output from the sim_discrete_time function into the start-stop
-## format
+## transform output from the sim_discrete_time function into the
+## start-stop format
 #' @export
-sim2start_stop <- function(sim, tte_name, warn=TRUE) {
+sim2start_stop <- function(sim, include_tx_nodes=FALSE,
+                           interval="overlap") {
+
+  if (sim$save_states=="all") {
+    data <- sim2start_stop.all(sim=sim)
+  } else if (sim$save_states=="last") {
+    data <- sim2start_stop.last(sim=sim,
+                                include_tx_nodes=include_tx_nodes,
+                                interval=interval)
+  } else if (sim$save_states=="at_t") {
+    stop("This function currently does not work if save_states='at_t'",
+         " was used in the original sim_discrete_time() call.")
+  }
+
+  return(data)
+}
+
+## used when save_states="all" was used in sim_discrete_time
+sim2start_stop.all <- function(sim) {
 
   # transform to long format
-  data <- sim2long(sim=sim, warn=warn)
-
-  # change name
-  tte_name_orig <- tte_name
-  tte_name <- paste0(tte_name, "_event")
+  data <- sim2long(sim=sim)
 
   # get names of time-varying variables
   tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
   tx_type <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$type}))
+  tte_names <- tx_names[tx_type=="time_to_event"]
   non_tte_names <- tx_names[tx_type!="time_to_event"]
 
   # get t0_data
-  data_fixed <- sim$data[, !c(paste0(tte_name_orig, "_event"),
-                              paste0(tte_name_orig, "_time"),
-                              paste0(tte_name_orig, "_past_event_times"),
+  data_fixed <- sim$data[, !c(paste0(tte_names, "_event"),
+                              paste0(tte_names, "_time"),
                               non_tte_names, ".simulation_time"),
                          with=FALSE]
 
   # transform to start-stop
   data <- long_to_periods(data, .id=".id", .start=".simulation_time",
-                          .by=c(tte_name, non_tte_names))
+                          .by=tx_names)
   data <- data.table::as.data.table(data)
 
   # merge t0_data to it
-  data <- merge(data, data_fixed, by=".id", all.x=TRUE)
+  data <- data[data_fixed, on=".id"]
 
   return(data)
 }
 
 ## function taken (and slightly changed) from
 ## https://github.com/larmarange/JLutils/
+# TODO: this function has at least three bugs:
+#       - it starts all observation periods at 1
+#       - it therefore ignores lines with start = 0, stop = 1
+#       - if an event ends at t = max_t - 1, it will miss the last line
+#         which should have start = max_t - 1, stop = max_t
+# Maybe re-do this completely by myself?
 #' @importFrom magrittr %>%
 long_to_periods <- function(data, .id, .start, .by=NULL) {
 
