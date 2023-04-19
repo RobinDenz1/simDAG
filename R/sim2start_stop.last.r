@@ -40,39 +40,29 @@ merge_nested_lists <- function(nested_list) {
   return(out)
 }
 
-## checks if an event is still ongoing at time t given
-## a vector of all start and stop times of all events of a person
-is_ongoing_event <- function(sim_time, events_start, events_end) {
-  any(sim_time > events_start & sim_time <= events_end)
+## identify if a certain period should be considered an event or not
+which_events <- function(sim_time, .id, inv_tte_past_events, event_durations) {
+
+  out <- logical(length(event_durations))
+
+  for (i in seq_len(length(event_durations))) {
+
+    events_start <- inv_tte_past_events[[i]][[.id]]
+
+    if (!is.null(events_start)) {
+      events_end <- events_start + event_durations[i]
+
+      if (any(sim_time >= events_start & sim_time < events_end)) {
+        out[i] <- TRUE
+      }
+    }
+  }
+  return(out)
 }
 
-## creates start / stop data for a single person
-vec2start_stop <- function(.id, events, event_kinds, event_durations,
-                           tte_names, max_t) {
-
-  # calculate time at end of each event
-  events_end <- events + event_durations
-
-  # sort all possible event times
-  sorted_events <- sort(c(events, events_end))
-  sorted_events <- sorted_events[sorted_events <= max_t]
-
-  # initialize data.table with start and stop times
-  rows <- data.table::data.table(.id=.id,
-                                 start=c(0, sorted_events),
-                                 stop=c(sorted_events, max_t))
-
-  # add correct status indicator to each period
-  for (i in seq_len(length(tte_names))) {
-    rows[[tte_names[i]]] <- vapply(
-      rows$stop,
-      FUN=is_ongoing_event,
-      FUN.VALUE=logical(1),
-      events_start=events[event_kinds==tte_names[i]],
-      events_end=events_end[event_kinds==tte_names[i]]
-    )
-  }
-  return(rows)
+## vectorized version of which_events to be used in apply() call
+identify_events <- function(x, inv_tte_past_events, event_durations) {
+  which_events(x["start"], x[".id"], inv_tte_past_events, event_durations)
 }
 
 ## given a node list, returns the used event duration
@@ -89,7 +79,6 @@ get_event_duration <- function(node) {
 
 ## takes the output of the sim_discrete_time function called with
 ## save_states="last" and outputs a data.table in the start / stop format
-# NOTE: mostly memory efficient, but not optimized for speed yet
 sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
 
   n_sim <- nrow(sim$data)
@@ -126,22 +115,49 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   tte_all <- merge_nested_lists(inv_tte_past_events)
   tte_n <- merge_nested_lists(tte_n_events)
 
-  # create start / stop data for each .id
-  # NOTE: this is the only computationally expensive part, might need
-  #       some adjustments or a different approach
-  out <- vector(mode="list", length=n_sim)
-  for (i in seq_len(n_sim)) {
+  # get needed vectors
+  vec_all_events <- unlist(tte_all)
+  vec_all_n <- unlist(tte_n)
+  vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
+  vec_all_events_end <- vec_all_events + vec_event_durations
+  vec_id <- rep(rep(1:n_sim, each=length(tte_names)), vec_all_n)
 
-    out[[i]] <- vec2start_stop(.id=i,
-                               events=tte_all[[i]],
-                               event_durations=rep(event_durations, tte_n[[i]]),
-                               event_kinds=rep(tte_names, tte_n[[i]]),
-                               tte_names=tte_names,
-                               max_t=max_t)
+  # initial data.table
+  data <- data.table(.id=rep(vec_id, 2),
+                     start=c(vec_all_events, vec_all_events_end))
+
+  # add zeros
+  start_rows <- data.table(.id=1:n_sim,
+                           start=0)
+  data <- rbind(data, start_rows)
+
+  # remove invalidly long times
+  data <- data[start <= max_t, ]
+
+  # sort by .id and start
+  setkey(data, .id, start)
+
+  # create stop
+  data <- data[, stop := shift(start, type="lead", fill=max_t), by=.id]
+
+  # initialize table storing all events + durations + kind
+  events_dat <- data.table(.id=vec_id,
+                           start=vec_all_events,
+                           end=vec_all_events_end)
+
+  # get event indicators
+  # NOTE: this is the computationally most expensive part, a more clever
+  #       vectorized way to do this could result in a big speedup
+  event_ind <- apply(data, MARGIN=1, FUN=identify_events,
+                     event_durations=event_durations,
+                     inv_tte_past_events=inv_tte_past_events)
+
+  # add event indicators to data
+  for (i in seq_len(length(tte_names))) {
+    data[[tte_names[i]]] <- event_ind[i,]
   }
-  out <- data.table::rbindlist(out)
 
-  out <- out[out$start!=max_t, ]
+  data <- data[data$start!=max_t & data$start!=data$stop, ]
 
   # extract other variables
   if (include_tx_nodes) {
@@ -157,14 +173,14 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   data_t0 <- sim$data[, !remove_vars, with=FALSE]
 
   # merge with start / stop data
-  out <- out[data_t0, on=".id"]
+  data <- data[data_t0, on=".id"]
 
   # how to code the intervals
   if (interval=="stop_minus_1") {
-    out$stop[out$stop < max_t] <- out$stop[out$stop < max_t] - 1
+    data$stop[data$stop < max_t] <- data$stop[data$stop < max_t] - 1
   } else if (interval=="start_plus_1") {
-    out$start[out$start > 0] <- out$start[out$start > 0] + 1
+    data$start[data$start > 0] <- data$start[data$start > 0] + 1
   }
 
-  return(out)
+  return(data)
 }
