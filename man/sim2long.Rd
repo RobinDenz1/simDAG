@@ -5,8 +5,6 @@
 Transform \code{sim_discrete_time} output into the long-format
 }
 \description{
-CURRENTLY MAY NOT WORK AS DESCRIBED
-
 This function transforms the output of the \code{\link{sim_discrete_time}} function into a single \code{data.table} structured in the long-format. See details.
 }
 \usage{
@@ -35,7 +33,7 @@ If \code{save_states="all"} was used in the creation of the \code{sim} object, t
 
 \strong{\emph{Other formats}:}
 
-Instead of transforming the output to the long format, it may also be transformed to the start-stop format using the \code{\link{sim2start_stop}} function.
+Instead of transforming the output to the long-format, it may also be transformed to the wide-format using the \code{\link{sim2wide}} format or to the start-stop format using the \code{\link{sim2start_stop}} function.
 
 }
 \value{

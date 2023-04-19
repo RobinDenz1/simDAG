@@ -45,7 +45,7 @@ sim2long.all <- function(sim, tte_names) {
   data <- data[, !tte_names_full, with=FALSE]
 
   # clean others
-  colnames(data)[colnames(data)==paste0(tte_names, "_event")] <- tte_names
+  colnames(data)[colnames(data) %in% paste0(tte_names, "_event")] <- tte_names
 
   return(data)
 }
