@@ -40,31 +40,6 @@ merge_nested_lists <- function(nested_list) {
   return(out)
 }
 
-## identify if a certain period should be considered an event or not
-which_events <- function(sim_time, .id, inv_tte_past_events, event_durations) {
-
-  out <- logical(length(event_durations))
-
-  for (i in seq_len(length(event_durations))) {
-
-    events_start <- inv_tte_past_events[[i]][[.id]]
-
-    if (!is.null(events_start)) {
-      events_end <- events_start + event_durations[i]
-
-      if (any(sim_time >= events_start & sim_time < events_end)) {
-        out[i] <- TRUE
-      }
-    }
-  }
-  return(out)
-}
-
-## vectorized version of which_events to be used in apply() call
-identify_events <- function(x, inv_tte_past_events, event_durations) {
-  which_events(x["start"], x[".id"], inv_tte_past_events, event_durations)
-}
-
 ## given a node list, returns the used event duration
 ## if not specified by user, returns default value
 get_event_duration <- function(node) {
@@ -77,8 +52,16 @@ get_event_duration <- function(node) {
   return(dur)
 }
 
+## last observation carried forward
+na.locf <- function(x) {
+  v <- !is.na(x)
+  c(NA, x[v])[cumsum(v)+1]
+}
+
 ## takes the output of the sim_discrete_time function called with
 ## save_states="last" and outputs a data.table in the start / stop format
+# NOTE: ugly but fast, could still be optimized to use less RAM with better
+#       use of data.table syntax
 sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
 
   n_sim <- nrow(sim$data)
@@ -115,12 +98,17 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   tte_all <- merge_nested_lists(inv_tte_past_events)
   tte_n <- merge_nested_lists(tte_n_events)
 
+  rm(inv_tte_past_events, tte_n_events)
+
   # get needed vectors
   vec_all_events <- unlist(tte_all)
   vec_all_n <- unlist(tte_n)
   vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
   vec_all_events_end <- vec_all_events + vec_event_durations
   vec_id <- rep(rep(1:n_sim, each=length(tte_names)), vec_all_n)
+  vec_kind <- rep(rep(tte_names, n_sim), vec_all_n)
+
+  rm(tte_all, tte_n)
 
   # initial data.table
   data <- data.table(.id=rep(vec_id, 2),
@@ -138,26 +126,46 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   setkey(data, .id, start)
 
   # create stop
-  data <- data[, stop := shift(start, type="lead", fill=max_t), by=.id]
+  data[, stop := shift(start, type="lead", fill=max_t), by=.id]
 
   # initialize table storing all events + durations + kind
   events_dat <- data.table(.id=vec_id,
                            start=vec_all_events,
-                           end=vec_all_events_end)
+                           end=vec_all_events_end,
+                           kind=vec_kind)
+  setkey(events_dat, .id, start)
 
-  # get event indicators
-  # NOTE: this is the computationally most expensive part, a more clever
-  #       vectorized way to do this could result in a big speedup
-  event_ind <- apply(data, MARGIN=1, FUN=identify_events,
-                     event_durations=event_durations,
-                     inv_tte_past_events=inv_tte_past_events)
+  rm(vec_all_events, vec_all_n, vec_event_durations,
+     vec_all_events_end, vec_id, vec_kind)
 
-  # add event indicators to data
+  data <- merge.data.table(data, events_dat, by=c(".id", "start"),
+                           all.x=TRUE, all.y=FALSE)
+
+  rm(events_dat)
+
+  # create one end for each event
   for (i in seq_len(length(tte_names))) {
-    data[[tte_names[i]]] <- event_ind[i,]
+    data[, (paste0("end_", tte_names[i])) := fifelse(data$kind==tte_names[i],
+                                                     data$end, NA_integer_)]
+  }
+  data$end <- NULL
+  data$kind <- NULL
+
+  # fill up ends
+  for (i in seq_len(length(tte_names))) {
+    name <- paste0("end_", tte_names[i])
+    data[, (name) := na.locf(eval(parse(text=name))), by=.id]
   }
 
-  data <- data[data$start!=max_t & data$start!=data$stop, ]
+  # create event indicators
+  for (i in seq_len(length(tte_names))) {
+    name <- paste0("end_", tte_names[i])
+    data[[tte_names[i]]] <- !is.na(data[[name]]) &
+      data$start < data[[name]]
+    data[[name]] <- NULL
+  }
+
+  data <- data[data$start!=max_t & data$start!=data$stop & !duplicated(data), ]
 
   # extract other variables
   if (include_tx_nodes) {
