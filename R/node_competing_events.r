@@ -60,7 +60,7 @@ node_competing_events <- function(data, parents, sim_time, name, prob_fun,
   # update past event times and kinds, see node_time_to_event function
   if (save_past_events) {
     ## times
-    cond <- (data[[name_event]] != event) & event!=0
+    cond <- !is.na(event_time) & event_time==sim_time
     ids_new_event <- data$.id[cond]
 
     if (!is.null(ids_new_event)) {

@@ -3,7 +3,7 @@
 ## start-stop format
 #' @export
 sim2start_stop <- function(sim, include_tx_nodes=FALSE,
-                           interval="overlap") {
+                           interval="overlap", use_save_states=TRUE) {
 
   if (sim$save_states=="all") {
     data <- sim2start_stop.all(sim=sim)
@@ -25,76 +25,209 @@ sim2start_stop.all <- function(sim) {
   # transform to long format
   data <- sim2long(sim=sim)
 
+  varying <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
+  data <- long2start_stop(data=data, id=".id", time=".simulation_time",
+                          varying=varying)
+
+  return(data)
+}
+
+## takes the output of the sim_discrete_time function called with
+## save_states="last" and outputs a data.table in the start / stop format
+# NOTE: ugly but fast, could still be optimized to use less RAM with
+#       better use of data.table syntax
+# TODO:
+#   - produces false results whenever an event ends and another one begins
+#     immediately, may have other related bugs
+#' @importFrom data.table fifelse
+#' @importFrom data.table data.table
+#' @importFrom data.table setkey
+#' @importFrom data.table merge.data.table
+sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
+
+  n_sim <- nrow(sim$data)
+  max_t <- sim$max_t
+
+  # extract past events
+  tte_past_events <- sim$tte_past_events
+
   # get names of time-varying variables
   tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
   tx_type <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$type}))
   tte_names <- tx_names[tx_type=="time_to_event"]
   non_tte_names <- tx_names[tx_type!="time_to_event"]
 
-  # get t0_data
-  data_fixed <- sim$data[, !c(paste0(tte_names, "_event"),
-                              paste0(tte_names, "_time"),
-                              non_tte_names, ".simulation_time"),
-                         with=FALSE]
+  # get durations of each time-to-event node
+  event_durations <- vapply(sim$tx_nodes[tx_type=="time_to_event"],
+                            FUN=get_event_duration,
+                            FUN.VALUE=numeric(1))
 
-  # transform to start-stop
-  data <- long_to_periods(data, .id=".id", .start=".simulation_time",
-                          .by=tx_names)
-  data <- data.table::as.data.table(data)
+  # create list of inverted tte_lists and a list containing the number
+  # of events per person per event kind
+  inv_tte_past_events <- vector(mode="list", length=length(tte_past_events))
+  tte_n_events <- vector(mode="list", length(tte_past_events))
 
-  # merge t0_data to it
-  data <- data[data_fixed, on=".id"]
+  for (i in seq_len(length(tte_past_events))) {
+    inv_tte_past_events[[i]] <- invert_event_time_list(tte_past_events[[i]],
+                                                       n_sim=n_sim)
+    tte_n_events[[i]] <- vapply(inv_tte_past_events[[i]],
+                                FUN=length,
+                                FUN.VALUE=integer(1))
+  }
+
+  # merge them into one list for further processing
+  tte_all <- merge_nested_lists(inv_tte_past_events)
+  tte_n <- merge_nested_lists(tte_n_events)
+
+  rm(inv_tte_past_events, tte_n_events)
+
+  # get needed vectors
+  vec_all_events <- unlist(tte_all)
+  vec_all_n <- unlist(tte_n)
+  vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
+  vec_all_events_end <- vec_all_events + vec_event_durations
+  vec_id <- rep(rep(1:n_sim, each=length(tte_names)), vec_all_n)
+  vec_kind <- rep(rep(tte_names, n_sim), vec_all_n)
+
+  rm(tte_all, tte_n)
+
+  # initial data.table
+  data <- data.table(.id=rep(vec_id, 2),
+                     start=c(vec_all_events, vec_all_events_end))
+
+  # add zeros
+  start_rows <- data.table(.id=1:n_sim, start=0)
+  data <- rbind(data, start_rows)
+
+  # remove invalidly long times
+  data <- data[start <= max_t, ]
+
+  # sort by .id and start
+  setkey(data, .id, start)
+
+  # create stop
+  data[, stop := shift(start, type="lead", fill=max_t), by=.id]
+
+  # initialize table storing all events + durations + kind
+  events_dat <- data.table(.id=vec_id,
+                           start=vec_all_events,
+                           end=vec_all_events_end,
+                           kind=vec_kind)
+  setkey(events_dat, .id, start)
+
+  rm(vec_all_events, vec_all_n, vec_event_durations,
+     vec_all_events_end, vec_id, vec_kind)
+
+  data <- merge.data.table(data, events_dat, by=c(".id", "start"),
+                           all.x=TRUE, all.y=FALSE)
+
+  rm(events_dat)
+
+  # create one end for each event
+  for (i in seq_len(length(tte_names))) {
+    data[, (paste0("end_", tte_names[i])) := fifelse(data$kind==tte_names[i],
+                                                     data$end, NA_integer_)]
+  }
+  data$end <- NULL
+  data$kind <- NULL
+
+  # fill up ends
+  for (i in seq_len(length(tte_names))) {
+    name <- paste0("end_", tte_names[i])
+    data[, (name) := na.locf(eval(parse(text=name))), by=.id]
+  }
+
+  # create event indicators
+  for (i in seq_len(length(tte_names))) {
+    name <- paste0("end_", tte_names[i])
+    data[[tte_names[i]]] <- !is.na(data[[name]]) &
+      data$start < data[[name]]
+    data[[name]] <- NULL
+  }
+
+  data <- data[data$start!=max_t & data$start!=data$stop & !duplicated(data), ]
+
+  # extract other variables
+  if (include_tx_nodes) {
+    remove_vars <- c(paste0(tte_names, "_event"),
+                     paste0(tte_names, "_time"),
+                     ".simulation_time")
+  } else {
+    remove_vars <- c(paste0(tte_names, "_event"),
+                     paste0(tte_names, "_time"),
+                     non_tte_names, ".simulation_time")
+  }
+
+  data_t0 <- sim$data[, !remove_vars, with=FALSE]
+
+  # merge with start / stop data
+  data <- data[data_t0, on=".id"]
+
+  # how to code the intervals
+  if (interval=="stop_minus_1") {
+    data$stop[data$stop < max_t] <- data$stop[data$stop < max_t] - 1
+  } else if (interval=="start_plus_1") {
+    data$start[data$start > 0] <- data$start[data$start > 0] + 1
+  }
 
   return(data)
 }
 
-## function taken (and slightly changed) from
-## https://github.com/larmarange/JLutils/
-# TODO: this function has at least three bugs:
-#       - it starts all observation periods at 1
-#       - it therefore ignores lines with start = 0, stop = 1
-#       - if an event ends at t = max_t - 1, it will miss the last line
-#         which should have start = max_t - 1, stop = max_t
-# Maybe re-do this completely by myself?
-#' @importFrom magrittr %>%
-long_to_periods <- function(data, .id, .start, .by=NULL) {
+## takes a list with one entry per time point filled with person ids
+## and outputs a list with one entry per person with time ids
+invert_event_time_list <- function(tte_list, n_sim) {
 
-  start <- .grp <- .prev_grp <- .prev_stop <- .next_prev_stop <- .last_stop <-
-    NULL
+  out <- vector(mode="list", length=n_sim)
 
-  data$start <- data[[.start]]
+  for (i in seq_len(length(tte_list))) {
+    for (j in seq_len(length(tte_list[[i]]))) {
+      person_id <- tte_list[[i]][[j]]
+      out[[person_id]] <- append(out[[person_id]], i)
+    }
+  }
+  return(out)
+}
 
-  data <- data %>%
-    dplyr::arrange(.data[[.id]], .data[[.start]]) %>%
-    dplyr::group_by(!!!dplyr::syms(c(.id, .by)))
-  data$.grp <- data %>% dplyr::group_indices()
+## takes a list of list where each list on the inside has the same length
+## and is filled with vectors or NULL, returns a new list with the same
+## length as the inside list containing concatenated vectors
+merge_nested_lists <- function(nested_list) {
 
-  data <- data %>%
-    dplyr::group_by(!!!dplyr::syms(.id)) %>%
-    dplyr::mutate(stop=dplyr::lead(start)) %>%
-    dplyr::filter(!is.na(stop)) %>%
-    dplyr::group_by(!!!dplyr::syms(.id)) %>%
-    dplyr::mutate(.prev_grp=dplyr::lag(.grp),
-                  .prev_stop=dplyr::lag(stop))
+  n_sim <- length(nested_list[[1]])
 
-  periods <- data %>%
-    dplyr::filter(is.na(.prev_grp) | .grp!=.prev_grp | start!=.prev_stop) %>%
-    dplyr::group_by(!!!dplyr::syms(.id)) %>%
-    dplyr::mutate(.next_prev_stop=dplyr::lead(.prev_stop))
+  out <- vector(mode="list", length=n_sim)
 
-  # trick: using the next value of .prev_stop allows to identify
-  # the new value of stop in periods if no next value, stop remains unchanged
+  for (i in seq_len(length(nested_list))) {
+    for (j in seq_len(n_sim)) {
+      # do nothing if NULL
+      if (is.null(nested_list[[i]][[j]])) {
 
-  temp_dat <- data %>%
-    dplyr::group_by(!!!dplyr::syms(.id)) %>%
-    dplyr::summarise(.last_stop=max(stop, na.rm=TRUE))
+        # simply assign it if first in line
+      } else if (i == 1) {
+        out[[j]] <- nested_list[[i]][[j]]
+        # append it to existing vector otherwise
+      } else {
+        out[[j]] <- append(out[[j]], nested_list[[i]][[j]])
+      }
+    }
+  }
+  return(out)
+}
 
-  periods <- merge(periods, temp_dat, by=.id, all.x=TRUE) %>%
-    dplyr::mutate(stop=ifelse(!is.na(.next_prev_stop),
-                              .next_prev_stop, .last_stop))
-  class(periods$stop) <- class(periods$.next_prev_stop) # bug fix
+## given a node list, returns the used event duration
+## if not specified by user, returns default value
+get_event_duration <- function(node) {
 
-  periods <- periods[, c(.id, "start", "stop", .by)]
+  if (is.null(node$event_duration)) {
+    dur <- formals(node_time_to_event)$event_duration
+  } else {
+    dur <- node$event_duration
+  }
+  return(dur)
+}
 
-  return(periods)
+## last observation carried forward
+na.locf <- function(x) {
+  v <- !is.na(x)
+  c(NA, x[v])[cumsum(v)+1]
 }

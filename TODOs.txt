@@ -46,11 +46,12 @@ sim2long:
 
 sim2start_stop:
 	- add support for competing event nodes
-	- fix bugs when using save_states="all" (maybe even re-write entire function)
 	- add needed arguments when using save_states="all"
 	- add support for save_states="at_t"
 	- needs unit tests
 	- needs input checks
+	- possible bug if columns are names "start" or "stop"
+	- fix bugs in sim2start_stop.last
 
 NEW needed functions:
 	- a function that automatically plots a flow chart for the sim_discrete_time function based on the

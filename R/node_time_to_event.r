@@ -64,7 +64,7 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
   if (save_past_events) {
 
     # ids with a new event at this point in time
-    ids_new_event <- data$.id[!data[[name_event]] & event]
+    ids_new_event <- data$.id[!is.na(event_time) & event_time==sim_time]
 
     if (!is.null(ids_new_event)) {
       # assign id vector to environment of sim_discrete_time function
