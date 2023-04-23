@@ -33,8 +33,6 @@ sim2start_stop.all <- function(sim) {
 
 ## takes the output of the sim_discrete_time function called with
 ## save_states="last" and outputs a data.table in the start / stop format
-# NOTE: ugly but fast, could still be optimized to use less RAM with
-#       better use of data.table syntax
 #' @importFrom data.table fifelse
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
@@ -82,7 +80,7 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   vec_all_n <- unlist(tte_n)
   vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
   vec_all_events_end <- vec_all_events + vec_event_durations
-  vec_id <- rep(rep(1:n_sim, each=length(tte_names)), vec_all_n)
+  vec_id <- rep(rep(seq_len(n_sim), each=length(tte_names)), vec_all_n)
   vec_kind <- rep(rep(tte_names, n_sim), vec_all_n)
 
   rm(tte_all, tte_n)
@@ -125,7 +123,7 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   # fill up ends & create event indicators
   for (i in seq_len(length(tte_names))) {
     name <- tte_names[i]
-    data[, (name) := na.locf(eval(parse(text=name))), by=.id]
+    data[, (name) := na_locf(eval(parse(text=name))), by=.id]
     data[, (name) := !is.na(eval(parse(text=name))) &
           start < eval(parse(text=name))]
   }
@@ -183,10 +181,10 @@ merge_nested_lists <- function(nested_list) {
       # do nothing if NULL
       if (is.null(nested_list[[i]][[j]])) {
 
-        # simply assign it if first in line
+      # simply assign it if first in line
       } else if (i == 1) {
         out[[j]] <- nested_list[[i]][[j]]
-        # append it to existing vector otherwise
+      # append it to existing vector otherwise
       } else {
         out[[j]] <- append(out[[j]], nested_list[[i]][[j]])
       }
@@ -208,7 +206,7 @@ get_event_duration <- function(node) {
 }
 
 ## last observation carried forward
-na.locf <- function(x) {
+na_locf <- function(x) {
   v <- !is.na(x)
-  c(NA, x[v])[cumsum(v)+1]
+  return(c(NA, x[v])[cumsum(v) + 1])
 }

@@ -147,7 +147,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   past_comp_causes_list <- past_comp_events_list
 
   # create and assign id
-  data$.id <- seq(1, nrow(data))
+  data[, .id := seq(1, nrow(data))]
 
   # start the main loop
   for (t in seq_len(max_t)) {

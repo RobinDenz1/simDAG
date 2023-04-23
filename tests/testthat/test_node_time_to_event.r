@@ -89,6 +89,6 @@ test_that("save_past_events working", {
                              immunity_duration=100,
                              save_past_events=TRUE,
                              envir=envir)
-  expect_true(!is.null(past_events_list$sickness_past_event_times[[100]]))
-  expect_true(is.null(past_events_list$sickness_past_event_times[[1]]))
+  expect_true(!is.null(past_events_list$sickness[[100]]))
+  expect_true(is.null(past_events_list$sickness[[1]]))
 })
