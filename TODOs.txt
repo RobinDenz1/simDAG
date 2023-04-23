@@ -4,6 +4,7 @@ General Stuff:
 	- add pkgdown site, badges etc.
 	- create a package logo
 	- update README
+	- update documentation
 	- I want to re-write most of the syntax for this package
 	  Actually growing a DAG using `+` and a node() function seems more R like
         See simcausal R-package
@@ -51,7 +52,7 @@ sim2start_stop:
 	- needs unit tests
 	- needs input checks
 	- possible bug if columns are names "start" or "stop"
-	- fix bugs in sim2start_stop.last
+	- works now, but adds unneccessary columns if events of the same kind happen right after one another
 
 NEW needed functions:
 	- a function that automatically plots a flow chart for the sim_discrete_time function based on the

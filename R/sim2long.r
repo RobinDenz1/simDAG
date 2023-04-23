@@ -38,6 +38,7 @@ sim2long.all <- function(sim, tte_names) {
 
   # simply bind together all previous states into one data.table
   data <- data.table::rbindlist(sim$past_states)
+  data[, .simulation_time := rep(seq_len(sim$max_t), each=nrow(sim$data))]
   setkey(data, .id, .simulation_time)
 
   # remove leftover columns

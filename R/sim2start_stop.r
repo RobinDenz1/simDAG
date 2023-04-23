@@ -3,14 +3,13 @@
 ## start-stop format
 #' @export
 sim2start_stop <- function(sim, include_tx_nodes=FALSE,
-                           interval="overlap", use_save_states=TRUE) {
+                           use_save_states=TRUE) {
 
   if (sim$save_states=="all") {
     data <- sim2start_stop.all(sim=sim)
   } else if (sim$save_states=="last") {
     data <- sim2start_stop.last(sim=sim,
-                                include_tx_nodes=include_tx_nodes,
-                                interval=interval)
+                                include_tx_nodes=include_tx_nodes)
   } else if (sim$save_states=="at_t") {
     stop("This function currently does not work if save_states='at_t'",
          " was used in the original sim_discrete_time() call.")
@@ -36,14 +35,11 @@ sim2start_stop.all <- function(sim) {
 ## save_states="last" and outputs a data.table in the start / stop format
 # NOTE: ugly but fast, could still be optimized to use less RAM with
 #       better use of data.table syntax
-# TODO:
-#   - produces false results whenever an event ends and another one begins
-#     immediately, may have other related bugs
 #' @importFrom data.table fifelse
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
 #' @importFrom data.table merge.data.table
-sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
+sim2start_stop.last <- function(sim, include_tx_nodes) {
 
   n_sim <- nrow(sim$data)
   max_t <- sim$max_t
@@ -106,7 +102,7 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   setkey(data, .id, start)
 
   # create stop
-  data[, stop := shift(start, type="lead", fill=max_t), by=.id]
+  data[, stop := shift(start, type="lead", fill=max_t + 1), by=.id]
 
   # initialize table storing all events + durations + kind
   events_dat <- data.table(.id=vec_id,
@@ -114,6 +110,9 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
                            end=vec_all_events_end,
                            kind=vec_kind)
   setkey(events_dat, .id, start)
+
+  # create one end for each event
+  events_dat <- dcast(events_dat, .id + start ~ kind, value.var="end")
 
   rm(vec_all_events, vec_all_n, vec_event_durations,
      vec_all_events_end, vec_id, vec_kind)
@@ -123,39 +122,22 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
 
   rm(events_dat)
 
-  # create one end for each event
+  # fill up ends & create event indicators
   for (i in seq_len(length(tte_names))) {
-    data[, (paste0("end_", tte_names[i])) := fifelse(data$kind==tte_names[i],
-                                                     data$end, NA_integer_)]
-  }
-  data$end <- NULL
-  data$kind <- NULL
-
-  # fill up ends
-  for (i in seq_len(length(tte_names))) {
-    name <- paste0("end_", tte_names[i])
+    name <- tte_names[i]
     data[, (name) := na.locf(eval(parse(text=name))), by=.id]
+    data[, (name) := !is.na(eval(parse(text=name))) &
+          start < eval(parse(text=name))]
   }
-
-  # create event indicators
-  for (i in seq_len(length(tte_names))) {
-    name <- paste0("end_", tte_names[i])
-    data[[tte_names[i]]] <- !is.na(data[[name]]) &
-      data$start < data[[name]]
-    data[[name]] <- NULL
-  }
-
-  data <- data[data$start!=max_t & data$start!=data$stop & !duplicated(data), ]
 
   # extract other variables
   if (include_tx_nodes) {
     remove_vars <- c(paste0(tte_names, "_event"),
-                     paste0(tte_names, "_time"),
-                     ".simulation_time")
+                     paste0(tte_names, "_time"))
   } else {
     remove_vars <- c(paste0(tte_names, "_event"),
                      paste0(tte_names, "_time"),
-                     non_tte_names, ".simulation_time")
+                     non_tte_names)
   }
 
   data_t0 <- sim$data[, !remove_vars, with=FALSE]
@@ -163,12 +145,11 @@ sim2start_stop.last <- function(sim, include_tx_nodes, interval) {
   # merge with start / stop data
   data <- data[data_t0, on=".id"]
 
-  # how to code the intervals
-  if (interval=="stop_minus_1") {
-    data$stop[data$stop < max_t] <- data$stop[data$stop < max_t] - 1
-  } else if (interval=="start_plus_1") {
-    data$start[data$start > 0] <- data$start[data$start > 0] + 1
-  }
+  # correct end of intervals
+  data[, stop := stop - 1]
+  data <- data[start <= stop & !duplicated(data), ]
+
+  setkey(data, NULL)
 
   return(data)
 }

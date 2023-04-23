@@ -24,13 +24,13 @@ clean_node_args <- function(node) {
 
 ## create an empty list of list with the right dimensions
 ## one element each for every tte_node containing max_t empty spaces each
-setup_past_events_list <- function(names, max_t, kind="_past_event_times") {
+setup_past_events_list <- function(names, max_t) {
 
   if (length(names)==0) {
     out <- list()
   } else {
     out <- vector(mode="list", length=length(names))
-    names(out) <- paste0(names, kind)
+    names(out) <- names
     for (i in seq_len(length(out))) {
       out[[i]] <- vector(mode="list", length=max_t)
     }
@@ -138,14 +138,13 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   # setup lists for storing the past events of all time_to_event nodes
   # time_to_event nodes
   past_events_list <- setup_past_events_list(names=tx_node_names[
-    tx_node_types=="time_to_event"], max_t=max_t, kind="_past_event_times")
+    tx_node_types=="time_to_event"], max_t=max_t)
 
   # competing_events nodes
   past_comp_events_list <- setup_past_events_list(names=tx_node_names[
-    tx_node_types=="competing_events"], max_t=max_t, kind="_past_event_times")
+    tx_node_types=="competing_events"], max_t=max_t)
 
-  past_comp_causes_list <- setup_past_events_list(names=tx_node_names[
-    tx_node_types=="competing_events"], max_t=max_t, kind="_past_event_causes")
+  past_comp_causes_list <- past_comp_events_list
 
   # create and assign id
   data$.id <- seq(1, nrow(data))
@@ -190,9 +189,6 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
       args$data <- data
       data <- do.call(tx_transform_fun, args=tx_transform_args)
     }
-
-    # assign time
-    data$.simulation_time <- t
 
     # save intermediate simulation states, if specified
     if (save_states=="all") {

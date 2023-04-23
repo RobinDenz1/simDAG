@@ -8,12 +8,6 @@
 #' @importFrom data.table setDT
 #' @importFrom data.table setcolorder
 #' @export
-
-#data <- subset(d_long, .id==420)
-#id <- ".id"
-#time <- ".simulation_time"
-#varying <- c("A", "B", "C")
-
 long2start_stop <- function(data, id, time, varying) {
 
   max_t <- max(data[[time]])
@@ -32,6 +26,7 @@ long2start_stop <- function(data, id, time, varying) {
   setkeyv(data, cols=c(id, time))
 
   # log in which rows something changed in the varying variables
+  # TODO: maybe collapse this into one variable?
   for (i in seq_len(length(varying))) {
     name <- varying[i]
     name_shift <- paste0(varying[i], "_shift")
@@ -63,13 +58,13 @@ long2start_stop <- function(data, id, time, varying) {
   # fix columns
   data <- data[start!=stop]
   data[, start := start + 1]
-  data$stop <- fifelse(data$stop==max_t, data$stop, data$stop + 1)
-  data <- data[start!=stop]
 
   # reorder columns
   first_cols <- c(id, "start", "stop", varying)
   setcolorder(data, c(first_cols,
                       colnames(data)[!colnames(data) %in% first_cols]))
+
+  setkey(data, NULL)
 
   return(data)
 }

@@ -32,7 +32,6 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
   # specific names
   name_event <- paste0(name, "_event")
   name_time <- paste0(name, "_time")
-  name_past_event_times <- paste0(name, "_past_event_times")
 
   days_since_event <- sim_time - data[[name_time]]
 
@@ -55,7 +54,10 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                 !event, NA_integer_,
                         fifelse(!is.na(data[[name_time]]) &
                                 days_since_event < immunity_duration,
-                                data[[name_time]], NA_integer_)))
+                                data[[name_time]],
+                        fifelse(!is.na(data[[name_time]]) &
+                                days_since_event >= immunity_duration &
+                                event, sim_time, NA_integer_))))
 
   # update past event times
   # NOTE: Looks weird, but is super efficient because the list does not have
@@ -72,7 +74,7 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
 
       # this vector is then assigned to the respective list
       assign2list(name="past_events_list",
-                  i=name_past_event_times,
+                  i=name,
                   j=sim_time,
                   value="ids_new_event",
                   envir=envir)
