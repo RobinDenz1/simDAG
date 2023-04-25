@@ -23,8 +23,7 @@ sim2long <- function(sim, warn=TRUE) {
   if (sim$save_states=="all") {
     data <- sim2long.all(sim=sim, tte_names=tte_names)
   } else if (sim$save_states=="last"){
-    stop("This function currently does not work if save_states='last'",
-         " was used in the original sim_discrete_time() call.")
+    data <- sim2long.last(sim=sim, include_tx_nodes=TRUE)
   } else if (sim$save_states=="at_t") {
     stop("This function currently does not work if save_states='at_t'",
          " was used in the original sim_discrete_time() call.")
@@ -33,8 +32,12 @@ sim2long <- function(sim, warn=TRUE) {
   return(data)
 }
 
-## used when save_states="all" was used in sim_discrete_time
+## transform to long-format when save_states="all" was used
+#' @importFrom data.table :=
+#' @importFrom data.table setcolorder
 sim2long.all <- function(sim, tte_names) {
+
+  .id <- .simulation_time <- NULL
 
   # simply bind together all previous states into one data.table
   data <- data.table::rbindlist(sim$past_states)
@@ -47,6 +50,39 @@ sim2long.all <- function(sim, tte_names) {
 
   # clean others
   colnames(data)[colnames(data) %in% paste0(tte_names, "_event")] <- tte_names
+
+  # reorder columns
+  first_cols <- c(".id", ".simulation_time")
+  setcolorder(data, c(first_cols,
+                      colnames(data)[!colnames(data) %in% first_cols]))
+
+  return(data)
+}
+
+## transform to long-format if save_states="last" was used
+#' @importFrom data.table :=
+#' @importFrom data.table .I
+#' @importFrom data.table setcolorder
+sim2long.last <- function(sim, include_tx_nodes) {
+
+  .simulation_time <- n_rep <- start <- NULL
+
+  data <- sim2start_stop.last(sim, include_tx_nodes=include_tx_nodes)
+
+  data[, n_rep := stop - start + 1]
+  data[start==0, n_rep := n_rep - 1]
+  data[, start := NULL]
+  data[, stop := NULL]
+
+  data <- data[rep(data[, .I], data$n_rep)]
+  data[, n_rep := NULL]
+
+  data[, .simulation_time := rep(seq_len(sim$max_t), nrow(sim$data))]
+
+  # reorder columns
+  first_cols <- c(".id", ".simulation_time")
+  setcolorder(data, c(first_cols,
+                      colnames(data)[!colnames(data) %in% first_cols]))
 
   return(data)
 }

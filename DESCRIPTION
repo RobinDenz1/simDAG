@@ -20,7 +20,6 @@ Imports:
 	dplyr,
 	Rfast,
 	rlang,
-	magrittr
 Suggests:
     knitr,
     rmarkdown,

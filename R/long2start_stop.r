@@ -7,8 +7,11 @@
 #' @importFrom data.table shift
 #' @importFrom data.table setDT
 #' @importFrom data.table setcolorder
+#' @importFrom data.table :=
 #' @export
 long2start_stop <- function(data, id, time, varying) {
+
+  start <- NULL
 
   max_t <- max(data[[time]])
 

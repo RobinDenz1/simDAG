@@ -67,6 +67,8 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                                    verbose=verbose)
   }
 
+  .id <- NULL
+
   # get initial data
   if (is.null(t0_data)) {
     data <- sim_from_dag(n_sim=n_sim,

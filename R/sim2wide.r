@@ -9,7 +9,7 @@ sim2wide <- function(sim, warn=TRUE) {
   node_types <- lapply(sim$tx_nodes, FUN=function(x){x$type})
   tte_nodes <- sim$tx_nodes[node_types=="time_to_event"]
   tte_names <- unlist(lapply(tte_nodes, FUN=function(x){x$name}))
-  tx_names <- unlist(lapply(tx_nodes, FUN=function(x){x$name}))
+  tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
 
   fixed_cols <- colnames(d_long)[!colnames(d_long) %in% tx_names]
   fixed_cols <- fixed_cols[fixed_cols!=".simulation_time"]
@@ -28,7 +28,7 @@ sim2wide <- function(sim, warn=TRUE) {
   form <- paste0(paste(fixed_cols, collapse=" + "), " ~ .simulation_time")
 
   data <- data.table::dcast(data=d_long,
-                            formula=as.formula(form),
+                            formula=stats::as.formula(form),
                             value.var=varying_cols)
 
   return(data)

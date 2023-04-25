@@ -37,7 +37,12 @@ sim2start_stop.all <- function(sim) {
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
 #' @importFrom data.table merge.data.table
+#' @importFrom data.table setcolorder
+#' @importFrom data.table dcast
+#' @importFrom data.table :=
 sim2start_stop.last <- function(sim, include_tx_nodes) {
+
+  start <- .id <- NULL
 
   n_sim <- nrow(sim$data)
   max_t <- sim$max_t
@@ -77,6 +82,14 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
 
   # get needed vectors
   vec_all_events <- unlist(tte_all)
+
+  # if no events at all happened, stop here
+  if (is.null(vec_all_events)) {
+    data <- data.table(.id=seq_len(n_sim), start=0, stop=max_t)
+    data[, (tte_names) := FALSE]
+    return(data)
+  }
+
   vec_all_n <- unlist(tte_n)
   vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
   vec_all_events_end <- vec_all_events + vec_event_durations
@@ -123,9 +136,14 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   # fill up ends & create event indicators
   for (i in seq_len(length(tte_names))) {
     name <- tte_names[i]
-    data[, (name) := na_locf(eval(parse(text=name))), by=.id]
-    data[, (name) := !is.na(eval(parse(text=name))) &
-          start < eval(parse(text=name))]
+
+    if (name %in% colnames(data)) {
+      data[, (name) := na_locf(eval(parse(text=name))), by=.id]
+      data[, (name) := !is.na(eval(parse(text=name))) &
+             start < eval(parse(text=name))]
+    } else {
+      data[, (name) := FALSE]
+    }
   }
 
   # extract other variables
@@ -146,6 +164,11 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   # correct end of intervals
   data[, stop := stop - 1]
   data <- data[start <= stop & !duplicated(data), ]
+
+  # reorder columns
+  first_cols <- c(".id", "start", "stop", tte_names)
+  setcolorder(data, c(first_cols,
+                      colnames(data)[!colnames(data) %in% first_cols]))
 
   setkey(data, NULL)
 

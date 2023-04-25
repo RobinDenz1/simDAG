@@ -1,5 +1,5 @@
 \name{long2start_stop}
-\alias{long2_start_stop}
+\alias{long2start_stop}
 
 \title{
 Transform a \code{data.table} in the long-format to a \code{data.table} in the start-stop format
