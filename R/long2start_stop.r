@@ -7,18 +7,50 @@
 #' @importFrom data.table shift
 #' @importFrom data.table setDT
 #' @importFrom data.table setcolorder
+#' @importFrom data.table is.data.table
 #' @importFrom data.table :=
 #' @export
-long2start_stop <- function(data, id, time, varying) {
+long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
+
+  if (!is.data.frame(data)) {
+    stop("'data' should be a data.table or an object that can be transformed",
+         " to a data.table (data.frame, tibble, ...).")
+  }
+
+  # transform to data.table if needed
+  if (!is.data.table(data)) {
+    setDT(data)
+  }
+
+  if (check_inputs) {
+    check_inputs_long2start_stop(data=data, id=id, time=time,
+                                 varying=varying)
+  }
 
   start <- NULL
-
   max_t <- max(data[[time]])
 
-  # add time -1 and time 0
-  data_0 <- data[data[[time]] <= 2,]
+  # edge case with no time-varying variables
+  if (length(varying)==0) {
+
+    data <- data[data[[time]]==1]
+    data[, (time) := NULL]
+    data[, start := 1]
+    data[, stop := max_t]
+
+    first_cols <- c(id, "start", "stop")
+    setcolorder(data, c(first_cols,
+                        colnames(data)[!colnames(data) %in% first_cols]))
+
+    setkey(data, NULL)
+
+    return(data)
+  }
+
+  # add 0 rows to data
+  data_0 <- data[data[[time]] == 1,]
   setkeyv(data_0, cols=c(id, time))
-  data_0[, (time) := rep(c(-1, 0), (nrow(data_0)/2))]
+  data_0[, (time) := 0]
 
   for (i in seq_len(length(varying))) {
     col <- varying[i]

@@ -2,9 +2,11 @@
 ## transform data simulated using the sim_discrete_time function to the
 ## wide format
 #' @export
-sim2wide <- function(sim, warn=TRUE) {
+sim2wide <- function(sim, use_saved_states=sim$save_states=="all",
+                     check_inputs=TRUE) {
 
-  d_long <- sim2long(sim=sim, warn=warn)
+  d_long <- sim2long(sim=sim, use_saved_states=use_saved_states,
+                     check_inputs=check_inputs)
 
   node_types <- lapply(sim$tx_nodes, FUN=function(x){x$type})
   tte_nodes <- sim$tx_nodes[node_types=="time_to_event"]
@@ -12,7 +14,7 @@ sim2wide <- function(sim, warn=TRUE) {
   tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
 
   fixed_cols <- colnames(d_long)[!colnames(d_long) %in% tx_names]
-  fixed_cols <- fixed_cols[fixed_cols!=".simulation_time"]
+  fixed_cols <- fixed_cols[fixed_cols!=".time"]
 
   if (sim$save_states=="all") {
     varying_cols <- tx_names
@@ -25,7 +27,7 @@ sim2wide <- function(sim, warn=TRUE) {
   varying_cols <- unique(varying_cols)
   fixed_cols <- unique(fixed_cols)
 
-  form <- paste0(paste(fixed_cols, collapse=" + "), " ~ .simulation_time")
+  form <- paste0(paste(fixed_cols, collapse=" + "), " ~ .time")
 
   data <- data.table::dcast(data=d_long,
                             formula=stats::as.formula(form),

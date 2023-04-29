@@ -20,11 +20,11 @@ test_that("general test case", {
               tte_past_events=list(A=past_events_A, B=past_events_B))
 
   expected <- data.table(.id=rep(1, 11),
-                         .simulation_time=seq_len(11),
+                         .time=seq_len(11),
                          A=c(rep(TRUE, 10), FALSE),
                          B=c(rep(FALSE, 5), rep(TRUE, 5), FALSE))
 
-  out_dat <- sim2long.last(sim, include_tx_nodes=TRUE)
+  out_dat <- sim2long.last(sim)
 
   expect_equal(out_dat, expected)
 })

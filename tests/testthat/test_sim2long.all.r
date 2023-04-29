@@ -41,13 +41,13 @@ test_that("general test case", {
                                           B_time=NA_integer_)))
 
   expected <- data.table(.id=rep(seq_len(10), each=5),
-                         .simulation_time=rep(seq_len(5), 10),
+                         .time=rep(seq_len(5), 10),
                          A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
                              TRUE),
                          B=FALSE)
-  setkey(expected, .id, .simulation_time)
+  setkey(expected, .id, .time)
 
-  out_dat <- sim2long.all(sim, tte_names=c("A", "B"))
+  out_dat <- sim2long.all(sim)
 
   expect_equal(out_dat, expected)
 })

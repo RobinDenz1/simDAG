@@ -209,6 +209,35 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
               ce_past_causes=past_comp_causes_list,
               tx_nodes=tx_nodes,
               max_t=max_t)
+  class(out) <- "simDT"
 
   return(out)
+}
+
+## S3 print method for sim_discrete_time output
+#' @export
+print.simDT <- function(x, ...) {
+  cat("A simDT object with:\n")
+  cat("  - ", nrow(x$data), " observations\n")
+  cat("  - ", x$max_t, " distinct points in time\n")
+  cat("  - ", length(x$tx_nodes), " time-varying variables in total\n")
+  cat("  - ", length(x$tte_past_events), " time_to_event nodes\n")
+  cat("  - ", length(x$ce_past_events), " competing_events nodes\n")
+
+  if (x$save_states=="all") {
+    output_str <- "States of the simulation were saved at all points in time."
+  } else if (x$save_states=="last") {
+    output_str <- "Only the last state of the simulation was saved."
+  } else if (x$save_states=="at_t") {
+    output_str <- paste0("States of the simulation were saved at user-",
+                         "defined points in time.")
+  }
+
+  cat(output_str, "\n")
+}
+
+## S3 summary method for sim_discrete_time output
+#' @export
+summary.simDT <- function(object, ...) {
+  print.simDT(x=object, ...)
 }

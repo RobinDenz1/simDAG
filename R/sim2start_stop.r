@@ -2,17 +2,17 @@
 ## transform output from the sim_discrete_time function into the
 ## start-stop format
 #' @export
-sim2start_stop <- function(sim, include_tx_nodes=FALSE,
-                           use_save_states=TRUE) {
+sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all",
+                           check_inputs=TRUE) {
 
-  if (sim$save_states=="all") {
+  if (check_inputs) {
+    check_inputs_sim2data(sim=sim, use_saved_states=use_saved_states)
+  }
+
+  if (use_saved_states) {
     data <- sim2start_stop.all(sim=sim)
-  } else if (sim$save_states=="last") {
-    data <- sim2start_stop.last(sim=sim,
-                                include_tx_nodes=include_tx_nodes)
-  } else if (sim$save_states=="at_t") {
-    stop("This function currently does not work if save_states='at_t'",
-         " was used in the original sim_discrete_time() call.")
+  } else {
+    data <- sim2start_stop.last(sim=sim)
   }
 
   return(data)
@@ -25,8 +25,8 @@ sim2start_stop.all <- function(sim) {
   data <- sim2long(sim=sim)
 
   varying <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
-  data <- long2start_stop(data=data, id=".id", time=".simulation_time",
-                          varying=varying)
+  data <- long2start_stop(data=data, id=".id", time=".time",
+                          varying=varying, check_inputs=FALSE)
 
   return(data)
 }
@@ -40,7 +40,13 @@ sim2start_stop.all <- function(sim) {
 #' @importFrom data.table setcolorder
 #' @importFrom data.table dcast
 #' @importFrom data.table :=
-sim2start_stop.last <- function(sim, include_tx_nodes) {
+sim2start_stop.last <- function(sim) {
+
+  # temporary error message
+  if (length(sim$ce_past_events) > 0) {
+    stop("This function currently does not work if competing_events",
+         " nodes were used in the original sim_discrete_time() call.")
+  }
 
   start <- .id <- NULL
 
@@ -85,7 +91,7 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
 
   # if no events at all happened, stop here
   if (is.null(vec_all_events)) {
-    data <- data.table(.id=seq_len(n_sim), start=0, stop=max_t)
+    data <- data.table(.id=seq_len(n_sim), start=1, stop=max_t)
     data[, (tte_names) := FALSE]
     return(data)
   }
@@ -102,8 +108,8 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   data <- data.table(.id=rep(vec_id, 2),
                      start=c(vec_all_events, vec_all_events_end))
 
-  # add zeros
-  start_rows <- data.table(.id=1:n_sim, start=0)
+  # add first time
+  start_rows <- data.table(.id=1:n_sim, start=1)
   data <- rbind(data, start_rows)
 
   # remove invalidly long times
@@ -147,14 +153,8 @@ sim2start_stop.last <- function(sim, include_tx_nodes) {
   }
 
   # extract other variables
-  if (include_tx_nodes) {
-    remove_vars <- c(paste0(tte_names, "_event"),
-                     paste0(tte_names, "_time"))
-  } else {
-    remove_vars <- c(paste0(tte_names, "_event"),
-                     paste0(tte_names, "_time"),
-                     non_tte_names)
-  }
+  remove_vars <- c(paste0(tte_names, "_event"),
+                   paste0(tte_names, "_time"))
 
   data_t0 <- sim$data[, !remove_vars, with=FALSE]
 

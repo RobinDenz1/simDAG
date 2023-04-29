@@ -41,18 +41,10 @@ node_competing_events:
 	- add input checks (could probably use most of the checks for node_time_to_event)
 	- allow user access to past_event_times and past_event_causes list
 
-sim2long:
-	- add support for save_states="at_t" and save_states="last"
-	- needs unit tests
-
 sim2start_stop:
 	- add support for competing event nodes
-	- add needed arguments when using save_states="all"
-	- add support for save_states="at_t"
-	- needs unit tests
-	- needs input checks
-	- possible bug if columns are names "start" or "stop"
-	- works now, but adds unneccessary columns if events of the same kind happen right after one another
+	- possible bug if columns are named "start" or "stop"
+	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
 NEW needed functions:
 	- a function that automatically plots a flow chart for the sim_discrete_time function based on the

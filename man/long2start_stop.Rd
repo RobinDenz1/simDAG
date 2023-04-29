@@ -8,7 +8,8 @@ Transform a \code{data.table} in the long-format to a \code{data.table} in the s
 This function transforms a \code{data.table} in the long-format (one row per person per time point) to a \code{data.table} in the start-stop format (one row per person-specific period in which no variables changed).
 }
 \usage{
-long2start_stop(data, id, time, varying)
+long2start_stop(data, id, time, varying, include_zero=FALSE,
+                check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
@@ -18,10 +19,16 @@ A \code{data.table} including data in the long-format.
 A single character string specifying a unique person identifier included in in \code{data}.
   }
   \item{time}{
-A single character string specifying a time variable included in in \code{data} coded as integers.
+A single character string specifying a time variable included in in \code{data} coded as integers starting from 1.
   }
   \item{varying}{
 A character vector specifying names of variables included in in \code{data} that may change over time.
+  }
+  \item{include_zero}{
+Whether to include time 0 in the output. If \code{TRUE} every first start is 0 instead of 1. STILL NEEDS CHANGES
+  }
+  \item{check_inputs}{
+Whether to check if the user input is correct or not. Can be turned off by setting it to \code{FALSE} to save computation time.
   }
 }
 \details{

@@ -135,3 +135,71 @@ check_inputs_node_conditional_probs <- function(data, parents, probs,
                       unique(interaction(data[, parents, with=FALSE]))])
   }
 }
+
+## check whether the inputs to the long2start_stop function are valid
+check_inputs_long2start_stop <- function(data, id, time, varying) {
+
+  if (nrow(data)==0) {
+    stop("'data' needs to have at least 1 row.")
+  } else if (!(is.character(id) && length(id)==1)) {
+    stop("'id' has to be a single character string, specifying the unique",
+         " person identifier in 'data'.")
+  } else if (!id %in% colnames(data)) {
+    stop(id, " is not a valid column in 'data'.")
+  } else if (!(is.character(data[[id]]) | is.integer(data[[id]]))) {
+    stop("The column specified by 'id' must be a character, factor or",
+         " integer variable.")
+  } else if (!(is.character(time) && length(time)==1)) {
+    stop("'time' has to be a single character string, specifying the",
+         " variable containing points in time in 'data'.")
+  } else if (!time %in% colnames(data)) {
+    stop(time, " is not a valid column in 'data'.")
+  } else if (!all(data[[time]] %% 1==0)) {
+    stop("The variable specified by 'time' may only contain integers.")
+  } else if (!((is.null(varying) | is.character(varying)))) {
+    stop("'varying' must be a character vector specifying variables that",
+         " change over time in 'data'.")
+  } else if (!all(varying %in% colnames(data))) {
+    stop("The following names in 'varying' are not contained in 'data': ",
+         paste0(varying[!varying %in% colnames(data)], collapse=", "))
+  }
+
+  if (length(varying)==0) {
+    warning("No time-varying variables specified.")
+  }
+}
+
+## check user inputs to sim2start_stop, sim2long, sim2wide functions
+check_inputs_sim2data <- function(sim, use_saved_states) {
+
+  # errors
+  if (!inherits(sim, "simDT")) {
+    stop("'sim' needs to be a simDT object created using the",
+         " sim_discrete_time() function.")
+  } else if (!(is.logical(use_saved_states) & length(use_saved_states)==1)) {
+    stop("'use_saved_states' must be either TRUE or FALSE.")
+  } else if (use_saved_states & sim$save_states=="last") {
+    stop("use_saved_states=TRUE cannot be used if save_states='last'",
+         " was used in the original sim_discrete_time() function call.",
+         " Set to FALSE or rerun simulation.")
+  }
+
+  # extract node_time_to_event objects
+  node_types <- lapply(sim$tx_nodes, FUN=function(x){x$type})
+  tte_names <- names(sim$tte_past_events)
+
+  # raise warning due to missing information if needed
+  if (length(tte_names) < length(sim$tx_nodes) & sim$save_states!="all") {
+    warn_cols <- unlist(lapply(sim$tx_nodes[node_types!="time_to_event"],
+                               FUN=function(x){x$name}))
+    warning("Resulting data may be inaccurate for the following columns: '",
+            paste0(warn_cols, collapse="', '"), "'\nbecause save_states!='all'",
+            " in sim_discrete_time function call. See details.")
+  }
+
+  if (sim$save_states=="at_t") {
+    warning("The output of this function may be inaccurate if",
+            " save_states='at_t' was used in the original sim_discrete_time()",
+            " function call. See documentation.")
+  }
+}
