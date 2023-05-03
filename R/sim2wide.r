@@ -1,12 +1,9 @@
 
 ## transform data simulated using the sim_discrete_time function to the
 ## wide format
-#' @export
-sim2wide <- function(sim, use_saved_states=sim$save_states=="all",
-                     check_inputs=TRUE) {
+sim2wide <- function(sim, use_saved_states=sim$save_states=="all") {
 
-  d_long <- sim2long(sim=sim, use_saved_states=use_saved_states,
-                     check_inputs=check_inputs)
+  d_long <- sim2long(sim=sim, use_saved_states=use_saved_states)
 
   node_types <- lapply(sim$tx_nodes, FUN=function(x){x$type})
   tte_nodes <- sim$tx_nodes[node_types=="time_to_event"]

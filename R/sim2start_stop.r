@@ -1,13 +1,7 @@
 
 ## transform output from the sim_discrete_time function into the
 ## start-stop format
-#' @export
-sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all",
-                           check_inputs=TRUE) {
-
-  if (check_inputs) {
-    check_inputs_sim2data(sim=sim, use_saved_states=use_saved_states)
-  }
+sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all") {
 
   if (use_saved_states) {
     data <- sim2start_stop.all(sim=sim)

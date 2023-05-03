@@ -1,14 +1,7 @@
 
 ## transforms the output of the sim_discrete_time function into a
 ## single data.table in the long format
-#' @export
-sim2long <- function(sim, use_saved_states=sim$save_states=="all",
-                     check_inputs=TRUE) {
-
-  if (check_inputs) {
-    check_inputs_sim2data(sim=sim, use_saved_states=use_saved_states,
-                          include_tx_nodes=FALSE)
-  }
+sim2long <- function(sim, use_saved_states=sim$save_states=="all") {
 
   if (use_saved_states) {
     data <- sim2long.all(sim=sim)

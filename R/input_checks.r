@@ -170,7 +170,7 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
 }
 
 ## check user inputs to sim2start_stop, sim2long, sim2wide functions
-check_inputs_sim2data <- function(sim, use_saved_states) {
+check_inputs_sim2data <- function(sim, use_saved_states, to) {
 
   # errors
   if (!inherits(sim, "simDT")) {
@@ -182,6 +182,9 @@ check_inputs_sim2data <- function(sim, use_saved_states) {
     stop("use_saved_states=TRUE cannot be used if save_states='last'",
          " was used in the original sim_discrete_time() function call.",
          " Set to FALSE or rerun simulation.")
+  } else if (!(is.character(to) & length(to)==1 &
+               !to %in% c("start_stop", "long", "wide"))) {
+    stop("'to' must be one of: 'start_stop', 'long', 'wide'.")
   }
 
   # extract node_time_to_event objects

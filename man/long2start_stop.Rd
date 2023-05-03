@@ -8,8 +8,7 @@ Transform a \code{data.table} in the long-format to a \code{data.table} in the s
 This function transforms a \code{data.table} in the long-format (one row per person per time point) to a \code{data.table} in the start-stop format (one row per person-specific period in which no variables changed).
 }
 \usage{
-long2start_stop(data, id, time, varying, include_zero=FALSE,
-                check_inputs=TRUE)
+long2start_stop(data, id, time, varying, check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
@@ -24,9 +23,6 @@ A single character string specifying a time variable included in in \code{data} 
   \item{varying}{
 A character vector specifying names of variables included in in \code{data} that may change over time.
   }
-  \item{include_zero}{
-Whether to include time 0 in the output. If \code{TRUE} every first start is 0 instead of 1. STILL NEEDS CHANGES
-  }
   \item{check_inputs}{
 Whether to check if the user input is correct or not. Can be turned off by setting it to \code{FALSE} to save computation time.
   }
@@ -35,7 +31,7 @@ Whether to check if the user input is correct or not. Can be turned off by setti
 This function relies on \code{data.table} syntax to make the data transformation as RAM efficient and fast as possible.
 }
 \value{
-Returns a \code{data.table} containing the columns \code{.id} (the unique person identifier) and \code{.simulation_time} (an integer variable encoding the simulation time) and all other variables created by the \code{sim_discrete_time} function in the long format.
+Returns a \code{data.table} containing the columns \code{.id} (the unique person identifier), \code{.time} (an integer variable encoding the time) and all other variables included in the input \code{data} in the long format.
 }
 \author{
 Robin Denz
