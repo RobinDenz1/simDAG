@@ -19,7 +19,7 @@ Depends:
 Imports:
 	dplyr,
 	Rfast,
-	rlang,
+	rlang
 Suggests:
     knitr,
     rmarkdown,

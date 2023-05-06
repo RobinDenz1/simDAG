@@ -1,3 +1,4 @@
+
 ## checking the inputs of the sim_discrete_time function
 check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
                                            t0_child_nodes, t0_sort_dag,

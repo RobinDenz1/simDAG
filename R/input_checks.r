@@ -183,7 +183,7 @@ check_inputs_sim2data <- function(sim, use_saved_states, to) {
          " was used in the original sim_discrete_time() function call.",
          " Set to FALSE or rerun simulation.")
   } else if (!(is.character(to) & length(to)==1 &
-               !to %in% c("start_stop", "long", "wide"))) {
+               to %in% c("start_stop", "long", "wide"))) {
     stop("'to' must be one of: 'start_stop', 'long', 'wide'.")
   }
 

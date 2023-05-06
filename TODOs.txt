@@ -46,6 +46,7 @@ sim2start_stop:
 	- possible bug if columns are named "start" or "stop"
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
-NEW needed functions:
-	- a function that automatically plots a flow chart for the sim_discrete_time function based on the
-	  node information would also be great
+plot.simDT
+	- add input checks (only a few, most stuff will be checked directly by ggplot2)
+	- add unit-tests
+	- add some actually useful text based on node info into the boxes
