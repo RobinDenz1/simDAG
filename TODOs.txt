@@ -47,6 +47,4 @@ sim2start_stop:
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
 plot.simDT
-	- add input checks (only a few, most stuff will be checked directly by ggplot2)
 	- add unit-tests
-	- add some actually useful text based on node info into the boxes

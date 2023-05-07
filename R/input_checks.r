@@ -169,7 +169,7 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
   }
 }
 
-## check user inputs to sim2start_stop, sim2long, sim2wide functions
+## check user inputs to sim2data function
 check_inputs_sim2data <- function(sim, use_saved_states, to) {
 
   # errors
@@ -204,5 +204,60 @@ check_inputs_sim2data <- function(sim, use_saved_states, to) {
     warning("The output of this function may be inaccurate if",
             " save_states='at_t' was used in the original sim_discrete_time()",
             " function call. See documentation.")
+  }
+}
+
+## check user input for plot.simDT function
+check_inputs_plot.simDT <- function(right_boxes, box_hdist, box_vdist,
+                                    box_l_width, box_l_height, box_r_width,
+                                    box_r_height, box_1_text_left,
+                                    box_1_text_right, box_2_text,
+                                    box_l_node_labels, box_r_node_labels,
+                                    box_last_text, tx_names) {
+
+  # logical values
+  if (!(is.logical(right_boxes) && length(right_boxes)==1)) {
+    stop("'right_boxes' must be either TRUE or FALSE.")
+  }
+
+  # numeric values
+  number_checks <- list(box_hdist, box_vdist, box_l_width, box_l_height,
+                        box_r_width, box_r_height)
+  check_names <- c("box_hdist", "box_vdist", "box_l_width", "box_l_height",
+                   "box_r_width", "box_r_height")
+  for (i in seq_len(length(number_checks))) {
+    arg <- number_checks[[i]]
+    if (!(is.numeric(arg) && length(arg==1))) {
+      stop("'", check_names[[i]], "' must be a single number.")
+    }
+  }
+
+  # single character values
+  str_checks <- list(box_1_text_left, box_2_text, box_last_text)
+  check_names <- c("box_1_text_left", "box_2_text", "box_last_text")
+  for (i in seq_len(length(str_checks))) {
+    arg <- str_checks[[i]]
+    if (!(is.character(arg) && length(arg==1))) {
+      stop("'", check_names[[i]], "' must be a single character string.")
+    }
+  }
+
+  # is separate here because it allows NULL
+  if (!(is.character(box_1_text_right) && length(box_1_text_right)==1) &&
+      !is.null(box_1_text_right)) {
+    stop("'box_1_text_right' must be a single character string or NULL.")
+  }
+
+  # multiple character values
+  if (!(is.character(box_l_node_labels) &&
+        length(box_l_node_labels)==length(tx_names)) &&
+      !is.null(box_l_node_labels)) {
+    stop("'box_l_node_labels' must be a character vector with one entry for",
+         " each tx_node in the original sim_discrete_time() call.")
+  } else if (!(is.character(box_r_node_labels) &&
+               length(box_r_node_labels)==length(tx_names)) &&
+             !is.null(box_r_node_labels)) {
+    stop("'box_r_node_labels' must be a character vector with one entry for",
+         " each tx_node in the original sim_discrete_time() call.")
   }
 }

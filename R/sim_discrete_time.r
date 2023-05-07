@@ -80,6 +80,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   } else {
     data <- data.table::setDT(t0_data)
   }
+  t0_var_names <- colnames(data)
 
   # perform an arbitrary data transformation right at the start
   if (!is.null(t0_transform_fun)) {
@@ -208,7 +209,8 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
               ce_past_events=past_comp_events_list,
               ce_past_causes=past_comp_causes_list,
               tx_nodes=tx_nodes,
-              max_t=max_t)
+              max_t=max_t,
+              t0_var_names=t0_var_names)
   class(out) <- "simDT"
 
   return(out)
