@@ -47,4 +47,6 @@ sim2start_stop:
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
 plot.simDT
-	- add unit-tests
+	- bug when changing box_r_width and box_hdist at the same time
+	- in general, many of the parameters use odd definitions (box_hdist counting from middle to middle, regardless of box_width etc.)
+	  may need some change to make it easier to specify them
