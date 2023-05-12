@@ -1,7 +1,6 @@
 
 ## checking the inputs of the sim_discrete_time function
-check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
-                                           t0_child_nodes, t0_sort_dag,
+check_inputs_sim_discrete_time <- function(n_sim, t0_dag, t0_sort_dag,
                                            t0_data,t0_transform_fun,
                                            t0_transform_args,max_t,
                                            tx_nodes, tx_nodes_order,
@@ -11,17 +10,6 @@ check_inputs_sim_discrete_time <- function(n_sim, t0_root_nodes,
   # rudimentary type checks
   if (!is.null(t0_data)) {
     stopifnot("'t0_data' must be a data.frame." = is.data.frame(t0_data))
-  } else {
-    ## rudimentary type checks for variables 'n_sim', 't0_root_nodes',
-    ## 't0_child_nodes' and 't0_sort_dag' in
-    ## function 'check_inputs_sim_from_dag'
-    stopifnot("''n_sim' must be a single integer > 0." = !is.null(n_sim))
-    stopifnot("'t0_root_nodes' must be either a data.frame or a list." =
-                !is.null(t0_root_nodes))
-    stopifnot("'t0_child_nodes' must be a list." =
-                !is.null(t0_child_nodes))
-    stopifnot("'t0_sort_dag' must be either TRUE or FALSE." =
-                !is.null(t0_sort_dag))
   }
   if (!is.null(t0_transform_fun)) {
     stopifnot("'t0_transform_fun' must be a function." =

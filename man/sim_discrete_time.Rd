@@ -8,10 +8,10 @@ Using Discrete-Time Simulation to Generate Complex Data from a Given DAG and Nod
 Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given DAG. In contrast to the \code{sim_from_dag} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually needs custom functions written by the user. See details.
 }
 \usage{
-sim_discrete_time(n_sim, t0_root_nodes, t0_child_nodes,
-                  t0_sort_dag, t0_data, t0_transform_fun,
-                  t0_transform_args, max_t,
-                  tx_nodes, tx_nodes_order,
+sim_discrete_time(n_sim=NULL, t0_dag=NULL, t0_sort_dag=TRUE,
+                  t0_data=NULL, t0_transform_fun=NULL,
+                  t0_transform_args=list(), max_t,
+                  tx_nodes, tx_nodes_order=NULL,
                   tx_transform_fun=NULL,
                   tx_transform_args=list(),
                   save_states="last", save_states_at=NULL,
@@ -21,11 +21,8 @@ sim_discrete_time(n_sim, t0_root_nodes, t0_child_nodes,
   \item{n_sim}{
 A single number specifying how many observations should be generated. If a \code{data.frame} is supplied to the \code{t0_data} argument, this argument is ignored. The sample size will then correspond to the number of rows in \code{t0_data}.
   }
-  \item{t0_root_nodes}{
-This argument is passed to the \code{root_nodes} argument of the \code{\link{sim_from_dag}} function internally. By specifying this argument and the \code{t0_child_nodes} argument, the dataset containing values of all relevant variables before the first time step can be created. If such a dataset already exists, it can be simply supplied to the \code{t0_data} argument. In this case, \code{t0_root_nodes} and \code{t0_child_nodes} should be set to \code{NULL}.
-  }
-  \item{t0_child_nodes}{
-Corresponds to the \code{child_nodes} argument in the \code{\link{sim_from_dag}} function. See argument \code{t0_root_nodes} or the details section for more details.
+  \item{t0_dag}{
+A \code{DAG} object that can be passed to the \code{dag} argument of the \code{\link{sim_from_dag}} function. If specified, data according to this DAG will be generated for time = 0. That data will then be used as starting data for the following simulation. Alternatively, the user can specify the \code{t0_data} argument directly.
   }
   \item{t0_sort_dag}{
 Corresponds to the \code{sort_dag} argument in the \code{\link{sim_from_dag}} function. Ignored if \code{t0_data} is specified.
@@ -104,18 +101,11 @@ library(simDAG)
 ## NOTE: this example is explained in detail in one of the vignettes
 
 # nodes for generating data at t0
-root_nodes <- list(list(name="age",
-                        dist="rnorm",
-                        params=list(mean=50, sd=4)),
-                   list(name="sex",
-                        dist="rbernoulli",
-                        params=list(p=0.5)))
-child_nodes <- list(list(name="bmi",
-                         parents=c("sex", "age"),
-                         type="gaussian",
-                         betas=c(1.1, 0.4),
-                         intercept=12,
-                         error=2))
+t0_dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), intercept=12, error=2)
 
 # a function that increases age as time goes on
 node_advance_age <- function(data) {
@@ -147,8 +137,7 @@ tx_nodes <- list(list(name="age",
 
 # run simulation for 100 people, 50 days long
 sim_dat <- sim_discrete_time(n_sim=100,
-                             t0_root_nodes=root_nodes,
-                             t0_child_nodes=child_nodes,
+                             t0_dag=t0_dag,
                              tx_nodes=tx_nodes,
                              max_t=50,
                              verbose=FALSE)$data

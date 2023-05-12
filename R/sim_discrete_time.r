@@ -41,10 +41,8 @@ setup_past_events_list <- function(names, max_t) {
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
 #' @export
-sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
-                              t0_child_nodes=NULL, t0_sort_dag=TRUE,
-                              t0_data=NULL,
-                              t0_transform_fun=NULL,
+sim_discrete_time <- function(n_sim=NULL, t0_dag=NULL, t0_sort_dag=TRUE,
+                              t0_data=NULL, t0_transform_fun=NULL,
                               t0_transform_args=list(), max_t,
                               tx_nodes, tx_nodes_order=NULL,
                               tx_transform_fun=NULL,
@@ -53,8 +51,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
                               verbose=FALSE, check_inputs=TRUE) {
 
   if (check_inputs) {
-    check_inputs_sim_discrete_time(n_sim=n_sim, t0_root_nodes=t0_root_nodes,
-                                   t0_child_nodes=t0_child_nodes,
+    check_inputs_sim_discrete_time(n_sim=n_sim, t0_dag=t0_dag,
                                    t0_sort_dag=t0_sort_dag, t0_data=t0_data,
                                    t0_transform_fun=t0_transform_fun,
                                    t0_transform_args=t0_transform_args,
@@ -72,8 +69,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_root_nodes=NULL,
   # get initial data
   if (is.null(t0_data)) {
     data <- sim_from_dag(n_sim=n_sim,
-                         root_nodes=t0_root_nodes,
-                         child_nodes=t0_child_nodes,
+                         dag=t0_dag,
                          sort_dag=t0_sort_dag,
                          check_inputs=check_inputs)
     data <- data.table::setDT(data)

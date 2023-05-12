@@ -112,22 +112,15 @@ node_generate_age <- function(data, parents, betas=NULL) {
   return(age)
 }
 
-t0_root_nodes <- list(list(name="kreis",
-                           dist="generate_kreis",
-                           params=list()),
-                      list(name="sex",
-                           dist="rbernoulli",
-                           params=list(p=0.5)),
-                      list(name="vacc_type",
-                           dist="rcategorical",
-                           params=list(probs=c(0.73919444, 0.17035600,
-                                               0.06936522, 0.02032859),
-                                       labels=c(1, 2, 3, 4))))
-t0_child_nodes <- list(list(name="age",
-                            parents="kreis",
-                            type="generate_age"))
+dag <- empty_dag() +
+  node("kreis", type="generate_kreis") +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("vacc_type", type="rcategorical", probs=c(0.73919444, 0.17035600,
+                                                 0.06936522, 0.02032859),
+       labels=c(1, 2, 3, 4)) +
+  node("age", type="generate_age", parents="kreis")
 
-start_data <- sim_from_dag(n_sim=10, root_nodes=t0_root_nodes, child_nodes=t0_child_nodes)
+start_data <- sim_from_dag(dag=dag, n_sim=10)
 ```
 
 This is how the resulting data looks:

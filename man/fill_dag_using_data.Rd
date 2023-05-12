@@ -1,14 +1,14 @@
-\name{nodes_from_data}
-\alias{nodes_from_data}
+\name{fill_dag_using_data}
+\alias{fill_dag_using_data}
 
 \title{
-Create a List of Fully Specified Nodes From Data
+Fills a partially specified \code{DAG} object with parameters estimated from reference data
 }
 \description{
-Given a list of nodes, where only the name, type and the parents are specified plus a \code{data.frame} containing realizations of these nodes, return a list of fully specified nodes (with beta-coefficients, intercepts, errors, ...). The returned list can be used directly to simulate data with the \code{\link{sim_from_dag}} function.
+Given a partially specified \code{DAG} object, where only the \code{name}, \code{type} and the \code{parents} are specified plus a \code{data.frame} containing realizations of these nodes, return a fully specified \code{DAG} (with beta-coefficients, intercepts, errors, ...). The returned \code{DAG} can be used directly to simulate data with the \code{\link{sim_from_dag}} function.
 }
 \usage{
-nodes_from_data(data, nodes, return_models=FALSE, na.rm=FALSE)
+fill_dag_using_data(data, nodes, return_models=FALSE, na.rm=FALSE)
 }
 \arguments{
   \item{data}{

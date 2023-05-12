@@ -109,9 +109,10 @@ root_multinomial <- function(data, name, na.rm) {
 ## given minimal information on node type and the causal structure,
 ## create lists for the root_nodes and child_nodes from observed data
 ## by fitting appropriate models
+# TODO: rework this with new syntax
 #' @export
-nodes_from_data <- function(data, nodes, return_models=FALSE,
-                            na.rm=FALSE) {
+fill_dag_using_data <- function(data, nodes, return_models=FALSE,
+                                na.rm=FALSE) {
 
   # count number of children, roots
   n_roots <- sum(vapply(nodes, FUN=function(x){is.null(x$parents)},

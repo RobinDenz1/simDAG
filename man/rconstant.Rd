@@ -1,5 +1,5 @@
-\name{constant}
-\alias{constant}
+\name{rconstant}
+\alias{rconstant}
 
 \title{
 Use a single constant value for a root node
@@ -8,7 +8,7 @@ Use a single constant value for a root node
 This is a small convenience function that simply returns the value passed to it, in order to allow the use of a constant node as root node in the \code{\link{sim_from_dag}} function.
 }
 \usage{
-constant(constant)
+rconstant(constant)
 }
 \arguments{
   \item{constant}{
@@ -20,8 +20,8 @@ Robin Denz
 }
 \examples{
 \dontrun{
-constant(7)
+rconstant(7)
 
-constant("Male")
+rconstant("Male")
 }
 }

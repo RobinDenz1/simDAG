@@ -12,8 +12,8 @@ Author: Robin Denz
 
 `simDAG` is an R-Package which can be used to generate data from a known directed acyclic graph (DAG) with associated information
 on distributions and causal coefficients. The root nodes are sampled first and each subsequent child node is generated according to a
-regression model (linear, logistic, multinomial, cox, ...). The result is a dataset that has the same causal structure as the
-specified DAG and by expectation the same distributions and regression coefficients as initially specified. It also implements a
+regression model (linear, logistic, multinomial, cox, ...) or other function. The result is a dataset that has the same causal structure as the
+specified DAG and by expectation the same distributions and coefficients as initially specified. It also implements a
 comprehensive framework for conducting discrete-time simulations in a similar fashion.
 
 ## Installation
@@ -52,25 +52,13 @@ caused by both `age` and `bmi` with causal coefficients of 0.1 and 0.3 respectiv
 The following code can be used to generate 10000 samples from these specifications:
 
 ```R
-root_nodes <- list(list(dist="rnorm",
-                        params=list(mean=50, sd=4),
-                        name="age"),
-                   list(dist="rbernoulli",
-                        params=list(p=0.5),
-                        name="sex"))
-child_nodes <- list(list(parents=c("sex", "age"),
-                         type="gaussian",
-                         name="bmi",
-                         betas=c(1.1, 0.4),
-                         intercept=12,
-                         error=2),
-                    list(parents=c("age", "bmi"),
-                         type="binomial",
-                         name="death",
-                         betas=c(0.1, 0.3),
-                         intercept=-15))
-sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
-                        child_nodes=child_nodes)
+dag <- empty_dag() +
+	node("age", type="rnorm", mean=50, sd=4) +
+	node("sex", type="rbernoulli", p=0.5) +
+	node("bmi", type="gaussian", betas=c(1.1, 0.4), intercept=12, error=2) +
+	node("death", type="binomial", betas=c(0.1, 0.3), intercept=-15)
+
+sim_dat <- sim_from_dag(dag, n_sim=10000)
 ```
 
 By fitting appropriate regression models, we can check if the data really does approximately conform to our specifications.

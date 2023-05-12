@@ -5,9 +5,6 @@ General Stuff:
 	- create a package logo
 	- update README
 	- update documentation
-	- I want to re-write most of the syntax for this package
-	  Actually growing a DAG using `+` and a node() function seems more R like
-        See simcausal R-package
 
 sim_from_dag:
 	- allow categorical data to be parents of other nodes
@@ -18,17 +15,25 @@ sim_from_dag:
 		- allow different link functions in binomial / gaussian
 		- whatever models one can find may be nice
 
-nodes_from_data:
+node:
+	- lots of the input checks formerly or currently in sim_from_dag should be moved here
+
+add_node:
+	- add functionality that every time a node is added it checks whether that makes sense
+	  (duplicate names for example)
+	- add that every time a node is added, information about the DAG is updated inside the DAG
+	  (name lists, counts, whether everything is specified)
+
+fill_dag_using_data (formerly nodes_from_data):
+	- currently doesn't work due to changes in syntax, needs fix
 	- should also allow more node types
 	- needs tests
 	- needs examples
 	- needs input checks
-	- maybe a different kind of input? just a DAG and node type list
 
-plot_dag:
-	- would be nice if it had at least some options and was a little prettier
-	- needs tests
-	- needs only limited input checks
+plot.DAG:
+	- rework this completely to be an actually useful function
+	- maybe even allow option to add information about causal betas etc.
 
 node_time_to_event:
 	- allow user access to past_event_times list in some way

@@ -33,7 +33,7 @@ The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$
 A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
 
 
-# Defining the Node Lists
+# Defining the DAG & Node List
 
 Similar to the `sim_from_dag` function, the user needs to specify the nodes of the underlying causal DAG to use this function.  All variables in a DTS can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
 
@@ -43,7 +43,7 @@ Similar to the `sim_from_dag` function, the user needs to specify the nodes of t
 
 * *tx_nodes*: This type of node is more complex and is the reason to use DTS. Variables in this category are updated at each step in time of the simulation process. These updates can be fairly easy, such as increasing the age of a person by one time unit on each step, or they can be very complex. For example, if we want to model the occurrence of some kind of time-dependent-event, we can generate the probability of that occurrence at each step depending on other variables in the simulation model or past states of the variable itself.
 
-The `t0_root_nodes` and `t0_child_nodes` arguments are exactly the same as in the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify those nodes can be found in the documentation of the `sim_from_dag` function or the associated vignette.
+The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` object as usual when using the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify this DAG can be found in the documentation of the `sim_from_dag` and `node` functions or the associated vignette.
 
 
 # A Simple Example - One Terminal Event
@@ -61,17 +61,11 @@ If we want to use this structure in the `sim_discrete_time` function, we first h
 ```{r}
 library(simDAG)
 
-t0_root_nodes <- list(list(name="age",
-                           dist="rnorm",
-                           params=list(mean=30, sd=5)),
-                      list(name="sex",
-                           dist="rbernoulli",
-                           params=list(p=0.5)))
-t0_child_nodes <- list(list(name="death",
-                            parents=c("age", "sex"),
-                            type="binomial",
-                            betas=c(0.15, 0.25),
-                            intercept=-10))
+t0_dag <- empty_dag() +
+  node("age", type="rnorm", mean=30, sd=5) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("death", type="binomial", parents=c("age", "sex"), betas=c(0.15, 0.25),
+       intercept=-10)
 ```
 
 We assume that `age` is normally distributed and that we have equal numbers of each `sex`. We assume that the probability of `death` can be described using a simple logistic regression model. This information is enough to specify the data set at $t = 0$. Now we only need to define the `tx_nodes` argument and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
@@ -114,8 +108,7 @@ To finally generate the desired data, we simply call the `sim_discrete_time` fun
 ```{r}
 set.seed(43)
 sim_dat <- sim_discrete_time(n_sim=10,
-                             t0_root_nodes=t0_root_nodes,
-                             t0_child_nodes=t0_child_nodes,
+                             t0_dag=t0_dag,
                              tx_nodes=tx_nodes,
                              max_t=50,
                              check_inputs=FALSE)
@@ -137,17 +130,11 @@ This particular example could be simulated in a much easier fashion, without rel
 Suppose that the event of interest wasn't `death`, but a cardiovascular event (`cve`). For the case of simplicity we will assume that the same causal structure and causal coefficients from above still apply, but that the event is now no longer terminal and my reoccur arbitrary number of times. First, let's redefine the nodes to get the new name right:
 
 ```{r}
-t0_root_nodes <- list(list(name="age",
-                           dist="rnorm",
-                           params=list(mean=30, sd=5)),
-                      list(name="sex",
-                           dist="rbernoulli",
-                           params=list(p=0.5)))
-t0_child_nodes <- list(list(name="cve",
-                            parents=c("age", "sex"),
-                            type="binomial",
-                            betas=c(0.15, 0.25),
-                            intercept=-15))
+t0_dag <- empty_dag() +
+  node("age", type="rnorm", mean=30, sd=5) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("cve", type="binomial", parents=c("age", "sex"), betas=c(0.15, 0.25),
+       intercept=-15)
 ```
 
 We also redefine the function that generates the required event probabilities:
@@ -179,8 +166,7 @@ Apart from changing the node name, we also changed the `event_duration` paramete
 
 ```{r}
 sim_dat <- sim_discrete_time(n_sim=10,
-                             t0_root_nodes=t0_root_nodes,
-                             t0_child_nodes=t0_child_nodes,
+                             t0_dag=t0_dag,
                              tx_nodes=tx_nodes,
                              max_t=50,
                              check_inputs=FALSE)
