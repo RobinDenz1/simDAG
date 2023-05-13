@@ -53,10 +53,12 @@ The following code can be used to generate 10000 samples from these specificatio
 
 ```R
 dag <- empty_dag() +
-	node("age", type="rnorm", mean=50, sd=4) +
-	node("sex", type="rbernoulli", p=0.5) +
-	node("bmi", type="gaussian", betas=c(1.1, 0.4), intercept=12, error=2) +
-	node("death", type="binomial", betas=c(0.1, 0.3), intercept=-15)
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", parents=c("age", "sex"), betas=c(1.1, 0.4),
+    intercept=12, error=2) +
+  node("death", type="binomial", parents=c("age", "bmi"), betas=c(0.1, 0.3),
+    intercept=-15)
 
 sim_dat <- sim_from_dag(dag, n_sim=10000)
 ```

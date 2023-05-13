@@ -21,7 +21,7 @@ A \code{DAG} object created using the \code{\link{empty_dag}} function.
 A \code{DAG.node} object created using the \code{\link{node}} function.
   }
   \item{object_1}{
-Either a \code{DAG} object or a \code{DAG.node} object. The order of the object does not matter fot the result.
+Either a \code{DAG} object or a \code{DAG.node} object. The order of the objects does not change the result.
   }
   \item{object_2}{
 See argument \code{object_1}.
