@@ -18,7 +18,7 @@ node <- function(name, type, parents=NULL, ...) {
   call_names <- names(call)
   rel_names <- call_names[!call_names %in% c("name", "type", "parents") &
                           call_names!=""]
-  args <- lapply(call[rel_names], eval)
+  args <- lapply(call[rel_names], eval, envir=parent.frame())
 
   # create node list
   if (length(parents) == 0 || all(parents=="")) {

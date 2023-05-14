@@ -74,7 +74,7 @@ sim_discrete_time <- function(n_sim=NULL, t0_dag=NULL, t0_sort_dag=TRUE,
                          check_inputs=check_inputs)
     data.table::setDT(data)
   } else {
-    data.table::setDT(t0_data)
+    data <- data.table::setDT(t0_data)
   }
   t0_var_names <- colnames(data)
 

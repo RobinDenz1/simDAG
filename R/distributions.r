@@ -37,6 +37,6 @@ rcategorical <- function(n, probs, labels=NULL, coerce2factor=FALSE) {
 
 ## simply assign a single constant value
 #' @export
-rconstant <- function(constant) {
-  return(constant)
+rconstant <- function(n, constant) {
+  return(rep(constant, n))
 }

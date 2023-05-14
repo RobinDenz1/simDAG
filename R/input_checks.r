@@ -241,3 +241,16 @@ check_inputs_plot.simDT <- function(right_boxes, box_hdist, box_vdist,
          " each tx_node in the original sim_discrete_time() call.")
   }
 }
+
+## check inputs for do() function
+check_inputs_do <- function(dag, names, values) {
+
+  if (!inherits(dag, "DAG")) {
+    stop("'dag' must be a DAG object created using the empty_dag() and node()",
+         " functions. See ?node for a description on how to do this.")
+  } else if (!(is.character(names) & length(names) > 0)) {
+    stop("'names' must be a character vector of length > 0.")
+  } else if (length(names) != length(values)) {
+    stop("'names' must have the same length as 'values'.")
+  }
+}
