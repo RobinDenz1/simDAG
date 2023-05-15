@@ -3,7 +3,6 @@ General Stuff:
 	- finish & update vignettes
 	- add pkgdown site, badges etc.
 	- create a package logo
-	- update README
 	- update documentation
 
 sim_from_dag:
@@ -24,8 +23,7 @@ add_node:
 	- add that every time a node is added, information about the DAG is updated inside the DAG
 	  (name lists, counts, whether everything is specified)
 
-fill_dag_using_data (formerly nodes_from_data):
-	- currently doesn't work due to changes in syntax, needs fix
+dag_from_data:
 	- should also allow more node types
 	- needs tests
 	- needs examples

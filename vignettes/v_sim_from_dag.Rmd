@@ -156,15 +156,13 @@ dag <- empty_dag() +
 This looks a lot like the code used above, except that we are not explicitly defining the actual beta coefficients. We only define the causal structure and the node types. Now we can call the `fill_dag_using_data` function:
 
 ```{r}
-# TODO: currently broken due to change of syntax
-#nodes <- fill_dag_using_data(data=sim_dat, dag=dag)
+est_dag <- dag_from_data(dag=dag, data=sim_dat)
 ```
 
 It returns an object that includes a fully specified `DAG`, which can be used directly in the `sim_from_dag` function:
 
 ```{r}
-# TODO: currently broken due to change of syntax
-#sim_dat2 <- sim_from_dag(dag=dag, n_sim=10000)
+sim_dat2 <- sim_from_dag(dag=est_dag$dag, n_sim=10000)
 ```
 
 The `fill_dag_using_data` function essentially just fits the corresponding models one by one for each node and extracts the relevant data from the models to fill in the gaps in the empty nodes. If we set `return_models` to `TRUE` in the `fill_dag_using_data` function call above, we can actually see that it used the exact same models we fit earlier to check if the simulation was valid.

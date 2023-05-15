@@ -13,7 +13,8 @@ is_node_type <- function(type, call_from) {
 
 # check whether a node type (root nodes) is appropriate
 is_node_dist <- function(type) {
-  length(type)==1 && is.character(type) && exists(type, mode="function")
+  length(type)==1 && is.character(type) && exists(type, mode="function",
+                                                  envir=globalenv())
 }
 
 # check whether parents are defined appropriately
