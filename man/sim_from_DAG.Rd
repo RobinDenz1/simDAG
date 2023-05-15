@@ -45,21 +45,11 @@ Yes it can, but only if the user-specified \code{dag} directly specifies a node 
 Robin Denz
 }
 \examples{
-\dontrun{
-# 2 root nodes, 1 child node
-root_nodes <- list(list(dist="rnorm",
-                        params=list(mean=50, sd=4),
-                        name="age"),
-                   list(dist="rbernoulli",
-                        params=list(p=0.5),
-                        name="sex"))
-child_nodes <- list(list(parents=c("sex", "age"),
-                         type="gaussian",
-                         name="bmi",
-                         betas=c(1.1, 0.4),
-                         intercept=12,
-                         error=2))
-sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
-                        child_nodes=child_nodes)
-}
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), intercept=12, error=2)
+
+sim_dat <- sim_from_dag(dag=dag, n_sim=1000)
 }

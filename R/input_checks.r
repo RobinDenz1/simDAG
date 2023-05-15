@@ -255,3 +255,33 @@ check_inputs_do <- function(dag, names, values) {
     stop("'names' must have the same length as 'values'.")
   }
 }
+
+## check inputs for dag_from_data function
+check_inputs_dag_from_data <- function(dag, data, return_models, na.rm) {
+
+  if (!inherits(dag, "DAG")) {
+    stop("'dag' must be a DAG object created using the empty_dag() and",
+         " node() function calls. See ?node for more details.")
+  } else if (!inherits(data, "data.frame")) {
+    stop("'data' must be a data.frame or data.table.")
+  } else if (!(is.logical(return_models) & length(return_models)==1)) {
+    stop("'return_models' must be either TRUE or FALSE.")
+  } else if (!(is.logical(na.rm) & length(na.rm)==1)) {
+    stop("'na.rm' must be either TRUE or FALSE.")
+  }
+
+  # check if all nodes are in data
+  dag_names <- c(lapply(dag$root_nodes, function(x){x$name}),
+                 lapply(dag$child_nodes, function(x){x$name}))
+  if (!all(dag_names %in% colnames(data))) {
+    stop("All nodes in 'dag' must correspond to a column in 'data'.",
+         "Missing columns: ", dag_names[!dag_names %in% colnames(data)])
+  }
+
+  # info for all node types there
+  dag_type <- c(lapply(dag$root_nodes, function(x){x$type}),
+                lapply(dag$child_nodes, function(x){x$type}))
+  if (length(dag_type) != length(dag_names)) {
+    stop("Every node in the dag object needs to have a defined node type.")
+  }
+}

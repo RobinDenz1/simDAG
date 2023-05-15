@@ -3,7 +3,6 @@ General Stuff:
 	- finish & update vignettes
 	- add pkgdown site, badges etc.
 	- create a package logo
-	- update documentation
 
 sim_from_dag:
 	- allow categorical data to be parents of other nodes

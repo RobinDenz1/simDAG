@@ -1,76 +1,78 @@
 
-## get information for linear node from data
-gen_node_gaussian <- function(name, parents, data, return_model=FALSE, ...) {
+## general function for glm nodes
+gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
 
   # create formula
   form <- stats::as.formula(paste0(name, " ~ ",
                                    paste0(parents, collapse=" + ")))
   # create list of arguments
-  args <- list(formula=form, data=data, family="gaussian")
-  args <- c(args, ...)
+  args <- list(formula=form, data=data, family=type)
 
   # fit model
   model <- do.call(stats::glm, args)
 
-  # extract coef, intercept, sigma
+  # extract coef, intercept
   out <- list(name=name,
               parents=parents,
-              type="gaussian",
+              type=type,
               betas=as.vector(model$coefficients[-1]),
-              intercept=as.vector(model$coefficients[1]),
-              error=stats::sd(model$residuals))
+              intercept=as.vector(model$coefficients[1]))
+
+  if (type=="gaussian") {
+    out$error <- stats::sd(model$residuals)
+  }
 
   if (return_model) {
     out$model <- model
   }
+  return(out)
+
+}
+
+## get information for linear node from data
+gen_node_gaussian <- function(name, parents, data, return_model, na.rm) {
+
+  out <- gen_glm_node(name=name, parents=parents, data=data,
+                      return_model=return_model, type="gaussian")
   return(out)
 }
 
 ## get information for binomial node from data
-gen_node_binomial <- function(name, parents, data, return_model=FALSE, ...) {
+gen_node_binomial <- function(name, parents, data, return_model, na.rm) {
 
-  # create formula
-  form <- stats::as.formula(paste0(name, " ~ ",
-                                   paste0(parents, collapse=" + ")))
-  # create list of arguments
-  args <- list(formula=form, data=data, family="binomial")
-  args <- c(args, ...)
-
-  # fit model
-  model <- do.call(stats::glm, args)
-
-  # extract coef, intercept
-  out <- list(name=name,
-              parents=parents,
-              type="binomial",
-              betas=as.vector(model$coefficients[-1]),
-              intercept=as.vector(model$coefficients[1]))
-
-  if (return_model) {
-    out$model <- model
-  }
+  out <- gen_glm_node(name=name, parents=parents, data=data,
+                      return_model=return_model, type="binomial")
   return(out)
 }
 
 ## get information for poisson node from data
-gen_node_poisson <- function(name, parents, data, return_model=FALSE, ...) {
+gen_node_poisson <- function(name, parents, data, return_model, na.rm) {
 
-  # create formula
-  form <- stats::as.formula(paste0(name, " ~ ",
-                                   paste0(parents, collapse=" + ")))
-  # create list of arguments
-  args <- list(formula=form, data=data, family="poisson")
-  args <- c(args, ...)
+  out <- gen_glm_node(name=name, parents=parents, data=data,
+                      return_model=return_model, type="poisson")
+  return(out)
+}
 
-  # fit model
-  model <- do.call(stats::glm, args)
+## get information for conditional probability node from data
+#' @importFrom data.table :=
+gen_node_conditional_prob <- function(data, name, parents, return_model,
+                                      na.rm) {
 
-  # extract coef, intercept
+  data$..interact_parents.. <- interaction(data[, parents, with=FALSE])
+
+  # estimate probabilities
+  data[, prob := mean(eval(parse(text=name)), na.rm=na.rm),
+       by=..interact_parents..]
+  data <- unique(data[, c("..interact_parents..", "prob")])
+
+  # coerce to list
+  probs <- as.list(data$prob)
+  names(probs) <- data$..interact_parents..
+
   out <- list(name=name,
+              type="conditional_prob",
               parents=parents,
-              type="poisson",
-              betas=as.vector(model$coefficients[-1]),
-              intercept=as.vector(model$coefficients[1]))
+              probs=probs)
 
   if (return_model) {
     out$model <- model
@@ -109,6 +111,10 @@ gen_node_rcategorical <- function(data, name, na.rm) {
 #' @export
 dag_from_data <- function(dag, data, return_models=FALSE,
                           na.rm=FALSE) {
+
+  check_inputs_dag_from_data(dag=dag, data=data, return_models=return_models,
+                             na.rm=na.rm)
+
   # initialize new dag
   new_dag <- empty_dag()
   models <- vector(mode="list", length=length(dag$child_nodes))
@@ -131,7 +137,9 @@ dag_from_data <- function(dag, data, return_models=FALSE,
 
     args <- list(data=data,
                  name=dag$child_nodes[[i]]$name,
-                 parents=dag$child_nodes[[i]]$parents)
+                 parents=dag$child_nodes[[i]]$parents,
+                 return_model=return_models,
+                 na.rm=na.rm)
 
     new_node <- do.call(model_fun, args)
 

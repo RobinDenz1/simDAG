@@ -52,6 +52,7 @@ Currently, the following child node types are supported:
   \item{\code{"gaussian"}: Estimates parameters for a node of type \code{"\link[=node_gaussian]{gaussian}"}}.
   \item{\code{"binomial"}: Estimates parameters for a node of type \code{"\link[=node_binomial]{binomial}"}}.
   \item{\code{"poisson"}: Estimates parameters for a node of type \code{"\link[=node_poisson]{poisson}"}}.
+  \item{\code{"conditional_prob"}: Estimates parameters for a node of type \code{"\link[=node_conditional_prob]{conditional_prob}"}}.
 }
 
 Other types need to be implemented by the user.
