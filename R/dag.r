@@ -21,6 +21,13 @@ add_node <- function(dag, node) {
     stop("'dag' must be a DAG object created using the empty_dag() function.")
   }
 
+  dag_names <- c(lapply(dag$root_nodes, function(x){x$name}),
+                 lapply(dag$child_nodes, function(x){x$name}))
+  if (node$name %in% dag_names) {
+    stop("A node with the name ", node$name, " is alread present in the",
+         " DAG object and will not be overwritten.")
+  }
+
   # add to child or root node lists inside DAG
   if (length(node$parents) == 0 || all(node$parents=="")) {
     dag$root_nodes[[length(dag$root_nodes)+1]] <- node

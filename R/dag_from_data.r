@@ -108,8 +108,7 @@ gen_node_rcategorical <- function(data, name, na.rm) {
 ## create lists for the root_nodes and child_nodes from observed data
 ## by fitting appropriate models
 #' @export
-dag_from_data <- function(dag, data, return_models=FALSE,
-                          na.rm=FALSE) {
+dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
 
   check_inputs_dag_from_data(dag=dag, data=data, return_models=return_models,
                              na.rm=na.rm)

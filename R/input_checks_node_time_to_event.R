@@ -1,3 +1,4 @@
+
 ## checking the inputs of the node_time_to_event function
 check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
                                             prob_fun, prob_fun_args,

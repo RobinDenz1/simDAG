@@ -145,3 +145,33 @@ test_that("child: no positional", {
               intercept=-10, p=0.1)
   expect_equal(out, expected)
 })
+
+test_that("call with only two unnamed arguments", {
+  expected <- list(name="C",
+                   type="rbernoulli",
+                   parents=NULL,
+                   params=list())
+  class(expected) <- "DAG.node"
+
+  out <- node("C", "rbernoulli")
+  expect_equal(out, expected)
+})
+
+test_that("call with only two named arguments", {
+  expected <- list(name="C",
+                   type="rbernoulli",
+                   parents=NULL,
+                   params=list())
+  class(expected) <- "DAG.node"
+
+  out <- node(type="rbernoulli", name="C")
+  expect_equal(out, expected)
+})
+
+test_that("error when name or type missing", {
+  expect_error(empty_dag() + node())
+  expect_error(empty_dag() + node(name="A"))
+  expect_error(empty_dag() + node(type="rbernoulli"))
+  expect_error(empty_dag() + node(name="A", betas=c(1, 2), intercept=2,
+                                  parents=c("sex", "age"), error=2))
+})

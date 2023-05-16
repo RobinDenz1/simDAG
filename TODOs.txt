@@ -13,15 +13,6 @@ sim_from_dag:
 		- allow different link functions in binomial / gaussian
 		- whatever models one can find may be nice
 
-node:
-	- lots of the input checks formerly or currently in sim_from_dag should be moved here
-
-add_node:
-	- add functionality that every time a node is added it checks whether that makes sense
-	  (duplicate names for example)
-	- add that every time a node is added, information about the DAG is updated inside the DAG
-	  (name lists, counts, whether everything is specified)
-
 dag_from_data:
 	- should also allow more node types
 	- needs tests

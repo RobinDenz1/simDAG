@@ -22,6 +22,94 @@ is_node_parents <- function(parents) {
   length(parents) > 0 && is.character(parents)
 }
 
+# check whether object is a vector of beta coefficients
+is_betas <- function(betas) {
+  length(betas) > 0 && is.numeric(betas)
+}
+
+# check whether an object may be used as an intercept
+is_intercept <- function(intercept) {
+  length(intercept) == 1 && is.numeric(intercept)
+}
+
+## input checks for root nodes
+check_inputs_root_node <- function(name, type) {
+
+  if (!is_node_name(name)) {
+    stop("The 'name' attribute must be a single character string.")
+  } else if (!is_node_dist(type)) {
+    stop("The 'type' parameter of a root node must be a single",
+         " character string naming a defined function.")
+  }
+}
+
+## input checks for child nodes
+check_inputs_child_node <- function(name, type, parents, args) {
+
+  if (!is_node_name(name)) {
+    stop("The 'name' attribute must be a single character string.")
+  } else if (!is_node_type(type, call_from="sim_from_dag")) {
+    stop("The 'type' parameter of a child node must be a single",
+         " character string pointing to a function starting with 'node_'.")
+  } else if (!is_node_parents(parents)) {
+    stop("The 'parents' argument of a child node must be a character",
+         " vector of length > 0.")
+  }
+
+  # type specific checks
+  type_check_fun_name <- paste0("check_inputs_node_", type)
+
+  if (exists(type_check_fun_name, mode="function", envir=globalenv())) {
+    type_check_fun <- get(type_check_fun_name)
+
+    type_check_fun(parents=parents, args=args)
+  }
+}
+
+## general checks for all regression based nodes
+check_inputs_node_regression <- function(parents, args, type) {
+
+  if (is.null(args$betas)) {
+    stop("'betas' must be defined when using type='", type, "'.")
+  } else if (is.null(args$intercept)) {
+    stop("'intercept' must be defined when using type='", type, "'.")
+  }
+
+  if (!is_betas(args$betas)) {
+    stop("'betas' must be a numeric vector when using type='", type, "'.")
+  } else if (!is_intercept(args$intercept)) {
+    stop("'intercept' must be a single number when using type='", type, "'.")
+  } else if (length(parents) != length(args$betas)) {
+    stop("'betas' must have the same length as 'parents' when using",
+         " type='", type, "'.")
+  }
+}
+
+## input checks for gaussian nodes
+check_inputs_node_gaussian <- function(parents, args) {
+
+  check_inputs_node_regression(parents=parents, args=args, type="gaussian")
+
+  if (is.null(args$error)) {
+    stop("'error' must be defined when using type='gaussian'.")
+  }
+}
+
+## input checks for binomial nodes
+check_inputs_binomial <- function(parents, args) {
+  check_inputs_node_regression(parents=parents, args=args, type="binomial")
+}
+
+## input checks for binomial nodes
+check_inputs_poisson <- function(parents, args) {
+  check_inputs_node_regression(parents=parents, args=args, type="poisson")
+}
+
+## input checks for binomial nodes
+check_inputs_binomial <- function(parents, args) {
+  check_inputs_node_regression(parents=parents, args=args, type="binomial")
+}
+
 ## checking the inputs of the sim_from_dag function
 check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
 
@@ -35,60 +123,9 @@ check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
          " node() function calls. See documentation.")
   }
 
-  ## check contents of root nodes
-  # correct node names
-  corr_names <- vapply(dag$root_nodes,
-                       FUN=function(x){is_node_name(x$name)},
-                       FUN.VALUE=logical(1))
-  if (!all(corr_names)) {
-    stop("The 'name' parameter of all root_nodes needs to be a single",
-         " character string. Problems in root_nodes: ",
-         seq_len(length(dag$root_nodes))[!corr_names])
-  }
-  # correct node type
-  corr_type <- vapply(dag$root_nodes,
-                      FUN=function(x){is_node_dist(x$type)},
-                      FUN.VALUE=logical(1))
-  if (!all(corr_type)) {
-    stop("The 'type' parameter of all root_nodes needs to be a single",
-         " character string naming a defined function.",
-         " Problems in root_nodes: ",
-         seq_len(length(dag$root_nodes))[!corr_type])
-  }
-
-  ## check contents of child nodes
-  # correct node names
-  corr_names <- vapply(dag$child_nodes,
-                       FUN=function(x){is_node_name(x$name)},
-                       FUN.VALUE=logical(1))
-  if (!all(corr_names)) {
-    stop("The 'name' parameter of all child_nodes needs to be a single",
-         " character string. Problems in child_nodes: ",
-         seq_len(length(dag$child_nodes))[!corr_names])
-  }
-  # correct node parents
-  corr_parents <- vapply(dag$child_nodes,
-                         FUN=function(x){is_node_parents(x$parents)},
-                         FUN.VALUE=logical(1))
-  if (!all(corr_parents)) {
-    stop("The 'parents' parameter of all child_nodes needs to be a vector",
-         " of character strings. Problems in child_nodes: ",
-         seq_len(length(dag$child_nodes))[!corr_parents])
-  }
-  # correct node type
-  corr_type <- vapply(dag$child_nodes,
-                      FUN=function(x){is_node_type(x$type,
-                                                   call_from="sim_from_dag")},
-                      FUN.VALUE=logical(1))
-  if (!all(corr_type)) {
-    stop("The 'type' parameter of all child_nodes needs to be a single",
-         " character string pointing to a function. Problems in child_nodes: ",
-         seq_len(length(dag$child_nodes))[!corr_type])
-  }
   # TODO: other checks:
   #   - multinomial / cox should (at the moment) only be leaf nodes
   #   - check if data generation possible or if there are missing node definitions
-
 }
 
 ## check the inputs of the node_conditional_probs function
