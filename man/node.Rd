@@ -69,5 +69,23 @@ Returns a \code{DAG.node} object which can be added to a \code{DAG} object direc
 Robin Denz
 }
 \examples{
-## add some examples
+library(simDAG)
+
+# creating a DAG with a single root node
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=30, sd=4)
+
+# creating a DAG with multiple root nodes
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("income", type="rnorm", mean=2700, sd=500)
+
+# also using child nodes
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("income", type="rnorm", mean=2700, sd=500) +
+  node("sickness", type="binomial", parents=c("sex", "income"),
+       betas=c(1.2, -0.3), intercept=-15) +
+  node("death", type="binomial", parents=c("sex", "income", "sickness"),
+       betas=c(0.1, -0.4, 0.8), intercept=-20)
 }

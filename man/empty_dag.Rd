@@ -20,5 +20,11 @@ Returns an empty \code{DAG} object.
 Robin Denz
 }
 \examples{
-## add some examples
+library(simDAG)
+
+# just an empty DAG
+empty_dag()
+
+# adding a node to it
+empty_dag() + node("age", type="rnorm", mean=20, sd=5)
 }

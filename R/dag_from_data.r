@@ -58,6 +58,8 @@ gen_node_poisson <- function(name, parents, data, return_model, na.rm) {
 gen_node_conditional_prob <- function(data, name, parents, return_model,
                                       na.rm) {
 
+  prob <- ..interact_parents.. <- NULL
+
   data$..interact_parents.. <- interaction(data[, parents, with=FALSE])
 
   # estimate probabilities
@@ -74,9 +76,6 @@ gen_node_conditional_prob <- function(data, name, parents, return_model,
               parents=parents,
               probs=probs)
 
-  if (return_model) {
-    out$model <- model
-  }
   return(out)
 }
 

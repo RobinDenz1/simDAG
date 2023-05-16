@@ -37,5 +37,16 @@ Returns an \code{DAG} object with the \code{DAG.node} object added to it.
 Robin Denz
 }
 \examples{
-## add some examples
+library(simDAG)
+
+## add nodes to DAG using +
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=5) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("income", type="gaussian", parents=c("age", "sex"), betas=c(1.1, 0.2),
+       intercept=-5, error=4)
+
+## add nodes to DAG using add_node()
+dag <- empty_dag()
+dag <- add_node(dag, node("age", type="rnorm", mean=50, sd=5))
 }

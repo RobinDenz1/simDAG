@@ -29,7 +29,10 @@ Some simple examples for custom nodes are given below.
 Robin Denz
 }
 \examples{
-\dontrun{
+library(simDAG)
+
+set.seed(3545)
+
 # create a custom node function, which is just a gaussian node that
 # includes (bad) truncation
 node_gaussian_trunc <- function(data, parents, betas, intercept, error,
@@ -48,25 +51,12 @@ node_parents_sum <- function(data, parents, betas=NULL) {
 }
 
 # an example of using these new node types in a simulation
-root_nodes <- list(list(dist="rnorm",
-                        params=list(mean=50, sd=4),
-                        name="age"),
-                   list(dist="rbernoulli",
-                        params=list(p=0.5),
-                        name="sex"))
-child_nodes <- list(list(parents=c("sex", "age"),
-                         type="gaussian_trunc",
-                         name="custom_node_1",
-                         betas=c(1.1, 0.4),
-                         intercept=-2,
-                         error=2,
-                         left=-1,
-                         right=10),
-                    list(parents=c("sex", "age"),
-                         type="parents_sum",
-                         name="custom_node_2",
-                         betas=NULL))
-sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
-                        child_nodes=child_nodes)
-}
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("custom_1", type="gaussian_trunc", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), intercept=-2, error=2, left=10, right=25) +
+  node("custom_2", type="parents_sum", parents=c("age", "custom_1"))
+
+sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

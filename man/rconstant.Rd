@@ -22,9 +22,7 @@ A single value of any kind which is used as the only value of the resulting vari
 Robin Denz
 }
 \examples{
-\dontrun{
 rconstant(n=10, constant=7)
 
 rconstant(n=4, constant="Male")
-}
 }

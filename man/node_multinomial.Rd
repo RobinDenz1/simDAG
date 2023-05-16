@@ -42,20 +42,16 @@ More explanation
 Robin Denz
 }
 \examples{
-\dontrun{
-# 2 root nodes, 1 child node
-root_nodes <- list(list(dist="rnorm",
-                        params=list(mean=50, sd=4),
-                        name="age"),
-                   list(dist="rbernoulli",
-                        params=list(p=0.5),
-                        name="sex"))
-child_nodes <- list(list(parents=c("sex", "age"),
-                         type="multinomial",
-                         name="UICC",
-                         betas=matrix(c(0.2, 0.4, 0.1, 0.5, 1.1, 1.2),
-                                      ncol=2)))
-sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
-                        child_nodes=child_nodes)
-}
+library(simDAG)
+
+set.seed(3345235)
+
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("UICC", type="multinomial", parents=c("sex", "age"),
+       betas=matrix(c(0.2, 0.4, 0.1, 0.5, 1.1, 1.2), ncol=2),
+       intercepts=1)
+
+sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

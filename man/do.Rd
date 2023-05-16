@@ -35,6 +35,8 @@ Returns a \code{DAG} object with updated node definitions.
 Robin Denz
 }
 \examples{
+library(simDAG)
+
 # define some initial DAG
 dag <- empty_dag() +
   node("death", "binomial", c("age", "sex"), betas=c(1, 2), intercept=-10) +
@@ -43,7 +45,7 @@ dag <- empty_dag() +
   node("smoking", parents=c("sex", "age"), type="binomial",
        betas=c(0.6, 0.2), intercept=-2)
 
-# return new DAG with do(smoking= TRUE)
+# return new DAG with do(smoking = TRUE)
 dag2 <- do(dag, names="smoking", values=TRUE)
 
 # which is equivalent to

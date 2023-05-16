@@ -25,8 +25,6 @@ add_node:
 dag_from_data:
 	- should also allow more node types
 	- needs tests
-	- needs examples
-	- needs input checks
 
 plot.DAG:
 	- rework this completely to be an actually useful function

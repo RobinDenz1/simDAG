@@ -25,5 +25,20 @@ An adjacency matrix is simply a square matrix in which each node has one column 
 Robin Denz
 }
 \examples{
-# TODO: add one
+library(simDAG)
+
+# some example DAG
+dag <- empty_dag() +
+  node("death", type="binomial", parents=c("age", "sex"), betas=c(1, 2),
+       intercept=-10) +
+  node("age", type="rnorm", mean=10, sd=2) +
+  node("sex", parents="", type="rbernoulli", p=0.5) +
+  node("smoking", parents=c("sex", "age"), type="binomial",
+       betas=c(0.6, 0.2), intercept=-2)
+
+# get adjacency matrix
+dag2matrix(dag)
+
+# get adjacency matrix using only the child nodes
+dag2matrix(dag, include_root_nodes=FALSE)
 }

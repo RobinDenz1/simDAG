@@ -31,20 +31,15 @@ This function uses the linear predictor defined by the \code{betas} and the inpu
 Robin Denz
 }
 \examples{
-\dontrun{
-# 2 root nodes, 1 child node
-root_nodes <- list(list(dist="rnorm",
-                        params=list(mean=50, sd=4),
-                        name="age"),
-                   list(dist="rbernoulli",
-                        params=list(p=0.5),
-                        name="sex"))
-child_nodes <- list(list(parents=c("sex", "age"),
-                         type="negative_binomial",
-                         name="smoking",
-                         betas=c(1.1, 0.4),
-                         theta=0.5))
-sim_dat <- sim_from_dag(n_sim=10000, root_nodes=root_nodes,
-                        child_nodes=child_nodes)
-}
+library(simDAG)
+
+set.seed(124554)
+
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("smoking", type="negative_binomial", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), theta=0.5)
+
+sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

@@ -45,39 +45,74 @@ Utilizing the user-defined discrete probability distribution in each stratum of 
 Robin Denz
 }
 \examples{
-\dontrun{
 set.seed(42)
 
-n_sim <- 1000000
-data <- data.table(sex=sample(c("male", "female"), size=n_sim, replace=TRUE),
-                   chemo=sample(c("yes", "no"), size=n_sim, replace=TRUE))
+#### two classes, one parent node ####
 
-# three classes, interaction
-probs <- list(male.no=c(0.5, 0.1, 0.4),
-              male.yes=c(0.8, 0.1, 0.1),
-              female.no=c(0.1, 0.7, 0.2),
-              female.yes=c(0.3, 0.4, 0.3))
-
-out <- node_conditional_prob(data=data, parents=c("sex", "chemo"), probs=probs)
-
-# three classes, no interaction
-probs <- list(male=c(0.5, 0.1, 0.4),
-              female=c(0.8, 0.1, 0.1))
-
-out <- node_conditional_prob(data=data, parents="sex", probs=probs)
-
-# two classes, interaction
-probs <- list(male.no=0.5,
-              male.yes=0.8,
-              female.no=0.1,
-              female.yes=0.3)
-
-out <- node_conditional_prob(data=data, parents=c("sex", "chemo"), probs=probs)
-CrossTable(interaction(data$sex, data$chemo), out)
-
-# two classes, no interaction
+# define conditional probs
 probs <- list(male=0.5, female=0.8)
 
-out <- node_conditional_prob(data=data, parents="sex", probs=probs)
-}
+# define DAG
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_prob", parents="sex", probs=probs)
+
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
+
+
+#### three classes, one parent node ####
+
+# define conditional probs
+probs <- list(male=c(0.5, 0.2, 0.3), female=c(0.8, 0.1, 0.1))
+
+# define DAG
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_prob", parents="sex", probs=probs)
+
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
+
+
+#### two classes, two parent nodes ####
+
+# define conditional probs
+probs <- list(male.FALSE=0.5,
+              male.TRUE=0.8,
+              female.FALSE=0.1,
+              female.TRUE=0.3)
+
+# define DAG
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
+
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
+
+
+#### three classes, two parent nodes ####
+
+# define conditional probs
+probs <- list(male.FALSE=c(0.5, 0.1, 0.4),
+              male.TRUE=c(0.8, 0.1, 0.1),
+              female.FALSE=c(0.1, 0.7, 0.2),
+              female.TRUE=c(0.3, 0.4, 0.3))
+
+# define dag
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
+
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
 }

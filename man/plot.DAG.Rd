@@ -27,7 +27,7 @@ If a publication ready graph should be produced, this function should probably n
 Robin Denz
 }
 \examples{
-\dontrun{
+library(simDAG)
 library(ggplot2)
 library(igraph)
 library(ggraph)
@@ -42,16 +42,15 @@ dag <- empty_dag() +
 plot(dag)
 
 # do it manually
-mat <- dag2matrix(dag)
+adj_mat <- dag2matrix(dag)
 
 g1 <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
 
 # this code produces equivalent results as the code above
-ggraph::ggraph(adj_graph, layout="graphopt") +
+ggraph::ggraph(g1, layout="graphopt") +
     ggraph::geom_edge_link(ggplot2::aes(
       start_cap=ggraph::label_rect(.data$node1.name),
       end_cap=ggraph::label_rect(.data$node2.name)),
       arrow=ggplot2::arrow(length=unit(4, "mm"))) +
     ggraph::geom_node_label(aes(label=.data$name))
-}
 }

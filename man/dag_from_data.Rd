@@ -68,5 +68,31 @@ A list of length two containing the new fully specified \code{DAG} object named 
 Robin Denz
 }
 \examples{
-# TODO: add examples
+library(simDAG)
+
+set.seed(457456)
+
+# get some example data from a known DAG
+dag <- empty_dag() +
+  node("death", type="binomial", parents=c("age", "sex"), betas=c(1, 2),
+       intercept=-10) +
+  node("age", type="rnorm", mean=10, sd=2) +
+  node("sex", parents="", type="rbernoulli", p=0.5) +
+  node("smoking", parents=c("sex", "age"), type="binomial",
+       betas=c(0.6, 0.2), intercept=-2)
+
+data <- sim_from_dag(dag=dag, n_sim=1000)
+
+# suppose we only know the causal structure and the node type:
+dag <- empty_dag() +
+  node("death", type="binomial", parents=c("age", "sex")) +
+  node("age", type="rnorm") +
+  node("sex", type="rbernoulli") +
+  node("smoking", type="binomial", parents=c("sex", "age"))
+
+# get parameter estimates from data
+dag_full <- dag_from_data(dag=dag, data=data)
+
+# can now be used to simulate data
+data2 <- sim_from_dag(dag=dag_full$dag, n_sim=100)
 }

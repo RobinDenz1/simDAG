@@ -34,5 +34,5 @@ rownames(mat) <- c("age", "sex", "death")
 
 type <- list(age="rnorm", sex="rbernoulli", death="binomial")
 
-dag <- matrix2dag(mat=mat, type=type)
+matrix2dag(mat=mat, type=type)
 }

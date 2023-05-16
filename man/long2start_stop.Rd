@@ -37,5 +37,17 @@ Returns a \code{data.table} containing the columns \code{.id} (the unique person
 Robin Denz
 }
 \examples{
-## add some examples
+library(simDAG)
+library(data.table)
+
+# generate example data in long format
+long <- data.table(.id=rep(seq_len(10), each=5),
+                   .time=rep(seq_len(5), 10),
+                   A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
+                           TRUE),
+                   B=FALSE)
+setkey(long, .id, .time)
+
+# transform to start-stop format
+long2start_stop(data=long, id=".id", time=".time", varying=c("A", "B"))
 }

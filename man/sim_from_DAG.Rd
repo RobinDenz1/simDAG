@@ -45,6 +45,10 @@ Yes it can, but only if the user-specified \code{dag} directly specifies a node 
 Robin Denz
 }
 \examples{
+library(simDAG)
+
+set.seed(345345)
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
@@ -52,4 +56,7 @@ dag <- empty_dag() +
        betas=c(1.1, 0.4), intercept=12, error=2)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=1000)
+
+# More examples for each directly supported node type as well as for custom
+# nodes can be found in the documentation page of the respective node function
 }

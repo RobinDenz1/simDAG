@@ -42,25 +42,42 @@ Utilizing the user-defined distribution in each stratum of \code{parents} (suppl
 Robin Denz
 }
 \examples{
-\dontrun{
+library(simDAG)
+
 set.seed(42)
 
-n_sim <- 1000000
-data <- data.table(sex=sample(c("male", "female"), size=n_sim, replace=TRUE),
-                   chemo=sample(c("yes", "no"), size=n_sim, replace=TRUE))
+#### with one parent node ####
 
-# one parent node
+# define conditional distributions
 distr <- list(male=list("rnorm", mean=100, sd=5),
               female=list("rcategorical", probs=c(0.1, 0.2, 0.7)))
 
-out <- node_conditional_distr(data=data, parents="sex", distr=distr)
+# define DAG
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.4, 0.6)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_distr", parents="sex", distr=distr)
 
-# with interaction of two parents
-distr <- list(male.no=list("rnorm", mean=100, sd=5),
-              male.yes=list("rnorm", mean=100, sd=20),
-              female.no=list("rbernoulli", p=0.5),
-              female.yes=list("rcategorical", probs=c(0.1, 0.2, 0.7)))
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
 
-out <- node_conditional_distr(data=data, parents=c("sex", "chemo"), distr=distr)
-}
+
+#### with two parent nodes ####
+
+# define conditional distributions with interaction between parents
+distr <- list(male.FALSE=list("rnorm", mean=100, sd=5),
+              male.TRUE=list("rnorm", mean=100, sd=20),
+              female.FALSE=list("rbernoulli", p=0.5),
+              female.TRUE=list("rcategorical", probs=c(0.1, 0.2, 0.7)))
+
+# define DAG
+dag <- empty_dag() +
+  node("sex", type="rcategorical", labels=c("male", "female"),
+       coerce2factor=TRUE, probs=c(0.4, 0.6)) +
+  node("chemo", type="rbernoulli", p=0.5) +
+  node("A", type="conditional_distr", parents=c("sex", "chemo"), distr=distr)
+
+# generate data
+data <- sim_from_dag(dag=dag, n_sim=1000)
 }
