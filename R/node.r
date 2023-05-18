@@ -57,12 +57,45 @@ node <- function(name, type, parents=NULL, ...) {
 #' @export
 print.DAG.node <- function(x, ...) {
 
+  # root nodes
   if (length(x$parents) == 0 || all(x$parents=="")) {
-    cat("A DAG.node object specifying a single root node of type ",
-        x$type, ".\n")
+    cat("A DAG.node object specifying a single root node with:\n")
+    cat("  - name: '", x$name, "'\n", sep="")
+    cat("  - type: '", x$type, "'\n", sep="")
+
+    if (length(x$params)==0) {
+      cat("  - no additional parameters\n")
+    } else {
+      param_str <- paste0(paste0(names(x$params), "=", x$params), collapse=", ")
+      cat("  - with parameters: ", param_str, "\n", sep="")
+    }
+
+  # child nodes
   } else {
-    cat("A DAG.node object specifying a single child node of type ",
-        x$type, ".\n")
+    cat("A DAG.node object specifying a single child node with:\n")
+    cat("  - name: '", x$name, "'\n", sep="")
+    cat("  - type: '", x$type, "'\n", sep="")
+    cat("  - parents: '", paste0(x$parents, collapse="', '"), "'\n", sep="")
+
+    if (length(x)==3) {
+      cat("  - no additional parameters\n")
+    } else {
+
+      if (!is.null(x$betas)) {
+        cat("  - betas: ", paste0(x$betas, collapse=", "), "\n", sep="")
+      }
+
+      if (!is.null(x$intercept)) {
+        cat("  - intercept: ", x$intercept, "\n", sep="")
+      }
+
+      other_args <- names(x)[!names(x) %in% c("name", "type", "parents",
+                                              "betas", "intercept")]
+      if (length(other_args) > 0) {
+        param_str <- paste0(other_args, collapse=", ")
+        cat("  - with additional parameters: '", param_str, "'\n", sep="")
+      }
+    }
   }
 }
 

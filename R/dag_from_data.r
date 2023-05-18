@@ -13,8 +13,8 @@ gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
 
   # extract coef, intercept
   out <- list(name=name,
-              parents=parents,
               type=type,
+              parents=parents,
               betas=as.vector(model$coefficients[-1]),
               intercept=as.vector(model$coefficients[1]))
 
@@ -83,6 +83,7 @@ gen_node_conditional_prob <- function(data, name, parents, return_model,
 gen_node_rnorm <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rnorm",
+              parents=NULL,
               params=list(mean=mean(data[[name]], na.rm=na.rm),
                           sd=stats::sd(data[[name]], na.rm=na.rm)))
   return(out)
@@ -92,6 +93,7 @@ gen_node_rnorm <- function(data, name, na.rm) {
 gen_node_rbernoulli <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rbernoulli",
+              parents=NULL,
               params=list(p=mean(data[[name]], na.rm=na.rm)))
   return(out)
 }
@@ -101,6 +103,7 @@ gen_node_rcategorical <- function(data, name, na.rm) {
   tab <- prop.table(table(data[[name]]))
   out <- list(name=name,
               type="rcategorical",
+              parents=NULL,
               params=list(labels=names(tab), probs=tab))
 }
 
@@ -123,8 +126,11 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
     # call associated root function
     root_fun <- get(paste0("gen_node_", dag$root_nodes[[i]]$type))
 
-    new_dag$root_nodes[[length(new_dag$root_nodes)+1]] <-
-      root_fun(data=data, name=dag$root_nodes[[i]]$name, na.rm=na.rm)
+    new_node <- root_fun(data=data, name=dag$root_nodes[[i]]$name, na.rm=na.rm)
+    class(new_node) <- "DAG.node"
+
+    new_dag$root_nodes[[length(new_dag$root_nodes)+1]] <- new_node
+
   }
 
   # fill new_dag with new child nodes
@@ -146,6 +152,8 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
       models[[i]] <- new_node$model
     }
     new_node$model <- NULL
+
+    class(new_node) <- "DAG.node"
 
     # add node to new dag
     new_dag$child_nodes[[length(new_dag$child_nodes)+1]] <- new_node

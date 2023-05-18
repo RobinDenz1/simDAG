@@ -62,6 +62,9 @@ Currently, the following node types are implemented directly for convenience:
 However, it is very simple to write a new custom \code{node_function} to be used instead, allowing the user to use any \code{type} of data-generation mechanism for any node. All that is required of this function is, that it has the named arguments \code{data} (the sample as generated so far) and \code{parents} (a character vector specifying the parents) and outputs either a vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found on the \code{node_custom} documentation page.
 
 }
+\note{
+Contrary to the R standard, this function does NOT support partial matching of argument names. This means that supplying \code{nam="age"} will not be recognized as \code{name="age"} and instead will be added as additional node argument used in the respective data-generating function call when using \code{sim_from_dag}.
+}
 \value{
 Returns a \code{DAG.node} object which can be added to a \code{DAG} object directly.
 }
