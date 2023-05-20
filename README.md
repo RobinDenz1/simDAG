@@ -4,7 +4,7 @@
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
 <!-- badges: end -->
 
-# simDAG
+# simDAG <img src="man/figures/logo.png" height="240" align="right" />
 
 Author: Robin Denz
 

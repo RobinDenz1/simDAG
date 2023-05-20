@@ -33,7 +33,7 @@ node <- function(name, type, parents=NULL, ...) {
 
     node_list <- list(name=name,
                       type=type,
-                      parents=parents,
+                      parents=NULL,
                       params=args)
   } else {
     # NOTE: in an if statement because we need to allow child nodes that are
