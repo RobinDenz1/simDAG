@@ -26,7 +26,6 @@ gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
     out$model <- model
   }
   return(out)
-
 }
 
 ## get information for linear node from data

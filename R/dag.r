@@ -76,28 +76,3 @@ print.DAG <- function(x, ...) {
 summary.DAG <- function(object, ...) {
   print.DAG(x=object, ...)
 }
-
-## S3 plot method of DAG objects, giving a quick and dirty way to plot
-## the DAG using the node lists
-#' @importFrom rlang .data
-#' @export
-plot.DAG <- function(x, ...) {
-
-  requireNamespace("ggplot2")
-  requireNamespace("igraph")
-  requireNamespace("ggraph")
-
-  # obtain adjacency matrix
-  adj_mat <- dag2matrix(dag=x, include_root_nodes=TRUE)
-
-  # create graph object from it
-  adj_graph <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
-
-  # plot it
-  ggraph::ggraph(adj_graph, layout="graphopt") +
-    ggraph::geom_edge_link(
-      ggplot2::aes(start_cap=ggraph::label_rect(.data$node1.name),
-                   end_cap=ggraph::label_rect(.data$node2.name)),
-      arrow=ggplot2::arrow(length=ggplot2::unit(4, "mm"))) +
-    ggraph::geom_node_label(ggplot2::aes(label=.data$name))
-}

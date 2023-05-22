@@ -27,7 +27,7 @@ Suggests:
 	vdiffr (>= 1.0.0),
 	ggplot2,
 	igraph,
-	ggraph
+	ggforce
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
