@@ -47,9 +47,11 @@ plotdata <- data.frame(label=c("E", "C", "B", "A", "D"),
                        r=0.2)
 
 # arrow placement
+plotdata2 <- plotdata
+plotdata2$r <- 0.28
 arrow_data <- get_arrow_from_a_to_b(a=c("A", "A", "C", "B", "D"),
                                     b=c("B", "C", "E", "E", "E"),
-                                    data=plotdata)
+                                    data=plotdata2)
 
 # custom colors
 uvic_blue <- "#005493"    #RGB: 0-84-147
@@ -64,10 +66,10 @@ p <- ggplot(plotdata, aes(x0=x0, y0=y0, r=r)) +
   xlim(c(-1.8, 1.8)) +
   geom_segment(data=arrow_data, aes(x=x, xend=xend, y=y, yend=yend),
                inherit.aes=FALSE, color=uvic_yellow,
-               arrow=arrow(length=unit(0.06, "cm"), type="closed"),
-               linewidth=0.4) #+
-  #theme_void() +
-  #theme_transparent()
+               arrow=arrow(length=unit(0.08, "cm"), type="closed"),
+               linewidth=0.4) +
+  theme_void() +
+  theme_transparent()
 
 # custom font
 sysfonts::font_add_google("Roboto Slab", "roboto_slab")
