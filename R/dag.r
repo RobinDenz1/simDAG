@@ -21,8 +21,7 @@ add_node <- function(dag, node) {
     stop("'dag' must be a DAG object created using the empty_dag() function.")
   }
 
-  dag_names <- c(lapply(dag$root_nodes, function(x){x$name}),
-                 lapply(dag$child_nodes, function(x){x$name}))
+  dag_names <- names(dag)
   if (node$name %in% dag_names) {
     stop("A node with the name ", node$name, " is alread present in the",
          " DAG object and will not be overwritten.")
@@ -75,4 +74,15 @@ print.DAG <- function(x, ...) {
 #' @export
 summary.DAG <- function(object, ...) {
   print.DAG(x=object, ...)
+}
+
+## S3 name method for DAG objects
+#' @export
+names.DAG <- function(x) {
+  root_names <- vapply(x$root_nodes, FUN=function(x){x$name},
+                       FUN.VALUE=character(1))
+  child_names <- vapply(x$child_nodes, FUN=function(x){x$name},
+                        FUN.VALUE=character(1))
+
+  return(c(root_names, child_names))
 }

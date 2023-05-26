@@ -73,7 +73,12 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
   requireNamespace("igraph")
 
   # adjacency matrix
-  adj_mat <- dag2matrix(dag=dag, include_root_nodes=TRUE)
+  adj_mat <- dag2matrix(dag=x, include_root_nodes=TRUE)
+
+  if (!is.null(node_names)) {
+    colnames(adj_mat) <- node_names
+    rownames(adj_mat) <- node_names
+  }
 
   # igraph object
   graph <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
