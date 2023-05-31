@@ -2,7 +2,8 @@
 ## get (x, y) coordinates for nodes in a DAG object
 get_node_data <- function(graph, adj_mat, layout, r) {
 
-  layout_fun <- get(paste0("layout_", layout))
+  layout_name <- paste0("layout_", layout)
+  layout_fun <- utils::getFromNamespace(layout_name, "igraph")
 
   plotdata <- as.data.frame(layout_fun(graph=graph))
   colnames(plotdata) <- c("x", "y")
