@@ -5,7 +5,6 @@ General Stuff:
 
 sim_from_dag:
 	- allow categorical data to be parents of other nodes
-	- finish tests and checks
 	- implement more node types:
 		- other types of survival regression
 		- ordinal regression
@@ -14,11 +13,9 @@ sim_from_dag:
 
 dag_from_data:
 	- should also allow more node types
-	- needs tests
 
 plot.DAG:
-	- rework this completely to be an actually useful function
-	- maybe even allow option to add information about causal betas etc.
+	- maybe allow option to add information about causal betas etc.
 
 node_time_to_event:
 	- allow user access to past_event_times list in some way

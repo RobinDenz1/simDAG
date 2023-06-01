@@ -103,7 +103,7 @@ gen_node_rcategorical <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rcategorical",
               parents=NULL,
-              params=list(labels=names(tab), probs=tab))
+              params=list(labels=names(tab), probs=as.vector(tab)))
 }
 
 ## given minimal information on node type and the causal structure,

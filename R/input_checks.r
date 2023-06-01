@@ -208,6 +208,8 @@ check_inputs_sim2data <- function(sim, use_saved_states, to) {
   # extract node_time_to_event objects
   node_types <- lapply(sim$tx_nodes, FUN=function(x){x$type})
   tte_names <- names(sim$tte_past_events)
+  save_past_events <- unlist(lapply(sim$tx_nodes[node_types=="time_to_event"],
+                                    FUN=function(x){x$save_past_events}))
 
   # raise warning due to missing information if needed
   if (length(tte_names) < length(sim$tx_nodes) & sim$save_states!="all") {
@@ -215,7 +217,14 @@ check_inputs_sim2data <- function(sim, use_saved_states, to) {
                                FUN=function(x){x$name}))
     warning("Resulting data may be inaccurate for the following columns: '",
             paste0(warn_cols, collapse="', '"), "'\nbecause save_states!='all'",
-            " in sim_discrete_time function call. See details.")
+            " in sim_discrete_time() function call. See details.")
+  }
+
+  # raise warning when using save_past_events = FALSE
+  if (sim$save_states!="all" && any(save_past_events==FALSE) ) {
+    warning("Resulting data may be inaccurate because save_past_events",
+            " was set to FALSE in one or more nodes in the original",
+            " sim_discrete_time() function call. See details.")
   }
 
   if (sim$save_states=="at_t") {
@@ -320,5 +329,34 @@ check_inputs_dag_from_data <- function(dag, data, return_models, na.rm) {
                 lapply(dag$child_nodes, function(x){x$type}))
   if (length(dag_type) != length(dag_names)) {
     stop("Every node in the dag object needs to have a defined node type.")
+  }
+}
+
+## check inputs for plot.DAG function
+check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
+                                  gg_theme) {
+
+  if (!inherits(dag, "DAG")) {
+    stop("'x' must be a DAG object created using the empty_dag() and node()",
+         " functions.")
+  }
+
+  size_dag <- length(names(dag))
+
+  if (size_dag < 2) {
+    stop("The supplied DAG must have at least two nodes.")
+  } else if (!((length(node_names) == size_dag && is.character(node_names)) |
+               is.null(node_names))) {
+    stop("'node_names' must be a character vector with one name for each node",
+         " or NULL.")
+  } else if (!(length(node_size) == 1 | length(node_size) == size_dag) &&
+             is.numeric(node_size) && all(node_size > 0)) {
+    stop("'node_size' must be a numeric vector of length 1 or with one entry",
+         " per node. May only contain positive numbers.")
+  } else if (!(length(arrow_node_dist)==1 && is.numeric(arrow_node_dist) &&
+               arrow_node_dist >= 0)) {
+    stop("'arrow_node_dist' must a single number >= 0.")
+  } else if (!ggplot2::is.theme(gg_theme)) {
+    stop("'gg_theme' must be a ggplot2 theme object.")
   }
 }

@@ -73,6 +73,9 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
   requireNamespace("ggforce")
   requireNamespace("igraph")
 
+  check_inputs_plot.DAG(dag=x, node_size=node_size, node_names=node_names,
+                        arrow_node_dist=arrow_node_dist, gg_theme=gg_theme)
+
   # adjacency matrix
   adj_mat <- dag2matrix(dag=x, include_root_nodes=TRUE)
 
