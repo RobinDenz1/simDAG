@@ -22,6 +22,7 @@ add_node <- function(dag, node) {
   }
 
   dag_names <- names(dag)
+
   if (node$name %in% dag_names) {
     stop("A node with the name ", node$name, " is alread present in the",
          " DAG object and will not be overwritten.")

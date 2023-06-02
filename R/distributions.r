@@ -26,10 +26,17 @@ rcategorical <- function(n, probs, labels=NULL, coerce2factor=FALSE) {
     }
   }
 
+  # needed for setting labels if not all events occurred
+  if (!is.null(labels)) {
+    observed <- sort(unique(out)) + 1
+  }
+
   if (coerce2factor & is.null(labels)) {
     out <- factor(out)
   } else if (coerce2factor) {
-    out <- factor(out, labels=labels)
+    out <- factor(out, labels=labels[observed])
+  } else if (!is.null(labels)) {
+    out <- as.character(factor(out, labels=labels[observed]))
   }
 
   return(out)

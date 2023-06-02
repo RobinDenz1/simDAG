@@ -29,3 +29,11 @@ test_that("ignore root nodes", {
 
   expect_equal(out, expected)
 })
+
+test_that("error: not a DAG object", {
+  expect_error(dag2matrix(dag="1"))
+})
+
+test_that("error: wrong include_root_nodes", {
+  expect_error(dag2matrix(dag=dag, include_root_nodes="A"))
+})
