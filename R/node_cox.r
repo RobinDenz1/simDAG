@@ -14,10 +14,17 @@ sim_surv_time <- function(row, betas, dist, lambda, gamma) {
 
 ## a node modeled using cox-regression
 #' @export
-node_cox <- function(data, parents, betas, surv_dist, lambda, gamma,
-                     cens_dist, cens_args, name) {
+node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
+                     lambda, gamma, cens_dist, cens_args, name) {
+
+  if (!is.null(formula)) {
+    data <- stats::model.frame(formula=formula, data=data)
+  } else {
+    data <- as.data.frame(data[, parents, with=FALSE])
+  }
+
   # generate survival times
-  time <- apply(as.data.frame(data[, parents, with=FALSE]), MARGIN=1,
+  time <- apply(data, MARGIN=1,
                 FUN=sim_surv_time, betas=betas, dist=surv_dist,
                 lambda=lambda, gamma=gamma)
 

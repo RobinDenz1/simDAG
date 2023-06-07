@@ -1,7 +1,7 @@
 
 ## define a single node to grow DAG objects using the + syntax
 #' @export
-node <- function(name, type, parents=NULL, ...) {
+node <- function(name, type, parents=NULL, formula=NULL, ...) {
 
   # NOTE: there is a lot of ugly code here because I need to avoid
   #       partial matching of function arguments
@@ -11,18 +11,17 @@ node <- function(name, type, parents=NULL, ...) {
     stop("Arguments 'name' and 'type' must be specified.")
   }
 
-  # get parents
-  if (length(names(call))==0 & length(call)==3) {
-    parents <- NULL
-  } else if (length(names(call))==0 || all(names(call)[1:4]=="")) {
-    parents <- eval(call[[4]])
-  } else {
-    parents <- eval(call[["parents"]])
+  parents <- get_parents_from_call(call=call, envir=environment())
+  formula <- get_formula_from_call(call=call, envir=environment())
+
+  if (inherits(formula, "formula")) {
+    parents <- all.vars(formula)
   }
 
   # get additional arguments
   call_names <- names(call)
-  rel_names <- call_names[!call_names %in% c("name", "type", "parents") &
+  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
+                                             "formula") &
                           call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
 
@@ -45,12 +44,45 @@ node <- function(name, type, parents=NULL, ...) {
     node_list <- list(name=name,
                       type=type,
                       parents=parents)
+
+    if (!is.null(formula)) {
+      node_list$formula <- formula
+    }
+
     node_list <- append(node_list, args)
   }
 
   class(node_list) <- "DAG.node"
 
   return(node_list)
+}
+
+## function to extract the parents vector as supplied by the user
+get_parents_from_call <- function(call, envir) {
+
+  if (length(names(call))==0 & length(call)==3) {
+    parents <- NULL
+  } else if (length(names(call))==0 || all(names(call)[1:4]=="")) {
+    parents <- eval(call[[4]], envir=envir)
+  } else {
+    parents <- eval(call[["parents"]], envir=envir)
+  }
+
+  return(parents)
+}
+
+## function to extract the formula object as supplied by the user
+get_formula_from_call <- function(call, envir) {
+
+  if (length(names(call))==0 & length(call) <= 4) {
+    formula <- NULL
+  } else if (length(names(call))==0 || all(names(call)[1:5]=="")) {
+    formula <- eval(call[[5]], envir=envir)
+  } else {
+    formula <- eval(call[["formula"]], envir=envir)
+  }
+
+  return(formula)
 }
 
 ## S3 print method for DAG.node objects

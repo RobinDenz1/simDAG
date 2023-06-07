@@ -1,11 +1,18 @@
 
 ## a node modeled using logistic regression
 #' @export
-node_binomial <- function(data, parents, betas, intercept,
+node_binomial <- function(data, parents, formula=NULL, betas, intercept,
                           return_prob=FALSE, coerce2factor=FALSE,
                           coerce2numeric=FALSE, labels=NULL) {
+
+  if (!is.null(formula)) {
+    data <- stats::model.frame(formula=formula, data=data)
+  } else {
+    data <- as.data.frame(data[, parents, with=FALSE])
+  }
+
   prob <- intercept +
-    rowSums(mapply("*", as.data.frame(data[, parents, with=FALSE]), betas))
+    rowSums(mapply("*", data, betas))
   prob <- 1/(1 + exp(-prob))
   out <- rbernoulli(n=nrow(data), p=prob)
 

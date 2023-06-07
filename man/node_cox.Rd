@@ -8,7 +8,7 @@ Simulate a Node Using Cox-Regression
 Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (XXXX).
 }
 \usage{
-node_cox(data, parents, betas, surv_dist, lambda, gamma,
+node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
          cens_dist, cens_args, name)
 }
 \arguments{
@@ -16,7 +16,10 @@ node_cox(data, parents, betas, surv_dist, lambda, gamma,
 A \code{data.frame} containing all columns specified by \code{parents}.
   }
   \item{parents}{
-A character vector specifying the names of the parents that this particular child node has.
+A character vector specifying the names of the parents that this particular child node has. If non-linear combinations or interaction effects should be included, the user may specify the \code{formula} argument instead.
+  }
+  \item{formula}{
+An optional \code{formula} object to describe how the node should be generated or \code{NULL} (default). If supplied it should start with \code{~}, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as \code{A + B} or \code{A + B + I(A^2)}, allowing non-linear effects. If this argument is defined, there is no need to define the \code{parents} argument. For example, using \code{parents=c("A", "B")} is equal to using \code{formula= ~ A + B}.
   }
   \item{betas}{
 A numeric vector with length equal to \code{parents}, specifying the causal beta coefficients used to generate the node.

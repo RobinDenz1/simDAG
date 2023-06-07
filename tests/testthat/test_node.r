@@ -104,6 +104,21 @@ test_that("child: all positional", {
   expect_equal(out, expected)
 })
 
+test_that("child: all positional with formula", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   formula=~ A + B,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", "binomial", NULL, ~ A + B, betas=c(1, 2),
+              intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
 test_that("child: only name positional", {
   expected <- list(name="C",
                    type="binomial",
@@ -116,6 +131,22 @@ test_that("child: only name positional", {
   out <- node("C", type="binomial", parents=c("A", "B"), betas=c(1, 2),
               intercept=-10, p=0.1)
   expect_equal(out, expected)
+})
+
+test_that("child: only name positional with formula", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   formula=~ A + B + I(A^2),
+                   betas=c(1, 2, 3),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", type="binomial", parents=c("A", "B"),
+              formula=~ A + B + I(A^2), betas=c(1, 2, 3),
+              intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 
 test_that("child: name & type positional", {
@@ -144,6 +175,22 @@ test_that("child: no positional", {
   out <- node(name="C", type="binomial", parents=c("A", "B"), betas=c(1, 2),
               intercept=-10, p=0.1)
   expect_equal(out, expected)
+})
+
+test_that("child: no positional with formula", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   formula=~ A + B + I(A^2),
+                   betas=c(1, 2, 3),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node(name="C", type="binomial", parents=NULL,
+              formula=~ A + B + I(A^2), betas=c(1, 2, 3),
+              intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 
 test_that("call with only two unnamed arguments", {
