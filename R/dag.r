@@ -78,8 +78,7 @@ summary.DAG <- function(object, ...) {
 }
 
 ## S3 name method for DAG objects
-#' @export
-names.DAG <- function(x) {
+names_DAG <- function(x) {
   root_names <- vapply(x$root_nodes, FUN=function(x){x$name},
                        FUN.VALUE=character(1))
   child_names <- vapply(x$child_nodes, FUN=function(x){x$name},

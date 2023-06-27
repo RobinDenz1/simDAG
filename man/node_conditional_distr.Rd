@@ -10,7 +10,7 @@ This function can be used to generate any kind of dichotomous, categorical or nu
 \usage{
 node_conditional_distr(data, parents, distr, default_distr=NULL,
                        default_distr_args=list(), default_val=NA_real_,
-                       coerce2numeric=TRUE)
+                       coerce2numeric=TRUE, check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
@@ -33,6 +33,9 @@ A single value which is used as an output for strata that are not mentioned in \
   }
   \item{coerce2numeric}{
 A single logical value specifying whether to try to coerce the resulting variable to numeric or not.
+  }
+  \item{check_inputs}{
+A single logical value specifying whether to perform input checks or not. May be set to \code{TRUE} to speed up things a little if you are sure your input is correct.
   }
 }
 \details{

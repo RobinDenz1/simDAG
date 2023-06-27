@@ -14,9 +14,6 @@ sim_from_dag:
 dag_from_data:
 	- should also allow more node types
 
-plot.DAG:
-	- maybe allow option to add information about causal betas etc.
-
 node_time_to_event:
 	- allow user access to past_event_times list in some way
 	- add options to directly add "days_since_event", "number_of_previous_events" and similar stuff to data

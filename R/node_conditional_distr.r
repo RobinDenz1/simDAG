@@ -4,7 +4,20 @@
 #' @export
 node_conditional_distr <- function(data, parents, distr, default_distr=NULL,
                                    default_distr_args=list(),
-                                   default_val=NA_real_, coerce2numeric=TRUE) {
+                                   default_val=NA_real_, coerce2numeric=TRUE,
+                                   check_inputs=TRUE) {
+
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
+  if (check_inputs) {
+    check_inputs_node_conditional_distr(data=data, parents=parents, distr=distr,
+                                        default_distr=default_distr,
+                                        default_distr_args=default_distr_args,
+                                        default_val=default_val,
+                                        coerce2numeric=coerce2numeric)
+  }
 
   out <- rep(default_val, nrow(data))
 

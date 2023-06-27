@@ -59,7 +59,8 @@ check_inputs_child_node <- function(name, type, parents, args) {
   # type specific checks
   type_check_fun_name <- paste0("check_inputs_node_", type)
 
-  if (exists(type_check_fun_name, mode="function", envir=globalenv())) {
+  if (exists(type_check_fun_name, mode="function", envir=globalenv()) &
+      !type %in% c("conditional_distr", "conditional_prob")) {
     type_check_fun <- get(type_check_fun_name)
 
     type_check_fun(parents=parents, args=args)
@@ -122,14 +123,9 @@ check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
     stop("'dag' must be a DAG object creates using empty_dag() and",
          " node() function calls. See documentation.")
   }
-
-  # TODO: other checks:
-  #   - multinomial / cox should (at the moment) only be leaf nodes
-  #   - check if data generation possible or if there are missing node definitions
 }
 
 ## check the inputs of the node_conditional_probs function
-# TODO: add checks for default_val and default_probs
 check_inputs_node_conditional_probs <- function(data, parents, probs,
                                                 default_val, default_probs) {
 
@@ -151,6 +147,48 @@ check_inputs_node_conditional_probs <- function(data, parents, probs,
          "combined strata of all 'parents'. The following elements are not: ",
          names(probs)[!names(probs) %in%
                       unique(interaction(data[, parents, with=FALSE]))])
+  } else if (!(is.null(default_probs) || (is.numeric(default_probs) &&
+               all(default_probs <=1 & default_probs >= 0)))) {
+    stop("'default_probs' must be a numeric vector containing only",
+         " values between 0 and 1 or NULL.")
+  } else if (!is.null(default_probs) &
+             length(default_probs) != min(dep_probs_length, na.rm=TRUE)) {
+    stop("'default_probs' should contain one entry for each possible",
+         " output class.")
+  } else if (length(default_val) != 1) {
+    stop("'default_val' must be a vector of length 1.")
+  }
+}
+
+## check inputs for node_conditional_distr function
+check_inputs_node_conditional_distr <- function(data, parents, distr,
+                                                default_distr,
+                                                default_distr_args, default_val,
+                                                coerce2numeric) {
+
+  if (!(inherits(data, "data.frame") | inherits(data, "data.table"))) {
+    stop("'data' must be a data.table object or an object that can be",
+         " transformed to a data.table.")
+  } else if (is.null(names(distr))) {
+    stop("All elements in 'distr' must be named using levels of 'parents'.")
+  } else if (length(parents) == 1 &&
+             !all(names(distr) %in% unique(data[[parents]]))) {
+    stop("All elements in 'distr' must correspond to levels in ", parents,
+         ". The following elements are not: ",
+         names(distr)[!names(distr) %in% unique(data[[parents]])])
+  } else if (length(parents) > 1 &&
+             !all(names(distr) %in%
+                  unique(interaction(data[, parents, with=FALSE])))) {
+    stop("All elements in 'distr' must correspond to levels defined by the",
+         "combined strata of all 'parents'. The following elements are not: ",
+         names(distr)[!names(distr) %in%
+                        unique(interaction(data[, parents, with=FALSE]))])
+  } else if (!is.function(default_distr) && !is.null(default_distr)) {
+    stop("'default_distr' must be a function or NULL.")
+  } else if (length(default_val) != 1) {
+    stop("'default_val' must be of length 1.")
+  } else if (!(is.logical(coerce2numeric) && length(coerce2numeric)==1)) {
+    stop("'coerce2numeric' must be either TRUE or FALSE.")
   }
 }
 
@@ -341,7 +379,7 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
          " functions.")
   }
 
-  size_dag <- length(names(dag))
+  size_dag <- length(names_DAG(dag))
 
   if (size_dag < 2) {
     stop("The supplied DAG must have at least two nodes.")
