@@ -44,6 +44,7 @@ test_that("gen_node_rnorm", {
   expected <- list(name="y",
                    type="rnorm",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(mean=3,
                                sd=1.581139))
 
@@ -59,6 +60,7 @@ test_that("gen_node_rbernoulli", {
   expected <- list(name="y",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(p=0.2))
 
   out <- gen_node_rbernoulli(data=data, name="y", na.rm=TRUE)
@@ -73,6 +75,7 @@ test_that("gen_node_rcategorical", {
   expected <- list(name="y",
                    type="rcategorical",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(labels=c("0", "1", "2"), probs=c(0.4, 0.2, 0.4)))
 
   out <- gen_node_rcategorical(data=data, name="y", na.rm=TRUE)
@@ -88,6 +91,7 @@ test_that("gen_node_conditional_prob", {
   expected <- list(name="y",
                    type="conditional_prob",
                    parents="x",
+                   time_varying=FALSE,
                    probs=list(A=2/3, B=0))
 
   out <- gen_node_conditional_prob(data=data, name="y", parents="x", na.rm=TRUE,
@@ -104,6 +108,7 @@ test_that("gen_node_gaussian", {
   expected <- list(name="y",
                    type="gaussian",
                    parents="x",
+                   time_varying=FALSE,
                    betas=1.6,
                    intercept=0.8,
                    error=0.9486833)
@@ -122,6 +127,7 @@ test_that("gen_node_binomial", {
   expected <- list(name="y",
                    type="binomial",
                    parents="x",
+                   time_varying=FALSE,
                    betas=1.090426,
                    intercept=-3.893967)
 
@@ -139,6 +145,7 @@ test_that("gen_node_poisson", {
   expected <- list(name="y",
                    type="poisson",
                    parents="x",
+                   time_varying=FALSE,
                    betas=0.2964423,
                    intercept=0.7471786)
 

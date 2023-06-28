@@ -1,7 +1,8 @@
 
 test_that("general test case empty_dag()", {
 
-  expected <- list(root_nodes=list(), child_nodes=list())
+  expected <- list(root_nodes=list(), child_nodes=list(),
+                   tx_nodes=list())
   class(expected) <- "DAG"
 
   out <- empty_dag()

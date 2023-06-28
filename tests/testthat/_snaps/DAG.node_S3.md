@@ -28,7 +28,7 @@
       - parents: 'C', 'D'
       - betas: 1, 2
       - intercept: 15
-      - with additional parameters: 'error'
+      - with additional parameters: error
 
 # S3 summary
 

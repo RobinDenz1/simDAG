@@ -122,6 +122,10 @@ check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
   } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object creates using empty_dag() and",
          " node() function calls. See documentation.")
+  } else if (length(dag$tx_nodes)!=0) {
+    stop("'The 'dag' object may not contain time-varying nodes. Use",
+         " the 'sim_discrete_time' function instead or remove all",
+         " time-varying nodes.")
   }
 }
 

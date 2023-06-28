@@ -8,7 +8,8 @@ Create a node object to grow a DAG step-by-step
 This function should be used in conjunction with the \code{\link{empty_dag}} function to create \code{DAG} objects, which can then be used to simulate data using the \code{\link{sim_from_dag}} function.
 }
 \usage{
-node(name, type, parents=NULL, formula=NULL, ...)
+node(name, type, parents=NULL, formula=NULL,
+     time_varying=FALSE, ...)
 }
 \arguments{
   \item{name}{
@@ -22,6 +23,9 @@ A character vector of names, specifying the parents of the node or \code{NULL} (
   }
   \item{formula}{
 An optional \code{formula} object to describe how the node should be generated or \code{NULL} (default). If supplied it should start with \code{~}, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as \code{A + B} or \code{A + B + I(A^2)}, allowing non-linear effects. If this argument is defined, there is no need to define the \code{parents} argument. For example, using \code{parents=c("A", "B")} is equal to using \code{formula= ~ A + B}. This is currently only supported for nodes of type \code{"binomial"}, \code{"gaussian"}, \code{"poisson"}, \code{"negative_binomial"} and \code{"cox"}.
+  }
+  \item{time_varying}{
+Either \code{TRUE} ro \code{FALSE}, indicating whether the specified node should vary over time. Note that if this is set to \code{TRUE}, the \code{sim_from_dag} function can no longer be used to simulate data from the resulsing DAG. Instead, the \code{sim_discrete_time} function needs to be used. See details.
   }
   \item{...}{
 Further named arguments needed to specify the node. Those can be parameters of distribution functions such as the \code{p} argument in the \code{\link{rbernoulli}} function for root nodes or arbitrary named arguments such as the \code{betas} argument of the \code{\link{node_gaussian}} function.

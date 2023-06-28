@@ -5,6 +5,7 @@ test_that("root: all positional, no additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list())
   class(expected) <- "DAG.node"
 
@@ -16,6 +17,7 @@ test_that("root: all positional, with additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(p=0.5))
   class(expected) <- "DAG.node"
 
@@ -27,6 +29,7 @@ test_that("root: no positional, no additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list())
   class(expected) <- "DAG.node"
 
@@ -43,6 +46,7 @@ test_that("root: no positional, with additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(p=0.5))
   class(expected) <- "DAG.node"
 
@@ -59,6 +63,7 @@ test_that("root: name positional, rest named, no additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list())
   class(expected) <- "DAG.node"
 
@@ -75,6 +80,7 @@ test_that("root: name positional, rest named, with additional", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list(p=0.5))
   class(expected) <- "DAG.node"
 
@@ -94,6 +100,7 @@ test_that("child: all positional", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    betas=c(1, 2),
                    intercept=-10,
                    p=0.1)
@@ -108,6 +115,7 @@ test_that("child: all positional with formula", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    formula=~ A + B,
                    betas=c(1, 2),
                    intercept=-10,
@@ -123,6 +131,7 @@ test_that("child: only name positional", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    betas=c(1, 2),
                    intercept=-10,
                    p=0.1)
@@ -137,6 +146,7 @@ test_that("child: only name positional with formula", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    formula=~ A + B + I(A^2),
                    betas=c(1, 2, 3),
                    intercept=-10,
@@ -153,6 +163,7 @@ test_that("child: name & type positional", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    betas=c(1, 2),
                    intercept=-10,
                    p=0.1)
@@ -167,6 +178,7 @@ test_that("child: no positional", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    betas=c(1, 2),
                    intercept=-10,
                    p=0.1)
@@ -181,6 +193,7 @@ test_that("child: no positional with formula", {
   expected <- list(name="C",
                    type="binomial",
                    parents=c("A", "B"),
+                   time_varying=FALSE,
                    formula=~ A + B + I(A^2),
                    betas=c(1, 2, 3),
                    intercept=-10,
@@ -193,10 +206,62 @@ test_that("child: no positional with formula", {
   expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 
+#### testing child nodes output with time-varying=TRUE
+
+test_that("time-varying: all positional", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   time_varying=TRUE,
+                   formula= ~ A + B,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", "binomial", c("A", "B"), ~ A + B, TRUE,
+              betas=c(1, 2), intercept=-10,
+              p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
+test_that("time-varying: only name positional", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   time_varying=TRUE,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", type="binomial", parents=c("A", "B"), betas=c(1, 2),
+              intercept=-10, p=0.1, time_varying=TRUE)
+  expect_equal(out, expected)
+})
+
+test_that("time-varying: only name positional with formula", {
+  expected <- list(name="C",
+                   type="binomial",
+                   parents=c("A", "B"),
+                   time_varying=TRUE,
+                   formula=~ A + B + I(A^2),
+                   betas=c(1, 2, 3),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", type="binomial", parents=c("A", "B"),
+              formula=~ A + B + I(A^2), betas=c(1, 2, 3),
+              intercept=-10, time_varying=TRUE, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
 test_that("call with only two unnamed arguments", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list())
   class(expected) <- "DAG.node"
 
@@ -208,6 +273,7 @@ test_that("call with only two named arguments", {
   expected <- list(name="C",
                    type="rbernoulli",
                    parents=NULL,
+                   time_varying=FALSE,
                    params=list())
   class(expected) <- "DAG.node"
 

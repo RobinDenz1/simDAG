@@ -15,6 +15,7 @@ gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
   out <- list(name=name,
               type=type,
               parents=parents,
+              time_varying=FALSE,
               betas=as.vector(model$coefficients[-1]),
               intercept=as.vector(model$coefficients[1]))
 
@@ -73,6 +74,7 @@ gen_node_conditional_prob <- function(data, name, parents, return_model,
   out <- list(name=name,
               type="conditional_prob",
               parents=parents,
+              time_varying=FALSE,
               probs=probs)
 
   return(out)
@@ -83,6 +85,7 @@ gen_node_rnorm <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rnorm",
               parents=NULL,
+              time_varying=FALSE,
               params=list(mean=mean(data[[name]], na.rm=na.rm),
                           sd=stats::sd(data[[name]], na.rm=na.rm)))
   return(out)
@@ -93,6 +96,7 @@ gen_node_rbernoulli <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rbernoulli",
               parents=NULL,
+              time_varying=FALSE,
               params=list(p=mean(data[[name]], na.rm=na.rm)))
   return(out)
 }
@@ -103,6 +107,7 @@ gen_node_rcategorical <- function(data, name, na.rm) {
   out <- list(name=name,
               type="rcategorical",
               parents=NULL,
+              time_varying=FALSE,
               params=list(labels=names(tab), probs=as.vector(tab)))
 }
 

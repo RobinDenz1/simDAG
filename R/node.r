@@ -1,7 +1,8 @@
 
 ## define a single node to grow DAG objects using the + syntax
 #' @export
-node <- function(name, type, parents=NULL, formula=NULL, ...) {
+node <- function(name, type, parents=NULL, formula=NULL,
+                 time_varying=FALSE, ...) {
 
   # NOTE: there is a lot of ugly code here because I need to avoid
   #       partial matching of function arguments
@@ -11,8 +12,12 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     stop("Arguments 'name' and 'type' must be specified.")
   }
 
-  parents <- get_parents_from_call(call=call, envir=environment())
-  formula <- get_formula_from_call(call=call, envir=environment())
+  parents <- get_arg_from_call(call=call, envir=environment(),
+                               name="parents", position=3)
+  formula <- get_arg_from_call(call=call, envir=environment(),
+                               name="formula", position=4)
+  time_varying <- get_arg_from_call(call=call, envir=environment(),
+                                    name="time_varying", position=5)
 
   if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
@@ -21,7 +26,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   # get additional arguments
   call_names <- names(call)
   rel_names <- call_names[!call_names %in% c("name", "type", "parents",
-                                             "formula") &
+                                             "formula", "time_varying") &
                           call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
 
@@ -33,6 +38,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     node_list <- list(name=name,
                       type=type,
                       parents=NULL,
+                      time_varying=time_varying,
                       params=args)
   } else {
     # NOTE: in an if statement because we need to allow child nodes that are
@@ -43,7 +49,8 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
 
     node_list <- list(name=name,
                       type=type,
-                      parents=parents)
+                      parents=parents,
+                      time_varying=time_varying)
 
     if (!is.null(formula)) {
       node_list$formula <- formula
@@ -57,32 +64,21 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   return(node_list)
 }
 
-## function to extract the parents vector as supplied by the user
-get_parents_from_call <- function(call, envir) {
+## extracts an argument from a sys.call() object given it's name
+## and position, ignoring partial name matching
+get_arg_from_call <- function(call, envir, name, position) {
 
-  if (length(names(call))==0 & length(call)==3) {
-    parents <- NULL
-  } else if (length(names(call))==0 || all(names(call)[1:4]=="")) {
-    parents <- eval(call[[4]], envir=envir)
+  if (length(names(call))==0 & length(call) <= position) {
+    argument <- formals("node")[[name]]
+  } else if (length(names(call))==0 || all(names(call)[1:(position+1)]=="")) {
+    argument <- eval(call[[position+1]], envir=envir)
+  } else if (is.null(eval(call[[name]], envir=envir))) {
+    argument <- formals("node")[[name]]
   } else {
-    parents <- eval(call[["parents"]], envir=envir)
+    argument <- eval(call[[name]], envir=envir)
   }
 
-  return(parents)
-}
-
-## function to extract the formula object as supplied by the user
-get_formula_from_call <- function(call, envir) {
-
-  if (length(names(call))==0 & length(call) <= 4) {
-    formula <- NULL
-  } else if (length(names(call))==0 || all(names(call)[1:5]=="")) {
-    formula <- eval(call[[5]], envir=envir)
-  } else {
-    formula <- eval(call[["formula"]], envir=envir)
-  }
-
-  return(formula)
+  return(argument)
 }
 
 ## S3 print method for DAG.node objects
@@ -109,7 +105,7 @@ print.DAG.node <- function(x, ...) {
     cat("  - type: '", x$type, "'\n", sep="")
     cat("  - parents: '", paste0(x$parents, collapse="', '"), "'\n", sep="")
 
-    if (length(x)==3) {
+    if (length(x)==4) {
       cat("  - no additional parameters\n")
     } else {
 
@@ -122,12 +118,16 @@ print.DAG.node <- function(x, ...) {
       }
 
       other_args <- names(x)[!names(x) %in% c("name", "type", "parents",
-                                              "betas", "intercept")]
+                                              "betas", "intercept",
+                                              "time_varying")]
       if (length(other_args) > 0) {
         param_str <- paste0(other_args, collapse=", ")
-        cat("  - with additional parameters: '", param_str, "'\n", sep="")
+        cat("  - with additional parameters: ", param_str, "\n", sep="")
       }
     }
+  }
+  if (x$time_varying) {
+    cat("This node may change over time.\n")
   }
 }
 

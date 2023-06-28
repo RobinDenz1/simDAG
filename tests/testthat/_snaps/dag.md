@@ -8,6 +8,7 @@
       -  4  nodes in total
       -  2  of which are root nodes
       -  2  of which are child nodes
+      -  0  of which are time-varying nodes
 
 # S3 summary method with empty dag
 
@@ -19,4 +20,5 @@
       -  4  nodes in total
       -  2  of which are root nodes
       -  2  of which are child nodes
+      -  0  of which are time-varying nodes
 

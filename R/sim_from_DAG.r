@@ -59,6 +59,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
     args <- dag$child_nodes[[i]]
     args$data <- data
     args$type <- NULL
+    args$time_varying <- NULL
 
     if (dag$child_nodes[[i]]$type!="cox") {
       args$name <- NULL
