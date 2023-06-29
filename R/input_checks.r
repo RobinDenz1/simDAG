@@ -5,10 +5,9 @@ is_node_name <- function(name) {
 }
 
 # check whether a node type is appropriate
-is_node_type <- function(type, call_from) {
+is_node_type <- function(type) {
   length(type)==1 && is.character(type) &&
-    exists(paste0("node_", type), mode="function") &&
-    !(call_from=="sim_from_dag" & type=="time_to_event")
+    exists(paste0("node_", type), mode="function")
 }
 
 # check whether a node type (root nodes) is appropriate
@@ -48,7 +47,7 @@ check_inputs_child_node <- function(name, type, parents, args) {
 
   if (!is_node_name(name)) {
     stop("The 'name' attribute must be a single character string.")
-  } else if (!is_node_type(type, call_from="sim_from_dag")) {
+  } else if (!is_node_type(type)) {
     stop("The 'type' parameter of a child node must be a single",
          " character string pointing to a function starting with 'node_'.")
   } else if (!is_node_parents(parents)) {
@@ -60,7 +59,7 @@ check_inputs_child_node <- function(name, type, parents, args) {
   type_check_fun_name <- paste0("check_inputs_node_", type)
 
   if (exists(type_check_fun_name, mode="function", envir=globalenv()) &
-      !type %in% c("conditional_distr", "conditional_prob")) {
+      !type %in% c("conditional_distr", "conditional_prob", "time_to_event")) {
     type_check_fun <- get(type_check_fun_name)
 
     type_check_fun(parents=parents, args=args)
@@ -122,7 +121,7 @@ check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
   } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object creates using empty_dag() and",
          " node() function calls. See documentation.")
-  } else if (length(dag$tx_nodes)!=0) {
+  } else if (is_time_varying_dag(dag)) {
     stop("'The 'dag' object may not contain time-varying nodes. Use",
          " the 'sim_discrete_time' function instead or remove all",
          " time-varying nodes.")
@@ -381,6 +380,9 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
   if (!inherits(dag, "DAG")) {
     stop("'x' must be a DAG object created using the empty_dag() and node()",
          " functions.")
+  } else if (is_time_varying_dag(dag)) {
+    warning("This plot method currently does not support time-varying nodes.",
+            " The output will only include time-fixed nodes.")
   }
 
   size_dag <- length(names_DAG(dag))
@@ -400,5 +402,148 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
     stop("'arrow_node_dist' must a single number >= 0.")
   } else if (!ggplot2::is.theme(gg_theme)) {
     stop("'gg_theme' must be a ggplot2 theme object.")
+  }
+}
+
+## check inputs of the sim_discrete_time function
+check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
+                                           t0_data,t0_transform_fun,
+                                           t0_transform_args,max_t,
+                                           tx_nodes, tx_nodes_order,
+                                           tx_transform_fun, tx_transform_args,
+                                           save_states, save_states_at,
+                                           verbose) {
+  # rudimentary type checks
+  if (!is.null(t0_data)) {
+    stopifnot("'t0_data' must be a data.frame." = is.data.frame(t0_data))
+  }
+  if (!is.null(t0_transform_fun)) {
+    stopifnot("'t0_transform_fun' must be a function." =
+                is.function(t0_transform_fun))
+  }
+  stopifnot("'t0_transform_args' must be a list." = is.list(t0_transform_args))
+  stopifnot("'max_t' must be a single integer." =
+              (length(max_t) == 1 && is.numeric(max_t)))
+  stopifnot("'tx_nodes' must be a list." = is.list(tx_nodes))
+  if (!is.null(tx_nodes_order)) {
+    stopifnot("'tx_nodes_order' must be a vector of type numeric." =
+                is.vector(tx_nodes_order, mode = "numeric"))
+  }
+  if (!is.null(tx_transform_fun)) {
+    stopifnot("'tx_transform_fun' must be a function." =
+                is.function(tx_transform_fun))
+  }
+  stopifnot("'tx_transform_args' must be a list." =
+              is.list(tx_transform_args))
+  stopifnot("'save_states' must be a single character." =
+              (length(save_states) == 1 && is.character(save_states)))
+  if (!is.null(save_states_at)) {
+    if (!(length(save_states_at) == 1 && is.numeric(save_states_at)) ||
+        !(is.vector(save_states_at, mode = "numeric")))  {
+      stop("'save_states_at' must be either a single integer",
+           " or a vector of type numeric.")
+    }
+  }
+  stopifnot("'verbose' must be logical." = is.logical(verbose))
+
+  # check content of t0_data
+  if (is.data.frame(t0_data)) {
+    stopifnot("'t0_data' needs to include at least one variable." =
+                (ncol(t0_data) != 0))
+    stopifnot("'t0_data' needs to include at least one row." =
+                (nrow(t0_data) != 0))
+  }
+
+  # check content of t0_transform_fun
+  if (is.function(t0_transform_fun)) {
+    stopifnot(
+      "'t0_transform_fun' needs to include at least one line." =
+        length(body(t0_transform_fun)) != 0)
+
+    # check content of t0_transform_args
+    if (length(names(formals(t0_transform_fun))) == 0) {
+      if (!identical(length(names(formals(t0_transform_fun))),
+                     length(names(t0_transform_args)))) {
+        stop("Defined parameters in 't0_transform_args' are not used",
+             " for 't0_transform_fun'.")
+      }
+    } else {
+      for (i in 1:length(names(formals(t0_transform_fun)))) {
+        if (!is.element(names(formals(t0_transform_fun))[i],
+                        names(t0_transform_args))) {
+          stop("All parameters of 't0_transform_fun' must be defined",
+               " in 't0_transform_args'.")
+        }
+      }
+    }
+  }
+
+  # check content of tx_nodes
+  if (is.list(tx_nodes)) {
+    for (i in 1:length(tx_nodes)) {
+      stopifnot("All elements of 'tx_nodes' must have a name." =
+                  (length(tx_nodes[[i]]$name) == 1 &&
+                     is.character(tx_nodes[[i]]$name)))
+      if (!is.null(tx_nodes[[i]]$parents)) {
+        stopifnot(
+          "All elements of 'tx_nodes' must have at least one parent." =
+            (length(tx_nodes[[i]]$parents >= 1) &&
+               is.vector(tx_nodes[[i]]$parents, mode = "character")))
+      }
+      stopifnot("All elements of 'tx_nodes' must have a type." =
+                  (length(tx_nodes[[i]]$type) == 1 &&
+                     is.character(tx_nodes[[i]]$type)))
+      ## rudimentary type checks for variables 'prob_fun', 'prob_fun_args',
+      ##'event_duration', 'immunity_duration' and 'save_past_events'
+      ##'in function 'check_inputs_node_time_to_event'
+      if (tx_nodes[[i]]$type == "time_to_event") {
+        stopifnot(
+          "Elements of type 'time_to_event' must have a prob_fun." =
+            !is.null(tx_nodes[[i]]$prob_fun))
+        ## variables 'prob_fun_args', 'event_duration', 'immunity_duration'
+        ## and 'save_past_events' have default values
+      }
+    }
+  }
+
+  # check content of tx_nodes_order
+  if (is.vector(tx_nodes_order)) {
+    if (!identical(length(tx_nodes_order), length(tx_nodes))) {
+      stop("'tx_nodes_order' must be the same length as",
+           " the number of nodes of 'tx_nodes.")
+    }
+    if (!all(is.element(tx_nodes_order, seq_len(length(tx_nodes))))) {
+      stop("'tx_nodes_order' must contain the same elements as",
+           " elements in 'tx_nodes'.")
+    }
+  }
+
+  # check content of tx_transform_fun
+  if (is.function(tx_transform_fun)) {
+    stopifnot("'tx_transform_fun' needs to include at least one line." =
+                length(body(tx_transform_fun)) != 0)
+
+    # check content of tx_transform_args
+    if (length(names(formals(tx_transform_fun))) == 0) {
+      if (!identical(length(names(formals(tx_transform_fun))),
+                     length(names(tx_transform_args)))) {
+        stop("Defined parameters in 'tx_transform_args' are not used",
+             " for 'tx_transform_fun'.")
+      }
+    } else {
+      for (i in 1:length(names(formals(tx_transform_fun)))) {
+        if (!is.element(names(formals(tx_transform_fun))[i],
+                        names(tx_transform_args))) {
+          stop("All parameters of 'tx_transform_fun' must be defined",
+               " in 'tx_transform_args'.")
+        }
+      }
+    }
+  }
+
+  # check content of save_states
+  if (is.character(save_states)) {
+    stopifnot("'save_states' must be either 'last', 'all' or 'at_t'." =
+                is.element(save_states, c("last", "all", "at_t")))
   }
 }

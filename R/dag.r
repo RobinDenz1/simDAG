@@ -24,7 +24,7 @@ add_node <- function(dag, node) {
 
   dag_names <- names_DAG(dag)
 
-  if (node$name %in% dag_names) {
+  if (node$name %in% dag_names & !node$time_varying) {
     stop("A node with the name ", node$name, " is alread present in the",
          " DAG object and will not be overwritten.")
   }
@@ -99,4 +99,8 @@ names_DAG <- function(x, include_tx_nodes=FALSE) {
   }
 
   return(out)
+}
+
+is_time_varying_dag <- function(dag) {
+  length(dag$tx_nodes)!=0
 }

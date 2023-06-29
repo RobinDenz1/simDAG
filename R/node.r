@@ -1,8 +1,7 @@
 
-## define a single node to grow DAG objects using the + syntax
+## define a single time-fixed node to grow DAG objects using the + syntax
 #' @export
-node <- function(name, type, parents=NULL, formula=NULL,
-                 time_varying=FALSE, ...) {
+node <- function(name, type, parents=NULL, formula=NULL, ...) {
 
   # NOTE: there is a lot of ugly code here because I need to avoid
   #       partial matching of function arguments
@@ -16,8 +15,6 @@ node <- function(name, type, parents=NULL, formula=NULL,
                                name="parents", position=3)
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
-  time_varying <- get_arg_from_call(call=call, envir=environment(),
-                                    name="time_varying", position=5)
 
   if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
@@ -38,7 +35,7 @@ node <- function(name, type, parents=NULL, formula=NULL,
     node_list <- list(name=name,
                       type=type,
                       parents=NULL,
-                      time_varying=time_varying,
+                      time_varying=FALSE,
                       params=args)
   } else {
     # NOTE: in an if statement because we need to allow child nodes that are
@@ -50,7 +47,72 @@ node <- function(name, type, parents=NULL, formula=NULL,
     node_list <- list(name=name,
                       type=type,
                       parents=parents,
-                      time_varying=time_varying)
+                      time_varying=FALSE)
+
+    if (!is.null(formula)) {
+      node_list$formula <- formula
+    }
+
+    node_list <- append(node_list, args)
+  }
+
+  class(node_list) <- "DAG.node"
+
+  return(node_list)
+}
+
+## define a single time-fixed node to grow DAG objects using the + syntax
+# NOTE: Having a carbon copy of node() looks stupid and I hate doing it.
+#       The reason however is that having two separate functions for
+#       time-fixed and time-varying nodes makes it both easier to use and
+#       allows better documentation. Usually you could create an internal
+#       function and call that one with different arguments. However, due to
+#       the need to avoid R's horrible partial name matching default I was
+#       unable to do this. So this terribleness has to stay for now.
+#' @export
+node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
+
+  call <- sys.call()
+
+  if (length(call) < 3) {
+    stop("Arguments 'name' and 'type' must be specified.")
+  }
+
+  parents <- get_arg_from_call(call=call, envir=environment(),
+                               name="parents", position=3)
+  formula <- get_arg_from_call(call=call, envir=environment(),
+                               name="formula", position=4)
+
+  if (inherits(formula, "formula")) {
+    parents <- all.vars(formula)
+  }
+
+  # get additional arguments
+  call_names <- names(call)
+  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
+                                             "formula") &
+                            call_names!=""]
+  args <- lapply(call[rel_names], eval, envir=parent.frame())
+
+  # create node list
+  if (length(parents) == 0 || all(parents=="")) {
+
+    check_inputs_root_node(name=name, type=type)
+
+    node_list <- list(name=name,
+                      type=type,
+                      parents=NULL,
+                      time_varying=TRUE,
+                      params=args)
+  } else {
+    if (length(args) > 0) {
+      check_inputs_child_node(name=name, type=type, parents=parents, args=args)
+    }
+
+    node_list <- list(name=name,
+                      type=type,
+                      parents=parents,
+                      time_varying=TRUE)
 
     if (!is.null(formula)) {
       node_list$formula <- formula

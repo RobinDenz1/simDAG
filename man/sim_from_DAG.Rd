@@ -38,7 +38,9 @@ Concrete details on how to specify the needed \code{dag} object are given in the
 
 \strong{\emph{Can this function create longitudinal data?}}
 
-Yes it can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{sim_discrete_time} is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
+Yes and no. It theoretically can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{sim_discrete_time} is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
+
+If time-dependent nodes were added to the \code{dag} using \code{node_td} calls, this function may not be used. Only the \code{sim_discrete_time} function will work in that case.
 
 }
 \author{

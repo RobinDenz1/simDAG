@@ -1,15 +1,16 @@
 \name{node}
 \alias{node}
+\alias{node_td}
 
 \title{
 Create a node object to grow a DAG step-by-step
 }
 \description{
-This function should be used in conjunction with the \code{\link{empty_dag}} function to create \code{DAG} objects, which can then be used to simulate data using the \code{\link{sim_from_dag}} function.
+These functions should be used in conjunction with the \code{\link{empty_dag}} function to create \code{DAG} objects, which can then be used to simulate data using the \code{\link{sim_from_dag}} function or the \code{\link{sim_discrete_time}} function.
 }
 \usage{
-node(name, type, parents=NULL, formula=NULL,
-     time_varying=FALSE, ...)
+node(name, type, parents=NULL, formula=NULL, ...)
+node_td(name, type, parents=NULL, formula=NULL, ...)
 }
 \arguments{
   \item{name}{
@@ -24,20 +25,23 @@ A character vector of names, specifying the parents of the node or \code{NULL} (
   \item{formula}{
 An optional \code{formula} object to describe how the node should be generated or \code{NULL} (default). If supplied it should start with \code{~}, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as \code{A + B} or \code{A + B + I(A^2)}, allowing non-linear effects. If this argument is defined, there is no need to define the \code{parents} argument. For example, using \code{parents=c("A", "B")} is equal to using \code{formula= ~ A + B}. This is currently only supported for nodes of type \code{"binomial"}, \code{"gaussian"}, \code{"poisson"}, \code{"negative_binomial"} and \code{"cox"}.
   }
-  \item{time_varying}{
-Either \code{TRUE} ro \code{FALSE}, indicating whether the specified node should vary over time. Note that if this is set to \code{TRUE}, the \code{sim_from_dag} function can no longer be used to simulate data from the resulsing DAG. Instead, the \code{sim_discrete_time} function needs to be used. See details.
-  }
   \item{...}{
 Further named arguments needed to specify the node. Those can be parameters of distribution functions such as the \code{p} argument in the \code{\link{rbernoulli}} function for root nodes or arbitrary named arguments such as the \code{betas} argument of the \code{\link{node_gaussian}} function.
   }
 }
 \details{
 
-To generate data using the \code{\link{sim_from_dag}} function, it is required to create a \code{DAG} object first. This object needs to contain information about the causal structure of the data (e.g. which variable causes which variable) and the specific structural equations for each variable (information about causal coefficients, type of distribution etc.). In this package, the \code{node} function is used in conjunction with the \code{\link{empty_dag}} function to create this object.
+To generate data using the \code{\link{sim_from_dag}} function or the \code{\link{sim_discrete_time}} function, it is required to create a \code{DAG} object first. This object needs to contain information about the causal structure of the data (e.g. which variable causes which variable) and the specific structural equations for each variable (information about causal coefficients, type of distribution etc.). In this package, the \code{node} and/or \code{node_td} function is used in conjunction with the \code{\link{empty_dag}} function to create this object.
 
-This works by first initializing an empty \code{DAG} using the \code{\link{empty_dag}} function and then adding multiple calls to the \code{node} function to it using a simple \code{+}, where each call to \code{node} adds information about a single node that should be generated. Multiple examples are given below.
+This works by first initializing an empty \code{DAG} using the \code{\link{empty_dag}} function and then adding multiple calls to the \code{node} and/or \code{node_td} functions to it using a simple \code{+}, where each call to \code{node} and/or \code{node_td} adds information about a single node that should be generated. Multiple examples are given below.
 
-In each call to \code{node} the user needs to indicate what the node should be called (\code{name}), which function should be used to generate the node (\code{type}), whether the node has any parents and if so which (\code{parents}) and any additional arguments needed to actually call the data-generating function of this node later passed to the three-dot syntax (\code{...}).
+In each call to \code{node} or \code{node_td} the user needs to indicate what the node should be called (\code{name}), which function should be used to generate the node (\code{type}), whether the node has any parents and if so which (\code{parents}) and any additional arguments needed to actually call the data-generating function of this node later passed to the three-dot syntax (\code{...}).
+
+\strong{\emph{\code{node} vs. \code{node_td}}}:
+
+By calling \code{node} you are indicating that this node is a time-fixed variable which should only be generated once. By using \code{node_td} you are indicating that it is a time-dependent node, which will be updated at each step in time when using a discrete-time simulation.
+
+\code{node_td} should only be used if you are planning to perform a discrete-time simulation with the \code{\link{sim_discrete_time}} function. \code{DAG} objects including time-dependent nodes may not be used in the \code{\link{sim_from_dag}} function.
 
 \strong{\emph{Implemented Root Node Types}}:
 
@@ -51,7 +55,7 @@ For convenience, this package includes three custom root-node functions:
   \item{"\link[=rconstant]{rconstant}": Used to set a variable to a constant value.}
 }
 
-\strong{\emph{Implemented Node Types}}:
+\strong{\emph{Implemented Child Node Types}}:
 
 Currently, the following node types are implemented directly for convenience:
 
@@ -66,7 +70,22 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
 }
 
-However, it is very simple to write a new custom \code{node_function} to be used instead, allowing the user to use any \code{type} of data-generation mechanism for any node. All that is required of this function is, that it has the named arguments \code{data} (the sample as generated so far) and \code{parents} (a character vector specifying the parents) and outputs either a vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found on the \code{node_custom} documentation page.
+For custom child node types, see below.
+
+\strong{\emph{Implemented Time-Dependent Node Types}}:
+
+Currently, the following node types are implemented directly for convenience to use in \code{node_td} calls:
+
+\itemize{
+  \item{"\link[=node_time_to_event]{time_to_event}": A node based on repeatedly checking whether an event occurs at each point in time.}
+  \item{"\link[=node_competing_events]{competing_events}": A node based on repeatedly checking whether one of multiple mutually exclusive events occurs at each point in time.}
+}
+
+For custom time-dependent node types, see below.
+
+\strong{\emph{Custom Node Types}}
+
+It is very simple to write a new custom \code{node_function} to be used instead, allowing the user to use any \code{type} of data-generation mechanism for any node. All that is required of this function is, that it has the named arguments \code{data} (the sample as generated so far) and \code{parents} (a character vector specifying the parents) and outputs either a vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found on the \code{node_custom} documentation page.
 
 }
 \note{
@@ -98,4 +117,14 @@ dag <- empty_dag() +
        betas=c(1.2, -0.3), intercept=-15) +
   node("death", type="binomial", parents=c("sex", "income", "sickness"),
        betas=c(0.1, -0.4, 0.8), intercept=-20)
+
+# using time-dependent nodes
+# NOTE: to simulate data from this DAG, the sim_discrete_time() function needs
+#       to be used due to "sickness" being a time-dependent node
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("income", type="rnorm", mean=2700, sd=500) +
+  node_td("sickness", type="binomial", parents=c("sex", "income"),
+          betas=c(0.1, -0.4), intercept=-50)
+
 }

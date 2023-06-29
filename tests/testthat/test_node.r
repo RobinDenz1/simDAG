@@ -219,9 +219,8 @@ test_that("time-varying: all positional", {
                    p=0.1)
   class(expected) <- "DAG.node"
 
-  out <- node("C", "binomial", c("A", "B"), ~ A + B, TRUE,
-              betas=c(1, 2), intercept=-10,
-              p=0.1)
+  out <- node_td("C", "binomial", c("A", "B"), ~ A + B,
+                 betas=c(1, 2), intercept=-10, p=0.1)
   expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 
@@ -235,8 +234,8 @@ test_that("time-varying: only name positional", {
                    p=0.1)
   class(expected) <- "DAG.node"
 
-  out <- node("C", type="binomial", parents=c("A", "B"), betas=c(1, 2),
-              intercept=-10, p=0.1, time_varying=TRUE)
+  out <- node_td("C", type="binomial", parents=c("A", "B"), betas=c(1, 2),
+                 intercept=-10, p=0.1)
   expect_equal(out, expected)
 })
 
@@ -251,9 +250,9 @@ test_that("time-varying: only name positional with formula", {
                    p=0.1)
   class(expected) <- "DAG.node"
 
-  out <- node("C", type="binomial", parents=c("A", "B"),
-              formula=~ A + B + I(A^2), betas=c(1, 2, 3),
-              intercept=-10, time_varying=TRUE, p=0.1)
+  out <- node_td("C", type="binomial", parents=c("A", "B"),
+                 formula=~ A + B + I(A^2), betas=c(1, 2, 3),
+                 intercept=-10, p=0.1)
   expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 

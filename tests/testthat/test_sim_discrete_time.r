@@ -49,20 +49,15 @@ prob_sick2 <- function(data, rr_sex0, rr_sex1) {
   return(p)
 }
 
-tx_nodes <- list(list(name = "sickness1",
-                      parents = c("age", "sex"),
-                      type = "time_to_event",
-                      prob_fun = prob_sick1,
-                      prob_fun_args = list(rr_sex0 = 3,
-                                           rr_sex1 = 1),
-                      event_duration = 14,
-                      immunity_duration = 30,
-                      save_past_events = FALSE))
+dag <- empty_dag() +
+  node_td("sickness1", parents=c("age", "sex"), type="time_to_event",
+          prob_fun=prob_sick1, prob_fun_args=list(rr_sex0=3, rr_sex1=1),
+          event_duration=14, immunity_duration=30, save_past_events=FALSE)
 
 test_that("correct nrow, ncol", {
-  sim_dat <- sim_discrete_time(t0_data = dt,
-                               max_t = 365,
-                               tx_nodes = tx_nodes)$data
+  sim_dat <- sim_discrete_time(t0_data=dt,
+                               max_t=365,
+                               dag=dag)$data
 
   expect_true(data.table::is.data.table(sim_dat))
   expect_true(nrow(sim_dat) == 200)
@@ -70,30 +65,21 @@ test_that("correct nrow, ncol", {
 })
 
 test_that("tx_nodes_order working", {
-  tx_nodes <- list(list(name = "sickness1",
-                        parents = c("age", "sex"),
-                        type = "time_to_event",
-                        prob_fun = prob_sick1,
-                        prob_fun_args = list(rr_sex0 = 3,
-                                             rr_sex1 = 1),
-                        event_duration = 14,
-                        immunity_duration = 30,
-                        save_past_events = FALSE),
-                   list(name = "sickness2",
-                        parents = c("age", "sex"),
-                        type = "time_to_event",
-                        prob_fun = prob_sick2,
-                        prob_fun_args = list(rr_sex0 = 1,
-                                             rr_sex1 = 2),
-                        event_duration = 14,
-                        immunity_duration = 100,
-                        save_past_events = FALSE))
+
+  dag <- empty_dag() +
+    node_td("sickness1", parents=c("age", "sex"), type="time_to_event",
+            prob_fun=prob_sick1, prob_fun_args=list(rr_sex0=3, rr_sex1=1),
+            event_duration=14, immunity_duration=30, save_past_events=FALSE) +
+    node_td("sickness2", parents=c("age", "sex"), type="time_to_event",
+            prob_fun=prob_sick2, prob_fun_args=list(rr_sex0=1, rr_sex1=2),
+            event_duration=14, immunity_duration=100, save_past_events=FALSE)
+
   sim_dat <- suppressWarnings({
-    sim_discrete_time(t0_data = dt,
-                      max_t = 5,
-                      tx_nodes = tx_nodes,
-                      tx_nodes_order = c(2, 1),
-                      verbose = TRUE)$data
+    sim_discrete_time(t0_data=dt,
+                      max_t=5,
+                      dag=dag,
+                      tx_nodes_order=c(2, 1),
+                      verbose=TRUE)$data
     })
 
   expect_true(data.table::is.data.table(sim_dat))
@@ -103,7 +89,7 @@ test_that("tx_nodes_order working", {
     suppressWarnings({
       sim_discrete_time(t0_data = dt,
                         max_t = 5,
-                        tx_nodes = tx_nodes,
+                        dag = dag,
                         tx_nodes_order = c(2, 1),
                         verbose = TRUE)
       }),
@@ -113,14 +99,14 @@ test_that("tx_nodes_order working", {
 test_that("save_states working", {
   sim_dat_all <- sim_discrete_time(t0_data = dt,
                                    max_t = 365,
-                                   tx_nodes = tx_nodes,
+                                   dag = dag,
                                    save_states = "all")$data
 
   expect_true(ncol(sim_dat_all) == 5)
 
   sim_dat_t <- sim_discrete_time(t0_data = dt,
                                  max_t = 365,
-                                 tx_nodes = tx_nodes,
+                                 dag = dag,
                                  save_states = "at_t",
                                  save_states_at = 100)$data
 
@@ -130,11 +116,11 @@ test_that("save_states working", {
 test_that("verbose working", {
   expect_output(sim_discrete_time(t0_data = dt,
                                   max_t = 365,
-                                  tx_nodes = tx_nodes,
+                                  dag = dag,
                                   verbose = TRUE))
   expect_output(sim_discrete_time(t0_data = dt,
                                   max_t = 365,
-                                  tx_nodes = tx_nodes,
+                                  dag = dag,
                                   verbose = TRUE),
                 "t = 365 node = sickness1")
 })

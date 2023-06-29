@@ -1,13 +1,6 @@
 
 set.seed(23523)
 
-# nodes for generating data at t0
-t0_dag <- empty_dag() +
-  node("age", type="rnorm", mean=50, sd=4) +
-  node("sex", type="rbernoulli", p=0.5) +
-  node("bmi", type="gaussian", parents=c("sex", "age"),
-       betas=c(1.1, 0.4), intercept=12, error=2)
-
 # a function to calculate the probability of death as a
 # linear combination of age, sex and bmi on the log scale
 prob_death <- function(data, beta_age, beta_sex, beta_bmi, intercept) {
@@ -16,22 +9,22 @@ prob_death <- function(data, beta_age, beta_sex, beta_bmi, intercept) {
   return(prob)
 }
 
-# defining the time-varying nodes
-tx_nodes <- list(list(name="death",
-                      type="time_to_event",
-                      parents=c("age", "sex", "bmi"),
-                      prob_fun=prob_death,
-                      prob_fun_args=list(beta_age=0.1,
-                                         beta_bmi=0.3,
-                                         beta_sex=-0.2,
-                                         intercept=-20),
-                      event_duration=Inf,
-                      save_past_events=TRUE))
+# nodes for generating data at t0
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), intercept=12, error=2) +
+  node_td("death", type="time_to_event", parents=c("age", "sex", "bmi"),
+          prob_fun=prob_death, prob_fun_args=list(beta_age=0.1,
+                                                  beta_bmi=0.3,
+                                                  beta_sex=-0.2,
+                                                  intercept=-20),
+          event_duration=Inf, save_past_events=TRUE)
 
 # run simulation for 100 people, 50 days long
 sim <- sim_discrete_time(n_sim=100,
-                         t0_dag=t0_dag,
-                         tx_nodes=tx_nodes,
+                         dag=dag,
                          max_t=50,
                          verbose=FALSE)
 

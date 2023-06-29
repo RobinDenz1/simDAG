@@ -102,7 +102,13 @@ $$
 logit(death) = -15 + age \cdot 0.1 + bmi \cdot 0.3.
 $$
 
-We can now use this `DAG` object to generate random data using the `sim_from_dag` function:
+To check whether we got the causal relationships right, we can call the `plot` function on the DAG object. The output should look very similar to the hand-drawn DAG above.
+
+```{r fig.width=7, fig.height=5}
+plot(dag)
+```
+
+This is all correct. We can now use this `DAG` object to generate random data using the `sim_from_dag` function:
 
 ```{r}
 set.seed(42)
@@ -176,7 +182,7 @@ Most real data sets include time-varying covariates, e.g. variables that are mea
 knitr::include_graphics("./images_v_sim_from_dag/time_dep_dag.png")
 ```
 
-Here, nodes $A$ and $B$ are time-constant variables that only have a causal effect on the initial state of $C$ and $D$, while nodes $C$ and $D$ change over time interdependently. If we want to simulate data from a DAG that looks like this using the `sim_from_dag` function, we have to add a node to the `child_nodes` list for every point in time that we want to consider.
+Here, nodes $A$ and $B$ are time-constant variables that only have a causal effect on the initial state of $C$ and $D$, while nodes $C$ and $D$ change over time interdependently. If we want to simulate data from a DAG that looks like this using the `sim_from_dag` function, we have to add a node to the for every point in time that we want to consider.
 
 We will quickly go through a somewhat simpler example, considering only 2 points in time. We define our nodes in the following way:
 

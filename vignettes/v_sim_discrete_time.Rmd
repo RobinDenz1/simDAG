@@ -28,7 +28,7 @@ A discrete-time simulation (DTS) consists of two steps. First, a bunch of entiti
 knitr::include_graphics("./images_v_sim_discrete_time/flow_chart.png")
 ```
 
-The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$ is either simulated using the `sim_from_dag` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the nodes defined by the `tx_nodes` defined by the user. Below we give a short example on how this works in practice. A more realistic (and therefore more complex) example can be found in a different vignette.
+The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$ is either simulated using the `sim_from_dag` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the time-dependent nodes added to the `dag` using `node_td` calls. Below we give a short example on how this works in practice. A more realistic (and therefore more complex) example can be found in a different vignette.
 
 A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
 
@@ -43,7 +43,7 @@ Similar to the `sim_from_dag` function, the user needs to specify the nodes of t
 
 * *tx_nodes*: This type of node is more complex and is the reason to use DTS. Variables in this category are updated at each step in time of the simulation process. These updates can be fairly easy, such as increasing the age of a person by one time unit on each step, or they can be very complex. For example, if we want to model the occurrence of some kind of time-dependent-event, we can generate the probability of that occurrence at each step depending on other variables in the simulation model or past states of the variable itself.
 
-The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` object as usual when using the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify this DAG can be found in the documentation of the `sim_from_dag` and `node` functions or the associated vignette.
+The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` object and calls to the `node` function as usual when using the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify this DAG can be found in the documentation of the `sim_from_dag` and `node` functions or the associated vignette.
 
 
 # A Simple Example - One Terminal Event
@@ -54,21 +54,19 @@ Let us consider a very simple example first. Suppose we want to generate data ac
 knitr::include_graphics("./images_v_sim_discrete_time/simple_dag.png")
 ```
 
-Here, `sex` is a time-invariant variables, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are death, they stay dead (no reincarnation allowed).
+Here, `sex` is a time-invariant variables, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
 
 If we want to use this structure in the `sim_discrete_time` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
 
 ```{r}
 library(simDAG)
 
-t0_dag <- empty_dag() +
+dag <- empty_dag() +
   node("age", type="rnorm", mean=30, sd=5) +
-  node("sex", type="rbernoulli", p=0.5) +
-  node("death", type="binomial", parents=c("age", "sex"), betas=c(0.15, 0.25),
-       intercept=-10)
+  node("sex", type="rbernoulli", p=0.5)
 ```
 
-We assume that `age` is normally distributed and that we have equal numbers of each `sex`. We assume that the probability of `death` can be described using a simple logistic regression model. This information is enough to specify the data set at $t = 0$. Now we only need to define the `tx_nodes` argument and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
+We assume that `age` is normally distributed and that we have equal numbers of each `sex`. This information is enough to specify the data set at $t = 0$. Now we only need to add additional time-dependent nodes using the `node_td` function and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
 
 ```{r}
 node_advance_age <- function(data) {
@@ -76,7 +74,7 @@ node_advance_age <- function(data) {
 }
 ```
 
-Next, we need to define a function that will return the probability of `death` for every individual at time $t$, given their current `age` and their `sex`. We again use the same logistic regression model, but make it explicit for exemplary reasons:
+Next, we need to define a function that will return the probability of `death` for every individual at time $t$, given their current `age` and their `sex`. We use a logistic regression model, but make it explicit for exemplary reasons:
 
 ```{r}
 prob_death <- function(data) {
@@ -86,30 +84,24 @@ prob_death <- function(data) {
 }
 ```
 
-Now we can define the `tx_node` list as follows:
+Now we can add those nodes to the `DAG` as follows:
 
 ```{r}
-tx_nodes <- list(list(name="age",
-                      type="advance_age",
-                      parents="age"),
-                 list(name="death",
-                      type="time_to_event",
-                      parents=c("age", "sex"),
-                      prob_fun=prob_death,
-                      event_duration=Inf,
-                      save_past_events=FALSE,
-                      check_inputs=FALSE))
+dag <- dag +
+  node_td("age", type="advance_age", parents="age") +
+  node_td("death", type="time_to_event", parents=c("age", "sex"),
+          prob_fun=prob_death, event_duration=Inf, save_past_events=TRUE,
+          check_inputs=FALSE)
 ```
 
-We simply pass the `node_advance_age` function to the `type` argument of the `age` node. `death` is a *time-to-event* node, because it's an event which is generated from a probability at each step in time. That probability is, as defined here, determined by the `prob_death` function we defined earlier. We set `event_duration` to `Inf` to make this a permanent event (once you are dead, there is no going back). We also set `save_past_events` to `FALSE` because there are no recurrent events here.
+We simply pass the `node_advance_age` function to the `type` argument of the `age` node. `death` is a *time-to-event* node, because it's an event which is generated from a probability at each step in time. That probability, as defined here, is determined by the `prob_death` function we defined earlier. We set `event_duration` to `Inf` to make this a permanent event (once you are dead, there is no going back).
 
 To finally generate the desired data, we simply call the `sim_discrete_time` function:
 
 ```{r}
 set.seed(43)
 sim_dat <- sim_discrete_time(n_sim=10,
-                             t0_dag=t0_dag,
-                             tx_nodes=tx_nodes,
+                             dag=dag,
                              max_t=50,
                              check_inputs=FALSE)
 ```
@@ -122,6 +114,12 @@ head(sim_dat$data)
 
 It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died.
 
+If we want to graphically display a flow diagram of the data-generation mechanism, we may use the `plot` method associated with the output of the `sim_discrete_time` function like this:
+
+```{r fig.width=7, fig.height=5}
+plot(sim_dat)
+```
+
 This particular example could be simulated in a much easier fashion, without relying on a discrete-time approach, because `age` increases linearly and the model for `death` is exactly the same regardless of time. DTS is more useful when truly complex data structures are required. Below we will extend this simple example a little bit, but we will still keep it relatively simple. 
 
 
@@ -130,11 +128,9 @@ This particular example could be simulated in a much easier fashion, without rel
 Suppose that the event of interest wasn't `death`, but a cardiovascular event (`cve`). For the case of simplicity we will assume that the same causal structure and causal coefficients from above still apply, but that the event is now no longer terminal and my reoccur arbitrary number of times. First, let's redefine the nodes to get the new name right:
 
 ```{r}
-t0_dag <- empty_dag() +
+dag <- empty_dag() +
   node("age", type="rnorm", mean=30, sd=5) +
-  node("sex", type="rbernoulli", p=0.5) +
-  node("cve", type="binomial", parents=c("age", "sex"), betas=c(0.15, 0.25),
-       intercept=-15)
+  node("sex", type="rbernoulli", p=0.5)
 ```
 
 We also redefine the function that generates the required event probabilities:
@@ -150,30 +146,40 @@ prob_cve <- function(data) {
 Now, all we have to do in this case is change some arguments of the `node_time_to_event` function:
 
 ```{r}
-tx_nodes <- list(list(name="age",
-                      type="advance_age",
-                      parents="age"),
-                 list(name="cve",
-                      type="time_to_event",
-                      parents=c("age", "sex"),
-                      prob_fun=prob_cve,
-                      event_duration=1,
-                      save_past_events=TRUE,
-                      check_inputs=FALSE))
+dag <- dag +
+  node_td("age", type="advance_age", parents=c("age")) +
+  node_td("cve", type="time_to_event", parents=c("age", "sex"),
+          prob_fun=prob_cve, event_duration=1, save_past_events=TRUE,
+          check_inputs=FALSE)
 ```
 
 Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time` function as before:
 
 ```{r}
 sim_dat <- sim_discrete_time(n_sim=10,
-                             t0_dag=t0_dag,
-                             tx_nodes=tx_nodes,
+                             dag=dag,
                              max_t=50,
                              check_inputs=FALSE)
 head(sim_dat$data)
 ```
 
-In this case, the data is a little more complex. At time $t = 50$, no person is currently experiencing a cardiovascular event, which is why the `cve_event` column is `FALSE` in all rows and the `cve_time` column is `NA` in all rows. However, looking at the `cve_past_event_times` column, one can clearly see that patient 2 experienced two events: the first at $t = 42$ and the second at $t = 48$ etc.
+In this case, the data is a little more complex. At time $t = 50$, only one person is currently experiencing a cardiovascular event, which is why the `cve_event` column is `FALSE` in almost all rows and the `cve_time` column is `NA` in almost all rows. We need to transform this output data into different formats using the `sim2data` function to gain more information.
+
+For example, we can transform it into the start-stop format:
+
+```{r warning=FALSE}
+d_start_stop <- sim2data(sim_dat, to="start_stop")
+head(d_start_stop)
+```
+
+In this format, we can clearly see when the events occured. This type of format is usually used to fit statistical models for time-to-event data. Another possibility is to transform it into the long-format:
+
+```{r warning=FALSE}
+d_long <- sim2data(sim_dat, to="long")
+head(d_long)
+```
+
+This may also be useful to fit discrete-time survival models.
 
 The simulation done here assumes that the time and number of previous events has no effect on any further events of the patient. This assumption may be relaxed by explicitly formulating the `prob_cve` function in a way that it uses the `cve_past_event_times` column to change the probability of further events.
 
