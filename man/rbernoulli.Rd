@@ -20,6 +20,8 @@ A numeric vector of probabilities, used when drawing the trials.
 }
 \details{
 Internally, it uses only a single call to \code{runif}, making it much faster and more memory efficient than using \code{rbinomial}.
+
+Note that this function accepts values of \code{p} that are smaller then 0 and greater than 1. For \code{p < 0} it will always return \code{FALSE}, for \code{p > 1} it will always return \code{TRUE}.
 }
 \author{
 Robin Denz
