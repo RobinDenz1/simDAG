@@ -73,7 +73,10 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
   .id <- NULL
 
   # get initial data
-  if (is.null(t0_data)) {
+  if (is.null(t0_data) & length(dag$root_nodes)==0 &
+      length(dag$child_nodes)==0) {
+    data <- data.table(.id=seq(1, n_sim))
+  } else if (is.null(t0_data)) {
     dag$tx_nodes <- NULL
     data <- sim_from_dag(n_sim=n_sim,
                          dag=dag,

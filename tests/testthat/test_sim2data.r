@@ -16,11 +16,9 @@ dag <- empty_dag() +
   node("bmi", type="gaussian", parents=c("sex", "age"),
        betas=c(1.1, 0.4), intercept=12, error=2) +
   node_td("death", type="time_to_event", parents=c("age", "sex", "bmi"),
-          prob_fun=prob_death, prob_fun_args=list(beta_age=0.1,
-                                                  beta_bmi=0.3,
-                                                  beta_sex=-0.2,
-                                                  intercept=-20),
-          event_duration=Inf, save_past_events=TRUE)
+          prob_fun=prob_death, beta_age=0.1, beta_bmi=0.3,
+          beta_sex=-0.2, intercept=-20, event_duration=Inf,
+          save_past_events=TRUE)
 
 # run simulation for 100 people, 50 days long
 sim <- sim_discrete_time(n_sim=100,

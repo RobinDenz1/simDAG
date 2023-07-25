@@ -101,6 +101,7 @@ names_DAG <- function(x, include_tx_nodes=FALSE) {
   return(out)
 }
 
+## check if DAG object contains time-varying nodes
 is_time_varying_dag <- function(dag) {
   length(dag$tx_nodes)!=0
 }

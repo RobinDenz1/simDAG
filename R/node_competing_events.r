@@ -3,11 +3,12 @@
 ## discrete-time simulations
 #' @importFrom data.table fifelse
 #' @export
-node_competing_events <- function(data, parents, sim_time, name, prob_fun,
-                                  prob_fun_args=list(), event_duration=c(0, 0),
+node_competing_events <- function(data, parents, sim_time, name,
+                                  prob_fun, ..., event_duration=c(0, 0),
                                   immunity_duration=max(event_duration),
                                   save_past_events=TRUE, envir) {
   # get list of arguments
+  prob_fun_args <- list(...)
   prob_fun_args$data <- data
 
   if ("sim_time" %in% names(formals(prob_fun))) {

@@ -44,7 +44,8 @@ test_that("correct nrow, ncol", {
                             sim_time=100,
                             name="sickness",
                             prob_fun=prob_sick,
-                            prob_fun_args=list(rr_smoke0=1, rr_smoke1=5),
+                            rr_smoke0=1,
+                            rr_smoke1=5,
                             event_duration=1,
                             immunity_duration=100,
                             save_past_events=FALSE,
@@ -62,11 +63,12 @@ test_that("correct sim_time", {
                             sim_time=50,
                             name="sickness",
                             prob_fun=prob_sick,
-                            prob_fun_args=list(rr_smoke0=1, rr_smoke1=5),
                             event_duration=1,
                             immunity_duration=100,
                             save_past_events=FALSE,
-                            envir=NULL)
+                            envir=NULL,
+                            rr_smoke0=1,
+                            rr_smoke1=5)
 
   expect_true(unique(out[sickness_event == TRUE]$sickness_time) == 50)
 })
@@ -84,7 +86,8 @@ test_that("save_past_events working", {
                              sim_time=100,
                              name="sickness",
                              prob_fun=prob_sick,
-                             prob_fun_args=list(rr_smoke0=10, rr_smoke1=15),
+                             rr_smoke0=10,
+                             rr_smoke1=15,
                              event_duration=1,
                              immunity_duration=100,
                              save_past_events=TRUE,

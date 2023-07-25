@@ -8,8 +8,8 @@ Simulate a Time-to-Event Node in Discrete-Time Simulation
 This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. See details.
 }
 \usage{
-node_time_to_event(data, parents, sim_time, name, prob_fun,
-                   prob_fun_args=list(), event_duration=0,
+node_time_to_event(data, parents, sim_time, name,
+                   prob_fun, ..., event_duration=0,
                    immunity_duration=event_duration,
                    save_past_events=TRUE, check_inputs=TRUE,
                    envir)
@@ -28,10 +28,10 @@ The current time of the simulation.
 The name of the node. This will be used as prefix before the \code{_event}, \code{_time} and \code{_past_event_times} columns.
   }
   \item{prob_fun}{
-A function that returns a numeric vector of size \code{nrow(data)} containing only number between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function.
+A function that returns a numeric vector of size \code{nrow(data)} containing only numbers between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function. The function needs to have a named argument called \code{data}. If the function has an argument named \code{sim_time}, the current simulation time will also be passed to this function automatically, allowing time-dependent probabilities to be generated. Alternatively this argument can be set to a single number (between 0 and 1), resulting in a fixed probability of occurence for every simulated individual at every point in time.
   }
-  \item{prob_fun_args}{
-A named list of arguments passed to \code{prob_fun}. Set to \code{list()} if you do not want to pass any arguments.
+  \item{...}{
+An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{event_duration}{
 A single number >= 0 specifying how long the event should last.

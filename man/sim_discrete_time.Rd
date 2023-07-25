@@ -120,11 +120,8 @@ prob_death <- function(data, beta_age, beta_sex, beta_bmi, intercept) {
 dag <- dag +
   node_td("age", type="advance_age", parents="age") +
   node_td("death", type="time_to_event", parents=c("age", "sex", "bmi"),
-          prob_fun=prob_death, prob_fun_args=list(beta_age=0.1,
-                                                  beta_bmi=0.3,
-                                                  beta_sex=-0.2,
-                                                  intercept=-20),
-          event_duration=Inf, save_past_events=FALSE)
+          prob_fun=prob_death, beta_age=0.1, beta_bmi=0.3, beta_sex=-0.2,
+          intercept=-20, event_duration=Inf, save_past_events=FALSE)
 
 # run simulation for 100 people, 50 days long
 sim_dt <- sim_discrete_time(n_sim=100,

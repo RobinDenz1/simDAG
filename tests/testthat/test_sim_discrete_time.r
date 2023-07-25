@@ -51,7 +51,7 @@ prob_sick2 <- function(data, rr_sex0, rr_sex1) {
 
 dag <- empty_dag() +
   node_td("sickness1", parents=c("age", "sex"), type="time_to_event",
-          prob_fun=prob_sick1, prob_fun_args=list(rr_sex0=3, rr_sex1=1),
+          prob_fun=prob_sick1, rr_sex0=3, rr_sex1=1,
           event_duration=14, immunity_duration=30, save_past_events=FALSE)
 
 test_that("correct nrow, ncol", {
@@ -68,10 +68,10 @@ test_that("tx_nodes_order working", {
 
   dag <- empty_dag() +
     node_td("sickness1", parents=c("age", "sex"), type="time_to_event",
-            prob_fun=prob_sick1, prob_fun_args=list(rr_sex0=3, rr_sex1=1),
+            prob_fun=prob_sick1, rr_sex0=3, rr_sex1=1,
             event_duration=14, immunity_duration=30, save_past_events=FALSE) +
     node_td("sickness2", parents=c("age", "sex"), type="time_to_event",
-            prob_fun=prob_sick2, prob_fun_args=list(rr_sex0=1, rr_sex1=2),
+            prob_fun=prob_sick2, rr_sex0=1, rr_sex1=2,
             event_duration=14, immunity_duration=100, save_past_events=FALSE)
 
   sim_dat <- suppressWarnings({

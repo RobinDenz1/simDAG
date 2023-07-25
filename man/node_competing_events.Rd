@@ -8,8 +8,8 @@ Simulate a Time-to-Event Node with Multiple Mutually Exclusive Events in Discret
 This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (which type of event the person is currently experiencing) and \code{name_time} (the time at which the current event started). Past events and their kind are stored in two lists. See details.
 }
 \usage{
-node_competing_events(data, parents, sim_time, name, prob_fun,
-                      prob_fun_args=list(), event_duration=c(0, 0),
+node_competing_events(data, parents, sim_time, name,
+                      prob_fun, ..., event_duration=c(0, 0),
                       immunity_duration=max(event_duration),
                       save_past_events=TRUE, envir)
 }
@@ -29,8 +29,8 @@ The name of the node. This will be used as prefix before the \code{_event}, \cod
   \item{prob_fun}{
 A function that returns a numeric matrix with \code{nrow(data)} rows and one column storing probabilities of occurence for each possible event type plus a column for no events. For example, if there are two possible events such as recurrence and death, the matrix would need to contain three columns. The first storing the probability of no-event and the other two columns storing probabilities for recurrence and death per person. Since the numbers are probabilities, the matrix should only contain numbers between 0 and 1 that sum to 1 in each row. These numbers specify the person-specific probability of experiencing the events modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rcategorical}} function.
   }
-  \item{prob_fun_args}{
-A named list of arguments passed to \code{prob_fun}. Set to \code{list()} (default) if you do not want to pass any arguments.
+  \item{...}{
+An arbitrary number of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments.
   }
   \item{event_duration}{
 A numeric vector containing one positive integer for each type of event of interest, specifying how long that event should last. For example, if we are interested in modelling the time to a cardiovascular event with death as competing event, this argument would need 2 entries. One would specify the duration of the cardiovascular event and the other would be \code{Inf} (because death is a terminal event).
@@ -39,7 +39,7 @@ A numeric vector containing one positive integer for each type of event of inter
 A single number >= \code{max(event_duration)} specifying how long the person should be immune to all events after experiencing one. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{max(event_duration) + 10} should be used.
   }
   \item{save_past_events}{
-When the event modeled using this node is recurrent (\code{immunity_duration < Inf & event_duration < Inf}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{ce_past_events} list and \code{ce_past_causes} list which are included in the output of the \code{sim_discrete_time} function. This extends the runtime and increases RAM usage, so if you are not interested in the timing of previous events or if you are using \code{save_states="all"} this functionality can be turned off by setting this argument to \code{FALSE}
+When the event modeled using this node is recurrent (\code{immunity_duration < Inf & any(event_duration < Inf)}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{ce_past_events} list and \code{ce_past_causes} list which are included in the output of the \code{sim_discrete_time} function. This extends the runtime and increases RAM usage, so if you are not interested in the timing of previous events or if you are using \code{save_states="all"} this functionality can be turned off by setting this argument to \code{FALSE}
   }
   \item{envir}{
 Only used internally to efficiently store the past event times. Cannot be used by the user.

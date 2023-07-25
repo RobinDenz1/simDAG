@@ -3,11 +3,15 @@
 ## discrete-time simulations
 #' @importFrom data.table fifelse
 #' @export
-node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
-                               prob_fun_args=list(), event_duration=0,
+node_time_to_event <- function(data, parents, sim_time, name,
+                               prob_fun, ..., event_duration=0,
                                immunity_duration=event_duration,
                                save_past_events=TRUE, check_inputs=TRUE,
                                envir) {
+
+  # get list of arguments
+  prob_fun_args <- list(...)
+  prob_fun_args$data <- data
 
   if (check_inputs) {
     check_inputs_node_time_to_event(data=data, parents=parents,
@@ -19,15 +23,16 @@ node_time_to_event <- function(data, parents, sim_time, name, prob_fun,
                                     save_past_events=save_past_events)
   }
 
-  # get list of arguments
-  prob_fun_args$data <- data
-
-  if ("sim_time" %in% names(formals(prob_fun))) {
+  if (is.function(prob_fun) && "sim_time" %in% names(formals(prob_fun))) {
     prob_fun_args$sim_time <- sim_time
   }
 
   # get event probabilities
-  event_prob <- do.call(prob_fun, args=prob_fun_args)
+  if (is.function(prob_fun)) {
+    event_prob <- do.call(prob_fun, args=prob_fun_args)
+  } else {
+    event_prob <- prob_fun
+  }
 
   # specific names
   name_event <- paste0(name, "_event")

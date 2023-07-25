@@ -61,7 +61,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   return(node_list)
 }
 
-## define a single time-fixed node to grow DAG objects using the + syntax
+## define a single time-varying node to grow DAG objects using the + syntax
 # NOTE: Having a carbon copy of node() looks stupid and I hate doing it.
 #       The reason however is that having two separate functions for
 #       time-fixed and time-varying nodes makes it both easier to use and

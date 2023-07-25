@@ -16,7 +16,8 @@ dag_from_data:
 
 node_time_to_event:
 	- allow user access to past_event_times list in some way
-	- add options to directly add "days_since_event", "number_of_previous_events" and similar stuff to data
+	- add options to directly add "days_since_event", "number_of_previous_events"
+	- maybe change immunity_duration parameter to start counting after event stops
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment

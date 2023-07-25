@@ -12,7 +12,9 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
               (length(sim_time) == 1 && is.numeric(sim_time)))
   stopifnot("'name' must be a single character." =
               (length(name) == 1 && is.character(name)))
-  stopifnot("'prob_fun' must be a function." = is.function(prob_fun))
+  stopifnot("'prob_fun' must be a function or a single number." =
+              is.function(prob_fun) | (is.numeric(prob_fun) &
+                                       length(prob_fun)==1))
   stopifnot("'prob_fun_args' must be a list." = is.list(prob_fun_args))
   stopifnot("'event_duration' must be a single integer." =
               (length(event_duration) == 1 && is.numeric(event_duration)))
