@@ -18,6 +18,12 @@ sim2start_stop.all <- function(sim) {
   # transform to long format
   data <- sim2long(sim=sim)
 
+  # remove optional time-to-event columns
+  c_names <- colnames(data)
+  c_names <- c_names[!(endsWith(c_names, "_time_since_last") |
+                       endsWith(c_names, "_event_count"))]
+  data <- data[, c_names, with=FALSE]
+
   varying <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
   data <- long2start_stop(data=data, id=".id", time=".time",
                           varying=varying, check_inputs=FALSE)
@@ -148,9 +154,11 @@ sim2start_stop.last <- function(sim) {
 
   # extract other variables
   remove_vars <- c(paste0(tte_names, "_event"),
-                   paste0(tte_names, "_time"))
+                   paste0(tte_names, "_time"),
+                   paste0(tte_names, "_time_since_last"),
+                   paste0(tte_names, "_event_count"))
 
-  data_t0 <- sim$data[, !remove_vars, with=FALSE]
+  data_t0 <- suppressWarnings(sim$data[, !remove_vars, with=FALSE])
 
   # merge with start / stop data
   data <- data[data_t0, on=".id"]

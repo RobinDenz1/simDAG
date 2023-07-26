@@ -15,9 +15,8 @@ dag_from_data:
 	- should also allow more node types
 
 node_time_to_event:
-	- allow user access to past_event_times list in some way
-	- add options to directly add "days_since_event", "number_of_previous_events"
 	- maybe change immunity_duration parameter to start counting after event stops
+	- maybe make time_since_last columns -1 if event hasn't happened yet instead of NA?
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment
@@ -30,6 +29,9 @@ sim2start_stop:
 	- add support for competing event nodes
 	- possible bug if columns are named "start" or "stop"
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
+
+sim2long.last:
+	- should include the _time_since_last and _event_count columns if specified
 
 plot.simDT
 	- bug when changing box_r_width and box_hdist at the same time

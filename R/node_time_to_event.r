@@ -6,6 +6,7 @@
 node_time_to_event <- function(data, parents, sim_time, name,
                                prob_fun, ..., event_duration=0,
                                immunity_duration=event_duration,
+                               time_since_last=FALSE, event_count=FALSE,
                                save_past_events=TRUE, check_inputs=TRUE,
                                envir) {
 
@@ -64,6 +65,28 @@ node_time_to_event <- function(data, parents, sim_time, name,
                                 days_since_event >= immunity_duration &
                                 event, sim_time, NA_integer_))))
 
+  # optional column containing days since onset of last recorded event
+  if (time_since_last) {
+    name_time_since <- paste0(name, "_time_since_last")
+
+    time_since <- fifelse(is.na(event_time) & is.na(data[[name_time_since]]),
+                          NA_integer_,
+                          fifelse(is.na(event_time) &
+                                  !is.na(data[[name_time_since]]),
+                                  data[[name_time_since]] + 1,
+                          fifelse(event_time == sim_time, 0,
+                                  data[[name_time_since]] + 1)))
+  }
+
+  # optional column counting the number of events the individual experienced
+  if (event_count) {
+    name_n_event <- paste0(name, "_event_count")
+
+    n_event <- data[[name_n_event]]
+    n_event <- fifelse(is.na(event_time), n_event,
+                       fifelse(event_time == sim_time, n_event + 1, n_event))
+  }
+
   # update past event times
   # NOTE: Looks weird, but is super efficient because the list does not have
   #       to be copied and the assignment is based on a single index, meaning
@@ -90,6 +113,14 @@ node_time_to_event <- function(data, parents, sim_time, name,
   out <- data.table::data.table(event=event,
                                 event_time=event_time)
   colnames(out) <- c(name_event, name_time)
+
+  if (time_since_last) {
+    out[, (name_time_since) := time_since]
+  }
+
+  if (event_count) {
+    out[, (name_n_event) := n_event]
+  }
 
   return(out)
 }
