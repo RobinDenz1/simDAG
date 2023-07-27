@@ -35,3 +35,21 @@ test_that("do multiple nodes", {
 
   expect_equal(out, expected)
 })
+
+test_that("with time-dependent node", {
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=1) +
+    node("B", type="binomial", parents="A", betas=3, intercept=-1) +
+    node_td("C", type="gaussian", parents=c("A", "B"), betas=c(1, 2),
+            intercept=2, error=10)
+
+  out <- do(dag, names="C", values=1)
+
+  expected <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=1) +
+    node("B", type="binomial", parents="A", betas=3, intercept=-1) +
+    node("C", type="rconstant", constant=1)
+
+  expect_equal(out, expected)
+})

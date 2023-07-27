@@ -355,6 +355,9 @@ check_inputs_dag_from_data <- function(dag, data, return_models, na.rm) {
     stop("'return_models' must be either TRUE or FALSE.")
   } else if (!(is.logical(na.rm) & length(na.rm)==1)) {
     stop("'na.rm' must be either TRUE or FALSE.")
+  } else if (is_time_varying_dag(dag)) {
+    stop("'dag' may not contain time-dependent nodes added with the",
+         " node_td() function.")
   }
 
   # check if all nodes are in data

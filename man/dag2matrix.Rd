@@ -12,7 +12,7 @@ dag2matrix(dag, include_root_nodes=TRUE)
 }
 \arguments{
   \item{dag}{
-A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{?empty_dag} or \code{?node} for more details.
+A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{?empty_dag} or \code{?node} for more details. Currently does not support DAGs with time-dependent nodes added using the \code{\link{node_td}} function.
   }
   \item{include_root_nodes}{
 Whether to include root nodes in the output matrix. Should usually be kept at \code{TRUE} (default).

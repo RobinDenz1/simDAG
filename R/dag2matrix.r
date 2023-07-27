@@ -10,6 +10,9 @@ dag2matrix <- function(dag, include_root_nodes=TRUE) {
   } else if (!(is.logical(include_root_nodes) &
                length(include_root_nodes)==1)) {
     stop("'include_root_nodes' must be either TRUE or FALSE.")
+  } else if (is_time_varying_dag(dag)) {
+    stop("'dag' may not contain time-dependent nodes added using the",
+         " node_td() function.")
   }
 
   # extract node names

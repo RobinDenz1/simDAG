@@ -8,9 +8,11 @@ do <- function(dag, names, values) {
   # remove old node definitions
   names_roots <- lapply(dag$root_nodes, function(x){x$name})
   names_children <- lapply(dag$child_nodes, function(x){x$name})
+  names_tx_nodes <- lapply(dag$tx_nodes, function(x){x$name})
 
   dag$root_nodes[names_roots %in% names] <- NULL
   dag$child_nodes[names_children %in% names] <- NULL
+  dag$tx_nodes[names_tx_nodes %in% names] <- NULL
 
   # replace with constant value definition
   for (i in seq_len(length(names))) {

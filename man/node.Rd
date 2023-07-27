@@ -10,6 +10,7 @@ These functions should be used in conjunction with the \code{\link{empty_dag}} f
 }
 \usage{
 node(name, type, parents=NULL, formula=NULL, ...)
+
 node_td(name, type, parents=NULL, formula=NULL, ...)
 }
 \arguments{

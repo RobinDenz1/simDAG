@@ -12,7 +12,7 @@ dag_from_data(dag, data, return_models=FALSE, na.rm=FALSE)
 }
 \arguments{
   \item{dag}{
-A partially specified \code{DAG} object created using the \code{\link{empty_dag}} and \code{\link{node}} functions. See \code{?node} for a more detailed description on how to do this. All nodes need to contain information about their \code{name}, \code{type} and \code{parents}. All other attributes will be added (or overwritten if already in there) when using this function.
+A partially specified \code{DAG} object created using the \code{\link{empty_dag}} and \code{\link{node}} functions. See \code{?node} for a more detailed description on how to do this. All nodes need to contain information about their \code{name}, \code{type} and \code{parents}. All other attributes will be added (or overwritten if already in there) when using this function. Currently does not support DAGs with time-dependent nodes added with the \code{\link{node_td}} function.
   }
   \item{data}{
 A \code{data.frame} used to obtain the parameters needed in the \code{DAG} object. It needs to contain a column for every node specified in the \code{dag} argument.
