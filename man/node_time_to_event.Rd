@@ -71,7 +71,7 @@ The probability of occurence is calculated using the function provided by the us
 
 \strong{\emph{What can be done with it}}:
 
-This type of node naturally support the implementation of terminal and recurrent events that may be influenced by pretty much anything. By specifying the \code{parents} and \code{prob_fun} arguments correctly, it is possible to create an event type that is dependent on past events of itself or other time-to-event variables and other variables in general. The user can include any amount of these nodes in their simulation. It may also be used to simulate any kind of binary time-dependent variable that one would usually not associate with the name "event" as well. It is very flexible, but it does require the user to do some coding by themselves.
+This type of node naturally support the implementation of terminal and recurrent events that may be influenced by pretty much anything. By specifying the \code{parents} and \code{prob_fun} arguments correctly, it is possible to create an event type that is dependent on past events of itself or other time-to-event variables and other variables in general. The user can include any amount of these nodes in their simulation. It may also be used to simulate any kind of binary time-dependent variable that one would usually not associate with the name "event" as well. It is very flexible, but it does require the user to do some coding by themselves (e.g. creating a suitable function for the \code{prob_fun} argument).
 
 \strong{\emph{What can't be done with it}}:
 

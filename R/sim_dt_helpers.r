@@ -1,4 +1,17 @@
 
+## add output of a node function to data.frame
+add_node_to_data <- function(data, new, name) {
+  if (is.data.frame(new)) {
+    new_names <- colnames(new)
+    for (i in seq_len(length(new_names))) {
+      data[[new_names[i]]] <- new[[new_names[i]]]
+    }
+  } else {
+    data[, name] <- new
+  }
+  return(data)
+}
+
 ## add some parent nodes that should be passed automatically
 add_missing_parents <- function(node) {
 
@@ -93,6 +106,21 @@ get_ce_names <- function(tx_node_names, tx_node_types) {
     paste, collapse="_")
 
   return(ce_names)
+}
+
+## check if a node has an argument and optionally if that argument is
+## set to TRUE
+node_has_arg <- function(node, arg, arg_is_true=FALSE) {
+  if (!is.null(node[[arg]])) {
+    if (arg_is_true && !all(node[[arg]])) {
+      out <- FALSE
+    } else {
+      out <- TRUE
+    }
+  } else {
+    out <- FALSE
+  }
+  return(out)
 }
 
 ## add columns that will be needed for time-to-event and

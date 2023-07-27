@@ -1,17 +1,4 @@
 
-## add output of a node function to data.frame
-add_node_to_data <- function(data, new, name) {
-  if (is.data.frame(new)) {
-    new_names <- colnames(new)
-    for (i in seq_len(length(new_names))) {
-      data[[new_names[i]]] <- new[[new_names[i]]]
-    }
-  } else {
-    data[, name] <- new
-  }
-  return(data)
-}
-
 ## generate data from a DAG with defined nodes
 #' @importFrom data.table data.table
 #' @importFrom data.table setDT

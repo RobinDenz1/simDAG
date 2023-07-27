@@ -15,7 +15,6 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
   stopifnot("'prob_fun' must be a function or a single number." =
               is.function(prob_fun) | (is.numeric(prob_fun) &
                                        length(prob_fun)==1))
-  stopifnot("'prob_fun_args' must be a list." = is.list(prob_fun_args))
   stopifnot("'event_duration' must be a single integer." =
               (length(event_duration) == 1 && is.numeric(event_duration)))
   stopifnot("'immunity_duration' must be a single integer." =
@@ -44,7 +43,7 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
     if (length(setdiff(names(formals(prob_fun)),
                        c("data", "sim_time"))) == 0) {
       stopifnot(
-        "Defined parameters in 'prob_fun_args' are not used for 'prob_fun'." =
+        "'prob_fun' received some arguments not mentioned in that function." =
           identical(length(setdiff(names(formals(prob_fun)),
                                    c("data", "sim_time"))),
                     length(names(prob_fun_args))))
@@ -55,7 +54,8 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
                               c("data", "sim_time"))[i],
                       names(prob_fun_args))) {
           stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
-               " must be defined in 'prob_fun_args'.")
+               " must be included in the node_td() if they don't have a",
+               " default value.")
         }
       }
     }

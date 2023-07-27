@@ -1,6 +1,5 @@
 
-## obtain an adjacency matrix of the causal DAG from the
-## specified node lists
+## obtain an adjacency matrix of the causal DAG from a DAG object
 #' @export
 dag2matrix <- function(dag, include_root_nodes=TRUE) {
 
@@ -11,8 +10,9 @@ dag2matrix <- function(dag, include_root_nodes=TRUE) {
                length(include_root_nodes)==1)) {
     stop("'include_root_nodes' must be either TRUE or FALSE.")
   } else if (is_time_varying_dag(dag)) {
-    stop("'dag' may not contain time-dependent nodes added using the",
-         " node_td() function.")
+    warning("This function currently does not support dag objects",
+            " with time-varying nodes added using the node_td() function.",
+            " The output will only contain the nodes added with node().")
   }
 
   # extract node names

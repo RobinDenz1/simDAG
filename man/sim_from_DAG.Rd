@@ -18,7 +18,7 @@ A \code{DAG} object created using the \code{\link{empty_dag}} function with node
 A single number specifying how many observations should be generated.
   }
   \item{sort_dag}{
-Whether to topologically sort the DAG before starting the simulation or not. If the nodes in \code{child_nodes} are already topologically sorted, this argument can be set to \code{FALSE} to safe some computation time. This usually won't safe too much time though, because it internally uses the \code{topological_sort} function from the \pkg{Rfast} package, which is very fast.
+Whether to topologically sort the DAG before starting the simulation or not. If the nodes in \code{dag} were already added in a topologically sorted manner, this argument can be set to \code{FALSE} to safe some computation time. This usually won't safe too much time though, because it internally uses the \code{topological_sort} function from the \pkg{Rfast} package, which is very fast.
   }
   \item{check_inputs}{
 Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.

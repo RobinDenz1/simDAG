@@ -77,7 +77,7 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
                         arrow_node_dist=arrow_node_dist, gg_theme=gg_theme)
 
   # adjacency matrix
-  adj_mat <- dag2matrix(dag=x, include_root_nodes=TRUE)
+  adj_mat <- suppressWarnings(dag2matrix(dag=x, include_root_nodes=TRUE))
 
   if (!is.null(node_names)) {
     colnames(adj_mat) <- node_names

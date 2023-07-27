@@ -12,7 +12,7 @@ long2start_stop(data, id, time, varying, check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
-A \code{data.table} including data in the long-format.
+A \code{data.table} or an object that can be coerced to a \code{data.table} (such as a \code{data.frame}) including data in the long-format.
   }
   \item{id}{
 A single character string specifying a unique person identifier included in in \code{data}.

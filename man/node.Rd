@@ -18,7 +18,7 @@ node_td(name, type, parents=NULL, formula=NULL, ...)
 A single character string specifying the name of the node.
   }
   \item{type}{
-A single character string specifying the type of the node. Depending on whether the node is a root node or a child node, different node types are allowed. See details.
+A single character string specifying the type of the node. Depending on whether the node is a root node, a child node or a time-dependent node different node types are allowed. See details.
   }
   \item{parents}{
 A character vector of names, specifying the parents of the node or \code{NULL} (default). If \code{NULL}, the node is treated as a root node. For convenience it is also allowed to set \code{parents=""} to indicate that the node is a root node.
@@ -90,7 +90,7 @@ It is very simple to write a new custom \code{node_function} to be used instead,
 
 }
 \note{
-Contrary to the R standard, this function does NOT support partial matching of argument names. This means that supplying \code{nam="age"} will not be recognized as \code{name="age"} and instead will be added as additional node argument used in the respective data-generating function call when using \code{sim_from_dag}.
+Contrary to the R standard, this function does \bold{NOT} support partial matching of argument names. This means that supplying \code{nam="age"} will not be recognized as \code{name="age"} and instead will be added as additional node argument used in the respective data-generating function call when using \code{sim_from_dag}.
 }
 \value{
 Returns a \code{DAG.node} object which can be added to a \code{DAG} object directly.

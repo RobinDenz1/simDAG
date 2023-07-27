@@ -60,10 +60,87 @@ sim2long.last <- function(sim) {
 
   data[, .time := rep(seq_len(sim$max_t), nrow(sim$data))]
 
+  data <- add_optional_cols_long.last(data=data, tx_nodes=sim$tx_nodes)
+
   # reorder columns
   first_cols <- c(".id", ".time")
   setcolorder(data, c(first_cols,
                       colnames(data)[!colnames(data) %in% first_cols]))
+
+  return(data)
+}
+
+## nodes of type time_to_event can have additional time-varying columns
+## that need to be added manually to the long-form dataset if only the
+## last simulation state was saved. This function does that
+#' @importFrom data.table :=
+#' @importFrom data.table shift
+#' @importFrom data.table fifelse
+#' @importFrom data.table .N
+add_optional_cols_long.last <- function(data, tx_nodes) {
+
+  .id <- NULL
+
+  # identify which nodes have optional columns
+  tx_nodes_type <- vapply(tx_nodes, FUN=function(x){x$type},
+                          FUN.VALUE=character(1))
+  tx_nodes <- tx_nodes[tx_nodes_type=="time_to_event"]
+
+  if (length(tx_nodes) > 0) {
+    tx_names <- vapply(tx_nodes, FUN=function(x){x$name},
+                       FUN.VALUE=character(1))
+
+    # check if they do have an optional column
+    has_time_since_last <- vapply(tx_nodes,
+                                  FUN=node_has_arg,
+                                  FUN.VALUE=logical(1),
+                                  arg="time_since_last",
+                                  arg_is_true=TRUE)
+    has_event_count <- vapply(tx_nodes,
+                              FUN=node_has_arg,
+                              FUN.VALUE=logical(1),
+                              arg="event_count",
+                              arg_is_true=TRUE)
+
+    # add event counts
+    if (any(has_event_count)) {
+
+      rel_cols <- tx_names[has_event_count | has_time_since_last]
+      for (i in seq_len(length(rel_cols))) {
+
+        orig_name <- rel_cols[i]
+        new_name <- paste0(orig_name, "_event_count")
+        name_shift <- paste0(new_name, "_shift")
+
+        data[, (name_shift) := shift(eval(parse(text=orig_name)),
+                                     type="lag", fill=NA), by=.id]
+        data[[new_name]] <- fifelse(data$.time==1 & data[[orig_name]], 1,
+                                    fifelse(!data[[name_shift]] &
+                                            data[[orig_name]], 1, 0, na=0))
+        data[, (new_name) := cumsum(eval(parse(text=new_name))), by=.id]
+        data[, (name_shift) := NULL]
+      }
+    }
+
+    # add time since last event
+    if (any(has_time_since_last)) {
+
+      rel_cols <- tx_names[has_time_since_last]
+      for (i in seq_len(length(rel_cols))) {
+
+        new_name <- paste0(rel_cols[i], "_time_since_last")
+        count_name <- paste0(rel_cols[i], "_event_count")
+
+        data[[new_name]] <- NA_integer_
+        data[, (new_name) := seq_len(.N), by=c(".id", count_name)]
+        data[eval(parse(text=count_name))==0, (new_name) := NA_integer_]
+
+        if (!has_event_count[i]) {
+          data[, (rel_cols[i]) := NULL]
+        }
+      }
+    }
+  }
 
   return(data)
 }
