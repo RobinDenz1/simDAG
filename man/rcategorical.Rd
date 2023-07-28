@@ -31,6 +31,8 @@ In case of a simple numeric vector (class probabilities should be the same for a
 Robin Denz
 }
 \examples{
+library(simDAG)
+
 rcategorical(n=5, labels=c("A", "B", "C"), probs=c(0.1, 0.2, 0.7))
 
 rcategorical(n=2, probs=matrix(c(0.1, 0.2, 0.5, 0.7, 0.4, 0.1), nrow=2))

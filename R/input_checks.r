@@ -496,15 +496,13 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
       stopifnot("All elements of 'tx_nodes' must have a type." =
                   (length(tx_nodes[[i]]$type) == 1 &&
                      is.character(tx_nodes[[i]]$type)))
-      ## rudimentary type checks for variables 'prob_fun', 'prob_fun_args',
-      ##'event_duration', 'immunity_duration' and 'save_past_events'
-      ##'in function 'check_inputs_node_time_to_event'
+      ## rudimentary type checks
       if (tx_nodes[[i]]$type == "time_to_event") {
         stopifnot(
           "Elements of type 'time_to_event' must have a prob_fun." =
             !is.null(tx_nodes[[i]]$prob_fun))
-        ## variables 'prob_fun_args', 'event_duration', 'immunity_duration'
-        ## and 'save_past_events' have default values
+        ## prob_fun_args, event_duration, immunity_duration
+        ## and save_past_events have default values
       }
     }
   }

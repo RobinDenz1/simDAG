@@ -14,10 +14,6 @@ sim_from_dag:
 dag_from_data:
 	- should also allow more node types
 
-node_time_to_event:
-	- maybe change immunity_duration parameter to start counting after event stops
-	- maybe make time_since_last columns -1 if event hasn't happened yet instead of NA?
-
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment
 	  the probability matrix, because then other events would still be possible
@@ -25,9 +21,11 @@ node_competing_events:
 	- add input checks (could probably use most of the checks for node_time_to_event)
 	- allow user access to past_event_times and past_event_causes list
 
+node_negative_binomial:
+	- I think it's not working correctly yet
+
 sim2start_stop:
 	- add support for competing event nodes
-	- possible bug if columns are named "start" or "stop"
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
 plot.simDT

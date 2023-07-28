@@ -28,7 +28,7 @@ A single number specifying the intercept that should be used when generating the
   }
 }
 \details{
-More explanation
+Essentially, this function simply calculates the linear predictor defined by the \code{betas}-coefficients, the \code{intercept} and the values of the \code{parents}. The exponential function is then applied to this predictor and the result is passed to the \code{\link[stats]{rpois}} function. The result is a draw from a subject-specific poisson distribution, resembling the user-defined poisson regression model.
 }
 \author{
 Robin Denz

@@ -14,6 +14,10 @@ node_time_to_event <- function(data, parents, sim_time, name,
   prob_fun_args <- list(...)
   prob_fun_args$data <- data
 
+  if (is.function(prob_fun) && "sim_time" %in% names(formals(prob_fun))) {
+    prob_fun_args$sim_time <- sim_time
+  }
+
   if (check_inputs) {
     check_inputs_node_time_to_event(data=data, parents=parents,
                                     sim_time=sim_time, name=name,
@@ -22,10 +26,6 @@ node_time_to_event <- function(data, parents, sim_time, name,
                                     event_duration=event_duration,
                                     immunity_duration=immunity_duration,
                                     save_past_events=save_past_events)
-  }
-
-  if (is.function(prob_fun) && "sim_time" %in% names(formals(prob_fun))) {
-    prob_fun_args$sim_time <- sim_time
   }
 
   # get event probabilities
@@ -128,7 +128,7 @@ node_time_to_event <- function(data, parents, sim_time, name,
 ## special assign function which assigns a vector of person ids to a list
 ## storing previous events for all time_to_event nodes
 # NOTE: i is a string specifying which variable, j is the time index
-assign2list <- function(name, i, j, value, envir){
+assign2list <- function(name, i, j, value, envir) {
   paste0(name, "[['", i, "']][[", j, "]] <- ", value) |>
     str2lang() |>
     eval(envir=envir)

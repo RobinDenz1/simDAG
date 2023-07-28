@@ -69,9 +69,13 @@ The \code{_event} column will stay \code{TRUE} until the event is over. The dura
 
 The probability of occurence is calculated using the function provided by the user using the \code{prob_fun} argument. This can be an arbitrary complex function. The only requirement is that it takes \code{data} as a first argument. The columns defined by the \code{parents} argument will be passed to this argument automatically. If it has an argument called \code{sim_time}, the current time of the simulation will automatically be passed to it as well. Any further arguments can be passed using the \code{...} syntax. A simple example could be a logistic regression node, in which the probability is calculated as an additive linear combination of the columns defined by \code{parents}. A more complex function could include simulation-time dependent effects, further effects dependent on past event times etc. Examples can be found below and in the vignettes.
 
+\strong{\emph{How it is Used}}:
+
+This function should never be called directly by the user. Instead, the user should define a DAG object using the \code{\link{empty_dag}} and \code{\link{node_td}} functions and set the \code{type} argument inside of a \code{node_td} call to \code{"time_to_event"}. This DAG can be passed to the \code{\link{sim_discrete_time}} function to generate the desired data. Many examples and more explanations are given below and in the vignettes of this package.
+
 \strong{\emph{What can be done with it}}:
 
-This type of node naturally support the implementation of terminal and recurrent events that may be influenced by pretty much anything. By specifying the \code{parents} and \code{prob_fun} arguments correctly, it is possible to create an event type that is dependent on past events of itself or other time-to-event variables and other variables in general. The user can include any amount of these nodes in their simulation. It may also be used to simulate any kind of binary time-dependent variable that one would usually not associate with the name "event" as well. It is very flexible, but it does require the user to do some coding by themselves (e.g. creating a suitable function for the \code{prob_fun} argument).
+This type of node naturally supports the implementation of terminal and recurrent events that may be influenced by pretty much anything. By specifying the \code{parents} and \code{prob_fun} arguments correctly, it is possible to create an event type that is dependent on past events of itself or other time-to-event variables and other variables in general. The user can include any amount of these nodes in their simulation. It may also be used to simulate any kind of binary time-dependent variable that one would usually not associate with the name "event" as well. It is very flexible, but it does require the user to do some coding by themselves (e.g. creating a suitable function for the \code{prob_fun} argument).
 
 \strong{\emph{What can't be done with it}}:
 
@@ -82,5 +86,60 @@ Currently this function only allows binary events. Categorical event types may b
 Robin Denz, Katharina Meiszl
 }
 \examples{
-# TODO: Add examples
+library(simDAG)
+
+## a simple terminal time-to-event node, with a constant probability of
+## occurence, independent of any other variable
+dag <- empty_dag() +
+  node_td("death", type="time_to_event", prob_fun=0.0001,
+          event_duration=Inf)
+
+## a simple recurrent time-to-event node with a constant probability of
+## occurence, independent of any other variable
+dag <- empty_dag() +
+  node_td("car_crash", type="time_to_event", prob_fun=0.001, event_duration=1)
+
+## a time-to-event node with a time-dependent probability function that
+## has an additional argument
+prob_car_crash <- function(data, sim_time, base_p) {
+  return(base_p + sim_time * 0.0001)
+}
+
+dag <- empty_dag() +
+  node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
+          event_duration=1, base_p=0.0001)
+
+## a time-to-event node with a probability function dependent on a
+## time-fixed variable
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
+          parents="sex")
+
+## a little more complex car crash simulation, where the probability for
+## a car crash is dependent on the sex, and the probability of death is
+## highly increased for 3 days after a car crash happened
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+prob_death <- function(data) {
+  ifelse(data$car_crash_event, 0.1, 0.0001)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
+          parents="sex") +
+  node_td("death", type="time_to_event", prob_fun=prob_death,
+          parents="car_crash_event")
+
+# use the sim_discrete_time function to simulate data from one of these DAGs:
+sim <- sim_discrete_time(dag, n_sim=20, max_t=500)
+
+## more examples can be found in the vignettes of this package
 }

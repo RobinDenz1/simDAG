@@ -93,6 +93,8 @@ Robin Denz, Katharina Meiszl
 \examples{
 library(simDAG)
 
+set.seed(454236)
+
 ## simulating death dependent on age, sex, bmi
 ## NOTE: this example is explained in detail in one of the vignettes
 

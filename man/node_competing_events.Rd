@@ -66,12 +66,42 @@ This type of node naturally support the implementation of competing events, wher
 
 \strong{\emph{What can't be done with it}}:
 
-This function may only be used to generate competing events, meaning that the occurence of event 1 at \eqn{t = 1} makes it impossible for event 2 at \eqn{t = 1} to occur. If the user wants to generate multiple events that are not mutually exclusive, he or she may add multiple \code{\link{node_time_to_event}} based nodes to the \code{tx_nodes} argument of the \code{\link{sim_discrete_time}} function.
+This function may only be used to generate competing events, meaning that the occurence of event 1 at \eqn{t = 1} makes it impossible for event 2 at \eqn{t = 1} to occur. If the user wants to generate multiple events that are not mutually exclusive, he or she may add multiple \code{\link{node_time_to_event}} based nodes to the \code{dag} argument of the \code{\link{sim_discrete_time}} function.
+
+In fact, a competing events node may be simulated using multiple calls to the \code{\link{node_time_to_event}} based nodes as well, by defining the \code{prob_fun} argument of these nodes in such a way that the occurence of event A makes the occurence of event B impossible. This might actually be easier to implement in some situations, because it doesn't require the user to manually define a probability function that outputs a matrix of subject-specific probabilities.
 
 }
 \author{
 Robin Denz
 }
 \examples{
-# TODO: Add examples
+library(simDAG)
+
+## a competing_events node with only terminal events, all with a constant
+## probability of occurence, independent of any other variable
+prob_death_illness <- function(data) {
+
+  # simply repeat the same probabilities for everyone
+  n <- nrow(data)
+  p_mat <- matrix(c(rep(0.9, n), rep(0.005, n), rep(0.005, n)),
+                  byrow = FALSE, ncol=3)
+
+  return(p_mat)
+}
+
+dag <- empty_dag() +
+  node_td("death_illness", type="competing_events", prob_fun=prob_death_illness,
+          event_duration=c(Inf, Inf))
+
+## making one of the event-types terminal and the other recurrent
+dag <- empty_dag() +
+  node_td("death_illness", type="competing_events", prob_fun=prob_death_illness,
+          event_duration=c(15, Inf))
+
+## call the sim_discrete_time function to generate data from it
+sim <- sim_discrete_time(dag, n_sim=100, max_t=500)
+
+## more examples on how to use the sim_discrete_time function can be found
+## in the documentation page of the node_time_to_event function and
+## in the package vignettes
 }

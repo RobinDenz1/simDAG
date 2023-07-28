@@ -80,5 +80,39 @@ Returns a single \code{data.table} (or \code{data.frame}) containing all simulat
 Robin Denz
 }
 \examples{
-## add some examples
+library(simDAG)
+
+set.seed(435345)
+
+## exemplary car crash simulation, where the probability for
+## a car crash is dependent on the sex, and the probability of death is
+## highly increased for 3 days after a car crash happened
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+prob_death <- function(data) {
+  ifelse(data$car_crash_event, 0.1, 0.0001)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
+          parents="sex") +
+  node_td("death", type="time_to_event", prob_fun=prob_death,
+          parents="car_crash_event")
+
+# generate some data, only saving the last state
+# not a problem here, because the only time-varying nodes are
+# time-to-event nodes where the event times are saved
+sim <- sim_discrete_time(dag, n_sim=20, max_t=500, save_states="last")
+
+# transform to start-stop format
+d_start_stop <- sim2data(sim, to="start_stop")
+
+# transform to long-format
+d_long <- sim2data(sim, to="long")
+
+# transform to wide-format
+d_wide <- sim2data(sim, to="wide")
 }

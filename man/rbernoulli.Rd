@@ -27,6 +27,8 @@ Note that this function accepts values of \code{p} that are smaller then 0 and g
 Robin Denz
 }
 \examples{
+library(simDAG)
+
 # generating 5 bernoulli random draws from an unbiased coin
 rbernoulli(n=5, p=0.5)
 

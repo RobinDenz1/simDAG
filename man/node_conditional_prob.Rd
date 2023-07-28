@@ -45,6 +45,8 @@ Utilizing the user-defined discrete probability distribution in each stratum of 
 Robin Denz
 }
 \examples{
+library(simDAG)
+
 set.seed(42)
 
 #### two classes, one parent node ####

@@ -5,7 +5,7 @@
 Simulate a Node Using Cox-Regression
 }
 \description{
-Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (XXXX).
+Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (2005).
 }
 \usage{
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
@@ -44,7 +44,14 @@ A single character string specifying the name of the node.
   }
 }
 \details{
-More explanation
+The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.
+
+Unlike the other \code{\link{node}} type functions, this function adds \strong{two} columns to the resulting dataset instead of one. The first column is called \code{paste0(name, "_event")} and is a logical variable, where \code{TRUE} indicates that the event has happened and \code{FALSE} indicates right-censoring. The second column is named \code{paste0(name, "_time")} and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates.
+
+To simulate more complex time-to-event data, the user may need to use the \code{\link{sim_discrete_time}} function instead.
+}
+\references{
+Bender R, Augustin T, Blettner M. Generating survival times to simulate Cox proportional hazards models. Statistics in Medicine. 2005; 24 (11): 1713-1723.
 }
 \author{
 Robin Denz
