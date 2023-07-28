@@ -43,14 +43,14 @@ check_inputs_root_node <- function(name, type) {
 }
 
 ## input checks for child nodes
-check_inputs_child_node <- function(name, type, parents, args) {
+check_inputs_child_node <- function(name, type, parents, args, time_varying) {
 
   if (!is_node_name(name)) {
     stop("The 'name' attribute must be a single character string.")
   } else if (!is_node_type(type)) {
     stop("The 'type' parameter of a child node must be a single",
          " character string pointing to a function starting with 'node_'.")
-  } else if (!is_node_parents(parents)) {
+  } else if (!is_node_parents(parents) & !time_varying) {
     stop("The 'parents' argument of a child node must be a character",
          " vector of length > 0.")
   }

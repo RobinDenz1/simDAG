@@ -256,6 +256,18 @@ test_that("time-varying: only name positional with formula", {
   expect_equal(out, expected, ignore_formula_env=TRUE)
 })
 
+test_that("time-varying: no parents", {
+  expected <- list(name="C",
+                   type="time_to_event",
+                   parents=NULL,
+                   time_varying=TRUE,
+                   prob_fun=0.001)
+  class(expected) <- "DAG.node"
+
+  out <- node_td("C", "time_to_event", prob_fun=0.001)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
 test_that("call with only two unnamed arguments", {
   expected <- list(name="C",
                    type="rbernoulli",

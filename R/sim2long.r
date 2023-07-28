@@ -103,7 +103,7 @@ add_optional_cols_long.last <- function(data, tx_nodes) {
                               arg_is_true=TRUE)
 
     # add event counts
-    if (any(has_event_count)) {
+    if (any(has_event_count | has_time_since_last)) {
 
       rel_cols <- tx_names[has_event_count | has_time_since_last]
       for (i in seq_len(length(rel_cols))) {
@@ -114,9 +114,9 @@ add_optional_cols_long.last <- function(data, tx_nodes) {
 
         data[, (name_shift) := shift(eval(parse(text=orig_name)),
                                      type="lag", fill=NA), by=.id]
-        data[[new_name]] <- fifelse(data$.time==1 & data[[orig_name]], 1,
+        data[, (new_name) := fifelse(data$.time==1 & data[[orig_name]], 1,
                                     fifelse(!data[[name_shift]] &
-                                            data[[orig_name]], 1, 0, na=0))
+                                            data[[orig_name]], 1, 0, na=0))]
         data[, (new_name) := cumsum(eval(parse(text=new_name))), by=.id]
         data[, (name_shift) := NULL]
       }
@@ -132,11 +132,11 @@ add_optional_cols_long.last <- function(data, tx_nodes) {
         count_name <- paste0(rel_cols[i], "_event_count")
 
         data[[new_name]] <- NA_integer_
-        data[, (new_name) := seq_len(.N), by=c(".id", count_name)]
+        data[, (new_name) := seq_len(.N) - 1, by=c(".id", count_name)]
         data[eval(parse(text=count_name))==0, (new_name) := NA_integer_]
 
         if (!has_event_count[i]) {
-          data[, (rel_cols[i]) := NULL]
+          data[, (count_name) := NULL]
         }
       }
     }

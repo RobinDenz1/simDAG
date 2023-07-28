@@ -41,7 +41,8 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     # NOTE: in an if statement because we need to allow child nodes that are
     #       almost completely empty for the dag_from_data function
     if (length(args) > 0) {
-      check_inputs_child_node(name=name, type=type, parents=parents, args=args)
+      check_inputs_child_node(name=name, type=type, parents=parents, args=args,
+                              time_varying=FALSE)
     }
 
     node_list <- list(name=name,
@@ -96,31 +97,24 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
 
   # create node list
   if (length(parents) == 0 || all(parents=="")) {
-
-    check_inputs_root_node(name=name, type=type)
-
-    node_list <- list(name=name,
-                      type=type,
-                      parents=NULL,
-                      time_varying=TRUE,
-                      params=args)
-  } else {
-    if (length(args) > 0) {
-      check_inputs_child_node(name=name, type=type, parents=parents, args=args)
-    }
-
-    node_list <- list(name=name,
-                      type=type,
-                      parents=parents,
-                      time_varying=TRUE)
-
-    if (!is.null(formula)) {
-      node_list$formula <- formula
-    }
-
-    node_list <- append(node_list, args)
+    parents <- NULL
   }
 
+  if (length(args) > 0) {
+    check_inputs_child_node(name=name, type=type, parents=parents, args=args,
+                            time_varying=TRUE)
+  }
+
+  node_list <- list(name=name,
+                    type=type,
+                    parents=parents,
+                    time_varying=TRUE)
+
+  if (!is.null(formula)) {
+    node_list$formula <- formula
+  }
+
+  node_list <- append(node_list, args)
   class(node_list) <- "DAG.node"
 
   return(node_list)

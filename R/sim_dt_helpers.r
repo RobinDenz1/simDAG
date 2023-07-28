@@ -19,19 +19,22 @@ add_missing_parents <- function(node) {
   if (node$type=="time_to_event" | node$type=="competing_events") {
     parents <- c(".id", node$parents,
                  paste0(node$name, c("_event", "_time")))
-    node$parents <- parents
+  } else {
+    parents <- node$parents
   }
 
   # add optional columns if time-to-event node
   if (node$type=="time_to_event" && !is.null(node$time_since_last) &&
       node$time_since_last) {
-    node$parents <- c(node$parents, paste0(node$name, "_time_since_last"))
+    parents <- c(parents, paste0(node$name, "_time_since_last"))
   }
 
   if (node$type=="time_to_event" && !is.null(node$event_count) &&
       node$event_count) {
-    node$parents <- c(node$parents, paste0(node$name, "_event_count"))
+    parents <- c(parents, paste0(node$name, "_event_count"))
   }
+
+  node$parents <- unique(parents)
 
   return(node)
 }
@@ -105,14 +108,27 @@ get_ce_names <- function(tx_node_names, tx_node_types) {
     tx_node_names[tx_node_types=="competing_events"], c("event", "time")), 1,
     paste, collapse="_")
 
+  if (length(ce_names)==0) {
+    ce_names <- NULL
+  }
+
   return(ce_names)
 }
 
 ## check if a node has an argument and optionally if that argument is
 ## set to TRUE
 node_has_arg <- function(node, arg, arg_is_true=FALSE) {
-  if (!is.null(node[[arg]])) {
-    if (arg_is_true && !all(node[[arg]])) {
+
+  if (is.null(node$parents) && !node$time_varying) {
+    arg <- node$params[[arg]]
+  } else {
+    arg <- node[[arg]]
+  }
+
+  if (!is.null(arg)) {
+    if (arg_is_true && is.logical(arg) && all(arg)) {
+      out <- TRUE
+    } else if (arg_is_true) {
       out <- FALSE
     } else {
       out <- TRUE
