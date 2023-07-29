@@ -12,7 +12,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
-         " node() functions.")
+         " node_td() functions.")
   }
   tx_nodes <- dag$tx_nodes
 

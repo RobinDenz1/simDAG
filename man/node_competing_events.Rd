@@ -11,7 +11,8 @@ This node essentially models a categorical time-dependent variable for which the
 node_competing_events(data, parents, sim_time, name,
                       prob_fun, ..., event_duration=c(0, 0),
                       immunity_duration=max(event_duration),
-                      save_past_events=TRUE, envir)
+                      save_past_events=TRUE, check_inputs=TRUE,
+                      envir)
 }
 \arguments{
   \item{data}{
@@ -40,6 +41,9 @@ A single number >= \code{max(event_duration)} specifying how long the person sho
   }
   \item{save_past_events}{
 When the event modeled using this node is recurrent (\code{immunity_duration < Inf & any(event_duration < Inf)}), the same person may experience multiple events over the course of the simulation. Those are generally stored in the \code{ce_past_events} list and \code{ce_past_causes} list which are included in the output of the \code{sim_discrete_time} function. This extends the runtime and increases RAM usage, so if you are not interested in the timing of previous events or if you are using \code{save_states="all"} this functionality can be turned off by setting this argument to \code{FALSE}
+  }
+  \item{check_inputs}{
+Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
   }
   \item{envir}{
 Only used internally to efficiently store the past event times. Cannot be used by the user.

@@ -59,7 +59,8 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying) {
   type_check_fun_name <- paste0("check_inputs_node_", type)
 
   if (exists(type_check_fun_name, mode="function", envir=globalenv()) &
-      !type %in% c("conditional_distr", "conditional_prob", "time_to_event")) {
+      !type %in% c("conditional_distr", "conditional_prob", "time_to_event",
+                   "competing_events")) {
     type_check_fun <- get(type_check_fun_name)
 
     type_check_fun(parents=parents, args=args)
@@ -546,5 +547,120 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
   if (is.character(save_states)) {
     stopifnot("'save_states' must be either 'last', 'all' or 'at_t'." =
                 is.element(save_states, c("last", "all", "at_t")))
+  }
+}
+
+## checking the inputs of the node_time_to_event function
+check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
+                                            prob_fun, prob_fun_args,
+                                            event_duration, immunity_duration,
+                                            save_past_events) {
+  # rudimentary type checks
+  stopifnot("'data' must be a data.frame." = is.data.frame(data))
+  stopifnot("'parents' must be a vector of type character." =
+              is.vector(parents, mode = "character"))
+  stopifnot("'sim_time' must be a single integer." =
+              (length(sim_time) == 1 && is.numeric(sim_time)))
+  stopifnot("'name' must be a single character." =
+              (length(name) == 1 && is.character(name)))
+  stopifnot("'prob_fun' must be a function or a single number." =
+              is.function(prob_fun) | (is.numeric(prob_fun) &
+                                         length(prob_fun)==1))
+  stopifnot("'event_duration' must be a single integer." =
+              (length(event_duration) == 1 && is.numeric(event_duration)))
+  stopifnot("'immunity_duration' must be a single integer." =
+              (length(immunity_duration) == 1 &&
+                 is.numeric(immunity_duration)))
+  stopifnot("'save_past_events' must be either TRUE or FALSE." =
+              (length(save_past_events) == 1 && is.logical(save_past_events)))
+
+  # check content of data
+  if (is.data.frame(data)) {
+    stopifnot(
+      "'data' needs to include at least one variable." =
+        (ncol(data) != 0))
+    stopifnot(
+      "'data' needs to include at least one row." =
+        (nrow(data) != 0))
+  }
+
+  # check content of prob_fun
+  if (is.function(prob_fun)) {
+    stopifnot(
+      "'prob_fun' needs to include at least one line." =
+        length(body(prob_fun)) != 0)
+
+    # check content of prob_fun_args
+    if (length(setdiff(names(formals(prob_fun)),
+                       c("data", "sim_time"))) != 0) {
+      for (i in 1:length(setdiff(names(formals(prob_fun)),
+                                 c("data", "sim_time")))) {
+        if(!is.element(setdiff(names(formals(prob_fun)),
+                               c("data", "sim_time"))[i],
+                       names(prob_fun_args))) {
+          stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
+               " must be included in the node_td() call if they don't have a",
+               " default value.")
+        }
+      }
+    }
+  }
+}
+
+## checking the inputs of the node_competing_events function
+check_inputs_node_competing_events <- function(data, parents, sim_time, name,
+                                               prob_fun, prob_fun_args,
+                                               event_duration,
+                                               immunity_duration,
+                                               save_past_events) {
+  # rudimentary type checks
+  stopifnot("'data' must be a data.frame." = is.data.frame(data))
+  stopifnot("'parents' must be a vector of type character." =
+              is.vector(parents, mode = "character"))
+  stopifnot("'sim_time' must be a single integer." =
+              (length(sim_time) == 1 && is.numeric(sim_time)))
+  stopifnot("'name' must be a single character." =
+              (length(name) == 1 && is.character(name)))
+  stopifnot("'prob_fun' must be a function." =
+              is.function(prob_fun))
+  stopifnot("'event_duration' must be a vector of integers." =
+              (length(event_duration) > 1 && is.numeric(event_duration)))
+  stopifnot("'immunity_duration' must be a single integer >= max(event_duration)." =
+              (length(immunity_duration) == 1 &&
+               is.numeric(immunity_duration) && immunity_duration >=
+                 max(event_duration)))
+  stopifnot("'save_past_events' must be either TRUE or FALSE." =
+              (length(save_past_events) == 1 && is.logical(save_past_events)))
+
+  # check content of data
+  if (is.data.frame(data)) {
+    stopifnot(
+      "'data' needs to include at least one variable." =
+        (ncol(data) != 0))
+    stopifnot(
+      "'data' needs to include at least one row." =
+        (nrow(data) != 0))
+  }
+
+  # check content of prob_fun
+  if (is.function(prob_fun)) {
+    stopifnot(
+      "'prob_fun' needs to include at least one line." =
+        length(body(prob_fun)) != 0)
+
+    # check content of prob_fun_args
+    if (length(setdiff(names(formals(prob_fun)),
+                       c("data", "sim_time"))) != 0) {
+      for (i in 1:length(setdiff(names(formals(prob_fun)),
+                                 c("data", "sim_time")))) {
+        if(!is.element(setdiff(names(formals(prob_fun)),
+                               c("data", "sim_time"))[i],
+                       names(prob_fun_args))) {
+          stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
+               " must be included in the node_td() call if they don't have a",
+               " default value.")
+        }
+      }
+    }
   }
 }

@@ -17,7 +17,8 @@ add_node <- function(dag, node) {
 
   # check if correct object types
   if (!inherits(node, "DAG.node")) {
-    stop("'node' must be a DAG.node object created using the node() function.")
+    stop("'node' must be a DAG.node object created using either the node() or",
+         " node_td() function.")
   } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() function.")
   }
@@ -31,11 +32,11 @@ add_node <- function(dag, node) {
 
   # add to child, root or tx node lists inside DAG
   if (node$time_varying) {
-    dag$tx_nodes[[length(dag$tx_nodes)+1]] <- node
+    dag$tx_nodes[[length(dag$tx_nodes) + 1]] <- node
   } else if (length(node$parents) == 0 || all(node$parents=="")) {
-    dag$root_nodes[[length(dag$root_nodes)+1]] <- node
+    dag$root_nodes[[length(dag$root_nodes) + 1]] <- node
   } else {
-    dag$child_nodes[[length(dag$child_nodes)+1]] <- node
+    dag$child_nodes[[length(dag$child_nodes) + 1]] <- node
   }
 
   return(dag)
@@ -50,8 +51,8 @@ add_node <- function(dag, node) {
   } else if (inherits(object_1, "DAG.node") & inherits(object_2, "DAG")) {
     out <- add_node(dag=object_2, node=object_1)
   } else {
-    stop("Only output created using the node() function can be added to a",
-         " DAG object.")
+    stop("Only output created using the node() or node_td() function can",
+         " be added to a DAG object.")
   }
   return(out)
 }

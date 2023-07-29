@@ -61,7 +61,6 @@ long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
   setkeyv(data, cols=c(id, time))
 
   # log in which rows something changed in the varying variables
-  # TODO: maybe collapse this into one variable?
   for (i in seq_len(length(varying))) {
     name <- varying[i]
     name_shift <- paste0(varying[i], "_shift")

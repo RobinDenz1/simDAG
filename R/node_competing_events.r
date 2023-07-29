@@ -6,13 +6,24 @@
 node_competing_events <- function(data, parents, sim_time, name,
                                   prob_fun, ..., event_duration=c(0, 0),
                                   immunity_duration=max(event_duration),
-                                  save_past_events=TRUE, envir) {
+                                  save_past_events=TRUE, check_inputs=TRUE,
+                                  envir) {
   # get list of arguments
   prob_fun_args <- list(...)
   prob_fun_args$data <- data
 
   if ("sim_time" %in% names(formals(prob_fun))) {
     prob_fun_args$sim_time <- sim_time
+  }
+
+  if (check_inputs) {
+    check_inputs_node_competing_events(data=data, parents=parents,
+                                       sim_time=sim_time, name=name,
+                                       prob_fun=prob_fun,
+                                       prob_fun_args=prob_fun_args,
+                                       event_duration=event_duration,
+                                       immunity_duration=immunity_duration,
+                                       save_past_events=save_past_events)
   }
 
   # get event probabilities
