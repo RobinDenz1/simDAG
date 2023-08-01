@@ -33,7 +33,7 @@ The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$
 A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
 
 
-# Defining the DAG & Node List
+# Defining the DAG
 
 Similar to the `sim_from_dag` function, the user needs to specify the nodes of the underlying causal DAG to use this function.  All variables in a DTS can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
 
@@ -59,6 +59,8 @@ Here, `sex` is a time-invariant variables, whereas `age` and `death` are not. Su
 If we want to use this structure in the `sim_discrete_time` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
 
 ```{r}
+library(data.table)
+library(ggplot2)
 library(simDAG)
 
 dag <- empty_dag() +
@@ -149,8 +151,7 @@ Now, all we have to do in this case is change some arguments of the `node_time_t
 dag <- dag +
   node_td("age", type="advance_age", parents=c("age")) +
   node_td("cve", type="time_to_event", parents=c("age", "sex"),
-          prob_fun=prob_cve, event_duration=1, save_past_events=TRUE,
-          check_inputs=FALSE)
+          prob_fun=prob_cve, event_duration=1, save_past_events=TRUE)
 ```
 
 Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time` function as before:
@@ -158,8 +159,7 @@ Apart from changing the node name, we also changed the `event_duration` paramete
 ```{r}
 sim_dat <- sim_discrete_time(n_sim=10,
                              dag=dag,
-                             max_t=50,
-                             check_inputs=FALSE)
+                             max_t=50)
 head(sim_dat$data)
 ```
 
@@ -181,7 +181,7 @@ head(d_long)
 
 This may also be useful to fit discrete-time survival models.
 
-The simulation done here assumes that the time and number of previous events has no effect on any further events of the patient. This assumption may be relaxed by explicitly formulating the `prob_cve` function in a way that it uses the `cve_past_event_times` column to change the probability of further events.
+The simulation done here assumes that the time and number of previous events has no effect on any further events of the patient. This assumption may be relaxed by explicitly formulating the `prob_cve` function in a way that it uses the `cve_time` column to change the probability of further events. A more in-depth example that includes considerations like these can be found in the third vignette of this package.
 
 # References
 

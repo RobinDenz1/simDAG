@@ -17,11 +17,11 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette contains an in-depth example on how to use the `sim_discrete_time` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a overly simple example here. Instead, our aim is to generate somewhat realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim of the real study was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe the data generation part here to give a detailed example on how the `sim_discrete_time` function may be used effectively.
+This vignette contains an in-depth example on how to use the `sim_discrete_time` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a overly simple example here. Instead, our aim is to generate somewhat realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim of the real study was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe a slightly simplified version of the data generation part here to give a detailed example on how the `sim_discrete_time` function may be used effectively.
 
 Note that the algorithm described here is not completely the same as the one we originally used, because that would require us to include confidential data into this vignette, which is sadly impossible.
 
-We strongly recommend reading the other two vignettes of this package first.
+We also strongly recommend reading the other two vignettes of this package first.
 
 # How to get started
 
@@ -62,29 +62,33 @@ Since this vignette is mostly concerned with the practical implementation of the
 
 ## Research goal
 
-Our main goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately.
+Our actual reasearch goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately. The goal for this vignette is to use parts of this model to showcase the capabilities of the `simDAG` package.
 
 ## Theoretical model
 
-There is a seemingly endless amount of literature describing models for the Covid-19 pandemic and the associated Covid-19 vaccines (see for example ZITATE). Trying to include all relevant aspects would be an unfeasible task. After deliberating on this literature we decided to include only a few key variables. To make this vignette readable we further limited the variables to only include:
+There is a seemingly endless amount of literature describing models for the Covid-19 pandemic and the associated Covid-19 vaccines. Trying to include all relevant aspects would be an unfeasible task. After deliberating on this literature we decided to include only a few key variables. To make this vignette readable we further limited the variables to only include the most essential:
 
-* `age`: The age of the individual in years.
-* `sex`: The biological sex (male/female) of the individual.
-* `calender_time`: General effects of the passage of time.
 * `vaccination`: The time at which the person received the first vaccine.
 * `covid`: Whether a Covid-19 infection occurred.
 * `sickness`: Whether the person has developed the sickness of interest.
 
-For our first tryouts, we decided to use the following causal DAG to represent our causal assumptions:
+We assume that these three variables vary over time and cause each other.
 
+# Implementing the model
 
-# Model 1
+Instead of diving in deep from the start and trying to include all relevant variables with all relevant relationships at once, it is often better to build a very simplified version first and to start adding more and more stuff to it as we continue.
 
-Instead of diving in deep from the start and trying to include all relevant variables at once, it is often better to build a very simplified version first and to start adding more and more variables to it as we continue. The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `time_to_event`.
+## Part 1: Adding vaccination, covid and sickness
+
+The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `time_to_event`.
 
 We start out modeling every one of these variables as completely independent of each other using the following DAG:
 
 ```{r}
+library(data.table)
+library(ggplot2)
+library(simDAG)
+
 dag <- empty_dag() +
   node_td("vaccination", type="time_to_event", prob_fun=0.001,
           event_duration=21, immunity_duration=Inf) +
@@ -94,8 +98,130 @@ dag <- empty_dag() +
           event_duration=2, immunity_duration=2)
 ```
 
-In the DAG above, we supplied a constant value to each of the `prob_fun` arguments, indicating that regardless of time and other variables, each event has a constant probability of occurring on each day. We set the `event_duration` of `vaccination` to 21, because we want to model the time after vaccination in which the risk for the adverse side-effect (e.g. the `sickness`) is higher than usual later on. By setting the `immunity_duration` of the `vaccination` to `Inf`, we are currently only allowing the person to get one vaccination over the entire time.
+In the DAG above, we supplied a constant value to each of the `prob_fun` arguments, indicating that regardless of time and other variables, each event has a constant probability of occurring on each day. We set the `event_duration` of `vaccination` to 21, because we want to model the time after vaccination in which the risk for the adverse side-effect (e.g. the `sickness`) is higher than usual later on. By setting the `immunity_duration` of the `vaccination` to `Inf`, we are currently only allowing the person to get one vaccination over the entire time. The `sickness` is allowed to occur again directly after it was over.
 
+## Part 2: Adding adverse effects of vaccination and covid
 
+We can make this data-generation process a little more interesting by making both the `vaccination` and `covid` have an effect on the probability of developing the sickness. We will do this by simply raising the probability of occurrence of the `sickness` by a constant factor whenever either a `covid` or `vaccination` event is currently happening. This can be done by formulating an appropriate `prob_fun` for the `sickness` node:
 
+```{r}
+prob_sickness <- function(data, rr_covid, rr_vacc, base_p) {
 
+  # multiply base probability by relevant RRs
+  p <- base_p * rr_vacc^(data$vaccination_event) * rr_covid^(data$covid_event)
+
+  return(p)
+}
+```
+
+This works because any number to an exponent of 1 is itself, while any number to an exponent of 0 is one. The `vaccination_event` and `covid_event` columns are always either `TRUE` (when an event is currently happening) or `FALSE` (when no event is currently happening), which are interpreted as 1 and 0 by R. Let's update our DAG:
+
+```{r}
+dag <- empty_dag() +
+  node_td("vaccination", type="time_to_event", prob_fun=0.001,
+          event_duration=21, immunity_duration=Inf) +
+  node_td("covid", type="time_to_event", prob_fun=0.001, event_duration=30,
+          immunity_duration=80) +
+  node_td("sickness", type="time_to_event", prob_fun=prob_sickness,
+          parents=c("vaccination_event", "covid_event"),
+          base_p=0.0001, rr_covid=3.5, rr_vacc=3.24,
+          event_duration=2, immunity_duration=2)
+```
+
+Instead of passing a constant value to the `prob_fun` argument, we are now passing it the previously defined function. Because our function has `base_p`, `rr_covid` and `rr_vacc` as arguments without defaults, we have to specify those in the `node_td` call as well. We keep the original `base_p`, and set the relative risks to 3.5 and 3.24 respectively. Additionally, we have to set both the `vaccination_event` and the `covid_event` columns as `parents` now, because they are used in the `prob_sickness` function.
+
+## Part 3: Making the vaccine useful
+
+So far we assumed that it makes no difference whether the person received the vaccine or not. We will now change this by implementing a time-window after receiving the vaccine in which the person cannot develop a `covid` infection. Again, this can be done by defining an appropriate `prob_fun` function, this time for the `covid` node:
+
+```{r}
+prob_covid <- function(data, base_p, vacc_duration) {
+  
+  p <- fifelse(data$vaccination_time_since_last < vacc_duration,
+               0, base_p, na=base_p)
+  return(p)
+}
+```
+
+In this function we use the column `vaccination_time_since_last`, which is a column that can optionally be created in time-to-event nodes by setting `time_since_last` to `TRUE`. So let's again update our DAG accordingly:
+
+```{r}
+dag <- empty_dag() +
+  node_td("vaccination", type="time_to_event", prob_fun=0.001,
+          event_duration=21, immunity_duration=Inf,
+          time_since_last=TRUE) +
+  node_td("covid", type="time_to_event", prob_fun=prob_covid,
+          parents=c("vaccination_time_since_last"),
+          base_p=0.001, vacc_duration=80, event_duration=30,
+          immunity_duration=80) +
+  node_td("sickness", type="time_to_event", prob_fun=prob_sickness,
+          parents=c("vaccination_event", "covid_event"),
+          base_p=0.0001, rr_covid=3.5, rr_vacc=3.24,
+          event_duration=2, immunity_duration=2)
+```
+
+Instead of just updating the `parents` and `prob_fun` arguments of the `covid` node, we now also had to set the `time_since_last` argument of the `vaccination` node to `TRUE` as well to get the required additional column. Our data-generation algorithm is getting better now. But there is still a lot we can do.
+
+## Part 4: Sick people don't get vaccinated
+
+In reality, very little people who were currently experiencing a Covid-19 infection went and got the vaccine. In fact, this is absolutely discouraged by doctors world-wide. To add this circumstance to the mode, we once again simply have to update the probability of receiving a vaccination, by defining an appropriate `prob_fun`:
+
+```{r}
+prob_vaccination <- function(data, base_p) {
+  
+  p <- fifelse(data$covid_event, 0, base_p)
+  
+  return(p)
+}
+```
+
+Using this function, the probability of getting vaccinated for any individual that is currently experiencing a `covid` infection is 0. Let's update our DAG one more time to include these changes:
+
+```{r}
+dag <- empty_dag() +
+  node_td("vaccination", type="time_to_event",
+          prob_fun=prob_vaccination,
+          parents=c("covid_event"), base_p=0.001,
+          event_duration=21, immunity_duration=Inf,
+          time_since_last=TRUE) +
+  node_td("covid", type="time_to_event", prob_fun=prob_covid,
+          parents=c("vaccination_time_since_last"),
+          base_p=0.001, vacc_duration=80, event_duration=30,
+          immunity_duration=80) +
+  node_td("sickness", type="time_to_event", prob_fun=prob_sickness,
+          parents=c("vaccination_event", "covid_event"),
+          base_p=0.0001, rr_covid=3.5, rr_vacc=3.24,
+          event_duration=2, immunity_duration=2)
+```
+
+Again we simply changed the `prob_fun` argument and added the correct `parents` to the appropriate node.
+
+## Generating Data using the final model
+
+We are now pleased with the complexity of our data-generation algorithm and want to simulate data from it. We can do this by simply calling the `sim_discrete_time` function on the specified DAG:
+
+```{r}
+set.seed(42)
+sim <- sim_discrete_time(dag, n_sim=1000, max_t=800)
+summary(sim)
+```
+
+For exemplary purposes, we kind of arbitrarily used 1000 individuals and let the simulation run for 800 days. By calling the `plot` method, we get a concise overview over the process we simulated:
+
+```{r fig.width=7, fig.height=5}
+plot(sim, box_text_size=4)
+```
+
+As can be seen, we managed to implement a fairly complex data-generation mechanism using only a few small function definitions and a few lines of code, allowing us to generate a complex dataset with three interdependent time-varying variables with only minimal effort. By utilizing the `sim2data` function, we could directly transform the `sim` object into a dataset in the start-stop format to run some statistical models on it (such as a cox-regression model).
+
+## Going even further
+
+There is no need to stop here. We could make this simulation model even more complex by implementing any of the following things:
+
+* Adding time-dependent base-probabilities for `vaccination`, `covid` and `sickness`
+* Adding different kinds of `vaccination`s, perhaps with different effects on `covid` and/or `sickness`
+* Adding time-fixed variables such as `sex` which have an effect on any of the other variables
+* Allowing multiple vaccinations
+* Changing the constant raising of the probabilities in the form of a relative risk to a more realistic non-linear time-dependent relative risk
+
+There are of course many more possible extensions, all of which can be implemented by augmenting the respective `prob_fun` arguments and updating the `dag` accordingly. In fact, in the real monte-carlo simulation we conducted, that is exactly what we did. We used empirical data to model time-dependent base-probabilities and more. How much complexity you really need is completely up to you. We hope that the `simDAG` package can help you with whatever you need.

@@ -41,6 +41,8 @@ Because the `sim_from_dag` function uses the method described above, it requires
 Regardless of which strategy you want to use, first you have to initialize an empty `DAG` object like this:
 
 ```{r}
+library(data.table)
+library(ggplot2)
 library(simDAG)
 
 dag <- empty_dag()
@@ -60,6 +62,7 @@ The `simDAG` package implements the following types of `child_nodes` directly:
 * `node_binomial`: A node based on logistic regression (binary data).
 * `node_multinomial`: A node based on multinomial logistic regression (categorical data).
 * `node_poisson`: A node based on poisson regression (count data).
+* `node_negative_binomial`: A node based on negative binomial regression (count data).
 * `node_cox`: A node based on cox regression (time-to-event data).
 * `node_conditional_prob`: A node based on conditional probabilities (binary / categorical data).
 * `node_conditional_distr`: A node based on conditional distributions (any data type).
@@ -76,7 +79,7 @@ dag <- dag +
   node("sex", type="rbernoulli", p=0.5)
 ```
 
-All nodes are defined by calling the `node()` function and adding the output to the `dag` object using a simple `+`. This syntax is heavily inspired by the `simcausal` R-package. Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `rnorm`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a Bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
+All nodes are defined by calling the `node()` function and adding the output to the `dag` object using a simple `+`. This syntax is heavily inspired by the `simcausal` R-package (Sofrygin et al. 2017). Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `rnorm`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a Bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
 
 Next, we have to define what the relationship between the child nodes and their parents should look like. We may use the following code:
 
@@ -104,7 +107,7 @@ $$
 
 To check whether we got the causal relationships right, we can call the `plot` function on the DAG object. The output should look very similar to the hand-drawn DAG above.
 
-```{r fig.width=7, fig.height=5}
+```{r fig.width=7, fig.height=6}
 plot(dag)
 ```
 
@@ -212,4 +215,7 @@ Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd ed. Cambridg
 Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation, Prediction, and Search. 2nd ed. The MIT Press, Cambridge 
 
 Chickering, D.M. (1995). A transformational characterization of equivalent Bayesian network structures. Proceedings of the 11th Conference on Uncertainty in Artificial Intelligence, Montreal, Canada, 87-98.
+
+Oleg Sofrygin, Mark J. van der Laan, and Romain Neugebauer (2017). simcausal R Package: Conducting Transparent and Reproducible Simulation Studies of Causal Effect Estimation with Complex Longitudinal Data. In: Journal of Statistical Software. 81.2, pp. 1-47
+
 
