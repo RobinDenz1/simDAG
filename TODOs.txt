@@ -1,6 +1,5 @@
 
 General Stuff:
-	- finish & update vignettes
 	- add pkgdown site, badges etc.
 
 ###### Bugs & TODOS ######
