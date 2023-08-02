@@ -99,6 +99,9 @@ names_DAG <- function(x, include_tx_nodes=FALSE) {
     out <- c(root_names, child_names)
   }
 
+  # in case the node is defined in both fixed and varying
+  out <- out[!duplicated(out)]
+
   return(out)
 }
 

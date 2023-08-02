@@ -16,6 +16,59 @@ test_that("two classes, one parent node", {
   expect_true(sum(data$A)==656)
 })
 
+test_that("two classes, one parent node, labels & factor", {
+
+  set.seed(42)
+
+  probs <- list(male=0.5, female=0.8)
+
+  dag <- empty_dag() +
+    node("sex", type="rcategorical", labels=c("male", "female"),
+         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+    node("chemo", type="rbernoulli", p=0.5) +
+    node("A", type="conditional_prob", parents="sex", probs=probs,
+         labels=c("A", "B"), coerce2factor=TRUE)
+
+  data <- sim_from_dag(dag=dag, n_sim=1000)
+
+  expect_true(sum(data$A=="B")==656)
+})
+
+test_that("two classes, one parent node, factor", {
+
+  set.seed(42)
+
+  probs <- list(male=0.5, female=0.8)
+
+  dag <- empty_dag() +
+    node("sex", type="rcategorical", labels=c("male", "female"),
+         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+    node("chemo", type="rbernoulli", p=0.5) +
+    node("A", type="conditional_prob", parents="sex", probs=probs,
+         coerce2factor=TRUE)
+
+  data <- sim_from_dag(dag=dag, n_sim=1000)
+
+  expect_true(sum(data$A=="TRUE")==656)
+})
+
+test_that("two classes, one parent node with default_prob", {
+
+  set.seed(42)
+
+  probs <- list(male=0.5)
+
+  dag <- empty_dag() +
+    node("sex", type="rcategorical", labels=c("male", "female"),
+         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+    node("chemo", type="rbernoulli", p=0.5) +
+    node("A", type="conditional_prob", parents="sex", probs=probs,
+         default_prob=0.8)
+
+  data <- sim_from_dag(dag=dag, n_sim=1000)
+
+  expect_true(sum(data$A)==656)
+})
 
 test_that("three classes, one parent node", {
 

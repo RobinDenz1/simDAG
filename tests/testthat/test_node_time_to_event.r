@@ -12,7 +12,7 @@ dt <- dt %>%
     sickness_time = NA_integer_,
     sickness_past_event_times = NA_integer_)
 
-prob_sick <- function(data, rr_smoke0, rr_smoke1) {
+prob_sick <- function(data, sim_time, rr_smoke0, rr_smoke1) {
   # smoking-dependent risk
   risk <- fifelse(data$smoking == 1, rr_smoke0, rr_smoke1)
 
@@ -94,4 +94,32 @@ test_that("save_past_events working", {
                              envir=envir)
   expect_true(!is.null(past_events_list$sickness[[100]]))
   expect_true(is.null(past_events_list$sickness[[1]]))
+})
+
+test_that("time_since_last working", {
+  set.seed(3245354)
+
+  dag <- empty_dag() +
+    node_td("sick", type="time_to_event", prob_fun=0.01,
+            event_duration=3, time_since_last=TRUE)
+
+  sim <- sim_discrete_time(dag, n_sim=10, max_t=100)
+
+  expect_equal(colnames(sim$data), c(".id", "sick_event", "sick_time",
+                                     "sick_time_since_last"))
+  expect_true(is.numeric(sim$data$sick_time_since_last))
+})
+
+test_that("event_count working", {
+  set.seed(3245354)
+
+  dag <- empty_dag() +
+    node_td("sick", type="time_to_event", prob_fun=0.1,
+            event_duration=3, event_count=TRUE)
+
+  sim <- sim_discrete_time(dag, n_sim=10, max_t=100)
+
+  expect_equal(colnames(sim$data), c(".id", "sick_event", "sick_time",
+                                     "sick_event_count"))
+  expect_true(is.numeric(sim$data$sick_event_count))
 })

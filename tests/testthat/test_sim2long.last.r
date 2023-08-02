@@ -25,6 +25,7 @@ test_that("general test case", {
                          .time=seq_len(11),
                          A=c(rep(TRUE, 10), FALSE),
                          B=c(rep(FALSE, 5), rep(TRUE, 5), FALSE))
+  setkey(expected, .id, .time)
 
   out_dat <- sim2long.last(sim)
 
@@ -64,6 +65,7 @@ test_that("adding time_since_last and event_count afterwards", {
                          B_event_count=c(rep(0, 5), rep(1, 6)),
                          A_time_since_last=seq(0, 10, 1),
                          B_time_since_last=c(rep(NA, 5), seq(0, 5, 1)))
+  setkey(expected, .id, .time)
 
   out_dat <- sim2long.last(sim)
 

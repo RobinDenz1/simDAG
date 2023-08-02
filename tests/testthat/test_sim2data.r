@@ -54,3 +54,30 @@ test_that("as wide data", {
   expect_true(nrow(out)==100)
   expect_true(ncol(out)==54)
 })
+
+test_that("as start_stop data, with data.frame output", {
+
+  out <- sim2data(sim=sim, to="start_stop", as_data_frame=TRUE)
+
+  expect_true(inherits(out, "data.frame"))
+  expect_true(nrow(out)==119)
+  expect_equal(colnames(out), c(".id", "start", "stop", "death", "age",
+                                "sex", "bmi"))
+})
+
+test_that("as wide data, save_states='all'", {
+
+  set.seed(2343)
+
+  sim <- sim_discrete_time(n_sim=100,
+                           dag=dag,
+                           max_t=50,
+                           verbose=FALSE,
+                           save_states="all")
+
+  out <- sim2data(sim=sim, to="wide")
+
+  expect_true(inherits(out, "data.table"))
+  expect_true(nrow(out)==100)
+  expect_true(ncol(out)==54)
+})

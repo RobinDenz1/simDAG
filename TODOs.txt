@@ -4,15 +4,11 @@ General Stuff:
 
 ###### Bugs & TODOS ######
 
-node_negative_binomial:
-	- I think it's not working correctly yet
-
 sim2start_stop:
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
-plot.simDT
+plot.simDT:
 	- bug when changing box_r_width and box_hdist at the same time
-
 
 ####### New Features: #######
 
@@ -33,3 +29,7 @@ node_competing_events:
 	
 sim2start_stop:
 	- add support for competing event nodes
+		- event_durations vector on line 101 needs to be changed to allow different event_durations per different event
+		- the data.table on line 126 needs to include another column including the event type (cause)
+		- probably need to change the dcast() call accordingly on line 133
+		- instead of returning the condition directly on line 149/150, it should return the corresponding event

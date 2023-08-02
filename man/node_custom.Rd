@@ -12,14 +12,14 @@ This page describes in detail how to extend this code to allow the usage of node
 A \code{data.frame} containing all columns specified by \code{parents}.
   }
   \item{parents}{
-A character vector specifying the names of the parents that this particular child node has.
+A character vector specifying the names of the parents that this particular child node has. This is only neccessary for child nodes, not time-dependent nodes or root nodes.
   }
   \item{...}{
 Any amount of additional arguments.
   }
 }
 \details{
-The number of available types of nodes is limited, but this package allows the user to easily implement their own node types by writing a single custom function. Only three things are required for this to work properly: (1) the function name should start with \code{node_}, (2) the function should contain the arguments \code{data} and \code{parents} as described above and (3) it should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
+The number of available types of nodes is limited, but this package allows the user to easily implement their own node types by writing a single custom function. Only three things are required for this to work properly: (1) the function name should start with \code{node_}, (2) the function should contain the arguments \code{data} and (if a child node) \code{parents} as described above and (3) it should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
 
 The function may include any amount of additional arguments specified by the user. If you think that your custom node type might be useful to others, please contact the maintainer of this package via the supplied e-mail address or github and we might add it to this package.
 

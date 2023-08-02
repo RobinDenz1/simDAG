@@ -28,3 +28,17 @@ test_that("two nodes", {
 
   expect_equal(out, expected)
 })
+
+test_that("one competing events node", {
+
+  expected <- "Change dependent on:\n'1', '2', '4'"
+
+  tx_nodes <- list(list(name="A",
+                        type="competing events",
+                        parents=c("1", "2", "4")))
+  out <- get_right_box_labels(tx_names="A",
+                              tx_nodes=tx_nodes)
+
+  expect_equal(out, expected)
+})
+

@@ -32,11 +32,13 @@ An optional character vector giving the factor levels of the generated classes. 
 A single logical value specifying whether to return the drawn events as a factor (default) or as integers.
   }
   \item{return_prob}{
-Either \code{TRUE} or \code{FALSE} (default). Specifies whether to return the matrix of class probabilities or not.
+Either \code{TRUE} or \code{FALSE} (default). Specifies whether to return the matrix of class probabilities or not. If you are using this function inside of a \code{\link{node}} call, you cannot set this to \code{TRUE} because it will return a matrix. It may, however, be useful when using this function by itself, or as a probability generating function for the \code{\link{node_competing_events}} function.
   }
 }
 \details{
-More explanation
+This function works essentially like the \code{\link{node_binomial}} function. First, the matrix of \code{betas} coefficients is used in conjunction with the values defined in the \code{parents} nodes and the \code{intercepts} to calculate the expected subject-specific probabilities of occurence for each possible category. This is done using the standard multinomial regression equations. Using those probabilities in conjunction with the \code{\link{rcategorical}} function, a single one of the possible categories is drawn for each individual.
+
+Since this function produces categorical output (as it should), it may be difficult to use this node type as a parent for other nodes. Nevertheless, it is of course possible using a user-defined node type (see \code{\link{node_custom}} for some infos on how to define those).
 }
 \author{
 Robin Denz

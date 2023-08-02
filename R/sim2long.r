@@ -66,6 +66,7 @@ sim2long.last <- function(sim) {
   first_cols <- c(".id", ".time")
   setcolorder(data, c(first_cols,
                       colnames(data)[!colnames(data) %in% first_cols]))
+  setkey(data, .id, .time)
 
   return(data)
 }

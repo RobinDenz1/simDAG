@@ -8,7 +8,8 @@ Simulate a Node Using Negative Binomial Regression
 Data from the parents is used to generate the node using negative binomial regression by applying the betas to the design matrix and sampling from the \code{rnbinom} function.
 }
 \usage{
-node_negative_binomial(data, parents, formula=NULL, betas, theta)
+node_negative_binomial(data, parents, formula=NULL, betas,
+                       intercept, theta)
 }
 \arguments{
   \item{data}{
@@ -23,12 +24,15 @@ An optional \code{formula} object to describe how the node should be generated o
   \item{betas}{
 A numeric vector with length equal to \code{parents}, specifying the causal beta coefficients used to generate the node.
   }
+  \item{intercept}{
+A single number specifying the intercept that should be used when generating the node.
+  }
   \item{theta}{
 A single number specifying the theta parameter (\code{size} argument in \code{rnbinom}).
   }
 }
 \details{
-This function uses the linear predictor defined by the \code{betas} and the input design matrix to sample from a subject-specific negative binomial distribution.
+This function uses the linear predictor defined by the \code{betas} and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the \code{data}, \code{betas} and \code{intercept}, exponentiating it and passing it to the \code{mu} argument of the \code{rnbinom} function of the \pkg{stats} package.
 }
 \author{
 Robin Denz
@@ -42,7 +46,7 @@ dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
   node("smoking", type="negative_binomial", parents=c("sex", "age"),
-       betas=c(1.1, 0.4), theta=0.5)
+       betas=c(1.1, 0.4), intercept=-2, theta=0.05)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

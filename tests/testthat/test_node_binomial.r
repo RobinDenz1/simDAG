@@ -69,4 +69,15 @@ test_that("coerce2numeric", {
   expect_true(all(dat$B==0 | dat$B==1))
 })
 
+test_that("with formula", {
 
+  set.seed(435)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", formula=~ A, betas=1, intercept=-2)
+
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_true(sum(dat$B)==99)
+})

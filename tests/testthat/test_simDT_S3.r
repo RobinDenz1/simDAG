@@ -25,3 +25,7 @@ test_that("print.simDT, save_states='at_t'", {
 test_that("summary.simDT", {
   expect_snapshot_output(summary(fake_simDT))
 })
+
+test_that("error when x not simDT", {
+  expect_error(plot.simDT("10"))
+})

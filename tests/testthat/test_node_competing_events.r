@@ -3,7 +3,7 @@ test_that("general test case", {
 
   set.seed(3545)
 
-  prob_death_illness <- function(data) {
+  prob_death_illness <- function(data, sim_time) {
 
     # simply repeat the same probabilities for everyone
     n <- nrow(data)
