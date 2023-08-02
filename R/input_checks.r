@@ -379,17 +379,14 @@ check_inputs_dag_from_data <- function(dag, data, return_models, na.rm) {
 
 ## check inputs for plot.DAG function
 check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
-                                  gg_theme) {
+                                  gg_theme, include_td_nodes) {
 
   if (!inherits(dag, "DAG")) {
     stop("'x' must be a DAG object created using the empty_dag() and node()",
          " functions.")
-  } else if (is_time_varying_dag(dag)) {
-    warning("This plot method currently does not support time-varying nodes.",
-            " The output will only include time-fixed nodes.")
   }
 
-  size_dag <- length(names_DAG(dag))
+  size_dag <- length(names_DAG(dag, include_tx_nodes=include_td_nodes))
 
   if (size_dag < 2) {
     stop("The supplied DAG must have at least two nodes.")

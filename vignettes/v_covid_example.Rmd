@@ -194,7 +194,13 @@ dag <- empty_dag() +
           event_duration=2, immunity_duration=2)
 ```
 
-Again we simply changed the `prob_fun` argument and added the correct `parents` to the appropriate node.
+Again we simply changed the `prob_fun` argument and added the correct `parents` to the appropriate node. Our final "DAG" looks like this:
+
+```{r fig.width=7, fig.height=5}
+plot(dag, mark_td_nodes=FALSE)
+```
+
+Note that in this plot it doesn't look like a classic DAG anymore, because it has an bi-directional arrow between `covid` and `vaccination` due to the time-dependent nature of their relationship.
 
 ## Generating Data using the final model
 

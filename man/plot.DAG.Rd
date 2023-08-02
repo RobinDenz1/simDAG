@@ -19,6 +19,7 @@ Using the node information contained in the \code{DAG} object this function plot
      arrow_alpha=1, arrow_head_size=0.3,
      arrow_head_unit="cm", arrow_type="closed",
      arrow_node_dist=0.03, gg_theme=ggplot2::theme_void(),
+     include_td_nodes=TRUE, mark_td_nodes=TRUE,
      ...)
 }
 \arguments{
@@ -38,7 +39,7 @@ A character vector with one entry for each node in the DAG specifying names that
 A single character string specifying the color of the outline of the node circles.
   }
   \item{node_fill}{
-A single character string specifying the color with which the nodes are filled.
+A single character string specifying the color with which the nodes are filled. Ignored if time-varying nodes are present and both \code{include_td_nodes} and \code{mark_td_nodes} are set to \code{TRUE}.
   }
   \item{node_linewidth}{
 A single number specifying the width of the outline of the node circles.
@@ -91,6 +92,12 @@ A single positive number specifying the distance between nodes and the arrows. B
   \item{gg_theme}{
 A \code{ggplot2} theme. By default this is set to \code{theme_void}, to get rid off everything but the plotted nodes (e.g. everything about the axis and the background). Might be usefull to change this to something else when searching for good parameters of the number arguments of this function.
   }
+  \item{include_td_nodes}{
+Whether to include time-varying nodes added to the \code{dag} using the \code{\link{node_td}} function or not. If one node is both specified as a time-fixed and time-varying node, it's parents in both calls will be pooled and it will be considered a time-varying node if this argument is \code{TRUE}. It will, however, also show up if it's argument is \code{FALSE}. In this case however, only the parents of that node in the standard \code{\link{node}} call will be considered.
+  }
+  \item{mark_td_nodes}{
+Whether to distinguish time-varying and time-fixed nodes by \code{fill} color. If \code{TRUE}, the color will be set automatically using the standard \code{ggplot2} palette, ignoring the color specified in \code{node_fill}. Ignored if \code{include_td_nodes=FALSE} or if there are no time-varying variables.
+  }
   \item{...}{
 Currently not used.
   }
@@ -99,6 +106,8 @@ Currently not used.
 This function uses the \pkg{igraph} package to find a suitable layout for the plot and then uses the \pkg{ggplot2} package in conjunctiont with the \code{geom_circle} function of the \pkg{ggforce} package to plot the directed acyclic graph defined by a \code{DAG} object. Since it returns a \code{ggplot} object, the user may use any standard \code{ggplot2} syntax to augment the plot or to save it using the \code{ggsave} function.
 
 Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the \pkg{igraph} package. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the \code{\link{dag2matrix}} function to obtain an adjacency matrix from the \code{DAG} object and directly use this matrix and the \pkg{igraph} package (or similar ones) to get much better plots.
+
+If the \code{DAG} supplied to this function contains time-varying variables, the resulting plot may contain cycles or even bi-directional arrows, depending on the \code{DAG}. The reason for that is, that the time-dimension is not shown in the plot. Note also that even though, technically, every time-varying node has itself as a parent, no arrows showing this dependence will be added to the plot.
 }
 \author{
 Robin Denz
@@ -124,4 +133,10 @@ adj_mat <- dag2matrix(dag)
 g1 <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
 
 plot(g1)
+
+# plot with a time-varying node
+dag <- dag +
+  node_td("lottery", type="time_to_event", parents=c("age", "smoking"))
+
+plot(dag)
 }

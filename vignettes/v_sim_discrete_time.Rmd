@@ -98,6 +98,12 @@ dag <- dag +
 
 We simply pass the `node_advance_age` function to the `type` argument of the `age` node. `death` is a *time-to-event* node, because it's an event which is generated from a probability at each step in time. That probability, as defined here, is determined by the `prob_death` function we defined earlier. We set `event_duration` to `Inf` to make this a permanent event (once you are dead, there is no going back).
 
+To visualize the resulting DAG, we can use the associated `plot` method:
+
+```{r fig.width=7, fig.height=5}
+plot(dag)
+```
+
 To finally generate the desired data, we simply call the `sim_discrete_time` function:
 
 ```{r}

@@ -54,6 +54,15 @@ get_edge_data <- function(from, to, data, pad) {
   return(arrow_dat)
 }
 
+## sets all values in a square matrix that are lying on
+## the diagonal from top-left to bottom-right to 0
+set_diagonal_to_0 <- function(mat) {
+  for (i in seq_len(nrow(mat))) {
+    mat[i, i] <- 0
+  }
+  return(mat)
+}
+
 ## S3 plot method for DAG objects
 #' @importFrom rlang .data
 #' @export
@@ -67,17 +76,21 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
                      arrow_alpha=1, arrow_head_size=0.3,
                      arrow_head_unit="cm", arrow_type="closed",
                      arrow_node_dist=0.03, gg_theme=ggplot2::theme_void(),
-                     ...) {
+                     include_td_nodes=TRUE, mark_td_nodes=TRUE, ...) {
 
   requireNamespace("ggplot2")
   requireNamespace("ggforce")
   requireNamespace("igraph")
 
   check_inputs_plot.DAG(dag=x, node_size=node_size, node_names=node_names,
-                        arrow_node_dist=arrow_node_dist, gg_theme=gg_theme)
+                        arrow_node_dist=arrow_node_dist, gg_theme=gg_theme,
+                        include_td_nodes=include_td_nodes)
 
   # adjacency matrix
-  adj_mat <- suppressWarnings(dag2matrix(dag=x, include_root_nodes=TRUE))
+  adj_mat <- dag2matrix(dag=x,
+                        include_root_nodes=TRUE,
+                        include_td_nodes=include_td_nodes)
+  adj_mat <- set_diagonal_to_0(adj_mat)
 
   if (!is.null(node_names)) {
     colnames(adj_mat) <- node_names
@@ -97,11 +110,27 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
                            data=d_nodes, pad=arrow_node_dist)
 
   # plot nodes
-  p <- ggplot2::ggplot(data=NULL) +
-    ggforce::geom_circle(data=d_nodes,
-                         ggplot2::aes(x0=.data$x, y0=.data$y, r=.data$r),
-                color=node_color, fill=node_fill, linewidth=node_linewidth,
-                linetype=node_linetype, alpha=node_alpha)
+  p <- ggplot2::ggplot(data=NULL)
+
+  if (mark_td_nodes) {
+    tx_names <- vapply(x$tx_nodes, FUN=function(x){x$name},
+                       FUN.VALUE=character(1))
+    d_nodes$td_node <- d_nodes$name %in% tx_names
+
+    p <- p + ggforce::geom_circle(data=d_nodes,
+                              ggplot2::aes(x0=.data$x, y0=.data$y, r=.data$r,
+                                           fill=.data$td_node),
+                              color=node_color,
+                              linewidth=node_linewidth,
+                              linetype=node_linetype, alpha=node_alpha)
+  } else {
+    p <- p + ggforce::geom_circle(data=d_nodes,
+                              ggplot2::aes(x0=.data$x, y0=.data$y, r=.data$r),
+                              color=node_color, fill=node_fill,
+                              linewidth=node_linewidth,
+                              linetype=node_linetype, alpha=node_alpha)
+  }
+
 
   # add names
   p <- p + ggplot2::geom_text(data=d_nodes,
@@ -123,6 +152,10 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
                                  linewidth=arrow_linewidth, alpha=arrow_alpha)
 
   p <- p + gg_theme
+
+  if (mark_td_nodes) {
+    p <- p + ggplot2::theme(legend.position="none")
+  }
 
   return(p)
 }

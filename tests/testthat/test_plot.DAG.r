@@ -84,3 +84,20 @@ test_that("change everything", {
                               gg_theme=ggplot2::theme_bw()
                               ))
 })
+
+dag <- dag +
+  node_td("vaccine", type="time_to_event", parents=c("A", "C", "D")) +
+  node_td("sickness", type="time_to_event", parents=c("C", "D", "vaccine"))
+
+test_that("with time-varying nodes, include = FALSE", {
+  expect_snapshot_output(plot(dag, include_td_nodes=FALSE))
+})
+
+test_that("with time-varying nodes, include = TRUE", {
+  expect_snapshot_output(plot(dag, include_td_nodes=TRUE))
+})
+
+test_that("with time-varying nodes, include = TRUE & mark_td_nodes = FALSE", {
+  expect_snapshot_output(plot(dag, include_td_nodes=TRUE,
+                              mark_td_nodes=FALSE))
+})

@@ -8,7 +8,7 @@ Obtain a Adjacency Matrix from a \code{DAG} object
 The \code{\link{sim_from_dag}} function requires the user to specify the causal relationships inside a \code{DAG} object containing node information. This function takes this object as input and outputs the underlying adjacency matrix. This can be useful to plot the theoretical DAG or to check if the nodes have been specified correctly.
 }
 \usage{
-dag2matrix(dag, include_root_nodes=TRUE)
+dag2matrix(dag, include_root_nodes=TRUE, include_td_nodes=FALSE)
 }
 \arguments{
   \item{dag}{
@@ -17,9 +17,14 @@ A \code{DAG} object created using the \code{\link{empty_dag}} function with node
   \item{include_root_nodes}{
 Whether to include root nodes in the output matrix. Should usually be kept at \code{TRUE} (default).
   }
+  \item{include_td_nodes}{
+Whether to include time-dependent nodes added to the \code{dag} using the \code{\link{node_td}} function or not. When including these types of nodes, it is possible for the adjacency matrix to contain cycles, e.g. that it is not a classic DAG anymore, due to the matrix not representing the passage of time.
+  }
 }
 \details{
 An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain \code{TRUE} in the spot \code{matrix["A", "B"]}.
+
+If a time-varying node is also defined as a time-fixed node, the parents of both parts will be pooled when creating the output matrix.
 }
 \author{
 Robin Denz

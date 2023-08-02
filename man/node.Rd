@@ -82,7 +82,7 @@ Currently, the following node types are implemented directly for convenience to 
   \item{"\link[=node_competing_events]{competing_events}": A node based on repeatedly checking whether one of multiple mutually exclusive events occurs at each point in time.}
 }
 
-For custom time-dependent node types, see below.
+However, the user may also use any of the child node types in a \code{node_td} call directly. For custom time-dependent node types, see below.
 
 \strong{\emph{Custom Node Types}}
 

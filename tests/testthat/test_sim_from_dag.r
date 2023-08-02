@@ -1,18 +1,22 @@
 
 root_nodes <- list(list(type="rnorm",
                         params=list(mean=17, sd=4),
-                        name="age"),
+                        name="age",
+                        time_varying=FALSE),
                    list(type="rbernoulli",
                         params=list(p=0.7),
-                        name="sex"))
+                        name="sex",
+                        time_varying=FALSE))
 child_nodes <- list(list(parents=c("sex", "age"),
                          type="gaussian",
                          name="bmi",
                          betas=c(2.1, 1.4),
                          intercept=14,
-                         error=2))
+                         error=2,
+                         time_varying=FALSE))
 dag <- list(root_nodes=root_nodes,
-            child_nodes=child_nodes)
+            child_nodes=child_nodes,
+            tx_nodes=list())
 class(dag) <- "DAG"
 
 test_that("correct nrow, ncol", {
@@ -36,13 +40,15 @@ test_that("sort_dag working", {
                            name="bmi",
                            betas=c(2.1, 1.4, 0.1),
                            intercept=14,
-                           error=2),
+                           error=2,
+                           time_varying=FALSE),
                       list(parents=c("sex", "age"),
                            type="gaussian",
                            name="income",
                            betas=c(0.1, 0.7),
                            intercept=100,
-                           error=10))
+                           error=10,
+                           time_varying=FALSE))
   dag$child_nodes <- child_nodes
 
   sim_dat <- sim_from_dag(n_sim=20, dag=dag, sort_dag=TRUE)

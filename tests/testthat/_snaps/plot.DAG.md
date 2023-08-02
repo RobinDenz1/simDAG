@@ -42,3 +42,15 @@
 
     
 
+# with time-varying nodes, include = FALSE
+
+    
+
+# with time-varying nodes, include = TRUE
+
+    
+
+# with time-varying nodes, include = TRUE & mark_td_nodes = FALSE
+
+    
+
