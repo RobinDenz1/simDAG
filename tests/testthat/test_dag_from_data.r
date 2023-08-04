@@ -22,7 +22,7 @@ test_that("general test case", {
     node("smoking", type="binomial", parents=c("sex", "age"))
 
   # get parameter estimates from data
-  dag_full <- dag_from_data(dag=dag, data=data)
+  dag_full <- dag_from_data(dag=dag, data=data, return_models=TRUE)
 
 
   expected_dag <- empty_dag() +

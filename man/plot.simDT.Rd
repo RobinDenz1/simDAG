@@ -161,7 +161,10 @@ The text in all boxes may be changed to custom text by using the \code{box_1_tex
 The graphic is created using the \code{ggplot2} package and the output is a standard \code{ggplot} object. This means that the user can change the result using standard \code{ggplot} syntax (adding more stuff, changing geoms, ...).
 }
 \value{
-Returns a \code{ggplot} object.
+Returns a standard \code{ggplot} object.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_discrete_time}}
 }
 \author{
 Robin Denz

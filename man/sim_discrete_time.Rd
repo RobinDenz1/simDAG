@@ -21,28 +21,28 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=TRUE,
 A \code{DAG} object created using the \code{empty_dag} function with \code{node_td} calls added to it (see details and examples). If the \code{dag} contains root nodes and child nodes which are time-fixed (those who were added using \code{node} calls), data according to this DAG will be generated for time = 0. That data will then be used as starting data for the following simulation. Alternatively, the user can specify the \code{t0_data} argument directly. In either case, the supplied \code{dag} needs to contain at least one time-dependent node added using the \code{node_td} function.
   }
   \item{n_sim}{
-A single number specifying how many observations should be generated. If a \code{data.frame} is supplied to the \code{t0_data} argument, this argument is ignored. The sample size will then correspond to the number of rows in \code{t0_data}.
+A single number specifying how many observations should be generated. If a \code{data.table} is supplied to the \code{t0_data} argument, this argument is ignored. The sample size will then correspond to the number of rows in \code{t0_data}.
   }
   \item{t0_sort_dag}{
 Corresponds to the \code{sort_dag} argument in the \code{\link{sim_from_dag}} function. Ignored if \code{t0_data} is specified.
   }
   \item{t0_data}{
-An optional \code{data.frame} containing values for all relevant variables at t = 0. This dataset will then be transformed over time according to the node functions specified in \code{tx_nodes}. Alternatively, data for t = 0 may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}.
+An optional \code{data.table} like object (also accepts a \code{data.frame}, \code{tibble} etc.) containing values for all relevant variables at \eqn{t = 0}. This dataset will then be transformed over time according to the node functions specified in \code{tx_nodes}. Alternatively, data for \eqn{t = 0} may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}.
   }
   \item{t0_transform_fun}{
-An optional function that takes the data created at t = 0 as the first argument. The function will be applied to the starting data and its output will replace the \code{data.frame}. Can be used to perform arbitrary data transformations after the starting data was created. Set to \code{NULL} to not use this functionality.
+An optional function that takes the data created at \eqn{t = 0} as the first argument. The function will be applied to the starting data and its output will replace the \code{data.table}. Can be used to perform arbitrary data transformations after the starting data was created. Set to \code{NULL} (default) to not use this functionality.
   }
   \item{t0_transform_args}{
 A named list of additional arguments passed to the \code{t0_transform_fun}. Ignored if \code{t0_transform_fun=NULL}.
   }
   \item{max_t}{
-A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at t = 1 (after creating the starting data with the arguments above) and will continue with until \code{max_t} by increasing the time by one unit at every step.
+A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at \eqn{t = 1} (after creating the starting data with the arguments above) and will continue with until \code{max_t} by increasing the time by one unit at every step.
   }
   \item{tx_nodes_order}{
 A numeric vector specifying the order in which the time-dependent nodes added to the \code{dag} object using the \code{\link{node_td}} function should be executed at each time step. If \code{NULL} (default), the nodes will be generated in the order in which they were originally added.
   }
   \item{tx_transform_fun}{
-An optional function that takes the data created after every point in time > 0 as the first argument and the simulation time as the second argument. The function will be applied to that data after all node functions at that point in time have been executed and its output will replace the previous \code{data.frame}. Can be used to perform arbitrary data transformations at every point in time. Set to \code{NULL} to not use this functionality.
+An optional function that takes the data created after every point in time  \eqn{t > 0} as the first argument and the simulation time as the second argument. The function will be applied to that data after all node functions at that point in time have been executed and its output will replace the previous \code{data.table}. Can be used to perform arbitrary data transformations at every point in time. Set to \code{NULL} (default) to not use this functionality.
   }
   \item{tx_transform_args}{
 A named list of additional arguments passed to the \code{tx_transform_fun}. Ignored if \code{tx_transform_fun=NULL}.
@@ -72,7 +72,7 @@ Due to the iterative process it is very easy to simulate arbitrarily complex dat
 
 \strong{\emph{How it Works}}:
 
-Internally, this function works by first simulating data using the \code{\link{sim_from_dag}} function. Alternatively, the user can supply a custom \code{data.frame} using the \code{t0_data} argument. This data defines the state of all entities at \eqn{t = 0}. Afterwards, the simulation time is increased by one unit and the data is transformed in place by calling each node function defined by the time-dependent nodes which were added to the \code{dag} using the \code{\link{node_td}} function (either in turn or by the order defined by the \code{tx_nodes_order} argument). Usually, each transformation changes the state of the entities in some way. For example if there is an \code{age} variable, we would probably increase the age of each person by one time unit at every step. Once \code{max_t} is reached, the resulting \code{data.table} will be returned. It contains the state of all entities at the last step with additional information of when they experienced some events (if \code{\link{node_time_to_event}} was used as time-dependent node). Multiple in-depth examples can be found in the vignettes of this package.
+Internally, this function works by first simulating data using the \code{\link{sim_from_dag}} function. Alternatively, the user can supply a custom \code{data.table} using the \code{t0_data} argument. This data defines the state of all entities at \eqn{t = 0}. Afterwards, the simulation time is increased by one unit and the data is transformed in place by calling each node function defined by the time-dependent nodes which were added to the \code{dag} using the \code{\link{node_td}} function (either in turn or by the order defined by the \code{tx_nodes_order} argument). Usually, each transformation changes the state of the entities in some way. For example if there is an \code{age} variable, we would probably increase the age of each person by one time unit at every step. Once \code{max_t} is reached, the resulting \code{data.table} will be returned. It contains the state of all entities at the last step with additional information of when they experienced some events (if \code{\link{node_time_to_event}} was used as time-dependent node). Multiple in-depth examples can be found in the vignettes of this package.
 
 \strong{\emph{Specifying the \code{dag} argument}}:
 
@@ -89,6 +89,12 @@ In most cases it will be neccessary for the user to write their own functions in
 }
 \author{
 Robin Denz, Katharina Meiszl
+}
+\value{
+Returns a \code{simDT} object, containing some general information about the simulated data as well as the final state of the simulated dataset (and more states, depending on the specification of the \code{save_states} argument).
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim2data}}, \code{\link{plot.simDT}}
 }
 \examples{
 library(simDAG)

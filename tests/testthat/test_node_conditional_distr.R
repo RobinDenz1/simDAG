@@ -44,3 +44,19 @@ test_that("with two parent nodes", {
   expect_equal(mean(data$A), 37.42947, tolerance=0.001)
   expect_equal(sd(data$A), 48.41304, tolerance=0.001)
 })
+
+test_that("supplying data.frame & setting default_distr", {
+
+  set.seed(3245)
+
+  distr <- list(male=list("rnorm", mean=100, sd=5),
+                female=list("rcategorical", probs=c(0.1, 0.2, 0.7)))
+
+  data <- data.frame(sex=c("male", "male", "female", "trans"))
+
+  out <- node_conditional_distr(data=data, parents="sex", distr=distr,
+                                coerce2numeric=FALSE,
+                                default_distr=runif)
+
+  expect_true(is.numeric(out))
+})

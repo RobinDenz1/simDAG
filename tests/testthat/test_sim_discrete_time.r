@@ -124,3 +124,57 @@ test_that("verbose working", {
                                   verbose = TRUE),
                 "t = 365 node = sickness1")
 })
+
+test_that("error when not a DAG object", {
+  expect_error(sim_discrete_time(dag="1", n_sim=100, max_t=12))
+})
+
+test_that("using t0_transform_fun", {
+
+  trans_fun <- function(data, a) {
+    data$age <- data$age * 2
+    return(data)
+  }
+
+  sim <- sim_discrete_time(t0_data=dt,
+                           max_t=365,
+                           dag=dag,
+                           verbose=FALSE,
+                           t0_transform_fun=trans_fun,
+                           t0_transform_args=list(a=10))
+
+  expect_equal(sim$data$age / 2, dt$age)
+})
+
+test_that("using tx_transform_fun", {
+
+  trans_fun <- function(data, a) {
+    data$age <- data$age + a
+    return(data)
+  }
+
+  sim <- sim_discrete_time(t0_data=dt,
+                           max_t=100,
+                           dag=dag,
+                           verbose=FALSE,
+                           tx_transform_fun=trans_fun,
+                           tx_transform_args=list(a=1))
+
+  expect_equal(sim$data$age - 100, dt$age)
+})
+
+## NOTE: Can't run this test because the function is not global and will
+#        therefore not be found, resulting in an error
+#test_that("using a custom node", {
+#
+#  node_sim_time_multiplier <- function(data, sim_time) {
+#    return(sim_time * 2)
+#  }
+#
+#  dag <- empty_dag() +
+#    node_td("custom_nonsense", type="sim_time_multiplier")
+#
+#  sim <- sim_discrete_time(dag=dag, n_sim=100, max_t=20)
+#
+#  expect_equal(sim$data$custom_nonsense, rep(40, 100))
+#})

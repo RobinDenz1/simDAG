@@ -26,6 +26,12 @@ The output will never contain time-dependent nodes. If this is neccessary, the u
 \author{
 Robin Denz
 }
+\value{
+Returns a partially specified \code{DAG} object.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{dag_from_data}}
+}
 \examples{
 library(simDAG)
 

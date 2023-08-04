@@ -43,12 +43,11 @@ test_that("non-logical time-varying variables", {
 
 test_that("works with no varying variables", {
 
-  long <- data.table(.id=rep(seq_len(10), each=5),
+  long <- data.frame(.id=rep(seq_len(10), each=5),
                      .simulation_time=rep(seq_len(5), 10),
                      A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
                          TRUE),
                      B=FALSE)
-  setkey(long, .id, .simulation_time)
 
   expected <- data.table(.id=seq_len(10),
                          start=1,
@@ -60,4 +59,8 @@ test_that("works with no varying variables", {
                              varying=NULL, check_inputs=FALSE)
 
   expect_equal(out_dat, expected)
+})
+
+test_that("wrong data", {
+  expect_error(long2start_stop(data="1", id=".id", time=".time"))
 })

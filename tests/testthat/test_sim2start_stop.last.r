@@ -335,3 +335,44 @@ test_that("event at t = max_t", {
 
   expect_equal(out_dat, expected)
 })
+
+test_that("error when using competing events node", {
+
+  set.seed(3525)
+
+  prob_test <- function(data) {
+
+    # simply repeat the same probabilities for everyone
+    n <- nrow(data)
+    p_mat <- matrix(c(rep(0.9, n), rep(0.005, n), rep(0.005, n)),
+                    byrow = FALSE, ncol=3)
+
+    return(p_mat)
+  }
+
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=20, sd=10) +
+    node_td("some_nonsense", type="competing_events", prob_fun=prob_test)
+
+  sim <- sim_discrete_time(dag=dag, n_sim=10, max_t=20)
+
+  expect_error(suppressWarnings(sim2data(sim, to="start_stop")))
+})
+
+test_that("no time-to-event nodes in data", {
+
+  set.seed(3123414)
+
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=20, sd=10) +
+    node_td("some_nonsense", type="gaussian", formula=~age,
+            betas=0.1, intercept=-1, error=5)
+
+  sim <- sim_discrete_time(dag=dag, n_sim=10, max_t=20)
+  out <- sim2start_stop.last(sim)
+
+  expect_equal(colnames(out), c(".id", "start", "stop", "age", "some_nonsense"))
+  expect_true(all(out$start==1))
+  expect_true(all(out$stop==20))
+  expect_true(is.numeric(out$age) & is.numeric(out$some_nonsense))
+})

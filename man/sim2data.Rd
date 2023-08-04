@@ -79,6 +79,9 @@ Returns a single \code{data.table} (or \code{data.frame}) containing all simulat
 \author{
 Robin Denz
 }
+\seealso{
+\code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

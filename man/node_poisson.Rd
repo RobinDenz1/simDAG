@@ -33,6 +33,12 @@ Essentially, this function simply calculates the linear predictor defined by the
 \author{
 Robin Denz
 }
+\value{
+Returns a numeric vector of length \code{nrow(data)}.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_from_dag}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

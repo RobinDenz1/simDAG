@@ -29,6 +29,12 @@ If a time-varying node is also defined as a time-fixed node, the parents of both
 \author{
 Robin Denz
 }
+\value{
+Returns a numeric square matrix with one row and one column per used node in \code{dag}.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}
+}
 \examples{
 library(simDAG)
 

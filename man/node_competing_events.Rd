@@ -78,6 +78,12 @@ In fact, a competing events node may be simulated using multiple calls to the \c
 \author{
 Robin Denz
 }
+\value{
+Returns a \code{data.table} containing the updated columns of the node.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_from_dag}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

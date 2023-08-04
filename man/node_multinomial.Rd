@@ -43,6 +43,12 @@ Since this function produces categorical output (as it should), it may be diffic
 \author{
 Robin Denz
 }
+\value{
+Returns a vector of length \code{nrow(data)}. Depending on the used arguments, this vector may be of type character, numeric of factor. If \code{return_prob} was used it instead returns a numeric matrix containing one column per possible event and \code{nrow(data)} rows.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_from_dag}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

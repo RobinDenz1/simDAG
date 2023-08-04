@@ -26,6 +26,9 @@ Note that this function accepts values of \code{p} that are smaller then 0 and g
 \author{
 Robin Denz
 }
+\value{
+Returns a logical vector of length \code{n}.
+}
 \examples{
 library(simDAG)
 

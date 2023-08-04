@@ -46,6 +46,12 @@ If time-dependent nodes were added to the \code{dag} using \code{node_td} calls,
 \author{
 Robin Denz
 }
+\value{
+Returns a single \code{data.table} including the simulated data.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{plot.DAG}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

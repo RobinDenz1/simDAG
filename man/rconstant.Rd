@@ -21,6 +21,9 @@ A single value of any kind which is used as the only value of the resulting vari
 \author{
 Robin Denz
 }
+\value{
+Returns a vector of length \code{n} with the same type as \code{constant}.
+}
 \examples{
 library(simDAG)
 

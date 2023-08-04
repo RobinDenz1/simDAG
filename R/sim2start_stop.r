@@ -63,6 +63,20 @@ sim2start_stop.last <- function(sim) {
   tte_names <- tx_names[tx_type=="time_to_event"]
   non_tte_names <- tx_names[tx_type!="time_to_event"]
 
+  # without any tte nodes, simply return the last state of data
+  if (length(tte_names) == 0) {
+    data <- sim$data
+    data[, start := 1]
+    data[, stop := max_t]
+
+    first_cols <- c(".id", "start", "stop")
+    setcolorder(data, c(first_cols,
+                        colnames(data)[!colnames(data) %in% first_cols]))
+    setkey(data, NULL)
+
+    return(data)
+  }
+
   # get durations of each time-to-event node
   event_durations <- vapply(sim$tx_nodes[tx_type=="time_to_event"],
                             FUN=get_event_duration,
@@ -92,64 +106,64 @@ sim2start_stop.last <- function(sim) {
 
   # if no events at all happened, stop here
   if (is.null(vec_all_events)) {
-    data <- data.table(.id=seq_len(n_sim), start=1, stop=max_t)
+    data <- data.table(.id=seq_len(n_sim), start=1, stop=(max_t + 1))
     data[, (tte_names) := FALSE]
-    return(data)
-  }
+  } else {
 
-  vec_all_n <- unlist(tte_n)
-  vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
-  vec_all_events_end <- vec_all_events + vec_event_durations
-  vec_id <- rep(rep(seq_len(n_sim), each=length(tte_names)), vec_all_n)
-  vec_kind <- rep(rep(tte_names, n_sim), vec_all_n)
+    vec_all_n <- unlist(tte_n)
+    vec_event_durations <- rep(rep(event_durations, n_sim), vec_all_n)
+    vec_all_events_end <- vec_all_events + vec_event_durations
+    vec_id <- rep(rep(seq_len(n_sim), each=length(tte_names)), vec_all_n)
+    vec_kind <- rep(rep(tte_names, n_sim), vec_all_n)
 
-  rm(tte_all, tte_n)
+    rm(tte_all, tte_n)
 
-  # initial data.table
-  data <- data.table(.id=rep(vec_id, 2),
-                     start=c(vec_all_events, vec_all_events_end))
+    # initial data.table
+    data <- data.table(.id=rep(vec_id, 2),
+                       start=c(vec_all_events, vec_all_events_end))
 
-  # add first time
-  start_rows <- data.table(.id=1:n_sim, start=1)
-  data <- rbind(data, start_rows)
+    # add first time
+    start_rows <- data.table(.id=1:n_sim, start=1)
+    data <- rbind(data, start_rows)
 
-  # remove invalidly long times
-  data <- data[start <= max_t, ]
+    # remove invalidly long times
+    data <- data[start <= max_t, ]
 
-  # sort by .id and start
-  setkey(data, .id, start)
+    # sort by .id and start
+    setkey(data, .id, start)
 
-  # create stop
-  data[, stop := shift(start, type="lead", fill=max_t + 1), by=.id]
+    # create stop
+    data[, stop := shift(start, type="lead", fill=max_t + 1), by=.id]
 
-  # initialize table storing all events + durations + kind
-  events_dat <- data.table(.id=vec_id,
-                           start=vec_all_events,
-                           end=vec_all_events_end,
-                           kind=vec_kind)
-  setkey(events_dat, .id, start)
+    # initialize table storing all events + durations + kind
+    events_dat <- data.table(.id=vec_id,
+                             start=vec_all_events,
+                             end=vec_all_events_end,
+                             kind=vec_kind)
+    setkey(events_dat, .id, start)
 
-  # create one end for each event
-  events_dat <- dcast(events_dat, .id + start ~ kind, value.var="end")
+    # create one end for each event
+    events_dat <- dcast(events_dat, .id + start ~ kind, value.var="end")
 
-  rm(vec_all_events, vec_all_n, vec_event_durations,
-     vec_all_events_end, vec_id, vec_kind)
+    rm(vec_all_events, vec_all_n, vec_event_durations,
+       vec_all_events_end, vec_id, vec_kind)
 
-  data <- merge.data.table(data, events_dat, by=c(".id", "start"),
-                           all.x=TRUE, all.y=FALSE)
+    data <- merge.data.table(data, events_dat, by=c(".id", "start"),
+                             all.x=TRUE, all.y=FALSE)
 
-  rm(events_dat)
+    rm(events_dat)
 
-  # fill up ends & create event indicators
-  for (i in seq_len(length(tte_names))) {
-    name <- tte_names[i]
+    # fill up ends & create event indicators
+    for (i in seq_len(length(tte_names))) {
+      name <- tte_names[i]
 
-    if (name %in% colnames(data)) {
-      data[, (name) := na_locf(eval(parse(text=name))), by=.id]
-      data[, (name) := !is.na(eval(parse(text=name))) &
-             start < eval(parse(text=name))]
-    } else {
-      data[, (name) := FALSE]
+      if (name %in% colnames(data)) {
+        data[, (name) := na_locf(eval(parse(text=name))), by=.id]
+        data[, (name) := !is.na(eval(parse(text=name))) &
+               start < eval(parse(text=name))]
+      } else {
+        data[, (name) := FALSE]
+      }
     }
   }
 

@@ -25,7 +25,8 @@ test_that("general test case", {
 
   ## making one of the event-types terminal and the other recurrent
   dag <- empty_dag() +
-    node_td("death_illness", type="competing_events", prob_fun=prob_death_illness,
+    node_td("death_illness", type="competing_events",
+            prob_fun=prob_death_illness,
             event_duration=c(15, Inf))
 
 

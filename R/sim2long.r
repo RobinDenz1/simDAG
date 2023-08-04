@@ -46,7 +46,7 @@ sim2long.all <- function(sim) {
 #' @importFrom data.table setcolorder
 sim2long.last <- function(sim) {
 
-  .time <- n_rep <- start <- NULL
+  .id <- .time <- n_rep <- start <- NULL
 
   data <- sim2start_stop.last(sim)
 

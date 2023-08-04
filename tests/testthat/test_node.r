@@ -292,10 +292,22 @@ test_that("call with only two named arguments", {
   expect_equal(out, expected)
 })
 
-test_that("error when name or type missing", {
+test_that("node: error when name or type missing", {
   expect_error(empty_dag() + node())
   expect_error(empty_dag() + node(name="A"))
   expect_error(empty_dag() + node(type="rbernoulli"))
   expect_error(empty_dag() + node(name="A", betas=c(1, 2), intercept=2,
                                   parents=c("sex", "age"), error=2))
+})
+
+test_that("node_td: error when name or type missing", {
+  expect_error(empty_dag() + node_td())
+  expect_error(empty_dag() + node_td(name="A"))
+  expect_error(empty_dag() + node_td(type="rbernoulli"))
+  expect_error(empty_dag() + node_td(name="A", betas=c(1, 2), intercept=2,
+                                     parents=c("sex", "age"), error=2))
+})
+
+test_that("snapshot print node_td", {
+  expect_snapshot_output(print(node_td("A", type="time_to_event")))
 })

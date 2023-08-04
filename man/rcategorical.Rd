@@ -30,6 +30,9 @@ In case of a simple numeric vector (class probabilities should be the same for a
 \author{
 Robin Denz
 }
+\value{
+Returns a numeric vector (or factor vector if \code{coerce2factor=TRUE}) of length \code{n}.
+}
 \examples{
 library(simDAG)
 

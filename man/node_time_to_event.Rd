@@ -85,6 +85,12 @@ Currently this function only allows binary events. Categorical event types may b
 \author{
 Robin Denz, Katharina Meiszl
 }
+\value{
+Returns a \code{data.table} containing at least two columns with updated values of the node.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node_td}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

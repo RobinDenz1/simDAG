@@ -30,6 +30,18 @@ test_that("ignore root nodes", {
   expect_equal(out, expected)
 })
 
+test_that("ignore root nodes & allow td_nodes", {
+
+  expected <- matrix(c(0, 1, 0, 0), ncol=2, byrow=TRUE)
+  colnames(expected) <- c("C", "D")
+  rownames(expected) <- c("C", "D")
+
+  out <- dag2matrix(dag=dag, include_root_nodes=FALSE,
+                    include_td_nodes=TRUE)
+
+  expect_equal(out, expected)
+})
+
 test_that("including td_nodes, no doubles", {
   dag <- empty_dag() +
     node("A", type="rbernoulli", p=0.1) +

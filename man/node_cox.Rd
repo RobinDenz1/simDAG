@@ -56,6 +56,9 @@ Bender R, Augustin T, Blettner M. Generating survival times to simulate Cox prop
 \author{
 Robin Denz
 }
+\value{
+Returns a \code{data.table} of length \code{nrow(data)} containing two columns. Both starting with the nodes \code{name} and ending with \code{_event} and \code{_time}. The first is a logical vector, the second a numeric one.
+}
 \examples{
 library(simDAG)
 

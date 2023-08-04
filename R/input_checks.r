@@ -468,20 +468,12 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
         stop("Defined parameters in 't0_transform_args' are not used",
              " for 't0_transform_fun'.")
       }
-    } else {
-      for (i in 1:length(names(formals(t0_transform_fun)))) {
-        if (!is.element(names(formals(t0_transform_fun))[i],
-                        names(t0_transform_args))) {
-          stop("All parameters of 't0_transform_fun' must be defined",
-               " in 't0_transform_args'.")
-        }
-      }
     }
   }
 
   # check content of tx_nodes
   if (is.list(tx_nodes)) {
-    for (i in 1:length(tx_nodes)) {
+    for (i in seq_len(length(tx_nodes))) {
       stopifnot("All elements of 'tx_nodes' must have a name." =
                   (length(tx_nodes[[i]]$name) == 1 &&
                      is.character(tx_nodes[[i]]$name)))
@@ -528,14 +520,6 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
                      length(names(tx_transform_args)))) {
         stop("Defined parameters in 'tx_transform_args' are not used",
              " for 'tx_transform_fun'.")
-      }
-    } else {
-      for (i in 1:length(names(formals(tx_transform_fun)))) {
-        if (!is.element(names(formals(tx_transform_fun))[i],
-                        names(tx_transform_args))) {
-          stop("All parameters of 'tx_transform_fun' must be defined",
-               " in 'tx_transform_args'.")
-        }
       }
     }
   }
@@ -590,8 +574,8 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
     # check content of prob_fun_args
     if (length(setdiff(names(formals(prob_fun)),
                        c("data", "sim_time"))) != 0) {
-      for (i in 1:length(setdiff(names(formals(prob_fun)),
-                                 c("data", "sim_time")))) {
+      for (i in seq_len(length(setdiff(names(formals(prob_fun)),
+                                 c("data", "sim_time"))))) {
         if(!is.element(setdiff(names(formals(prob_fun)),
                                c("data", "sim_time"))[i],
                        names(prob_fun_args))) {
@@ -648,8 +632,8 @@ check_inputs_node_competing_events <- function(data, parents, sim_time, name,
     # check content of prob_fun_args
     if (length(setdiff(names(formals(prob_fun)),
                        c("data", "sim_time"))) != 0) {
-      for (i in 1:length(setdiff(names(formals(prob_fun)),
-                                 c("data", "sim_time")))) {
+      for (i in seq_len(length(setdiff(names(formals(prob_fun)),
+                                 c("data", "sim_time"))))) {
         if(!is.element(setdiff(names(formals(prob_fun)),
                                c("data", "sim_time"))[i],
                        names(prob_fun_args))) {

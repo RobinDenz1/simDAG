@@ -49,6 +49,12 @@ By default this function returns a logical vector containing only \code{TRUE} an
 \author{
 Robin Denz
 }
+\value{
+Returns a logical vector (or numeric vector if \code{return_prob=TRUE}) of length \code{nrow(data)}.
+}
+\seealso{
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_from_dag}}, \code{\link{sim_discrete_time}}
+}
 \examples{
 library(simDAG)
 

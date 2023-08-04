@@ -25,6 +25,9 @@ The function may include any amount of additional arguments specified by the use
 
 Some simple examples for custom nodes are given below.
 }
+\value{
+Should return either a vector of length \code{nrow(data)} or a \code{data.table} or \code{data.frame} with \code{nrow(data)} rows.
+}
 \author{
 Robin Denz
 }

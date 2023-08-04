@@ -50,7 +50,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
 
   # perform an arbitrary data transformation right at the start
   if (!is.null(t0_transform_fun)) {
-    args$data <- data
+    t0_transform_args$data <- data
     data <- do.call(t0_transform_fun, args=t0_transform_args)
   }
 
@@ -140,7 +140,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
 
     # perform an arbitrary data transformation after each time point
     if (!is.null(tx_transform_fun)) {
-      args$data <- data
+      tx_transform_args$data <- data
       data <- do.call(tx_transform_fun, args=tx_transform_args)
     }
 
