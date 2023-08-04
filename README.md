@@ -36,7 +36,7 @@ If you encounter any bugs or have any specific feature requests, please file an 
 
 Suppose we want to generate data with the following causal structure:
 
-<img src="man/figures/example_DAG.png" />
+<img src="man/figures/example_DAG.png" width="500" />
 
 where `age` is normally distributed with a mean of 50 and a standard deviation of 4 and `sex` is bernoulli distributed with `p = 0.5` (equal number of men and women).
 Both of these "root nodes" (meaning they have no parents - no arrows pointing into them) have a direct causal effect on the `bmi`.
