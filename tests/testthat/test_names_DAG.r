@@ -1,7 +1,7 @@
 
 dag <- empty_dag() +
   node("A", "rbernoulli", p=0.1) +
-  node("B", "binomial", parents=c("A"), p=0.1) +
+  node("B", "binomial", parents=c("A"), betas=c(1), intercept=-1) +
   node_td("C", "time_to_event", p=0.1)
 
 test_that("all names", {

@@ -1,4 +1,9 @@
 
+## check whether something is a formula or not
+is_formula <- function(x) {
+  inherits(x, "formula")
+}
+
 # check whether a node name is appropriate
 is_node_name <- function(name) {
   length(name)==1 && is.character(name)
@@ -43,7 +48,8 @@ check_inputs_root_node <- function(name, type) {
 }
 
 ## input checks for child nodes
-check_inputs_child_node <- function(name, type, parents, args, time_varying) {
+check_inputs_child_node <- function(name, type, parents, args, time_varying,
+                                    formula) {
 
   if (!is_node_name(name)) {
     stop("The 'name' attribute must be a single character string.")
@@ -53,16 +59,18 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying) {
   } else if (!is_node_parents(parents) & !time_varying) {
     stop("The 'parents' argument of a child node must be a character",
          " vector of length > 0.")
+  } else if (!(is_formula(formula) | is.null(formula))) {
+    stop("'formula' must be a valid formula object or NULL.")
   }
 
   # type specific checks
   type_check_fun_name <- paste0("check_inputs_node_", type)
 
-  if (exists(type_check_fun_name, mode="function", envir=globalenv()) &
+  if (exists(type_check_fun_name, mode="function") &
       !type %in% c("conditional_distr", "conditional_prob", "time_to_event",
                    "competing_events")) {
+    args$formula <- formula
     type_check_fun <- get(type_check_fun_name)
-
     type_check_fun(parents=parents, args=args)
   }
 }
@@ -80,7 +88,7 @@ check_inputs_node_regression <- function(parents, args, type) {
     stop("'betas' must be a numeric vector when using type='", type, "'.")
   } else if (!is_intercept(args$intercept)) {
     stop("'intercept' must be a single number when using type='", type, "'.")
-  } else if (length(parents) != length(args$betas)) {
+  } else if ((length(parents) != length(args$betas)) & is.null(args$formula)) {
     stop("'betas' must have the same length as 'parents' when using",
          " type='", type, "'.")
   }
@@ -97,18 +105,19 @@ check_inputs_node_gaussian <- function(parents, args) {
 }
 
 ## input checks for binomial nodes
-check_inputs_binomial <- function(parents, args) {
+check_inputs_node_binomial <- function(parents, args) {
   check_inputs_node_regression(parents=parents, args=args, type="binomial")
 }
 
-## input checks for binomial nodes
-check_inputs_poisson <- function(parents, args) {
+## input checks for poisson nodes
+check_inputs_node_poisson <- function(parents, args) {
   check_inputs_node_regression(parents=parents, args=args, type="poisson")
 }
 
-## input checks for binomial nodes
-check_inputs_binomial <- function(parents, args) {
-  check_inputs_node_regression(parents=parents, args=args, type="binomial")
+## input checks for negative_binomial nodes
+check_inputs_node_negative_binomial <- function(parents, args) {
+  check_inputs_node_regression(parents=parents, args=args,
+                               type="negative_binomial")
 }
 
 ## checking the inputs of the sim_from_dag function
@@ -143,14 +152,16 @@ check_inputs_node_conditional_probs <- function(data, parents, probs,
              !all(names(probs) %in% unique(data[[parents]]))) {
     stop("All elements in 'probs' must correspond to levels in ", parents,
          ". The following elements are not: ",
-         names(probs)[!names(probs) %in% unique(data[[parents]])])
+         paste0(names(probs)[!names(probs) %in% unique(data[[parents]])],
+                collapse="  "))
   } else if (length(parents) > 1 &&
              !all(names(probs) %in%
                   unique(interaction(data[, parents, with=FALSE])))) {
     stop("All elements in 'probs' must correspond to levels defined by the",
          "combined strata of all 'parents'. The following elements are not: ",
-         names(probs)[!names(probs) %in%
-                      unique(interaction(data[, parents, with=FALSE]))])
+         paste0(names(probs)[!names(probs) %in%
+                      unique(interaction(data[, parents, with=FALSE]))],
+                collaps="  "))
   } else if (!(is.null(default_probs) || (is.numeric(default_probs) &&
                all(default_probs <=1 & default_probs >= 0)))) {
     stop("'default_probs' must be a numeric vector containing only",
@@ -170,23 +181,22 @@ check_inputs_node_conditional_distr <- function(data, parents, distr,
                                                 default_distr_args, default_val,
                                                 coerce2numeric) {
 
-  if (!(inherits(data, "data.frame") | inherits(data, "data.table"))) {
-    stop("'data' must be a data.table object or an object that can be",
-         " transformed to a data.table.")
-  } else if (is.null(names(distr))) {
+  if (is.null(names(distr))) {
     stop("All elements in 'distr' must be named using levels of 'parents'.")
   } else if (length(parents) == 1 &&
              !all(names(distr) %in% unique(data[[parents]]))) {
     stop("All elements in 'distr' must correspond to levels in ", parents,
          ". The following elements are not: ",
-         names(distr)[!names(distr) %in% unique(data[[parents]])])
+         paste0(names(distr)[!names(distr) %in% unique(data[[parents]])],
+                collapse="  "))
   } else if (length(parents) > 1 &&
              !all(names(distr) %in%
                   unique(interaction(data[, parents, with=FALSE])))) {
     stop("All elements in 'distr' must correspond to levels defined by the",
          "combined strata of all 'parents'. The following elements are not: ",
-         names(distr)[!names(distr) %in%
-                        unique(interaction(data[, parents, with=FALSE]))])
+         paste0(names(distr)[!names(distr) %in%
+                        unique(interaction(data[, parents, with=FALSE]))],
+                collapse="  "))
   } else if (!is.function(default_distr) && !is.null(default_distr)) {
     stop("'default_distr' must be a function or NULL.")
   } else if (length(default_val) != 1) {
@@ -206,7 +216,7 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
          " person identifier in 'data'.")
   } else if (!id %in% colnames(data)) {
     stop(id, " is not a valid column in 'data'.")
-  } else if (!(is.character(data[[id]]) | is.integer(data[[id]]))) {
+  } else if (!(is.character(data[[id]]) | is.numeric(data[[id]]))) {
     stop("The column specified by 'id' must be a character, factor or",
          " integer variable.")
   } else if (!(is.character(time) && length(time)==1)) {
@@ -368,13 +378,6 @@ check_inputs_dag_from_data <- function(dag, data, return_models, na.rm) {
     stop("All nodes in 'dag' must correspond to a column in 'data'.",
          "Missing columns: ", dag_names[!dag_names %in% colnames(data)])
   }
-
-  # info for all node types there
-  dag_type <- c(lapply(dag$root_nodes, function(x){x$type}),
-                lapply(dag$child_nodes, function(x){x$type}))
-  if (length(dag_type) != length(dag_names)) {
-    stop("Every node in the dag object needs to have a defined node type.")
-  }
 }
 
 ## check inputs for plot.DAG function
@@ -394,8 +397,8 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
                is.null(node_names))) {
     stop("'node_names' must be a character vector with one name for each node",
          " or NULL.")
-  } else if (!(length(node_size) == 1 | length(node_size) == size_dag) &&
-             is.numeric(node_size) && all(node_size > 0)) {
+  } else if (!((length(node_size) == 1 | length(node_size) == size_dag) &&
+                is.numeric(node_size) && all(node_size > 0))) {
     stop("'node_size' must be a numeric vector of length 1 or with one entry",
          " per node. May only contain positive numbers.")
   } else if (!(length(arrow_node_dist)==1 && is.numeric(arrow_node_dist) &&
@@ -439,8 +442,7 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
   stopifnot("'save_states' must be a single character." =
               (length(save_states) == 1 && is.character(save_states)))
   if (!is.null(save_states_at)) {
-    if (!(length(save_states_at) == 1 && is.numeric(save_states_at)) ||
-        !(is.vector(save_states_at, mode = "numeric")))  {
+    if (!is.numeric(save_states_at))  {
       stop("'save_states_at' must be either a single integer",
            " or a vector of type numeric.")
     }

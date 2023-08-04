@@ -42,7 +42,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     #       almost completely empty for the dag_from_data function
     if (length(args) > 0) {
       check_inputs_child_node(name=name, type=type, parents=parents, args=args,
-                              time_varying=FALSE)
+                              formula=formula, time_varying=FALSE)
     }
 
     node_list <- list(name=name,
@@ -102,7 +102,7 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
 
   if (length(args) > 0) {
     check_inputs_child_node(name=name, type=type, parents=parents, args=args,
-                            time_varying=TRUE)
+                            formula=formula, time_varying=TRUE)
   }
 
   node_list <- list(name=name,

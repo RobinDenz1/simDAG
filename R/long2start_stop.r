@@ -33,7 +33,7 @@ long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
   # edge case with no time-varying variables
   if (length(varying)==0) {
 
-    data <- data[data[[time]]==1]
+    data <- data[eval(parse(text=time))==1,]
     data[, (time) := NULL]
     data[, start := 1]
     data[, stop := max_t]

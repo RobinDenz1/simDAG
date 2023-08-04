@@ -18,20 +18,14 @@ comprehensive framework for conducting discrete-time simulations in a similar fa
 
 ## Installation
 
-Currently this package is not available on CRAN, but can be installed easily using the `devtools` R-Package:
-
-```R
-library(devtools)
-
-devtools::install_github("RUB-AMIB/simDAG")
-```
+Currently this package is not available on CRAN, but can be installed easily using the `remotes` R-Package:
 
 or the `remotes` R-Package:
 
 ```R
 library(remotes)
 
-remotes::install_github("RUB-AMIB/simDAG")
+remotes::install_github("RobinDenz1/simDAG")
 ```
 
 ## Bug Reports and Feature Requests
@@ -86,6 +80,6 @@ Use `citation("simDAG")` to get the relevant citation information.
 
 ## License
 
-© 2022 Robin Denz
+© 2023 Robin Denz
 
 The contents of this repository are distributed under the GNU General Public License. You can find the full text of this License in this github repository. Alternatively, see <http://www.gnu.org/licenses/>.
