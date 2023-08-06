@@ -41,7 +41,6 @@ long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
     first_cols <- c(id, "start", "stop")
     setcolorder(data, c(first_cols,
                         colnames(data)[!colnames(data) %in% first_cols]))
-
     setkey(data, NULL)
 
     return(data)
@@ -97,7 +96,6 @@ long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
   first_cols <- c(id, "start", "stop", varying)
   setcolorder(data, c(first_cols,
                       colnames(data)[!colnames(data) %in% first_cols]))
-
   setkey(data, NULL)
 
   return(data)

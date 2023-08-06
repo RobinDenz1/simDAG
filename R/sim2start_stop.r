@@ -186,7 +186,6 @@ sim2start_stop.last <- function(sim) {
   first_cols <- c(".id", "start", "stop", tte_names)
   setcolorder(data, c(first_cols,
                       colnames(data)[!colnames(data) %in% first_cols]))
-
   setkey(data, NULL)
 
   return(data)

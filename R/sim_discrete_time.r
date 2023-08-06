@@ -132,8 +132,17 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
         args$envir <- envir
       }
 
-      # call needed node function
-      node_out <- do.call(node_type_fun, args)
+      # call needed node function and make possible errors more
+      # informative by adding node and time
+      node_out <- tryCatch({
+        do.call(node_type_fun, args)},
+        error=function(e){
+          stop("An error occured when processing node '", tx_nodes[[i]]$name,
+               "' at time t = ", t, ". The message was: ", e)
+        }
+      )
+
+      # add output to data
       data <- add_node_to_data(data=data, new=node_out,
                                name=tx_nodes[[i]]$name)
     }

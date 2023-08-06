@@ -34,6 +34,9 @@ Returns a \code{DAG} object with updated node definitions.
 \author{
 Robin Denz
 }
+\references{
+Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd ed. Cambridge: Cambridge University Press
+}
 \examples{
 library(simDAG)
 

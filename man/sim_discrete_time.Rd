@@ -82,6 +82,10 @@ The \code{dag} argument should be specified as described in the \code{\link{node
 
 All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow.
 
+\strong{\emph{What do I do with the output?}}:
+
+This function outputs a \code{simDT} object, not a \code{data.table}. To obtain an actual dataset from the output of this function, users should use the \code{\link{sim2data}} function to transform it into the desired format. Currently, the long-format, the wide-format and the start-stop format are supported. See \code{\link{sim2data}} for more information.
+
 \strong{\emph{A Few Words of Caution}}:
 
 In most cases it will be neccessary for the user to write their own functions in order to actually use the \code{sim_discrete_time} function. Unlike the \code{\link{sim_from_dag}} function, in which many popular node types can be implemented in a re-usable way, discrete-time simulation will always require some custom input by the user. This is the price users have to pay for the almost unlimited flexibility offered by this simulation methodology.
@@ -91,10 +95,29 @@ In most cases it will be neccessary for the user to write their own functions in
 Robin Denz, Katharina Meiszl
 }
 \value{
-Returns a \code{simDT} object, containing some general information about the simulated data as well as the final state of the simulated dataset (and more states, depending on the specification of the \code{save_states} argument).
+Returns a \code{simDT} object, containing some general information about the simulated data as well as the final state of the simulated dataset (and more states, depending on the specification of the \code{save_states} argument). In particular, it includes the following objects:
+
+\itemize{
+  \item{\code{past_states}: A list containing the generated data at the specified points in time.}
+  \item{\code{save_states}: The value of the \code{save_states} argument supplied by the user.}
+  \item{\code{data}: The data at time \code{max_t}.}
+  \item{\code{tte_past_events}: A list storing the times at which events happened in variables of type \code{"time_to_event"}, if specified.}
+  \item{\code{ce_past_events}: A list storing the times at which events happened in variables of type \code{"competing_events"}, if specified.}
+  \item{\code{ce_past_causes}: A list storing the types of events which happened at in variables of type \code{"competing_events"}, if specified.}
+  \item{\code{tx_nodes}: A list of all time-varying nodes, as specified in the supplied \code{dag} object.}
+  \item{\code{max_t}: The value of \code{max_t}, as supplied by the user.}
+  \item{\code{t0_var_names}: A character vector containing the names of all variable names that do not vary over time.}
+}
+
+To obtain a single dataset from this function that can be processed futher, please use the \code{\link{sim2data}} function.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim2data}}, \code{\link{plot.simDT}}
+}
+\references{
+Tang, Jiangjun, George Leu, und Hussein A. Abbass. 2020. Simulation and Computational Red Teaming for Problem Solving. Hoboken: IEEE Press.
+
+Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
 }
 \examples{
 library(simDAG)

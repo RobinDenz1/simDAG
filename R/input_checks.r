@@ -418,6 +418,11 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
                                            save_states, save_states_at,
                                            verbose) {
   # rudimentary type checks
+  if (!is_time_varying_dag(dag)) {
+    stop("'dag' must contain at least one time-varying node added using",
+         " the node_td() function. For dag objects with no time-varying",
+         " nodes, please use the sim_from_dag() function instead.")
+  }
   if (!is.null(t0_data)) {
     stopifnot("'t0_data' must be a data.frame." = is.data.frame(t0_data))
   }

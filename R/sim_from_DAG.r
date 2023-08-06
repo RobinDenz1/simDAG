@@ -52,8 +52,14 @@ sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
       args$name <- NULL
     }
 
-    # call needed node function
-    node_out <- do.call(get(paste0("node_", dag$child_nodes[[i]]$type)), args)
+    # call needed node function, add node name to possible errors
+    node_out <- tryCatch({
+      do.call(get(paste0("node_", dag$child_nodes[[i]]$type)), args)},
+      error=function(e){
+        stop("An error occured when processing node '",
+             dag$child_nodes[[i]]$name, "'. The message was: ", e)
+      }
+    )
     data <- add_node_to_data(data=data, new=node_out,
                              name=dag$child_nodes[[i]]$name)
   }
