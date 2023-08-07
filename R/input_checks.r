@@ -469,38 +469,12 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
         length(body(t0_transform_fun)) != 0)
 
     # check content of t0_transform_args
-    if (length(names(formals(t0_transform_fun))) == 0) {
-      if (!identical(length(names(formals(t0_transform_fun))),
-                     length(names(t0_transform_args)))) {
-        stop("Defined parameters in 't0_transform_args' are not used",
-             " for 't0_transform_fun'.")
-      }
-    }
-  }
-
-  # check content of tx_nodes
-  if (is.list(tx_nodes)) {
-    for (i in seq_len(length(tx_nodes))) {
-      stopifnot("All elements of 'tx_nodes' must have a name." =
-                  (length(tx_nodes[[i]]$name) == 1 &&
-                     is.character(tx_nodes[[i]]$name)))
-      if (!is.null(tx_nodes[[i]]$parents)) {
-        stopifnot(
-          "All elements of 'tx_nodes' must have at least one parent." =
-            (length(tx_nodes[[i]]$parents >= 1) &&
-               is.vector(tx_nodes[[i]]$parents, mode = "character")))
-      }
-      stopifnot("All elements of 'tx_nodes' must have a type." =
-                  (length(tx_nodes[[i]]$type) == 1 &&
-                     is.character(tx_nodes[[i]]$type)))
-      ## rudimentary type checks
-      if (tx_nodes[[i]]$type == "time_to_event") {
-        stopifnot(
-          "Elements of type 'time_to_event' must have a prob_fun." =
-            !is.null(tx_nodes[[i]]$prob_fun))
-        ## prob_fun_args, event_duration, immunity_duration
-        ## and save_past_events have default values
-      }
+    names_fun <- names(formals(t0_transform_fun))
+    names_args <- names(t0_transform_args)
+    if (!all(names_args %in% names_fun)) {
+      stop("The following arguments are in 't0_transform_args' but are",
+           " not define in 't0_transform_fun': ",
+           paste0(names_args[!names_args %in% names_fun], collapse=","))
     }
   }
 
@@ -508,26 +482,23 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
   if (is.vector(tx_nodes_order)) {
     if (!identical(length(tx_nodes_order), length(tx_nodes))) {
       stop("'tx_nodes_order' must be the same length as",
-           " the number of nodes of 'tx_nodes.")
-    }
-    if (!all(is.element(tx_nodes_order, seq_len(length(tx_nodes))))) {
-      stop("'tx_nodes_order' must contain the same elements as",
-           " elements in 'tx_nodes'.")
+           " the number of time-varying nodes in the dag.")
     }
   }
 
   # check content of tx_transform_fun
   if (is.function(tx_transform_fun)) {
-    stopifnot("'tx_transform_fun' needs to include at least one line." =
-                length(body(tx_transform_fun)) != 0)
+    stopifnot(
+      "'tx_transform_fun' needs to include at least one line." =
+        length(body(tx_transform_fun)) != 0)
 
-    # check content of tx_transform_args
-    if (length(names(formals(tx_transform_fun))) == 0) {
-      if (!identical(length(names(formals(tx_transform_fun))),
-                     length(names(tx_transform_args)))) {
-        stop("Defined parameters in 'tx_transform_args' are not used",
-             " for 'tx_transform_fun'.")
-      }
+    # check content of t0_transform_args
+    names_fun <- names(formals(tx_transform_fun))
+    names_args <- names(tx_transform_args)
+    if (!all(names_args %in% names_fun)) {
+      stop("The following arguments are in 'tx_transform_args' but are",
+           " not define in 'tx_transform_fun': ",
+           paste0(names_args[!names_args %in% names_fun], collapse=","))
     }
   }
 

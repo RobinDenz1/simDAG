@@ -7,9 +7,6 @@ General Stuff:
 sim2start_stop:
 	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
 
-plot.simDT:
-	- bug when changing box_r_width and box_hdist at the same time
-
 ####### New Features: #######
 
 sim_from_dag:

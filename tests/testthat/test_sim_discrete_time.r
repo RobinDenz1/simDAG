@@ -163,18 +163,45 @@ test_that("using tx_transform_fun", {
   expect_equal(sim$data$age - 100, dt$age)
 })
 
-## NOTE: Can't run this test because the function is not global and will
-#        therefore not be found, resulting in an error
-#test_that("using a custom node", {
-#
-#  node_sim_time_multiplier <- function(data, sim_time) {
-#    return(sim_time * 2)
-#  }
-#
-#  dag <- empty_dag() +
-#    node_td("custom_nonsense", type="sim_time_multiplier")
-#
-#  sim <- sim_discrete_time(dag=dag, n_sim=100, max_t=20)
-#
-#  expect_equal(sim$data$custom_nonsense, rep(40, 100))
-#})
+test_that("helpful error message working", {
+
+  # function that purposefully throws an error at t = 100
+  prob_car_crash <- function(data, sim_time, base_p) {
+
+    if (sim_time != 100) {
+      base_p + sim_time * 0.0001
+    } else {
+      stop("Error at t = 100")
+    }
+
+    return(base_p)
+  }
+
+  dag <- empty_dag() +
+    node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
+            event_duration=1, base_p=0.0001)
+
+  expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120),
+               paste0("An error occured when processing node 'car_crash'",
+                      " at time t = 100. The message was: Error in (",
+                      "function (data, sim_time, base_p) : Error at",
+                      " t = 100"), fixed=TRUE)
+})
+
+test_that("using a custom node", {
+
+  dag <- empty_dag() +
+    node_td("custom_nonsense", type="sim_time_multiplier")
+
+  node_sim_time_multiplier <- function(data, sim_time) {
+    return(sim_time * 2)
+  }
+
+  # function needs to be global
+  assign("node_sim_time_multiplier", value=node_sim_time_multiplier,
+         envir=.GlobalEnv)
+
+  sim <- sim_discrete_time(dag=dag, n_sim=100, max_t=20)
+
+  expect_equal(sim$data$custom_nonsense, rep(40, 100))
+})
