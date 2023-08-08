@@ -17,7 +17,7 @@ sim_from_dag:
 		- whatever models one can find may be nice
 
 dag_from_data:
-	- should also allow more node types
+	- should allow multinomial
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment

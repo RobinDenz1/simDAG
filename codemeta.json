@@ -122,6 +122,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=ggforce"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "MASS",
+      "name": "MASS",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=MASS"
     }
   ],
   "softwareRequirements": {
@@ -175,5 +187,25 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "737.035KB"
+  "fileSize": "919.514KB",
+  "citation": [
+    {
+      "@type": "CreativeWork",
+      "datePublished": "2023",
+      "author": [
+        {
+          "@type": "Person",
+          "givenName": "Robin",
+          "familyName": "Denz"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Katharina",
+          "familyName": "Meiszl"
+        }
+      ],
+      "name": "simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information",
+      "url": "https://github.com/RobinDenz1/simDAG"
+    }
+  ]
 }

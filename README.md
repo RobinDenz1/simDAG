@@ -2,6 +2,8 @@
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![](https://www.r-pkg.org/badges/version/simDAG?color=green)](https://cran.r-project.org/package=simDAG)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
+[![R-CMD-check](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/RUB-AMIB/simDAG/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RUB-AMIB/simDAG?branch=main)
 <!-- badges: end -->
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />

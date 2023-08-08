@@ -24,7 +24,6 @@ test_that("general test case", {
   # get parameter estimates from data
   dag_full <- dag_from_data(dag=dag, data=data, return_models=TRUE)
 
-
   expected_dag <- empty_dag() +
     node("death", type="binomial", parents=c("age", "sex"),
          betas=c(0.9699486, 1.8823713), intercept=-9.631358) +
@@ -34,7 +33,36 @@ test_that("general test case", {
          betas=c(0.4799525, 0.2378301), intercept=-2.492591)
 
   expect_equal(dag_full$dag, expected_dag, tolerance=0.0001)
+})
 
+test_that("root node function not defined", {
+
+  set.seed(245)
+
+  data <- data.table(A=rnorm(10),
+                     B=rnorm(10))
+
+  dag_empty <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbeta")
+
+  expect_error(dag_from_data(dag_empty, data))
+})
+
+test_that("child node function not defined", {
+
+  set.seed(3455)
+
+  data <- data.table(A=rnorm(10),
+                     B=rnorm(10),
+                     C=rnorm(10))
+
+  dag_empty <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="gaussian", parents=c("A")) +
+    node("C", type="not_defined", parents=c("A", "B"))
+
+  expect_error(dag_from_data(dag_empty, data))
 })
 
 test_that("gen_node_rnorm", {
@@ -151,6 +179,27 @@ test_that("gen_node_poisson", {
 
   out <- gen_node_poisson(name="y", parents="x", data=data, na.rm=TRUE,
                            return_model=FALSE)
+
+  expect_equal(out, expected, tolerance=0.0001)
+})
+
+test_that("gen_node_negative_binomial", {
+
+  data <- data.frame(x=c(1, 2, 3, 4, 5, 5, 6, 5),
+                     y=c(3, 4, 5, 6, 10, 14, 12, 11))
+
+  expected <- list(name="y",
+                   type="negative_binomial",
+                   parents="x",
+                   time_varying=FALSE,
+                   betas=0.3158466,
+                   intercept=0.7541809,
+                   theta=688561.1)
+
+  out <- suppressWarnings(gen_node_negative_binomial(name="y", parents="x",
+                                                     data=data, na.rm=TRUE,
+                                                     return_model=TRUE))
+  out$model <- NULL
 
   expect_equal(out, expected, tolerance=0.0001)
 })

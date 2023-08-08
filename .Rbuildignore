@@ -3,3 +3,8 @@
 ^TODOs.txt
 ^LICENSE\.md$
 ^codemeta\.json
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^codecov\.yml$

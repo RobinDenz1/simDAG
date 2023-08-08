@@ -52,6 +52,7 @@ Currently, the following child node types are supported:
   \item{\code{"gaussian"}: Estimates parameters for a node of type \code{"\link[=node_gaussian]{gaussian}"}}.
   \item{\code{"binomial"}: Estimates parameters for a node of type \code{"\link[=node_binomial]{binomial}"}}.
   \item{\code{"poisson"}: Estimates parameters for a node of type \code{"\link[=node_poisson]{poisson}"}}.
+  \item{\code{"negative_binomial"}: Estimates parameters for a node of type \code{"\link[=node_negative_binomial]{negative_binomial}"}}.
   \item{\code{"conditional_prob"}: Estimates parameters for a node of type \code{"\link[=node_conditional_prob]{conditional_prob}"}}.
 }
 
@@ -60,6 +61,11 @@ Other types need to be implemented by the user.
 \strong{\emph{Support for custom nodes}}:
 
 The \code{sim_from_dag} function supports custom node functions, as described in \code{\link{node_custom}}. It is impossible for us to directly support these custom types in this function directly. However, the user can extend this function easily to accomodate any of his/her custom types. Similar to defining a custom node type, the user simply has to write a function that returns a correctly specified \code{node.DAG} object, given the named arguments \code{name}, \code{parents}, \code{type}, \code{data} and \code{return_model}. The first three arguments should simply be added directly to the output. The \code{data} should be used inside your function to fit a model or obtain the required parameters in some other way. The \code{return_model} argument should control whether the model should be added to the output (in a named argument called \code{model}). The function name should be \code{paste0("gen_node_", YOURTYPE)}. An examples is given below.
+
+\strong{\emph{Interactions & cubic terms}}:
+
+This function currently does not support the usage of interaction effects or non-linear terms (such as using \code{A ~ B + I(B^2)} as a formula). Instead, it will be assumed that all values in \code{parents} have a linear effect on the respective node. For example, using \code{parents=c("A", "B")} for a node named \code{"C"} will use the formula \code{C ~ A + B}. If other behavior is desired, users need to integrate this into their own custom function as described above.
+
 }
 \value{
 A list of length two containing the new fully specified \code{DAG} object named \code{dag} and a list of the fitted models (if \code{return_models=TRUE}) in the object named \code{models}.

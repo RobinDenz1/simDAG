@@ -1,0 +1,10 @@
+citHeader("To cite simDAG in publications use:")
+
+citEntry(
+  entry    = "misc",
+  title    = "simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information",
+  author   = "Robin Denz, Katharina Meiszl",
+  year     = "2023",
+  url      = "https://github.com/RobinDenz1/simDAG",
+  textVersion = "Robin Denz and Katharina Meiszl (2023): simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information, available at https://github.com/RobinDenz1/simDAG"
+)

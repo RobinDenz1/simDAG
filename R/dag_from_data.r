@@ -53,6 +53,32 @@ gen_node_poisson <- function(name, parents, data, return_model, na.rm) {
   return(out)
 }
 
+## get information for negative binomial node from data
+gen_node_negative_binomial <- function(name, parents, data, return_model,
+                                       na.rm) {
+  requireNamespace("MASS")
+
+  # fit negative binomial regression
+  form <- paste0(name, " ~ ", paste0(parents, collapse=" + "))
+  model <- MASS::glm.nb(stats::as.formula(form), data=data,
+                        na.action=ifelse(na.rm, "na.omit", "na.fail"))
+
+  # extract needed information
+  out <- list(name=name,
+              type="negative_binomial",
+              parents=parents,
+              time_varying=FALSE,
+              betas=as.vector(model$coefficients[-1]),
+              intercept=as.vector(model$coefficients[1]),
+              theta=model$theta)
+
+  if (return_model) {
+    out$model <- model
+  }
+
+  return(out)
+}
+
 ## get information for conditional probability node from data
 #' @importFrom data.table :=
 gen_node_conditional_prob <- function(data, name, parents, return_model,
@@ -120,6 +146,10 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
   check_inputs_dag_from_data(dag=dag, data=data, return_models=return_models,
                              na.rm=na.rm)
 
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
   # initialize new dag
   new_dag <- empty_dag()
   models <- vector(mode="list", length=length(dag$child_nodes))
@@ -127,8 +157,17 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
   # fill new_dag with new root nodes
   for (i in seq_len(length(dag$root_nodes))) {
 
+    fun_name <- paste0("gen_node_", dag$root_nodes[[i]]$type)
+
+    if (!exists(fun_name, mode="function")) {
+      stop("The function '", fun_name, "' neccessary to create the node",
+           " object for node '", dag$root_nodes[[i]]$name, "' is not",
+           " defined. Users need to write their own functions for ",
+           " unsupported node types. See details.")
+    }
+
     # call associated root function
-    root_fun <- get(paste0("gen_node_", dag$root_nodes[[i]]$type))
+    root_fun <- get(fun_name)
 
     new_node <- root_fun(data=data, name=dag$root_nodes[[i]]$name, na.rm=na.rm)
     class(new_node) <- "DAG.node"
@@ -140,8 +179,17 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
   # fill new_dag with new child nodes
   for (i in seq_len(length(dag$child_nodes))) {
 
+    fun_name <- paste0("gen_node_", dag$child_nodes[[i]]$type)
+
+    if (!exists(fun_name, mode="function")) {
+      stop("The function '", fun_name, "' neccessary to create the node",
+           " object for node '", dag$child_nodes[[i]]$name, "' is not",
+           " defined. Users need to write their own functions for ",
+           " unsupported node types. See details.")
+    }
+
     # get new node using model_node_ function
-    model_fun <- get(paste0("gen_node_", dag$child_nodes[[i]]$type))
+    model_fun <- get(fun_name)
 
     args <- list(data=data,
                  name=dag$child_nodes[[i]]$name,
