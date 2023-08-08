@@ -29,7 +29,7 @@ Whether to perform input checks (\code{TRUE} by default). Prints warning message
   }
 }
 \details{
-The raw output of the \code{sim_discrete_time} function may be difficult to use for further analysis. Using this function, it is straightforward to transform that ouput into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.
+The raw output of the \code{sim_discrete_time} function may be difficult to use for further analysis. Using this function, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.
 
 \strong{\emph{The start-stop format}:}
 

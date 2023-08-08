@@ -178,7 +178,7 @@ d_start_stop <- sim2data(sim_dat, to="start_stop")
 head(d_start_stop)
 ```
 
-In this format, we can clearly see when the events occured. This type of format is usually used to fit statistical models for time-to-event data. Another possibility is to transform it into the long-format:
+In this format, we can clearly see when the events occurred. This type of format is usually used to fit statistical models for time-to-event data. Another possibility is to transform it into the long-format:
 
 ```{r warning=FALSE}
 d_long <- sim2data(sim_dat, to="long")

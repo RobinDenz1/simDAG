@@ -62,7 +62,7 @@ Since this vignette is mostly concerned with the practical implementation of the
 
 ## Research goal
 
-Our actual reasearch goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately. The goal for this vignette is to use parts of this model to showcase the capabilities of the `simDAG` package.
+Our actual research goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately. The goal for this vignette is to use parts of this model to showcase the capabilities of the `simDAG` package.
 
 ## Theoretical model
 
@@ -80,7 +80,7 @@ Instead of diving in deep from the start and trying to include all relevant vari
 
 ## Part 1: Adding vaccination, covid and sickness
 
-The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `time_to_event`.
+The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurrence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `time_to_event`.
 
 We start out modeling every one of these variables as completely independent of each other using the following DAG:
 

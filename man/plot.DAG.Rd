@@ -90,7 +90,7 @@ Either \code{"open"} or \code{"closed"}, which controls the type of head the arr
 A single positive number specifying the distance between nodes and the arrows. By setting this to values greater than 0 the arrows will not touch the node circles, leaving a bit of space instead.
   }
   \item{gg_theme}{
-A \code{ggplot2} theme. By default this is set to \code{theme_void}, to get rid off everything but the plotted nodes (e.g. everything about the axis and the background). Might be usefull to change this to something else when searching for good parameters of the number arguments of this function.
+A \code{ggplot2} theme. By default this is set to \code{theme_void}, to get rid off everything but the plotted nodes (e.g. everything about the axis and the background). Might be useful to change this to something else when searching for good parameters of the number arguments of this function.
   }
   \item{include_td_nodes}{
 Whether to include time-varying nodes added to the \code{dag} using the \code{\link{node_td}} function or not. If one node is both specified as a time-fixed and time-varying node, it's parents in both calls will be pooled and it will be considered a time-varying node if this argument is \code{TRUE}. It will, however, also show up if it's argument is \code{FALSE}. In this case however, only the parents of that node in the standard \code{\link{node}} call will be considered.
@@ -103,7 +103,7 @@ Currently not used.
   }
 }
 \details{
-This function uses the \pkg{igraph} package to find a suitable layout for the plot and then uses the \pkg{ggplot2} package in conjunctiont with the \code{geom_circle} function of the \pkg{ggforce} package to plot the directed acyclic graph defined by a \code{DAG} object. Since it returns a \code{ggplot} object, the user may use any standard \code{ggplot2} syntax to augment the plot or to save it using the \code{ggsave} function.
+This function uses the \pkg{igraph} package to find a suitable layout for the plot and then uses the \pkg{ggplot2} package in conjunction with the \code{geom_circle} function of the \pkg{ggforce} package to plot the directed acyclic graph defined by a \code{DAG} object. Since it returns a \code{ggplot} object, the user may use any standard \code{ggplot2} syntax to augment the plot or to save it using the \code{ggsave} function.
 
 Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the \pkg{igraph} package. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the \code{\link{dag2matrix}} function to obtain an adjacency matrix from the \code{DAG} object and directly use this matrix and the \pkg{igraph} package (or similar ones) to get much better plots.
 

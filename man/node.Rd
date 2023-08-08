@@ -94,7 +94,7 @@ Most child nodes can be easily used as parents for other nodes. This allows the 
 
 \strong{\emph{Cyclic causal structures}}:
 
-The name DAG (directed \strong{acyclic} graph) implies that cycles are not allowed. This means that if you start from any node and only follow the arrows in the direction they are pointing, there should be no way to get back to your original node. This is neccessary both theoretically and for practical reasons if we are dealing with static DAGs created using the \code{node} function. If the user attempts to generate data from a static cyclic graph using the \code{\link{sim_from_dag}} function, an error will be produced.
+The name DAG (directed \strong{acyclic} graph) implies that cycles are not allowed. This means that if you start from any node and only follow the arrows in the direction they are pointing, there should be no way to get back to your original node. This is necessary both theoretically and for practical reasons if we are dealing with static DAGs created using the \code{node} function. If the user attempts to generate data from a static cyclic graph using the \code{\link{sim_from_dag}} function, an error will be produced.
 
 However, in the realm of discrete-time simulations, cyclic causal structures are perfectly reasonable. A variable \eqn{A} at \eqn{t = 1} may influence a variable \eqn{B} at \eqn{t = 2}, which in turn may influence variable \eqn{A} at \eqn{t = 3} again. Therefore, when using the \code{node_td} function to simulate time-dependent data using the \code{\link{sim_discrete_time}} function, cyclic structures are allowed to be present and no error will be produced.
 

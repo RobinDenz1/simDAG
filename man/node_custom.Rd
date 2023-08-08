@@ -12,7 +12,7 @@ This page describes in detail how to extend this code to allow the usage of node
 A \code{data.frame} containing all columns specified by \code{parents}.
   }
   \item{parents}{
-A character vector specifying the names of the parents that this particular child node has. This is only neccessary for child nodes, not time-dependent nodes or root nodes.
+A character vector specifying the names of the parents that this particular child node has. This is only necessary for child nodes, not time-dependent nodes or root nodes.
   }
   \item{...}{
 Any amount of additional arguments.

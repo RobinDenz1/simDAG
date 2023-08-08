@@ -78,7 +78,7 @@ A single character string specifying the color of the text inside the boxes.
 A single number between 0 and 1 specifying the transparency level of the text inside the boxes.
   }
   \item{box_text_angle}{
-A single positibe number specifying the angle of the text inside the boxes.
+A single positive number specifying the angle of the text inside the boxes.
   }
   \item{box_text_family}{
 A single character string specifying the family of the text inside the boxes. May be one of \code{"sans", "serif", "mono"}.
@@ -129,10 +129,10 @@ A single number specifying the angle of the arrow heads.
 A single number specifying the size of the arrow heads. The unit is defined by the \code{arrow_head_size} argument.
   }
   \item{arrow_head_unit}{
-A single chracter string specifying which unit to use when specifying the \code{arrow_head_size} argument. Defaults to \code{"cm"}.
+A single character string specifying which unit to use when specifying the \code{arrow_head_size} argument. Defaults to \code{"cm"}.
   }
   \item{arrow_head_type}{
-A single chracter string specifying which type of arrow head to use. See \code{?arrow} for more details.
+A single character string specifying which type of arrow head to use. See \code{?arrow} for more details.
   }
   \item{arrow_left_pad}{
 A single positive number specifying the distance between the left boxes and the arrow line to the left of it.

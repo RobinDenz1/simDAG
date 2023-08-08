@@ -1,7 +1,4 @@
 
-General Stuff:
-	- add pkgdown site, badges etc.
-
 ###### Bugs & TODOS ######
 
 sim2start_stop:

@@ -150,7 +150,7 @@ Evidently, the coefficients do match the causal coefficients we specified earlie
 
 ## Defining nodes using existing data
 
-If the data should resemble a specific real data set, it makes sense to base the values for the causal coefficients on that specific data set. This can be done by fitting a single model for each child node, extracting the estimated coefficients from the fitted models and putting those into an appropriate `DAG` object. If the assumed DAG is big, this can be a time-extensive task. The `fill_dag_using_data` function automates this process. This function takes a node list containing only minimal information about the causal structure and node type and outputs a fully specified `DAG` object.
+If the data should resemble a specific real data set, it makes sense to base the values for the causal coefficients on that specific data set. This can be done by fitting a single model for each child node, extracting the estimated coefficients from the fitted models and putting those into an appropriate `DAG` object. If the assumed DAG is big, this can be a time-extensive task. The `dag_from_data` function automates this process. This function takes a node list containing only minimal information about the causal structure and node type and outputs a fully specified `DAG` object.
 
 For example, lets assume that the data we just generated (`sim_dat`) was our data set of interest. Let us also assume that we know the true underlying causal diagram and have a rough idea about the nature of the relationship between the nodes (e.g. we know or can reasonably guess the node type). Now all we have to do is create a partially specified `DAG` in accordance to these assumptions first:
 
@@ -162,7 +162,7 @@ dag <- empty_dag() +
   node("death", type="binomial", parents=c("age", "bmi"))
 ```
 
-This looks a lot like the code used above, except that we are not explicitly defining the actual beta coefficients. We only define the causal structure and the node types. Now we can call the `fill_dag_using_data` function:
+This looks a lot like the code used above, except that we are not explicitly defining the actual beta coefficients. We only define the causal structure and the node types. Now we can call the `dag_from_data` function:
 
 ```{r}
 est_dag <- dag_from_data(dag=dag, data=sim_dat)
@@ -174,7 +174,7 @@ It returns an object that includes a fully specified `DAG`, which can be used di
 sim_dat2 <- sim_from_dag(dag=est_dag$dag, n_sim=10000)
 ```
 
-The `fill_dag_using_data` function essentially just fits the corresponding models one by one for each node and extracts the relevant data from the models to fill in the gaps in the empty nodes. If we set `return_models` to `TRUE` in the `fill_dag_using_data` function call above, we can actually see that it used the exact same models we fit earlier to check if the simulation was valid.
+The `dag_from_data` function essentially just fits the corresponding models one by one for each node and extracts the relevant data from the models to fill in the gaps in the empty nodes. If we set `return_models` to `TRUE` in the `dag_from_data` function call above, we can actually see that it used the exact same models we fit earlier to check if the simulation was valid.
 
 
 # Time-varying covariates

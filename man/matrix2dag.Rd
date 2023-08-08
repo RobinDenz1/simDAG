@@ -21,7 +21,7 @@ A named list with one entry for each variable in \code{mat}, specifying the \cod
 \details{
 An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain \code{1} in the spot \code{matrix["A", "B"]}. This function uses this kind of matrix and additional information about the node type to create a \code{DAG} object. The resulting \code{DAG} cannot be used in the \code{\link{sim_from_dag}} function directly, because it will not contain the necessary parameters such as beta-coefficients or intercepts etc. It may, however, be passed directly to the \code{\link{dag_from_data}} function. This is pretty much it's only valid use-case. If the goal is to to specify a full \code{DAG} manually, the user should use the \code{\link{empty_dag}} function in conjunction with \code{\link{node}} calls instead, as described in the respective documentation pages and the vignettes.
 
-The output will never contain time-dependent nodes. If this is neccessary, the user needs to manually define the DAG.
+The output will never contain time-dependent nodes. If this is necessary, the user needs to manually define the DAG.
 }
 \author{
 Robin Denz

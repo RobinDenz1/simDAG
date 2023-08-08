@@ -39,10 +39,10 @@ add_box_coordinates <- function(data, box_width, box_height) {
   x <- y <- NULL
 
   data <- within(data, {
-    xmin <- x - box_width;
-    xmax <- x + box_width;
-    ymin <- y - box_height;
-    ymax <- y + box_height;
+    xmin <- x - box_width
+    xmax <- x + box_width
+    ymin <- y - box_height
+    ymax <- y + box_height
   })
 
   return(data)

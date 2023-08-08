@@ -5,7 +5,7 @@
 Simulate a Node Using Conditional Probabilities
 }
 \description{
-This function can be used to generate dichotomous or categorical variables dependent on one or more categorical variables where the probabilities of occurence in each strata defined by those variables is known.
+This function can be used to generate dichotomous or categorical variables dependent on one or more categorical variables where the probabilities of occurrence in each strata defined by those variables is known.
 }
 \usage{
 node_conditional_prob(data, parents, probs, default_probs=NULL,
@@ -20,10 +20,10 @@ A \code{data.frame} containing all columns specified by \code{parents}.
 A character vector specifying the names of the parents that this particular child node has.
   }
   \item{probs}{
-A named list where each element corresponds to one stratum defined by parents. If only one name is given in \code{parents}, this means that there should be one element for possible value of the variable given in \code{parents}. If the node has multiple \code{parents}, there needs to be one element for possible combinations of \code{parents} (see examples). The values of those elements should either be a single number, corresponding to the probability of occurence of a single event/value in case of a dichotomous variable, or a vector of probabilities that sum to 1, corresponding to class probabilities. In either case, the length of all elements should be the same. If possible strata of \code{parents} (or their possible combinations in case of multiple \code{parents}) are omitted, the result will be set to \code{default_val} for these omitted strata. See argument \code{default_val} and argument \code{default_probs} for an alternative.
+A named list where each element corresponds to one stratum defined by parents. If only one name is given in \code{parents}, this means that there should be one element for possible value of the variable given in \code{parents}. If the node has multiple \code{parents}, there needs to be one element for possible combinations of \code{parents} (see examples). The values of those elements should either be a single number, corresponding to the probability of occurrence of a single event/value in case of a dichotomous variable, or a vector of probabilities that sum to 1, corresponding to class probabilities. In either case, the length of all elements should be the same. If possible strata of \code{parents} (or their possible combinations in case of multiple \code{parents}) are omitted, the result will be set to \code{default_val} for these omitted strata. See argument \code{default_val} and argument \code{default_probs} for an alternative.
   }
   \item{default_probs}{
-If not all possible strata of \code{parents} are included in \code{probs}, the user may set default probabilities for all omitted strata. For example, if there are three strata (A, B and C) defined by \code{parents} and \code{probs} only contains defined probabilities for strata A, the probabilities for strata B and C can be set simultaneously by using this argument. Should be a single value between 0 and 1 for Bernoulli trials and a numeric vector with sum 1 for multinomial trials. If \code{NULL} (default) the value of the produced output for misisng strata will be set to \code{default_val} (see below).
+If not all possible strata of \code{parents} are included in \code{probs}, the user may set default probabilities for all omitted strata. For example, if there are three strata (A, B and C) defined by \code{parents} and \code{probs} only contains defined probabilities for strata A, the probabilities for strata B and C can be set simultaneously by using this argument. Should be a single value between 0 and 1 for Bernoulli trials and a numeric vector with sum 1 for multinomial trials. If \code{NULL} (default) the value of the produced output for missing strata will be set to \code{default_val} (see below).
   }
   \item{default_val}{
 Value of the produced variable in strata that are not included in the \code{probs} argument. If \code{default_probs} is not \code{NULL}, that arguments functionality will be used instead.

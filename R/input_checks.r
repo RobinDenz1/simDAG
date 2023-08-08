@@ -584,7 +584,8 @@ check_inputs_node_competing_events <- function(data, parents, sim_time, name,
               is.function(prob_fun))
   stopifnot("'event_duration' must be a vector of integers." =
               (length(event_duration) > 1 && is.numeric(event_duration)))
-  stopifnot("'immunity_duration' must be a single integer >= max(event_duration)." =
+  stopifnot(
+    "'immunity_duration' must be a single integer >= max(event_duration)." =
               (length(immunity_duration) == 1 &&
                is.numeric(immunity_duration) && immunity_duration >=
                  max(event_duration)))

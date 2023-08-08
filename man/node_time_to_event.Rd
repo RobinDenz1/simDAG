@@ -29,7 +29,7 @@ The current time of the simulation.
 The name of the node. This will be used as prefix before the \code{_event}, \code{_time} columns. If the \code{time_since_last} or \code{event_count} arguments are set to \code{TRUE}, this will also be used as prefix for those respective columns.
   }
   \item{prob_fun}{
-A function that returns a numeric vector of size \code{nrow(data)} containing only numbers between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function. The function needs to have a named argument called \code{data}. If the function has an argument named \code{sim_time}, the current simulation time will also be passed to this function automatically, allowing time-dependent probabilities to be generated. Alternatively this argument can be set to a single number (between 0 and 1), resulting in a fixed probability of occurence for every simulated individual at every point in time.
+A function that returns a numeric vector of size \code{nrow(data)} containing only numbers between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function. The function needs to have a named argument called \code{data}. If the function has an argument named \code{sim_time}, the current simulation time will also be passed to this function automatically, allowing time-dependent probabilities to be generated. Alternatively this argument can be set to a single number (between 0 and 1), resulting in a fixed probability of occurrence for every simulated individual at every point in time.
   }
   \item{...}{
 An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
@@ -57,17 +57,17 @@ Only used internally to efficiently store the past event times. Cannot be used b
   }
 }
 \details{
-When performing discrete-time simulation using the \code{\link{sim_discrete_time}} function, the standard node functions implemented in this package are usually not sufficient because they don't capture the time-dependent nature of some very interesting variables. Often, the variable that should be modelled has some probability of occurring at each point in time. Once it does occurr, it has some kind of influence on other variables for a period of time until it goes back to normal (or doesn't). This could be a car crash, a surgery, a vaccination etc. The \code{time_to_event} node function can be used to model these kinds of nodes in a fairly straightforward fashion.
+When performing discrete-time simulation using the \code{\link{sim_discrete_time}} function, the standard node functions implemented in this package are usually not sufficient because they don't capture the time-dependent nature of some very interesting variables. Often, the variable that should be modelled has some probability of occurring at each point in time. Once it does occur, it has some kind of influence on other variables for a period of time until it goes back to normal (or doesn't). This could be a car crash, a surgery, a vaccination etc. The \code{time_to_event} node function can be used to model these kinds of nodes in a fairly straightforward fashion.
 
 \strong{\emph{How it Works}}:
 
 At \eqn{t = 1}, this node will be initialized for the first time. It adds two columns to the data: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started) where \code{name} is the name of the node. Additionally, it adds a list with \code{max_t} entries to the \code{tte_past_events} list returned by the \code{sim_discrete_time} function, which records which individuals experienced a new event at each point in time.
 
-In a nutshell, it simply models the occurrence of some event by calculating the probability of occurence at \eqn{t} and drawing a single bernoulli trial from this probability. If the trial is a "success", the corresponding event column will be set to \code{TRUE}, the time column will be set to the current simulation time \eqn{t} and the column storing the past event times will receive an entry.
+In a nutshell, it simply models the occurrence of some event by calculating the probability of occurrence at \eqn{t} and drawing a single bernoulli trial from this probability. If the trial is a "success", the corresponding event column will be set to \code{TRUE}, the time column will be set to the current simulation time \eqn{t} and the column storing the past event times will receive an entry.
 
-The \code{_event} column will stay \code{TRUE} until the event is over. The duration for that is controlled by the \code{event_duration} parameter. When modeling terminal events such as death, one can simply set this parameter to \code{Inf}, making the event eternal. In many cases it will also be neccessary to implement some kind of immunity after the event, which can be done using the \code{immunity_duration} argument. This effectively sets the probability of another occurence of the event to 0 in the next \code{immunity_duration} time steps. During the immunity duration, the event may be \code{TRUE} (if the event is still ongoing) or \code{FALSE} (if the \code{event_duration} has already passed). The \code{_time} column is similarly set to the time of occurence of the event and reset to \code{NA} when the \code{immunity_duration} is over.
+The \code{_event} column will stay \code{TRUE} until the event is over. The duration for that is controlled by the \code{event_duration} parameter. When modeling terminal events such as death, one can simply set this parameter to \code{Inf}, making the event eternal. In many cases it will also be necessary to implement some kind of immunity after the event, which can be done using the \code{immunity_duration} argument. This effectively sets the probability of another occurrence of the event to 0 in the next \code{immunity_duration} time steps. During the immunity duration, the event may be \code{TRUE} (if the event is still ongoing) or \code{FALSE} (if the \code{event_duration} has already passed). The \code{_time} column is similarly set to the time of occurrence of the event and reset to \code{NA} when the \code{immunity_duration} is over.
 
-The probability of occurence is calculated using the function provided by the user using the \code{prob_fun} argument. This can be an arbitrary complex function. The only requirement is that it takes \code{data} as a first argument. The columns defined by the \code{parents} argument will be passed to this argument automatically. If it has an argument called \code{sim_time}, the current time of the simulation will automatically be passed to it as well. Any further arguments can be passed using the \code{...} syntax. A simple example could be a logistic regression node, in which the probability is calculated as an additive linear combination of the columns defined by \code{parents}. A more complex function could include simulation-time dependent effects, further effects dependent on past event times etc. Examples can be found below and in the vignettes.
+The probability of occurrence is calculated using the function provided by the user using the \code{prob_fun} argument. This can be an arbitrary complex function. The only requirement is that it takes \code{data} as a first argument. The columns defined by the \code{parents} argument will be passed to this argument automatically. If it has an argument called \code{sim_time}, the current time of the simulation will automatically be passed to it as well. Any further arguments can be passed using the \code{...} syntax. A simple example could be a logistic regression node, in which the probability is calculated as an additive linear combination of the columns defined by \code{parents}. A more complex function could include simulation-time dependent effects, further effects dependent on past event times etc. Examples can be found below and in the vignettes.
 
 \strong{\emph{How it is Used}}:
 
@@ -95,13 +95,13 @@ Returns a \code{data.table} containing at least two columns with updated values 
 library(simDAG)
 
 ## a simple terminal time-to-event node, with a constant probability of
-## occurence, independent of any other variable
+## occurrence, independent of any other variable
 dag <- empty_dag() +
   node_td("death", type="time_to_event", prob_fun=0.0001,
           event_duration=Inf)
 
 ## a simple recurrent time-to-event node with a constant probability of
-## occurence, independent of any other variable
+## occurrence, independent of any other variable
 dag <- empty_dag() +
   node_td("car_crash", type="time_to_event", prob_fun=0.001, event_duration=1)
 

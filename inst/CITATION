@@ -1,7 +1,6 @@
-citHeader("To cite simDAG in publications use:")
 
-citEntry(
-  entry    = "misc",
+bibentry(
+  bibtype    = "misc",
   title    = "simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information",
   author   = "Robin Denz, Katharina Meiszl",
   year     = "2023",

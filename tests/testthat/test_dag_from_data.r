@@ -12,7 +12,7 @@ test_that("general test case", {
     node("smoking", parents=c("sex", "age"), type="binomial",
          betas=c(0.6, 0.2), intercept=-2)
 
-  data <- sim_from_dag(dag=dag, n_sim=1000)
+  data <- as.data.frame(sim_from_dag(dag=dag, n_sim=1000))
 
   # suppose we only know the causal structure and the node type:
   dag <- empty_dag() +
