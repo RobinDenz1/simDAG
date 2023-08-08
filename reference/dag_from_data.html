@@ -29,6 +29,9 @@
     <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -79,7 +82,7 @@
     
 
 <p><strong><em>How it works</em></strong>:</p>
-<p>It can be cumbersone to specify all the node information needed for the simulation, especially when there are a lot of nodes to consider. Additionally, if data is available, it is natural to fit appropriate models to the data to get an empirical estimate of the node information for the simulation. This function automates this process. If the user has a reasonable DAG and knows the node types, this is a very fast way to generate synthetic data that corresponds well to the empirical data.</p>
+<p>It can be cumbersome to specify all the node information needed for the simulation, especially when there are a lot of nodes to consider. Additionally, if data is available, it is natural to fit appropriate models to the data to get an empirical estimate of the node information for the simulation. This function automates this process. If the user has a reasonable DAG and knows the node types, this is a very fast way to generate synthetic data that corresponds well to the empirical data.</p>
 <p>All the user has to do is create a minimal <code>DAG</code> object including only information on the <code>parents</code>, the <code>name</code> and the node <code>type</code>. For root nodes, the required distribution parameters are extracted from the data. For child nodes, regression models corresponding to the specified <code>type</code> are fit to the data using the <code>parents</code> as independent covariates and the <code>name</code> as dependent variable. All required information is extracted from these models and added to the respective node. The output contains a fully specified <code>DAG</code> object which can then be used directly in the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function. It may also include a list containing the fitted models for further inspection, if <code>return_models=TRUE</code>.</p>
 <p><strong><em>Supported root node types</em></strong>:</p>
 <p>Currently, the following root node types are supported:</p>
@@ -96,7 +99,7 @@
 <li><p><code>"conditional_prob"</code>: Estimates parameters for a node of type <code>"<a href="node_conditional_prob.html">conditional_prob</a>"</code>.</p></li>
 </ul><p>Other types need to be implemented by the user.</p>
 <p><strong><em>Support for custom nodes</em></strong>:</p>
-<p>The <code>sim_from_dag</code> function supports custom node functions, as described in <code><a href="node_custom.html">node_custom</a></code>. It is impossible for us to directly support these custom types in this function directly. However, the user can extend this function easily to accomodate any of his/her custom types. Similar to defining a custom node type, the user simply has to write a function that returns a correctly specified <code>node.DAG</code> object, given the named arguments <code>name</code>, <code>parents</code>, <code>type</code>, <code>data</code> and <code>return_model</code>. The first three arguments should simply be added directly to the output. The <code>data</code> should be used inside your function to fit a model or obtain the required parameters in some other way. The <code>return_model</code> argument should control whether the model should be added to the output (in a named argument called <code>model</code>). The function name should be <code>paste0("gen_node_", YOURTYPE)</code>. An examples is given below.</p>
+<p>The <code>sim_from_dag</code> function supports custom node functions, as described in <code><a href="node_custom.html">node_custom</a></code>. It is impossible for us to directly support these custom types in this function directly. However, the user can extend this function easily to accommodate any of his/her custom types. Similar to defining a custom node type, the user simply has to write a function that returns a correctly specified <code>node.DAG</code> object, given the named arguments <code>name</code>, <code>parents</code>, <code>type</code>, <code>data</code> and <code>return_model</code>. The first three arguments should simply be added directly to the output. The <code>data</code> should be used inside your function to fit a model or obtain the required parameters in some other way. The <code>return_model</code> argument should control whether the model should be added to the output (in a named argument called <code>model</code>). The function name should be <code>paste0("gen_node_", YOURTYPE)</code>. An examples is given below.</p>
 <p><strong><em>Interactions &amp; cubic terms</em></strong>:</p>
 <p>This function currently does not support the usage of interaction effects or non-linear terms (such as using <code>A ~ B + I(B^2)</code> as a formula). Instead, it will be assumed that all values in <code>parents</code> have a linear effect on the respective node. For example, using <code>parents=c("A", "B")</code> for a node named <code>"C"</code> will use the formula <code>C ~ A + B</code>. If other behavior is desired, users need to integrate this into their own custom function as described above.</p>
     </div>

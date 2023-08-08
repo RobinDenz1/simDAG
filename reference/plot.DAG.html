@@ -29,6 +29,9 @@
     <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -141,7 +144,7 @@
 <dd><p>A single positive number specifying the distance between nodes and the arrows. By setting this to values greater than 0 the arrows will not touch the node circles, leaving a bit of space instead.</p></dd>
 
   <dt>gg_theme</dt>
-<dd><p>A <code>ggplot2</code> theme. By default this is set to <code>theme_void</code>, to get rid off everything but the plotted nodes (e.g. everything about the axis and the background). Might be usefull to change this to something else when searching for good parameters of the number arguments of this function.</p></dd>
+<dd><p>A <code>ggplot2</code> theme. By default this is set to <code>theme_void</code>, to get rid off everything but the plotted nodes (e.g. everything about the axis and the background). Might be useful to change this to something else when searching for good parameters of the number arguments of this function.</p></dd>
 
   <dt>include_td_nodes</dt>
 <dd><p>Whether to include time-varying nodes added to the <code>dag</code> using the <code><a href="node.html">node_td</a></code> function or not. If one node is both specified as a time-fixed and time-varying node, it's parents in both calls will be pooled and it will be considered a time-varying node if this argument is <code>TRUE</code>. It will, however, also show up if it's argument is <code>FALSE</code>. In this case however, only the parents of that node in the standard <code><a href="node.html">node</a></code> call will be considered.</p></dd>
@@ -155,7 +158,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function uses the <span class="pkg">igraph</span> package to find a suitable layout for the plot and then uses the <span class="pkg">ggplot2</span> package in conjunctiont with the <code>geom_circle</code> function of the <span class="pkg">ggforce</span> package to plot the directed acyclic graph defined by a <code>DAG</code> object. Since it returns a <code>ggplot</code> object, the user may use any standard <code>ggplot2</code> syntax to augment the plot or to save it using the <code>ggsave</code> function.</p>
+    <p>This function uses the <span class="pkg">igraph</span> package to find a suitable layout for the plot and then uses the <span class="pkg">ggplot2</span> package in conjunction with the <code>geom_circle</code> function of the <span class="pkg">ggforce</span> package to plot the directed acyclic graph defined by a <code>DAG</code> object. Since it returns a <code>ggplot</code> object, the user may use any standard <code>ggplot2</code> syntax to augment the plot or to save it using the <code>ggsave</code> function.</p>
 <p>Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the <span class="pkg">igraph</span> package. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the <code><a href="dag2matrix.html">dag2matrix</a></code> function to obtain an adjacency matrix from the <code>DAG</code> object and directly use this matrix and the <span class="pkg">igraph</span> package (or similar ones) to get much better plots.</p>
 <p>If the <code>DAG</code> supplied to this function contains time-varying variables, the resulting plot may contain cycles or even bi-directional arrows, depending on the <code>DAG</code>. The reason for that is, that the time-dimension is not shown in the plot. Note also that even though, technically, every time-varying node has itself as a parent, no arrows showing this dependence will be added to the plot.</p>
     </div>

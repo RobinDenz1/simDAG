@@ -29,6 +29,9 @@
     <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -71,7 +74,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain <code>1</code> in the spot <code>matrix["A", "B"]</code>. This function uses this kind of matrix and additional information about the node type to create a <code>DAG</code> object. The resulting <code>DAG</code> cannot be used in the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function directly, because it will not contain the necessary parameters such as beta-coefficients or intercepts etc. It may, however, be passed directly to the <code><a href="dag_from_data.html">dag_from_data</a></code> function. This is pretty much it's only valid use-case. If the goal is to to specify a full <code>DAG</code> manually, the user should use the <code><a href="empty_dag.html">empty_dag</a></code> function in conjunction with <code><a href="node.html">node</a></code> calls instead, as described in the respective documentation pages and the vignettes.</p>
-<p>The output will never contain time-dependent nodes. If this is neccessary, the user needs to manually define the DAG.</p>
+<p>The output will never contain time-dependent nodes. If this is necessary, the user needs to manually define the DAG.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

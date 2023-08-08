@@ -53,6 +53,9 @@
     <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
@@ -381,11 +384,10 @@ to base the values for the causal coefficients on that specific data
 set. This can be done by fitting a single model for each child node,
 extracting the estimated coefficients from the fitted models and putting
 those into an appropriate <code>DAG</code> object. If the assumed DAG is
-big, this can be a time-extensive task. The
-<code>fill_dag_using_data</code> function automates this process. This
-function takes a node list containing only minimal information about the
-causal structure and node type and outputs a fully specified
-<code>DAG</code> object.</p>
+big, this can be a time-extensive task. The <code>dag_from_data</code>
+function automates this process. This function takes a node list
+containing only minimal information about the causal structure and node
+type and outputs a fully specified <code>DAG</code> object.</p>
 <p>For example, lets assume that the data we just generated
 (<code>sim_dat</code>) was our data set of interest. Let us also assume
 that we know the true underlying causal diagram and have a rough idea
@@ -402,7 +404,7 @@ first:</p>
 <p>This looks a lot like the code used above, except that we are not
 explicitly defining the actual beta coefficients. We only define the
 causal structure and the node types. Now we can call the
-<code>fill_dag_using_data</code> function:</p>
+<code>dag_from_data</code> function:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est_dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dag_from_data.html">dag_from_data</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, data<span class="op">=</span><span class="va">sim_dat</span><span class="op">)</span></span></code></pre></div>
 <p>It returns an object that includes a fully specified
@@ -410,13 +412,13 @@ causal structure and the node types. Now we can call the
 <code>sim_from_dag</code> function:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">est_dag</span><span class="op">$</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>fill_dag_using_data</code> function essentially just fits
-the corresponding models one by one for each node and extracts the
-relevant data from the models to fill in the gaps in the empty nodes. If
-we set <code>return_models</code> to <code>TRUE</code> in the
-<code>fill_dag_using_data</code> function call above, we can actually
-see that it used the exact same models we fit earlier to check if the
-simulation was valid.</p>
+<p>The <code>dag_from_data</code> function essentially just fits the
+corresponding models one by one for each node and extracts the relevant
+data from the models to fill in the gaps in the empty nodes. If we set
+<code>return_models</code> to <code>TRUE</code> in the
+<code>dag_from_data</code> function call above, we can actually see that
+it used the exact same models we fit earlier to check if the simulation
+was valid.</p>
 </div>
 </div>
 <div class="section level2">

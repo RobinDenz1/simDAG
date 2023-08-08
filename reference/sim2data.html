@@ -29,6 +29,9 @@
     <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -80,7 +83,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using this function, it is straightforward to transform that ouput into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.</p>
+    <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using this function, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.</p>
 <p><strong><em>The start-stop format</em>:</strong></p>
 <p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. These intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can simply add 1 to the <code>stop</code> column.</p>
 <p><strong><em>The long format</em>:</strong></p>
