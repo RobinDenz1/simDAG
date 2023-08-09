@@ -5,8 +5,8 @@
   "description": "Simulate complex data from a given DAG and information about each individual node. Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to one of many implemented regressions, such as logistic regression, linear regression, poisson regression and more. Also includes a comprehensive framework for discrete-time simulation, which can generate even more complex longitudinal data.",
   "name": "simDAG: Simulate Data from a DAG and Associated Node Information",
   "relatedLink": "https://robindenz1.github.io/simDAG/",
-  "codeRepository": "https://github.com/RUB-AMIB/simDAG",
-  "issueTracker": "https://github.com/RUB-AMIB/siMDAG/issues",
+  "codeRepository": "https://github.com/RobinDenz1/simDAG",
+  "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
   "version": "0.1.0",
   "programmingLanguage": {
@@ -200,7 +200,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "920.095KB",
+  "fileSize": "924.053KB",
   "citation": [
     {
       "@type": "CreativeWork",
