@@ -6,7 +6,7 @@ Authors@R: c(
     person("Katharina", "Meiszl", , "meiszl@amib.rub-uni-bochum.de", role = c("aut"))
     )
 Maintainer: Robin Denz <robin.denz@rub.de>
-Description: Simulate complex data from a given DAG and information about each individual node.
+Description: Simulate complex data from a given directed acyclic graph and information about each individual node.
 	Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to
 	one of many implemented regressions, such as logistic regression, linear
 	regression, poisson regression and more. Also includes a comprehensive framework for discrete-time

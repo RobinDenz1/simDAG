@@ -35,13 +35,13 @@ A function that returns a numeric vector of size \code{nrow(data)} containing on
 An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{event_duration}{
-A single number >= 0 specifying how long the event should last.
+A single number >= 0 specifying how long the event should last. The point in time at which an event occurs also counts into this duration. For example, if an event occurs at \eqn{t = 2} and it has a duration of 3, the event will be set to \code{TRUE} on \eqn{t \in \{2, 3, 4\}}.
   }
   \item{immunity_duration}{
 A single number >= \code{event_duration} specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{event_duration + 10} should be used.
   }
   \item{time_since_last}{
-Either \code{TRUE} or \code{FALSE} (default), indicating whether an additional column should be generated that tracks the number of time units since the individual had its last event onset. For example, if the individual experienced a single event at t = 10, this column would be \code{NA} before time 10, 0 at time 10 and increased by 1 at each point in time. If another event happens, the time is set to 0 again. The column is named \code{paste0(name, "_time_since_last")}. The difference to the column ending with \code{"_time"} is that this column will not be set to \code{NA} again if the \code{immunity_duration} is over. It keeps counting until the end of the simulation, which may be useful when constructing event-time dependent probability functions.
+Either \code{TRUE} or \code{FALSE} (default), indicating whether an additional column should be generated that tracks the number of time units since the individual had its last event onset. For example, if the individual experienced a single event at \eqn{t = 10}, this column would be \code{NA} before time 10, 0 at time 10 and increased by 1 at each point in time. If another event happens, the time is set to 0 again. The column is named \code{paste0(name, "_time_since_last")}. The difference to the column ending with \code{"_time"} is that this column will not be set to \code{NA} again if the \code{immunity_duration} is over. It keeps counting until the end of the simulation, which may be useful when constructing event-time dependent probability functions.
   }
   \item{event_count}{
 Either \code{TRUE} or \code{FALSE} (default), indicating whether an additional column should be generated that tracks the number of events the individual has already experienced. This column is 0 for all individuals at t = 0. Each time a new event occurs, the counter is increased by one. Note that only new events increase this counter. For example, an individual with an event at t = 10 that has an \code{event_duration} of 15 will have a value of 0 before t = 10, and will have a value of 1 at t = 10 and afterwards. The column will be named \code{paste0(name, "_event_count")}.

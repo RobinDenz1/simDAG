@@ -24,7 +24,7 @@ Using the node information contained in the \code{DAG} object this function plot
 }
 \arguments{
   \item{x}{
-A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{\link{empty_dag}} or \code{\link{node}} for more details. Currently does not support DAGs with time-dependent nodes added using the \code{\link{node_td}} function.
+A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{\link{empty_dag}} or \code{\link{node}} for more details.
   }
   \item{layout}{
 A single character string specifying the layout of the plot. This internally calls the \code{layout_} function of the \pkg{igraph} package, which offers a great variety of ways to layout the nodes of a graph. Defaults to \code{"nicely"}. Some other options are: \code{"as_star"}, \code{"as_tree"}, \code{"in_circle"}, \code{"on_spere"}, \code{"randomly"} and many more. For more details see \code{?layout_}.
