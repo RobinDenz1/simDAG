@@ -142,15 +142,28 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
         }
       )
 
-      # add output to data
-      data <- add_node_to_data(data=data, new=node_out,
-                               name=tx_nodes[[i]]$name)
+      # add output to data, also make possible error messages more
+      # informative here
+      data <- tryCatch({
+        add_node_to_data(data=data, new=node_out, name=tx_nodes[[i]]$name)},
+        error=function(e){
+          stop("An error occured when trying to add the output of node '",
+               tx_nodes[[i]]$name, "' at time t = ", t, " to the current",
+               " data. The message was: ", e)
+        }
+      )
     }
 
     # perform an arbitrary data transformation after each time point
     if (!is.null(tx_transform_fun)) {
       tx_transform_args$data <- data
-      data <- do.call(tx_transform_fun, args=tx_transform_args)
+      data <- tryCatch({
+        do.call(tx_transform_fun, args=tx_transform_args)},
+        error=function(e){
+          stop("An error occured when calling the tx_transform() function",
+               " at t = ", t, ". The message was: ", e)
+        }
+      )
     }
 
     # save intermediate simulation states, if specified

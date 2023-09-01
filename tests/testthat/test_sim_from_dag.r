@@ -57,3 +57,41 @@ test_that("sort_dag working", {
   expect_true(ncol(sim_dat)==4)
   expect_error(sim_from_dag(n_sim=20, dag=dag, sort_dag=FALSE))
 })
+
+test_that("helpful error message root nodes", {
+
+  rcustom <- function(n) {
+    stop("failed instantly")
+  }
+
+  assign("rcustom", value=rcustom, envir=.GlobalEnv)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node("B", type="rcustom")
+
+  expect_error(sim_from_dag(dag, n=10),
+               paste0("An error occured when processing root node 'B'. ",
+                      "The message was: Error in (function (n) : ",
+                      "failed instantly"),
+               fixed=TRUE)
+})
+
+test_that("helpful error message child nodes", {
+
+  node_custom <- function(data, parents) {
+    stop("failed instantly")
+  }
+
+  assign("node_custom", value=node_custom, envir=.GlobalEnv)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node("B", type="custom", parents="A")
+
+  expect_error(sim_from_dag(dag, n=10),
+               paste0("An error occured when processing node 'B'. ",
+                      "The message was: Error in ",
+                      "(function (data, parents) : failed instantly"),
+               fixed=TRUE)
+})

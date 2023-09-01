@@ -17,7 +17,13 @@ sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
     args$n <- n_sim
 
     # call data generation function
-    out <- data.table(do.call(get(dag$root_nodes[[i]]$type), args))
+    out <- tryCatch({
+      data.table(do.call(get(dag$root_nodes[[i]]$type), args))},
+      error=function(e){
+        stop("An error occured when processing root node '",
+             dag$root_nodes[[i]]$name, "'. The message was: ", e)
+      }
+    )
     colnames(out) <- dag$root_nodes[[i]]$name
 
     data[[i]] <- out

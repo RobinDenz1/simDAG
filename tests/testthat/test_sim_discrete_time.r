@@ -163,7 +163,7 @@ test_that("using tx_transform_fun", {
   expect_equal(sim$data$age - 100, dt$age)
 })
 
-test_that("helpful error message working", {
+test_that("helpful error message node processing working", {
 
   # function that purposefully throws an error at t = 100
   prob_car_crash <- function(data, sim_time, base_p) {
@@ -186,6 +186,51 @@ test_that("helpful error message working", {
                       " at time t = 100. The message was: Error in (",
                       "function (data, sim_time, base_p) : Error at",
                       " t = 100"), fixed=TRUE)
+})
+
+test_that("helpful error message adding node to data working", {
+
+  dag <- empty_dag() +
+    node_td("custom_nonsense", type="nonsense")
+
+  node_nonsense <- function(data, sim_time) {
+    if (sim_time < 100) {
+      return(10)
+    } else {
+      return(list(20, 12))
+    }
+  }
+
+  assign("node_nonsense", value=node_nonsense, envir=.GlobalEnv)
+
+  expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120),
+               paste0("An error occured when trying to add the output of ",
+                      "node 'custom_nonsense' at time t = 100 to the ",
+                      "current data. The message was: Error in ",
+                      "`[<-.data.table`(`*tmp*`, , name, value = list(20, ",
+                      "12)): Supplied 2 items to be assigned to 10 items ",
+                      "of column 'custom_nonsense'. If you wish to ",
+                      "'recycle' the RHS please use rep() to make this ",
+                      "intent clear to readers of your code."),
+               fixed=TRUE)
+})
+
+test_that("helpful error message when processing tx_transform_fun", {
+
+  # function that purposefully throws an error at t = 100
+  transform_fun <- function(data) {
+    stop("failed instantly")
+  }
+
+  dag <- empty_dag() +
+    node_td("car_crash", type="time_to_event", prob_fun=0.001,
+            event_duration=1)
+
+  expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120,
+                                 tx_transform_fun=transform_fun),
+               paste0("An error occured when calling the tx_transform() ",
+                      "function at t = 1. The message was: Error in ",
+                      "(function (data) : failed instantly"), fixed=TRUE)
 })
 
 test_that("using a custom node", {
