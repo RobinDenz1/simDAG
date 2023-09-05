@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,13 +82,13 @@
     
 
 <p><strong><em>How it Works</em></strong>:</p>
-<p>First, <code>n_sim</code> i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, <code>age</code> and <code>sex</code>. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node <code>height</code> is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (random error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge u v, vertex u comes before v in the ordering. By using <code>sort_dag=TRUE</code> it is ensured that the nodes are processed in such an ordering.</p>
+<p>First, <code>n_sim</code> i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, <code>age</code> and <code>sex</code>. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node <code>height</code> is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (random error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge \(u\) \(v\), vertex \(u\) comes before \(v\) in the ordering. By using <code>sort_dag=TRUE</code> it is ensured that the nodes are processed in such an ordering.</p>
 <p>This procedure is simple in theory, but can get very complex when manually coded. This function offers a simplified workflow by only requiring the user to define the <code>dag</code> object with appropriate information (see documentation of <code><a href="node.html">node</a></code> function). A sample of size <code>n_sim</code> is then generated from the DAG specified by those two arguments.</p>
 <p><strong><em>Specifying the DAG</em></strong>:</p>
 <p>Concrete details on how to specify the needed <code>dag</code> object are given in the documentation page of the <code><a href="node.html">node</a></code> function and in the vignettes of this package.</p>
 <p><strong><em>Can this function create longitudinal data?</em></strong></p>
-<p>Yes and no. It theoretically can, but only if the user-specified <code>dag</code> directly specifies a node for each desired point in time. Using the <code>sim_discrete_time</code> is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.</p>
-<p>If time-dependent nodes were added to the <code>dag</code> using <code>node_td</code> calls, this function may not be used. Only the <code>sim_discrete_time</code> function will work in that case.</p>
+<p>Yes and no. It theoretically can, but only if the user-specified <code>dag</code> directly specifies a node for each desired point in time. Using the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.</p>
+<p>If time-dependent nodes were added to the <code>dag</code> using <code><a href="node.html">node_td</a></code> calls, this function may not be used. Only the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function will work in that case.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -98,7 +98,7 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Returns a single <code>data.table</code> including the simulated data.</p>
+<p>Returns a single <code>data.table</code> including the simulated data with (at least) one column per node specified in <code>dag</code> and <code>n_sim</code> rows.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>In this small vignette, we introduce the <code>sim_from_dag</code>
+<p>In this small vignette, we introduce the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code>
 function, which can be used to simulate complex data from arbitrary
 causal directed acyclic graphs (DAGs). The simulated data may include
 continuous, binary, categorical, count or time-to-event variables. This
@@ -154,7 +154,7 @@ between each node and its parents.</p>
 <div class="section level2">
 <h2 id="defining-the-dag">Defining the DAG<a class="anchor" aria-label="anchor" href="#defining-the-dag"></a>
 </h2>
-<p>Because the <code>sim_from_dag</code> function uses the method
+<p>Because the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function uses the method
 described above, it requires information about the causal structure and
 the exact form of the relationship between child nodes and their
 parents. All of this information has to be included in the
@@ -225,7 +225,7 @@ collection of nodes covers a lot of data types, it is still a somewhat
 limited collection. If, for example, we wanted to add a child node that
 is normally distributed but also truncated at specific values, we could
 not do this using just the offered node functions. For this reason, the
-<code>sim_from_dag</code> function also allows the user to use custom
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function also allows the user to use custom
 functions as nodes, which makes it possible to model any kind of data
 and any kind of relationship.</p>
 </div>
@@ -245,17 +245,18 @@ and <code>sex</code>:</p>
 <p>All nodes are defined by calling the <code><a href="../reference/node.html">node()</a></code> function and
 adding the output to the <code>dag</code> object using a simple
 <code>+</code>. This syntax is heavily inspired by the
-<code>simcausal</code> R-package (Sofrygin et al. 2017). Here, we assume
+<code>simCausal</code> R-package (Sofrygin et al. 2017). Here, we assume
 that <code>age</code> is a continuous normally distributed variable with
 a mean of 50 and a standard deviation of 4 (If this was a real
 simulation study we would probably use a truncated normal distribution
 to ensure that age is not negative). This can be done by setting the
-<code>dist</code> parameter to <code>rnorm</code>, which is the standard
-R function for generating random values from a normal distribution. All
-arguments listed in the <code>params</code> parameter will be passed to
-this function. Similarly, we define <code>sex</code> to be a Bernoulli
-distributed variable (taking only the values 0/1). We assume that there
-is an even gender distribution by setting <code>p = 0.5</code>.</p>
+<code>dist</code> parameter to <code>"rnorm"</code>, which is the
+standard R function for generating random values from a normal
+distribution. All arguments listed in the <code>params</code> parameter
+will be passed to this function. Similarly, we define <code>sex</code>
+to be a Bernoulli distributed variable (taking only the values 0/1). We
+assume that there is an even gender distribution by setting
+<code>p = 0.5</code>.</p>
 <p>Next, we have to define what the relationship between the child nodes
 and their parents should look like. We may use the following code:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -269,7 +270,7 @@ and <code>age</code>, we have to list both of these nodes as the parents
 of <code>bmi</code>. We then specify that the <code>bmi</code> should be
 a continuous variable modeled using a linear regression by setting
 <code>type="gaussian"</code>. The concrete regression equation is
-defined through the use of the <code>interecept</code>,
+defined through the use of the <code>intercept</code>,
 <code>betas</code> and <code>error</code> arguments. Our specification
 for the <code>bmi</code> node corresponds to the following equation:</p>
 <p><span class="math display">\[
@@ -287,15 +288,15 @@ described by the code above is then:</p>
 logit(death) = -15 + age \cdot 0.1 + bmi \cdot 0.3.
 \]</span></p>
 <p>To check whether we got the causal relationships right, we can call
-the <code>plot</code> function on the DAG object. The output should look
-very similar to the hand-drawn DAG above.</p>
+the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> function on the DAG object. The output should
+look very similar to the hand-drawn DAG above.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required namespace: ggforce</span></span>
 <span><span class="co">#&gt; Loading required namespace: igraph</span></span></code></pre></div>
 <p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 <p>This is all correct. We can now use this <code>DAG</code> object to
-generate random data using the <code>sim_from_dag</code> function:</p>
+generate random data using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span>
@@ -328,7 +329,7 @@ our specified causal DAG. Starting with the root nodes:</p>
 means that the results will never <em>exactly</em> match the theoretical
 distributions. But it’s definitely close enough here. To check if the
 child nodes were modeled correctly, we simply fit the corresponding
-models using the <code>glm</code> function:</p>
+models using the <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code> function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod_bmi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">bmi</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">sex</span>, data<span class="op">=</span><span class="va">sim_dat</span>, family<span class="op">=</span><span class="st">"gaussian"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod_bmi</span><span class="op">)</span></span>
@@ -384,7 +385,7 @@ to base the values for the causal coefficients on that specific data
 set. This can be done by fitting a single model for each child node,
 extracting the estimated coefficients from the fitted models and putting
 those into an appropriate <code>DAG</code> object. If the assumed DAG is
-big, this can be a time-extensive task. The <code>dag_from_data</code>
+big, this can be a time-extensive task. The <code><a href="../reference/dag_from_data.html">dag_from_data()</a></code>
 function automates this process. This function takes a node list
 containing only minimal information about the causal structure and node
 type and outputs a fully specified <code>DAG</code> object.</p>
@@ -404,21 +405,21 @@ first:</p>
 <p>This looks a lot like the code used above, except that we are not
 explicitly defining the actual beta coefficients. We only define the
 causal structure and the node types. Now we can call the
-<code>dag_from_data</code> function:</p>
+<code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> function:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">est_dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dag_from_data.html">dag_from_data</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, data<span class="op">=</span><span class="va">sim_dat</span><span class="op">)</span></span></code></pre></div>
 <p>It returns an object that includes a fully specified
 <code>DAG</code>, which can be used directly in the
-<code>sim_from_dag</code> function:</p>
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">est_dag</span><span class="op">$</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>dag_from_data</code> function essentially just fits the
+<p>The <code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> function essentially just fits the
 corresponding models one by one for each node and extracts the relevant
 data from the models to fill in the gaps in the empty nodes. If we set
 <code>return_models</code> to <code>TRUE</code> in the
-<code>dag_from_data</code> function call above, we can actually see that
-it used the exact same models we fit earlier to check if the simulation
-was valid.</p>
+<code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> function call above, we can actually see
+that it used the exact same models we fit earlier to check if the
+simulation was valid.</p>
 </div>
 </div>
 <div class="section level2">
@@ -427,7 +428,7 @@ was valid.</p>
 <p>Most real data sets include time-varying covariates, e.g. variables
 that are measured at multiple points in time that are subject to
 changes. It is possible to generate this type of data using the
-<code>sim_from_dag</code> function as well. All we need to do is to
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function as well. All we need to do is to
 define an appropriate <code>DAG</code> that directly specifies how the
 variables change over time. For example, we can extend the simple
 <code>DAG</code> from above to include a dimension of time:</p>
@@ -439,7 +440,7 @@ A small DAG with four nodes
 <p>Here, nodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are time-constant variables that only
 have a causal effect on the initial state of <span class="math inline">\(C\)</span> and <span class="math inline">\(D\)</span>, while nodes <span class="math inline">\(C\)</span> and <span class="math inline">\(D\)</span> change over time interdependently. If
 we want to simulate data from a DAG that looks like this using the
-<code>sim_from_dag</code> function, we have to add a node to the for
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function, we have to add a node to the for
 every point in time that we want to consider.</p>
 <p>We will quickly go through a somewhat simpler example, considering
 only 2 points in time. We define our nodes in the following way:</p>
@@ -462,11 +463,11 @@ only 2 points in time. We define our nodes in the following way:</p>
 <code>bmi</code>. The <code>death</code> node is determined by the
 initial <code>age</code> and by the time-varying <code>bmi</code>. This
 surely is not the most realistic example. It is only meant to show how
-the <code>sim_from_dag</code> function may be used to incorporate
+the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function may be used to incorporate
 time-dependent covariates. If many points in time should be considered
 or there are very complex time-dependent structures that may not be
 easily described using a DAG like the one above, the
-<code>sim_discrete_time</code> function also included in this package
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function also included in this package
 may be used instead.</p>
 </div>
 <div class="section level2">

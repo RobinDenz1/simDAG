@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>This vignette contains an in-depth example on how to use the
-<code>sim_discrete_time</code> function to generate complex
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function to generate complex
 time-to-event data. Unlike the other vignettes, we will not rely on a
 overly simple example here. Instead, our aim is to generate somewhat
 realistic data about the Covid-19 pandemic. In particular, we are
@@ -105,7 +105,7 @@ real data, including measurement problems as described below. This data
 generation algorithm was then used to identify a suitable data analysis
 strategy for the real data. We only describe a slightly simplified
 version of the data generation part here to give a detailed example on
-how the <code>sim_discrete_time</code> function may be used
+how the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function may be used
 effectively.</p>
 <p>Note that the algorithm described here is not completely the same as
 the one we originally used, because that would require us to include
@@ -171,7 +171,7 @@ between the considered variables.</p>
 generate the initial data used in the simulation process. It is
 important to check this data thoroughly, as it will be used as a basis
 for all subsequent steps of the simulation. The
-<code>sim_from_dag</code> function might be very helpful for this
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function might be very helpful for this
 step.</p>
 </div>
 <div class="section level3">
@@ -255,7 +255,7 @@ each point in time. Once they occur, they last for some duration
 (e.g. someone being sick for two weeks or something similar). After the
 event is over, there is usually some duration where the person is
 “immune” to receiving the event again. This is a perfect case for using
-a time-dependent node of type <code>time_to_event</code>.</p>
+a time-dependent node of type <code>"time_to_event"</code>.</p>
 <p>We start out modeling every one of these variables as completely
 independent of each other using the following DAG:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -420,7 +420,7 @@ relationship.</p>
 </h3>
 <p>We are now pleased with the complexity of our data-generation
 algorithm and want to simulate data from it. We can do this by simply
-calling the <code>sim_discrete_time</code> function on the specified
+calling the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function on the specified
 DAG:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -435,8 +435,8 @@ DAG:</p>
 <span><span class="co">#&gt; Only the last state of the simulation was saved.</span></span></code></pre></div>
 <p>For exemplary purposes, we kind of arbitrarily used 1000 individuals
 and let the simulation run for 800 days. By calling the
-<code>plot</code> method, we get a concise overview over the process we
-simulated:</p>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method, we get a concise overview over the process
+we simulated:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span>, box_text_size<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="v_covid_example_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
@@ -444,7 +444,7 @@ simulated:</p>
 data-generation mechanism using only a few small function definitions
 and a few lines of code, allowing us to generate a complex dataset with
 three interdependent time-varying variables with only minimal effort. By
-utilizing the <code>sim2data</code> function, we could directly
+utilizing the <code><a href="../reference/sim2data.html">sim2data()</a></code> function, we could directly
 transform the <code>sim</code> object into a dataset in the start-stop
 format to run some statistical models on it (such as a cox-regression
 model).</p>
@@ -479,6 +479,13 @@ more. How much complexity you really need is completely up to you. We
 hope that the <code>simDAG</code> package can help you with whatever you
 need.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol
+(2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate:
+Pearson Education Limited.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

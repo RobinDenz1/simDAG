@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,12 +94,12 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>In this small vignette, we introduce the
-<code>sim_discrete_time</code> function, which can be used to generate
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function, which can be used to generate
 arbitrarily complex longitudinal data with discrete points in time. Just
-as the <code>sim_from_dag</code> function contained in this package, it
-allows any mixture of continuous, binary, categorical, count, or
+as the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function contained in this package,
+it allows any mixture of continuous, binary, categorical, count, or
 time-to-event data. The main advantage of the
-<code>sim_discrete_time</code> function is that it naturally generates
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function is that it naturally generates
 longitudinal data without the need to define a node for each variable at
 each point in time. It also makes the generation of complex
 time-to-event data a lot easier. Features such as time-dependent
@@ -127,21 +127,21 @@ schematic flow of DTS is shown in the figure below.</p>
 A generalized flow-chart of the discrete-time simulation approach
 </p>
 </div>
-<p>The <code>sim_discrete_time</code> directly implements this workflow.
-A data set at <span class="math inline">\(t = 0\)</span> is either
-simulated using the <code>sim_from_dag</code> function or supplied
-directly by the user (using the <code>t0_data</code> argument). This
-data set is then updated according to the time-dependent nodes added to
-the <code>dag</code> using <code>node_td</code> calls. Below we give a
-short example on how this works in practice. A more realistic (and
-therefore more complex) example can be found in a different
+<p>The <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> directly implements this
+workflow. A data set at <span class="math inline">\(t = 0\)</span> is
+either simulated using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function or
+supplied directly by the user (using the <code>t0_data</code> argument).
+This data set is then updated according to the time-dependent nodes
+added to the <code>dag</code> using <code><a href="../reference/node.html">node_td()</a></code> calls. Below
+we give a short example on how this works in practice. A more realistic
+(and therefore more complex) example can be found in a different
 vignette.</p>
 <p>A DTS can be seen as a special case of simulation modeling. It is
 closely related to <em>dynamic microsimulation</em> (Spooner et
 al. 2021), <em>discrete-event simulation</em> (Banks 2014) and
 <em>agent-based modeling</em> (Ugur &amp; Saka 2006). As such, it
 requires a lot of input from the users. In general, the
-<code>sim_discrete_time</code> function is not an “off-the-shelves”
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function is not an “off-the-shelves”
 function which can be used “as-is” to simulate data. In most cases, the
 user needs to write their own functions to actually use this function
 effectively. This is the price one has to pay for the nearly unlimited
@@ -152,10 +152,11 @@ complex longitudinal time-to-event data.</p>
 <div class="section level2">
 <h2 id="defining-the-dag">Defining the DAG<a class="anchor" aria-label="anchor" href="#defining-the-dag"></a>
 </h2>
-<p>Similar to the <code>sim_from_dag</code> function, the user needs to
-specify the nodes of the underlying causal DAG to use this function. All
-variables in a DTS can be categorized into three categories: <em>t0_root
-nodes</em>, <em>t0_child_nodes</em> and <em>tx_nodes</em>.</p>
+<p>Similar to the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function, the user needs
+to specify the nodes of the underlying causal DAG to use this function.
+All variables in a DTS can be categorized into three categories:
+<em>t0_root nodes</em>, <em>t0_child_nodes</em> and
+<em>tx_nodes</em>.</p>
 <ul>
 <li><p><em>t0_root_nodes</em>: Variables that are completely independent
 of all other variables and are only generated once are called
@@ -183,16 +184,16 @@ in the simulation model or past states of the variable itself.</p></li>
 </ul>
 <p>The <code>t0_root_nodes</code> and <code>t0_child_nodes</code>
 arguments are specified using a <code>DAG</code> object and calls to the
-<code>node</code> function as usual when using the
-<code>sim_from_dag</code> function. In fact, they are simply passed to
+<code><a href="../reference/node.html">node()</a></code> function as usual when using the
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function. In fact, they are simply passed to
 it under the hood. Their role in the data generation process is only to
 obtain the initial data set we need for <span class="math inline">\(t =
-0\)</span>. It would be equivalent to call the <code>sim_from_dag</code>
-function manually and then pass the output to the <code>t0_data</code>
-argument. We therefore won’t go into more detail here. More information
-about how to correctly specify this DAG can be found in the
-documentation of the <code>sim_from_dag</code> and <code>node</code>
-functions or the associated vignette.</p>
+0\)</span>. It would be equivalent to call the
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function manually and then pass the output
+to the <code>t0_data</code> argument. We therefore won’t go into more
+detail here. More information about how to correctly specify this DAG
+can be found in the documentation of the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> and
+<code><a href="../reference/node.html">node()</a></code> functions or the associated vignette.</p>
 </div>
 <div class="section level2">
 <h2 id="a-simple-example---one-terminal-event">A Simple Example - One Terminal Event<a class="anchor" aria-label="anchor" href="#a-simple-example---one-terminal-event"></a>
@@ -212,7 +213,7 @@ that <code>sex</code> and <code>age</code> have a direct causal effect
 on the probability of death, regardless of the time. Once people are
 dead, they stay dead (no reincarnation allowed).</p>
 <p>If we want to use this structure in the
-<code>sim_discrete_time</code> function, we first have to generate an
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function, we first have to generate an
 initial dataset for the state of the population at <span class="math inline">\(t = 0\)</span> as described above. We do this by
 first specifying the <code>t0_root_nodes</code> as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -227,7 +228,7 @@ first specifying the <code>t0_root_nodes</code> as follows:</p>
 have equal numbers of each <code>sex</code>. This information is enough
 to specify the data set at <span class="math inline">\(t = 0\)</span>.
 Now we only need to add additional time-dependent nodes using the
-<code>node_td</code> function and were ready. First, we define a
+<code><a href="../reference/node.html">node_td()</a></code> function and were ready. First, we define a
 function that increases the age of all individuals by 1 at each
 step:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -251,7 +252,7 @@ it explicit for exemplary reasons:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span><span class="op">)</span>,</span>
 <span>          prob_fun<span class="op">=</span><span class="va">prob_death</span>, event_duration<span class="op">=</span><span class="cn">Inf</span>, save_past_events<span class="op">=</span><span class="cn">TRUE</span>,</span>
 <span>          check_inputs<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>We simply pass the <code>node_advance_age</code> function to the
+<p>We simply pass the <code>node_advance_age()</code> function to the
 <code>type</code> argument of the <code>age</code> node.
 <code>death</code> is a <em>time-to-event</em> node, because it’s an
 event which is generated from a probability at each step in time. That
@@ -260,20 +261,17 @@ probability, as defined here, is determined by the
 <code>event_duration</code> to <code>Inf</code> to make this a permanent
 event (once you are dead, there is no going back).</p>
 <p>To visualize the resulting DAG, we can use the associated
-<code>plot</code> method:</p>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required namespace: ggforce</span></span>
 <span><span class="co">#&gt; Loading required namespace: igraph</span></span></code></pre></div>
 <p><img src="v_sim_discrete_time_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>To finally generate the desired data, we simply call the
-<code>sim_discrete_time</code> function:</p>
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
-<span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">10</span>,</span>
-<span>                             dag<span class="op">=</span><span class="va">dag</span>,</span>
-<span>                             max_t<span class="op">=</span><span class="fl">50</span>,</span>
-<span>                             check_inputs<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">10</span>, dag<span class="op">=</span><span class="va">dag</span>, max_t<span class="op">=</span><span class="fl">50</span>, check_inputs<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>By setting <code>max_t=50</code>, we are letting this simulation run
 for 50 (simulated) years. The results look like this:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -290,8 +288,8 @@ years by looking at the <code>death_event</code> column. The
 <code>death_time</code> column records the time at which each person
 died.</p>
 <p>If we want to graphically display a flow diagram of the
-data-generation mechanism, we may use the <code>plot</code> method
-associated with the output of the <code>sim_discrete_time</code>
+data-generation mechanism, we may use the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method
+associated with the output of the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>
 function like this:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">)</span></span></code></pre></div>
@@ -325,7 +323,7 @@ probabilities:</p>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Now, all we have to do in this case is change some arguments of the
-<code>node_time_to_event</code> function:</p>
+<code><a href="../reference/node_time_to_event.html">node_time_to_event()</a></code> function:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"advance_age"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -336,7 +334,7 @@ probabilities:</p>
 cardiovascular event only lasts 1 year. We also set
 <code>save_past_events</code> to <code>TRUE</code> in order to store the
 possible recurrent events. Now we call the
-<code>sim_discrete_time</code> function as before:</p>
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function as before:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">10</span>,</span>
 <span>                             dag<span class="op">=</span><span class="va">dag</span>,</span>
@@ -354,7 +352,7 @@ experiencing a cardiovascular event, which is why the
 <code>cve_event</code> column is <code>FALSE</code> in almost all rows
 and the <code>cve_time</code> column is <code>NA</code> in almost all
 rows. We need to transform this output data into different formats using
-the <code>sim2data</code> function to gain more information.</p>
+the <code><a href="../reference/sim2data.html">sim2data()</a></code> function to gain more information.</p>
 <p>For example, we can transform it into the start-stop format:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d_start_stop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim_dat</span>, to<span class="op">=</span><span class="st">"start_stop"</span><span class="op">)</span></span>
