@@ -39,7 +39,7 @@ dag2matrix <- function(dag, include_root_nodes=TRUE, include_td_nodes=FALSE) {
   all_names <- all_names[!duplicated(all_names)]
 
   # initialize adjacency matrix
-  adjacency_mat <- matrix(data=FALSE,
+  adjacency_mat <- matrix(data=0,
                           nrow=length(all_names),
                           ncol=length(all_names))
   rownames(adjacency_mat) <- all_names

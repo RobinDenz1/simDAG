@@ -28,7 +28,7 @@ Whether to perform plausibility checks for the user input or not. Is set to \cod
 
 \strong{\emph{How it Works}}:
 
-First, \code{n_sim} i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, \code{age} and \code{sex}. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node \code{height} is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (random error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge u v, vertex u comes before v in the ordering. By using \code{sort_dag=TRUE} it is ensured that the nodes are processed in such an ordering.
+First, \code{n_sim} i.i.d. samples from the root nodes are drawn. Children of these nodes are then generated one by one according to specified relationships and causal coefficients. For example, lets suppose there are two root nodes, \code{age} and \code{sex}. Those are generated from a normal distribution and a bernoulli distribution respectively. Afterward, the child node \code{height} is generated using both of these variables as parents according to a linear regression with defined coefficients, intercept and sigma (random error). This works because every DAG has at least one topological ordering, which is a linear ordering of vertices such that for every directed edge \eqn{u} \eqn{v}, vertex \eqn{u} comes before \eqn{v} in the ordering. By using \code{sort_dag=TRUE} it is ensured that the nodes are processed in such an ordering.
 
 This procedure is simple in theory, but can get very complex when manually coded. This function offers a simplified workflow by only requiring the user to define the \code{dag} object with appropriate information (see documentation of \code{\link{node}} function). A sample of size \code{n_sim} is then generated from the DAG specified by those two arguments.
 
@@ -38,16 +38,16 @@ Concrete details on how to specify the needed \code{dag} object are given in the
 
 \strong{\emph{Can this function create longitudinal data?}}
 
-Yes and no. It theoretically can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{sim_discrete_time} is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
+Yes and no. It theoretically can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{\link{sim_discrete_time}} is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
 
-If time-dependent nodes were added to the \code{dag} using \code{node_td} calls, this function may not be used. Only the \code{sim_discrete_time} function will work in that case.
+If time-dependent nodes were added to the \code{dag} using \code{\link{node_td}} calls, this function may not be used. Only the \code{\link{sim_discrete_time}} function will work in that case.
 
 }
 \author{
 Robin Denz
 }
 \value{
-Returns a single \code{data.table} including the simulated data.
+Returns a single \code{data.table} including the simulated data with (at least) one column per node specified in \code{dag} and \code{n_sim} rows.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{plot.DAG}}, \code{\link{sim_discrete_time}}

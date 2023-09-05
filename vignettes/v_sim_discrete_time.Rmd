@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this small vignette, we introduce the `sim_discrete_time` function, which can be used to generate arbitrarily complex longitudinal data with discrete points in time. Just as the `sim_from_dag` function contained in this package, it allows any mixture of continuous, binary, categorical, count, or time-to-event data. The main advantage of the `sim_discrete_time` function is that it naturally generates longitudinal data without the need to define a node for each variable at each point in time. It also makes the generation of complex time-to-event data a lot easier. Features such as time-dependent effects, time-dependent covariates, any form of censoring, recurrent-events and competing events may be included in a straightforward fashion.
+In this small vignette, we introduce the `sim_discrete_time()` function, which can be used to generate arbitrarily complex longitudinal data with discrete points in time. Just as the `sim_from_dag()` function contained in this package, it allows any mixture of continuous, binary, categorical, count, or time-to-event data. The main advantage of the `sim_discrete_time()` function is that it naturally generates longitudinal data without the need to define a node for each variable at each point in time. It also makes the generation of complex time-to-event data a lot easier. Features such as time-dependent effects, time-dependent covariates, any form of censoring, recurrent-events and competing events may be included in a straightforward fashion.
 
 
 # What is Discrete-Time Simulation and Why Use it?
@@ -28,14 +28,14 @@ A discrete-time simulation (DTS) consists of two steps. First, a bunch of entiti
 knitr::include_graphics("./images_v_sim_discrete_time/flow_chart.png")
 ```
 
-The `sim_discrete_time` directly implements this workflow. A data set at $t = 0$ is either simulated using the `sim_from_dag` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the time-dependent nodes added to the `dag` using `node_td` calls. Below we give a short example on how this works in practice. A more realistic (and therefore more complex) example can be found in a different vignette.
+The `sim_discrete_time()` directly implements this workflow. A data set at $t = 0$ is either simulated using the `sim_from_dag()` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the time-dependent nodes added to the `dag` using `node_td()` calls. Below we give a short example on how this works in practice. A more realistic (and therefore more complex) example can be found in a different vignette.
 
-A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
+A DTS can be seen as a special case of simulation modeling. It is closely related to *dynamic microsimulation* (Spooner et al. 2021), *discrete-event simulation* (Banks 2014) and *agent-based modeling* (Ugur & Saka 2006). As such, it requires a lot of input from the users. In general, the `sim_discrete_time()` function is not an "off-the-shelves" function which can be used "as-is" to simulate data. In most cases, the user needs to write their own functions to actually use this function effectively. This is the price one has to pay for the nearly unlimited flexibility of this simulation methodology. Nevertheless, it may be the only valid simulation strategy when the user is interested in highly complex longitudinal time-to-event data.
 
 
 # Defining the DAG
 
-Similar to the `sim_from_dag` function, the user needs to specify the nodes of the underlying causal DAG to use this function.  All variables in a DTS can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
+Similar to the `sim_from_dag()` function, the user needs to specify the nodes of the underlying causal DAG to use this function.  All variables in a DTS can be categorized into three categories: *t0_root nodes*, *t0_child_nodes* and *tx_nodes*.
 
 * *t0_root_nodes*: Variables that are completely independent of all other variables and are only generated once are called *t0_root_nodes*. This could be something like sex or geographic entities. They are generally simply sampled from some previously defined distribution, but they could also be sampled directly from existing data. The prefix *t0_* indicates that these variables are created only once in the beginning.
 
@@ -43,7 +43,7 @@ Similar to the `sim_from_dag` function, the user needs to specify the nodes of t
 
 * *tx_nodes*: This type of node is more complex and is the reason to use DTS. Variables in this category are updated at each step in time of the simulation process. These updates can be fairly easy, such as increasing the age of a person by one time unit on each step, or they can be very complex. For example, if we want to model the occurrence of some kind of time-dependent-event, we can generate the probability of that occurrence at each step depending on other variables in the simulation model or past states of the variable itself.
 
-The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` object and calls to the `node` function as usual when using the `sim_from_dag` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify this DAG can be found in the documentation of the `sim_from_dag` and `node` functions or the associated vignette.
+The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` object and calls to the `node()` function as usual when using the `sim_from_dag()` function. In fact, they are simply passed to it under the hood. Their role in the data generation process is only to obtain the initial data set we need for $t = 0$. It would be equivalent to call the `sim_from_dag()` function manually and then pass the output to the `t0_data` argument. We therefore won't go into more detail here. More information about how to correctly specify this DAG can be found in the documentation of the `sim_from_dag()` and `node()` functions or the associated vignette.
 
 
 # A Simple Example - One Terminal Event
@@ -56,7 +56,7 @@ knitr::include_graphics("./images_v_sim_discrete_time/simple_dag.png")
 
 Here, `sex` is a time-invariant variables, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
 
-If we want to use this structure in the `sim_discrete_time` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
+If we want to use this structure in the `sim_discrete_time()` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
 
 ```{r}
 library(data.table)
@@ -68,7 +68,7 @@ dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5)
 ```
 
-We assume that `age` is normally distributed and that we have equal numbers of each `sex`. This information is enough to specify the data set at $t = 0$. Now we only need to add additional time-dependent nodes using the `node_td` function and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
+We assume that `age` is normally distributed and that we have equal numbers of each `sex`. This information is enough to specify the data set at $t = 0$. Now we only need to add additional time-dependent nodes using the `node_td()` function and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
 
 ```{r}
 node_advance_age <- function(data) {
@@ -96,22 +96,19 @@ dag <- dag +
           check_inputs=FALSE)
 ```
 
-We simply pass the `node_advance_age` function to the `type` argument of the `age` node. `death` is a *time-to-event* node, because it's an event which is generated from a probability at each step in time. That probability, as defined here, is determined by the `prob_death` function we defined earlier. We set `event_duration` to `Inf` to make this a permanent event (once you are dead, there is no going back).
+We simply pass the `node_advance_age()` function to the `type` argument of the `age` node. `death` is a *time-to-event* node, because it's an event which is generated from a probability at each step in time. That probability, as defined here, is determined by the `prob_death` function we defined earlier. We set `event_duration` to `Inf` to make this a permanent event (once you are dead, there is no going back).
 
-To visualize the resulting DAG, we can use the associated `plot` method:
+To visualize the resulting DAG, we can use the associated `plot()` method:
 
 ```{r fig.width=7, fig.height=5}
 plot(dag)
 ```
 
-To finally generate the desired data, we simply call the `sim_discrete_time` function:
+To finally generate the desired data, we simply call the `sim_discrete_time()` function:
 
 ```{r}
 set.seed(43)
-sim_dat <- sim_discrete_time(n_sim=10,
-                             dag=dag,
-                             max_t=50,
-                             check_inputs=FALSE)
+sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50, check_inputs=FALSE)
 ```
 
 By setting `max_t=50`, we are letting this simulation run for 50 (simulated) years. The results look like this:
@@ -122,7 +119,7 @@ head(sim_dat$data)
 
 It is easy to see that all people died over the course of those 50 years by looking at the `death_event` column. The `death_time` column records the time at which each person died.
 
-If we want to graphically display a flow diagram of the data-generation mechanism, we may use the `plot` method associated with the output of the `sim_discrete_time` function like this:
+If we want to graphically display a flow diagram of the data-generation mechanism, we may use the `plot()` method associated with the output of the `sim_discrete_time()` function like this:
 
 ```{r fig.width=7, fig.height=5}
 plot(sim_dat)
@@ -151,7 +148,7 @@ prob_cve <- function(data) {
 }
 ```
 
-Now, all we have to do in this case is change some arguments of the `node_time_to_event` function:
+Now, all we have to do in this case is change some arguments of the `node_time_to_event()` function:
 
 ```{r}
 dag <- dag +
@@ -160,7 +157,7 @@ dag <- dag +
           prob_fun=prob_cve, event_duration=1, save_past_events=TRUE)
 ```
 
-Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time` function as before:
+Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time()` function as before:
 
 ```{r}
 sim_dat <- sim_discrete_time(n_sim=10,
@@ -169,7 +166,7 @@ sim_dat <- sim_discrete_time(n_sim=10,
 head(sim_dat$data)
 ```
 
-In this case, the data is a little more complex. At time $t = 50$, only one person is currently experiencing a cardiovascular event, which is why the `cve_event` column is `FALSE` in almost all rows and the `cve_time` column is `NA` in almost all rows. We need to transform this output data into different formats using the `sim2data` function to gain more information.
+In this case, the data is a little more complex. At time $t = 50$, only one person is currently experiencing a cardiovascular event, which is why the `cve_event` column is `FALSE` in almost all rows and the `cve_time` column is `NA` in almost all rows. We need to transform this output data into different formats using the `sim2data()` function to gain more information.
 
 For example, we can transform it into the start-stop format:
 

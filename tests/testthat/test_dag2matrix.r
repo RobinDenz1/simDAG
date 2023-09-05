@@ -96,3 +96,14 @@ test_that("error: not a DAG object", {
 test_that("error: wrong include_root_nodes", {
   expect_error(dag2matrix(dag=dag, include_root_nodes="A"))
 })
+
+test_that("only root nodes still numeric", {
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=34) +
+    node("B", type="rcategorical")
+
+  out <- dag2matrix(dag)
+
+  expect_true(is.numeric(out) & !is.logical(out))
+})

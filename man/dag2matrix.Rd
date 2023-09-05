@@ -22,7 +22,7 @@ Whether to include time-dependent nodes added to the \code{dag} using the \code{
   }
 }
 \details{
-An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain \code{TRUE} in the spot \code{matrix["A", "B"]}.
+An adjacency matrix is simply a square matrix in which each node has one column and one row associated with it. For example, if the node A has a causal effect on node B, the matrix will contain \code{1} in the spot \code{matrix["A", "B"]}.
 
 If a time-varying node is also defined as a time-fixed node, the parents of both parts will be pooled when creating the output matrix.
 }

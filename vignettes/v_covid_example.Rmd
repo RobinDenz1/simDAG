@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This vignette contains an in-depth example on how to use the `sim_discrete_time` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a overly simple example here. Instead, our aim is to generate somewhat realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim of the real study was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe a slightly simplified version of the data generation part here to give a detailed example on how the `sim_discrete_time` function may be used effectively.
+This vignette contains an in-depth example on how to use the `sim_discrete_time()` function to generate complex time-to-event data. Unlike the other vignettes, we will not rely on a overly simple example here. Instead, our aim is to generate somewhat realistic data about the Covid-19 pandemic. In particular, we are interested in generating a longitudinal data set containing Covid-19 infections, vaccines and adverse side effects of those vaccines. The aim of the real study was to create a data set that is reasonably close to real data, including measurement problems as described below. This data generation algorithm was then used to identify a suitable data analysis strategy for the real data. We only describe a slightly simplified version of the data generation part here to give a detailed example on how the `sim_discrete_time()` function may be used effectively.
 
 Note that the algorithm described here is not completely the same as the one we originally used, because that would require us to include confidential data into this vignette, which is sadly impossible.
 
@@ -45,7 +45,7 @@ If the simulated data should correspond to real data, it is crucial to base the 
 
 ## **5.)** Simulate data for $t = 0$ (if needed).
 
-After having specified suitable distributions and relationships, generate the initial data used in the simulation process. It is important to check this data thoroughly, as it will be used as a basis for all subsequent steps of the simulation. The `sim_from_dag` function might be very helpful for this step.
+After having specified suitable distributions and relationships, generate the initial data used in the simulation process. It is important to check this data thoroughly, as it will be used as a basis for all subsequent steps of the simulation. The `sim_from_dag()` function might be very helpful for this step.
 
 ## **6.)** Write functions for each time-varying node, one at a time.
 
@@ -80,7 +80,7 @@ Instead of diving in deep from the start and trying to include all relevant vari
 
 ## Part 1: Adding vaccination, covid and sickness
 
-The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurrence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `time_to_event`.
+The most important variables for us are the `vaccination`, the `covid`-19 infection and the `sickness`. All of these are variables that have a certain probability of occurrence at each point in time. Once they occur, they last for some duration (e.g. someone being sick for two weeks or something similar). After the event is over, there is usually some duration where the person is "immune" to receiving the event again. This is a perfect case for using a time-dependent node of type `"time_to_event"`.
 
 We start out modeling every one of these variables as completely independent of each other using the following DAG:
 
@@ -204,7 +204,7 @@ Note that in this plot it doesn't look like a classic DAG anymore, because it ha
 
 ## Generating Data using the final model
 
-We are now pleased with the complexity of our data-generation algorithm and want to simulate data from it. We can do this by simply calling the `sim_discrete_time` function on the specified DAG:
+We are now pleased with the complexity of our data-generation algorithm and want to simulate data from it. We can do this by simply calling the `sim_discrete_time()` function on the specified DAG:
 
 ```{r}
 set.seed(42)
@@ -212,13 +212,13 @@ sim <- sim_discrete_time(dag, n_sim=1000, max_t=800)
 summary(sim)
 ```
 
-For exemplary purposes, we kind of arbitrarily used 1000 individuals and let the simulation run for 800 days. By calling the `plot` method, we get a concise overview over the process we simulated:
+For exemplary purposes, we kind of arbitrarily used 1000 individuals and let the simulation run for 800 days. By calling the `plot()` method, we get a concise overview over the process we simulated:
 
 ```{r fig.width=7, fig.height=5}
 plot(sim, box_text_size=4)
 ```
 
-As can be seen, we managed to implement a fairly complex data-generation mechanism using only a few small function definitions and a few lines of code, allowing us to generate a complex dataset with three interdependent time-varying variables with only minimal effort. By utilizing the `sim2data` function, we could directly transform the `sim` object into a dataset in the start-stop format to run some statistical models on it (such as a cox-regression model).
+As can be seen, we managed to implement a fairly complex data-generation mechanism using only a few small function definitions and a few lines of code, allowing us to generate a complex dataset with three interdependent time-varying variables with only minimal effort. By utilizing the `sim2data()` function, we could directly transform the `sim` object into a dataset in the start-stop format to run some statistical models on it (such as a cox-regression model).
 
 ## Going even further
 
@@ -231,3 +231,7 @@ There is no need to stop here. We could make this simulation model even more com
 * Changing the constant raising of the probabilities in the form of a relative risk to a more realistic non-linear time-dependent relative risk
 
 There are of course many more possible extensions, all of which can be implemented by augmenting the respective `prob_fun` arguments and updating the `dag` accordingly. In fact, in the real monte-carlo simulation we conducted, that is exactly what we did. We used empirical data to model time-dependent base-probabilities and more. How much complexity you really need is completely up to you. We hope that the `simDAG` package can help you with whatever you need.
+
+# References
+
+Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
