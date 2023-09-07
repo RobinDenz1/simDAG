@@ -1,3 +1,7 @@
+# S3 print list of nodes
+
+    A list of DAG.node objects.
+
 # S3 print root node, no params
 
     A DAG.node object specifying a single root node with:

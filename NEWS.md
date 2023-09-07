@@ -6,3 +6,4 @@
 
 * Minor changes to documentation
 * dag2matrix() now returns a numeric matrix even if the dag object contains only root nodes
+* node() and node_td() now support character vectors in the 'name' argument, allowing easy creation of multiple nodes with the same definition

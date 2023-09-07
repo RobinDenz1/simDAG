@@ -32,11 +32,9 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
 
     check_inputs_root_node(name=name, type=type)
 
-    node_list <- list(name=name,
-                      type=type,
-                      parents=NULL,
-                      time_varying=FALSE,
-                      params=args)
+    node_list <- create_node_list(name=name, type=type, parents=NULL,
+                                  formula=NULL, time_varying=FALSE,
+                                  root=TRUE, args=args)
   } else {
     # NOTE: in an if statement because we need to allow child nodes that are
     #       almost completely empty for the dag_from_data function
@@ -45,19 +43,10 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                               formula=formula, time_varying=FALSE)
     }
 
-    node_list <- list(name=name,
-                      type=type,
-                      parents=parents,
-                      time_varying=FALSE)
-
-    if (!is.null(formula)) {
-      node_list$formula <- formula
-    }
-
-    node_list <- append(node_list, args)
+    node_list <- create_node_list(name=name, type=type, parents=parents,
+                                  formula=formula, time_varying=FALSE,
+                                  args=args, root=FALSE)
   }
-
-  class(node_list) <- "DAG.node"
 
   return(node_list)
 }
@@ -105,18 +94,9 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
                             formula=formula, time_varying=TRUE)
   }
 
-  node_list <- list(name=name,
-                    type=type,
-                    parents=parents,
-                    time_varying=TRUE)
-
-  if (!is.null(formula)) {
-    node_list$formula <- formula
-  }
-
-  node_list <- append(node_list, args)
-  class(node_list) <- "DAG.node"
-
+  node_list <- create_node_list(name=name, type=type, parents=parents,
+                                formula=formula, root=FALSE,
+                                time_varying=TRUE, args=args)
   return(node_list)
 }
 
@@ -137,12 +117,65 @@ get_arg_from_call <- function(call, envir, name, position) {
   return(argument)
 }
 
+## given parameters, create a node list
+create_node_list <- function(name, type, parents, formula, time_varying,
+                             root, args) {
+
+  name <- unique(name)
+  if (length(name) > 1) {
+
+    node_list <- vector(mode="list", length=length(name))
+    for (i in seq_len(length(name))) {
+      node_list[[i]] <- create_DAG.node(name=name[i], type=type,
+                                        parents=parents, formula=formula,
+                                        time_varying=time_varying,
+                                        root=root, args=args)
+    }
+    class(node_list) <- "DAG.node"
+
+  } else {
+    node_list <- create_DAG.node(name=name, type=type,
+                                 parents=parents, formula=formula,
+                                 time_varying=time_varying,
+                                 root=root, args=args)
+  }
+
+  return(node_list)
+}
+
+## given parameters, create a single DAG.node object
+create_DAG.node <- function(name, type, parents, formula, time_varying,
+                            root, args) {
+
+  node_list <- list(name=name,
+                    type=type,
+                    parents=parents,
+                    time_varying=time_varying)
+
+  if (!is.null(formula)) {
+    node_list$formula <- formula
+  }
+
+  if (root) {
+    node_list$params <- args
+  } else {
+    node_list <- append(node_list, args)
+  }
+
+  class(node_list) <- "DAG.node"
+
+  return(node_list)
+}
+
 ## S3 print method for DAG.node objects
 #' @export
 print.DAG.node <- function(x, ...) {
 
+  # list of DAG.nodes
+  if (!is.character(x[[1]])) {
+    cat("A list of DAG.node objects.")
   # root nodes
-  if (length(x$parents) == 0 || all(x$parents=="")) {
+  } else if (length(x$parents) == 0 || all(x$parents=="")) {
     cat("A DAG.node object specifying a single root node with:\n")
     cat("  - name: '", x$name, "'\n", sep="")
     cat("  - type: '", x$type, "'\n", sep="")
@@ -182,7 +215,7 @@ print.DAG.node <- function(x, ...) {
       }
     }
   }
-  if (x$time_varying) {
+  if (is.character(x[[1]]) && x$time_varying) {
     cat("This node may change over time.\n")
   }
 }

@@ -13,6 +13,25 @@ test_that("root: all positional, no additional", {
   expect_equal(out, expected)
 })
 
+test_that("root: multiple names, all positional, no additional", {
+  expected <- list(list(name="C",
+                   type="rbernoulli",
+                   parents=NULL,
+                   time_varying=FALSE,
+                   params=list()),
+                   list(name="D",
+                        type="rbernoulli",
+                        parents=NULL,
+                        time_varying=FALSE,
+                        params=list()))
+  class(expected[[1]]) <- "DAG.node"
+  class(expected[[2]]) <- "DAG.node"
+  class(expected) <- "DAG.node"
+
+  out <- node(c("C", "D"), "rbernoulli", NULL)
+  expect_equal(out, expected)
+})
+
 test_that("root: all positional, with additional", {
   expected <- list(name="C",
                    type="rbernoulli",
@@ -108,6 +127,30 @@ test_that("child: all positional", {
 
   out <- node("C", "binomial", c("A", "B"), betas=c(1, 2), intercept=-10,
               p=0.1)
+  expect_equal(out, expected)
+})
+
+test_that("child: multiple, all positional", {
+  expected <- list(list(name="C",
+                        type="binomial",
+                        parents=c("A", "B"),
+                        time_varying=FALSE,
+                        betas=c(1, 2),
+                        intercept=-10,
+                        p=0.1),
+                   list(name="D",
+                        type="binomial",
+                        parents=c("A", "B"),
+                        time_varying=FALSE,
+                        betas=c(1, 2),
+                        intercept=-10,
+                        p=0.1))
+  class(expected[[1]]) <- "DAG.node"
+  class(expected[[2]]) <- "DAG.node"
+  class(expected) <- "DAG.node"
+
+  out <- node(c("C", "D"), "binomial", c("A", "B"), betas=c(1, 2),
+              intercept=-10, p=0.1)
   expect_equal(out, expected)
 })
 
@@ -220,6 +263,32 @@ test_that("time-varying: all positional", {
   class(expected) <- "DAG.node"
 
   out <- node_td("C", "binomial", c("A", "B"), ~ A + B,
+                 betas=c(1, 2), intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
+test_that("time-varying: multiple, all positional", {
+  expected <- list(list(name="C",
+                        type="binomial",
+                        parents=c("A", "B"),
+                        time_varying=TRUE,
+                        formula= ~ A + B,
+                        betas=c(1, 2),
+                        intercept=-10,
+                        p=0.1),
+                   list(name="D",
+                        type="binomial",
+                        parents=c("A", "B"),
+                        time_varying=TRUE,
+                        formula= ~ A + B,
+                        betas=c(1, 2),
+                        intercept=-10,
+                        p=0.1))
+  class(expected[[1]]) <- "DAG.node"
+  class(expected[[2]]) <- "DAG.node"
+  class(expected) <- "DAG.node"
+
+  out <- node_td(c("C", "D"), "binomial", c("A", "B"), ~ A + B,
                  betas=c(1, 2), intercept=-10, p=0.1)
   expect_equal(out, expected, ignore_formula_env=TRUE)
 })

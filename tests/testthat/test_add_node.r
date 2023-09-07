@@ -22,3 +22,12 @@ test_that("not a DAG", {
 test_that("error when node name already in DAG", {
   expect_error(empty_dag() + node("A", "rnorm") + node("A", "rbernoulli"))
 })
+
+test_that("works with multiple names", {
+  dag1 <- empty_dag() + node(c("A", "B", "C"), type="rbernoulli")
+  dag2 <- node(c("A", "B", "C"), type="rbernoulli") + empty_dag()
+
+  expect_equal(dag1, dag2)
+  expect_equal(names_DAG(dag1), c("A", "B", "C"))
+  expect_equal(names_DAG(dag2), c("A", "B", "C"))
+})

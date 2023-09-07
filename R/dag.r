@@ -46,10 +46,22 @@ add_node <- function(dag, node) {
 #' @export
 `+.DAG` <- function(object_1, object_2) {
 
-  if (inherits(object_1, "DAG") & inherits(object_2, "DAG.node")) {
+  if (inherits(object_1, "DAG") & inherits(object_2, "DAG.node") &
+      is.character(object_2[[1]])) {
     out <- add_node(dag=object_1, node=object_2)
-  } else if (inherits(object_1, "DAG.node") & inherits(object_2, "DAG")) {
+  } else if (inherits(object_1, "DAG") & inherits(object_2, "DAG.node")) {
+    out <- object_1
+    for (i in seq_len(length(object_2))) {
+      out <- add_node(dag=out, node=object_2[[i]])
+    }
+  } else if (inherits(object_1, "DAG.node") & inherits(object_2, "DAG") &
+             is.character(object_1[[1]])) {
     out <- add_node(dag=object_2, node=object_1)
+  } else if (inherits(object_1, "DAG.node") & inherits(object_2, "DAG")) {
+    out <- object_2
+    for (i in seq_len(length(object_2))) {
+      out <- add_node(dag=out, node=object_1[[i]])
+    }
   } else {
     stop("Only output created using the node() or node_td() function can",
          " be added to a DAG object.")

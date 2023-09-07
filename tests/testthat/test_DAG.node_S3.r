@@ -1,4 +1,9 @@
 
+test_that("S3 print list of nodes", {
+  test_node <- node(c("A", "B"), type="rbernoulli")
+  expect_snapshot_output(print(test_node))
+})
+
 test_that("S3 print root node, no params", {
   test_node <- node("A", type="rbernoulli")
   expect_snapshot_output(print(test_node))

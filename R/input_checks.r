@@ -6,7 +6,7 @@ is_formula <- function(x) {
 
 # check whether a node name is appropriate
 is_node_name <- function(name) {
-  length(name)==1 && is.character(name)
+  length(name) >= 1 && is.character(name)
 }
 
 # check whether a node type is appropriate
@@ -40,7 +40,7 @@ is_intercept <- function(intercept) {
 check_inputs_root_node <- function(name, type) {
 
   if (!is_node_name(name)) {
-    stop("The 'name' attribute must be a single character string.")
+    stop("The 'name' attribute must be character vector of length >= 1.")
   } else if (!is_node_dist(type)) {
     stop("The 'type' parameter of a root node must be a single",
          " character string naming a defined function.")
@@ -52,7 +52,7 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying,
                                     formula) {
 
   if (!is_node_name(name)) {
-    stop("The 'name' attribute must be a single character string.")
+    stop("The 'name' attribute must be character vector of length >= 1.")
   } else if (!is_node_type(type)) {
     stop("The 'type' parameter of a child node must be a single",
          " character string pointing to a function starting with 'node_'.")

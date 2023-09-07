@@ -15,7 +15,7 @@ node_td(name, type, parents=NULL, formula=NULL, ...)
 }
 \arguments{
   \item{name}{
-A single character string specifying the name of the node.
+A character vector with at least one entry specifying the name of the node. If a character vector containing multiple different names is supplied, one separate node will be created for each name. These nodes are completely independent, but have the exact same node definition as supplied by the user. If only a single character string is provided, only one node is generated.
   }
   \item{type}{
 A single character string specifying the type of the node. Depending on whether the node is a root node, a child node or a time-dependent node different node types are allowed. See details.
@@ -119,6 +119,11 @@ dag <- empty_dag() +
 dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5) +
   node("income", type="rnorm", mean=2700, sd=500)
+
+# creating a DAG with multiple root nodes + multiple names in one node
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node(c("income_1", "income_2"), type="rnorm", mean=2700, sd=500)
 
 # also using child nodes
 dag <- empty_dag() +
