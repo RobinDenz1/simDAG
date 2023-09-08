@@ -624,3 +624,26 @@ check_inputs_node_competing_events <- function(data, parents, sim_time, name,
     }
   }
 }
+
+## check inputs for the sim_n_datasets() function
+check_inputs_sim_n_datasets <- function(dag, n_repeats, n_cores,
+                                        data_format, data_format_args,
+                                        progressbar) {
+
+  if (!inherits(dag, "DAG")) {
+    stop("'dag' must be a DAG object created using the empty_dag()",
+         " and node() or node_td() functions.")
+  } else if (!(length(n_repeats)==1 && is.numeric(n_repeats) &&
+               n_repeats >= 1)) {
+    stop("'n_repeats' must a single positive number.")
+  } else if (!(length(n_cores)==1 && is.numeric(n_cores) &&
+               n_cores >= 1)) {
+    stop("'n_cores' must be a single positive number.")
+  } else if (!(length(data_format)==1 && is.character(data_format))) {
+    stop("'data_format' must be a single character string.")
+  } else if (!is.list(data_format_args)) {
+    stop("'data_format_args' must be a list.")
+  } else if (!(length(progressbar)==1 && is.logical(progressbar))) {
+    stop("'progressbar' must be either TRUE or FALSE.")
+  }
+}

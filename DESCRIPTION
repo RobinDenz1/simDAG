@@ -30,7 +30,11 @@ Suggests:
     igraph,
     ggforce,
     MASS,
-    covr
+    covr,
+	foreach,
+	doSNOW,
+	doRNG,
+	parallel
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
