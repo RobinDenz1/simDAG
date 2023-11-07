@@ -26,13 +26,13 @@ sim2long.all <- function(sim) {
   setkey(data, .id, .time)
 
   # remove leftover columns
-  tte_names_full <- paste0(tte_names, "_time")
-  if (length(tte_names_full) > 0) {
+  if (length(tte_names) > 0) {
+    tte_names_full <- paste0(tte_names, "_time")
     data <- data[, !tte_names_full, with=FALSE]
-  }
 
-  # clean others
-  colnames(data)[colnames(data) %in% paste0(tte_names, "_event")] <- tte_names
+    # clean others
+    colnames(data)[colnames(data) %in% paste0(tte_names, "_event")] <- tte_names
+  }
 
   # reorder columns
   first_cols <- c(".id", ".time")
