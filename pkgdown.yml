@@ -5,7 +5,7 @@ articles:
   v_covid_example: v_covid_example.html
   v_sim_discrete_time: v_sim_discrete_time.html
   v_sim_from_dag: v_sim_from_dag.html
-last_built: 2023-11-07T14:05Z
+last_built: 2023-11-07T14:13Z
 urls:
   reference: https://robindenz1.github.io/simDAG/reference
   article: https://robindenz1.github.io/simDAG/articles
