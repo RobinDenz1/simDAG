@@ -27,7 +27,9 @@ sim2long.all <- function(sim) {
 
   # remove leftover columns
   tte_names_full <- paste0(tte_names, "_time")
-  data <- data[, !tte_names_full, with=FALSE]
+  if (length(tte_names_full) > 0) {
+    data <- data[, !tte_names_full, with=FALSE]
+  }
 
   # clean others
   colnames(data)[colnames(data) %in% paste0(tte_names, "_event")] <- tte_names
