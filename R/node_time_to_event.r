@@ -47,8 +47,7 @@ node_time_to_event <- function(data, parents, sim_time, name,
   event_prob <- fifelse(is.na(data[[name_time]]), event_prob,
                         fifelse(data[[name_event]] &
                                 days_since_event < event_duration, 1,
-                        fifelse(data[[name_event]] &
-                                days_since_event < immunity_duration, 0,
+                        fifelse(days_since_event < immunity_duration, 0,
                                 event_prob)))
 
   # draw new events based on this probability
