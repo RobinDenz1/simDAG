@@ -65,7 +65,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>dag</dt>
-<dd><p>A <code>DAG</code> object created using the <code><a href="empty_dag.html">empty_dag</a></code> function with nodes added to it using the <code>+</code> syntax. See <code><a href="empty_dag.html">?empty_dag</a></code> or <code><a href="node.html">?node</a></code> for more details. Currently does not support DAGs with time-dependent nodes added using the <code><a href="node.html">node_td</a></code> function.</p></dd>
+<dd><p>A <code>DAG</code> object created using the <code><a href="empty_dag.html">empty_dag</a></code> function with nodes added to it using the <code>+</code> syntax. See <code><a href="empty_dag.html">?empty_dag</a></code> or <code><a href="node.html">?node</a></code> for more details. Supports DAGs with time-dependent nodes added using the <code><a href="node.html">node_td</a></code> function. However, including such DAGs may result in cyclic causal structures, because time is not represented in the output matrix.</p></dd>
 
   <dt>include_root_nodes</dt>
 <dd><p>Whether to include root nodes in the output matrix. Should usually be kept at <code>TRUE</code> (default).</p></dd>
@@ -109,6 +109,37 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># get adjacency matrix</span></span></span>
 <span class="r-in"><span><span class="fu">dag2matrix</span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         age sex death smoking</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> age       0   0     1       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sex       0   0     1       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> death     0   0     0       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> smoking   0   0     0       0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get adjacency matrix using only the child nodes</span></span></span>
+<span class="r-in"><span><span class="fu">dag2matrix</span><span class="op">(</span><span class="va">dag</span>, include_root_nodes<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         death smoking</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> death       0       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> smoking     0       0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## adding time-varying nodes</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"disease"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"smoking"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          prob_fun<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"smoking"</span>,</span></span>
+<span class="r-in"><span>                                                   <span class="st">"disease"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          prob_fun<span class="op">=</span><span class="fl">0.001</span>, event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get adjacency matrix including all nodes</span></span></span>
+<span class="r-in"><span><span class="fu">dag2matrix</span><span class="op">(</span><span class="va">dag</span>, include_td_nodes<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         age sex death smoking disease</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> age       0   0     1       1       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sex       0   0     1       1       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> death     0   0     0       0       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> smoking   0   0     1       0       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> disease   0   0     1       0       0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get adjacency matrix including only time-constant nodes</span></span></span>
+<span class="r-in"><span><span class="fu">dag2matrix</span><span class="op">(</span><span class="va">dag</span>, include_td_nodes<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         age sex death smoking</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> age       0   0     1       1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sex       0   0     1       1</span>
