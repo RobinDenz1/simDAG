@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -213,7 +213,9 @@ particular real-life data set. To do this we decided to simulate data
 that is as close to the real data as possible. Using this data we could
 then try out different analysis strategies and see which one performed
 adequately. The goal for this vignette is to use parts of this model to
-showcase the capabilities of the <code>simDAG</code> package.</p>
+showcase the capabilities of the <code>simDAG</code> package. More
+information on the actual simulation can be found in the first related
+publication (Denz et al. 2023).</p>
 </div>
 <div class="section level3">
 <h3 id="theoretical-model">Theoretical model<a class="anchor" aria-label="anchor" href="#theoretical-model"></a>
@@ -331,12 +333,13 @@ as <code>parents</code> now, because they are used in the
 <div class="section level3">
 <h3 id="part-3-making-the-vaccine-useful">Part 3: Making the vaccine useful<a class="anchor" aria-label="anchor" href="#part-3-making-the-vaccine-useful"></a>
 </h3>
-<p>So far we assumed that it makes no difference whether the person
-received the vaccine or not. We will now change this by implementing a
-time-window after receiving the vaccine in which the person cannot
-develop a <code>covid</code> infection. Again, this can be done by
-defining an appropriate <code>prob_fun</code> function, this time for
-the <code>covid</code> node:</p>
+<p>So far we assumed that the <code>covid</code> infection probability
+is unaffected by whether the person received the vaccine or not. We will
+now change this by implementing a time-window after receiving the
+vaccine in which the person cannot develop a <code>covid</code>
+infection. Again, this can be done by defining an appropriate
+<code>prob_fun</code> function, this time for the <code>covid</code>
+node:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_covid</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">base_p</span>, <span class="va">vacc_duration</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
@@ -374,9 +377,9 @@ better now. But there is still a lot we can do.</p>
 </h3>
 <p>In reality, very little people who were currently experiencing a
 Covid-19 infection went and got the vaccine. In fact, this is absolutely
-discouraged by doctors world-wide. To add this circumstance to the mode,
-we once again simply have to update the probability of receiving a
-vaccination, by defining an appropriate <code>prob_fun</code>:</p>
+discouraged by doctors world-wide. To add this circumstance to the
+model, we once again simply have to update the probability of receiving
+a vaccination, by defining an appropriate <code>prob_fun</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_vaccination</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">base_p</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
@@ -411,14 +414,14 @@ the correct <code>parents</code> to the appropriate node. Our final
 <span><span class="co">#&gt; Loading required namespace: igraph</span></span></code></pre></div>
 <p><img src="v_covid_example_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>Note that in this plot it doesn’t look like a classic DAG anymore,
-because it has an bi-directional arrow between <code>covid</code> and
+because it has a bi-directional arrow between <code>covid</code> and
 <code>vaccination</code> due to the time-dependent nature of their
 relationship.</p>
 </div>
 <div class="section level3">
 <h3 id="generating-data-using-the-final-model">Generating Data using the final model<a class="anchor" aria-label="anchor" href="#generating-data-using-the-final-model"></a>
 </h3>
-<p>We are now pleased with the complexity of our data-generation
+<p>Suppose we are now pleased with the complexity of our data-generation
 algorithm and want to simulate data from it. We can do this by simply
 calling the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function on the specified
 DAG:</p>
@@ -440,14 +443,29 @@ we simulated:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span>, box_text_size<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="v_covid_example_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p>A more useful output of the resulting data can be obtained using the
+<code><a href="../reference/sim2data.html">sim2data()</a></code> function. For example, we could transform the
+output to the start-stop format:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"start_stop"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         .id start  stop vaccination  covid sickness</span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;int&gt; &lt;num&gt;      &lt;lgcl&gt; &lt;lgcl&gt;   &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt;    1:     1     1   178       FALSE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt;    2:     1   179   199        TRUE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt;    3:     1   200   800       FALSE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt;    4:     2     1   501       FALSE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt;    5:     2   502   531       FALSE   TRUE    FALSE</span></span>
+<span><span class="co">#&gt;   ---                                              </span></span>
+<span><span class="co">#&gt; 3466:  1000     1    47       FALSE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 3467:  1000    48    49       FALSE  FALSE     TRUE</span></span>
+<span><span class="co">#&gt; 3468:  1000    50   131       FALSE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 3469:  1000   132   152        TRUE  FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 3470:  1000   153   800       FALSE  FALSE    FALSE</span></span></code></pre></div>
 <p>As can be seen, we managed to implement a fairly complex
 data-generation mechanism using only a few small function definitions
 and a few lines of code, allowing us to generate a complex dataset with
-three interdependent time-varying variables with only minimal effort. By
-utilizing the <code><a href="../reference/sim2data.html">sim2data()</a></code> function, we could directly
-transform the <code>sim</code> object into a dataset in the start-stop
-format to run some statistical models on it (such as a cox-regression
-model).</p>
+three interdependent time-varying variables with only minimal
+effort.</p>
 </div>
 <div class="section level3">
 <h3 id="going-even-further">Going even further<a class="anchor" aria-label="anchor" href="#going-even-further"></a>
@@ -486,6 +504,11 @@ need.</p>
 <p>Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol
 (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate:
 Pearson Education Limited.</p>
+<p>Denz, Robin, Katharina Meiszl, Peter Ihle, Doris F. Oberle, Ursula
+Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer and Nina Timmesfeld (2023).
+“Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses
+using German Health-Care Data: A Simulation Study”. In:
+arXiv:2310.15016</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

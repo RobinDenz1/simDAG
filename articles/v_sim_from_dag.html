@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -294,7 +294,7 @@ look very similar to the hand-drawn DAG above.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required namespace: ggforce</span></span>
 <span><span class="co">#&gt; Loading required namespace: igraph</span></span></code></pre></div>
-<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>This is all correct. We can now use this <code>DAG</code> object to
 generate random data using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -320,7 +320,7 @@ relationships in this dataset to confirm that it indeed corresponds to
 our specified causal DAG. Starting with the root nodes:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>

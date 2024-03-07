@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -205,7 +205,7 @@ generate data according to the following causal DAG:</p>
 A small DAG with time-varying age
 </p>
 </div>
-<p>Here, <code>sex</code> is a time-invariant variables, whereas
+<p>Here, <code>sex</code> is a time-invariant variable, whereas
 <code>age</code> and <code>death</code> are not. Suppose that each tick
 of the simulation corresponds to a duration of one year. Then,
 naturally, people will age one year on every simulation tick. We assume
@@ -228,7 +228,7 @@ first specifying the <code>t0_root_nodes</code> as follows:</p>
 have equal numbers of each <code>sex</code>. This information is enough
 to specify the data set at <span class="math inline">\(t = 0\)</span>.
 Now we only need to add additional time-dependent nodes using the
-<code><a href="../reference/node.html">node_td()</a></code> function and were ready. First, we define a
+<code><a href="../reference/node.html">node_td()</a></code> function and we are ready. First, we define a
 function that increases the age of all individuals by 1 at each
 step:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -308,9 +308,9 @@ little bit, but we will still keep it relatively simple.</p>
 <p>Suppose that the event of interest wasn’t <code>death</code>, but a
 cardiovascular event (<code>cve</code>). For the case of simplicity we
 will assume that the same causal structure and causal coefficients from
-above still apply, but that the event is now no longer terminal and my
-reoccur arbitrary number of times. First, let’s redefine the nodes to
-get the new name right:</p>
+above still apply, but that the event is now no longer terminal and may
+re-occur an arbitrary number of times. First, let’s redefine the nodes
+to get the new name right:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">30</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
