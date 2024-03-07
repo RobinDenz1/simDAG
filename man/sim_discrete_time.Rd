@@ -109,7 +109,7 @@ Returns a \code{simDT} object, containing some general information about the sim
   \item{\code{t0_var_names}: A character vector containing the names of all variable names that do not vary over time.}
 }
 
-To obtain a single dataset from this function that can be processed futher, please use the \code{\link{sim2data}} function.
+To obtain a single dataset from this function that can be processed further, please use the \code{\link{sim2data}} function.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim2data}}, \code{\link{plot.simDT}}

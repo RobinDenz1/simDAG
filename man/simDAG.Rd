@@ -28,7 +28,7 @@ If you want to simulate data that is easily described using a standard DAG witho
 
 \strong{\emph{What features are missing from this package?}}
 
-The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalised mixed linear models or more complex survival time models.
+The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalized mixed linear models or more complex survival time models.
 
 \strong{\emph{Why should I use this package instead of the \pkg{simCausal} package?}}
 

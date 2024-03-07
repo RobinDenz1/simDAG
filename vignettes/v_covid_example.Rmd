@@ -62,7 +62,7 @@ Since this vignette is mostly concerned with the practical implementation of the
 
 ## Research goal
 
-Our actual research goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately. The goal for this vignette is to use parts of this model to showcase the capabilities of the `simDAG` package.
+Our actual research goal was to identify a suitable data analysis strategy for the assessment of Covid-19 vaccine side-effects for a particular real-life data set. To do this we decided to simulate data that is as close to the real data as possible. Using this data we could then try out different analysis strategies and see which one performed adequately. The goal for this vignette is to use parts of this model to showcase the capabilities of the `simDAG` package. More information on the actual simulation can be found in the first related publication (Denz et al. 2023).
 
 ## Theoretical model
 
@@ -132,7 +132,7 @@ Instead of passing a constant value to the `prob_fun` argument, we are now passi
 
 ## Part 3: Making the vaccine useful
 
-So far we assumed that it makes no difference whether the person received the vaccine or not. We will now change this by implementing a time-window after receiving the vaccine in which the person cannot develop a `covid` infection. Again, this can be done by defining an appropriate `prob_fun` function, this time for the `covid` node:
+So far we assumed that the `covid` infection probability is unaffected by whether the person received the vaccine or not. We will now change this by implementing a time-window after receiving the vaccine in which the person cannot develop a `covid` infection. Again, this can be done by defining an appropriate `prob_fun` function, this time for the `covid` node:
 
 ```{r}
 prob_covid <- function(data, base_p, vacc_duration) {
@@ -164,7 +164,7 @@ Instead of just updating the `parents` and `prob_fun` arguments of the `covid` n
 
 ## Part 4: Sick people don't get vaccinated
 
-In reality, very little people who were currently experiencing a Covid-19 infection went and got the vaccine. In fact, this is absolutely discouraged by doctors world-wide. To add this circumstance to the mode, we once again simply have to update the probability of receiving a vaccination, by defining an appropriate `prob_fun`:
+In reality, very little people who were currently experiencing a Covid-19 infection went and got the vaccine. In fact, this is absolutely discouraged by doctors world-wide. To add this circumstance to the model, we once again simply have to update the probability of receiving a vaccination, by defining an appropriate `prob_fun`:
 
 ```{r}
 prob_vaccination <- function(data, base_p) {
@@ -200,11 +200,11 @@ Again we simply changed the `prob_fun` argument and added the correct `parents` 
 plot(dag, mark_td_nodes=FALSE)
 ```
 
-Note that in this plot it doesn't look like a classic DAG anymore, because it has an bi-directional arrow between `covid` and `vaccination` due to the time-dependent nature of their relationship.
+Note that in this plot it doesn't look like a classic DAG anymore, because it has a bi-directional arrow between `covid` and `vaccination` due to the time-dependent nature of their relationship.
 
 ## Generating Data using the final model
 
-We are now pleased with the complexity of our data-generation algorithm and want to simulate data from it. We can do this by simply calling the `sim_discrete_time()` function on the specified DAG:
+Suppose we are now pleased with the complexity of our data-generation algorithm and want to simulate data from it. We can do this by simply calling the `sim_discrete_time()` function on the specified DAG:
 
 ```{r}
 set.seed(42)
@@ -218,7 +218,13 @@ For exemplary purposes, we kind of arbitrarily used 1000 individuals and let the
 plot(sim, box_text_size=4)
 ```
 
-As can be seen, we managed to implement a fairly complex data-generation mechanism using only a few small function definitions and a few lines of code, allowing us to generate a complex dataset with three interdependent time-varying variables with only minimal effort. By utilizing the `sim2data()` function, we could directly transform the `sim` object into a dataset in the start-stop format to run some statistical models on it (such as a cox-regression model).
+A more useful output of the resulting data can be obtained using the `sim2data()` function. For example, we could transform the output to the start-stop format:
+
+```{r}
+sim2data(sim, to="start_stop")
+```
+
+As can be seen, we managed to implement a fairly complex data-generation mechanism using only a few small function definitions and a few lines of code, allowing us to generate a complex dataset with three interdependent time-varying variables with only minimal effort.
 
 ## Going even further
 
@@ -235,3 +241,5 @@ There are of course many more possible extensions, all of which can be implement
 # References
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
+
+Denz, Robin, Katharina Meiszl, Peter Ihle, Doris F. Oberle, Ursula Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer and Nina Timmesfeld (2023). "Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses using German Health-Care Data: A Simulation Study". In: arXiv:2310.15016

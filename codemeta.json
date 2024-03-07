@@ -8,13 +8,19 @@
   "codeRepository": "https://github.com/RobinDenz1/simDAG",
   "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
   "runtimePlatform": "R version 4.2.1 (2022-06-23 ucrt)",
+  "provider": {
+    "@id": "https://cran.r-project.org",
+    "@type": "Organization",
+    "name": "Comprehensive R Archive Network (CRAN)",
+    "url": "https://cran.r-project.org"
+  },
   "author": [
     {
       "@type": "Person",
@@ -147,6 +153,47 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=covr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "foreach",
+      "name": "foreach",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=foreach"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "doSNOW",
+      "name": "doSNOW",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=doSNOW"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "doRNG",
+      "name": "doRNG",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=doRNG"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "parallel",
+      "name": "parallel"
     }
   ],
   "softwareRequirements": {
@@ -200,7 +247,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "924.187KB",
+  "fileSize": "943.984KB",
   "citation": [
     {
       "@type": "CreativeWork",

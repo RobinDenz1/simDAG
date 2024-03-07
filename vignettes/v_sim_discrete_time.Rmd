@@ -54,7 +54,7 @@ Let us consider a very simple example first. Suppose we want to generate data ac
 knitr::include_graphics("./images_v_sim_discrete_time/simple_dag.png")
 ```
 
-Here, `sex` is a time-invariant variables, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
+Here, `sex` is a time-invariant variable, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
 
 If we want to use this structure in the `sim_discrete_time()` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
 
@@ -68,7 +68,7 @@ dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5)
 ```
 
-We assume that `age` is normally distributed and that we have equal numbers of each `sex`. This information is enough to specify the data set at $t = 0$. Now we only need to add additional time-dependent nodes using the `node_td()` function and were ready. First, we define a function that increases the age of all individuals by 1 at each step:
+We assume that `age` is normally distributed and that we have equal numbers of each `sex`. This information is enough to specify the data set at $t = 0$. Now we only need to add additional time-dependent nodes using the `node_td()` function and we are ready. First, we define a function that increases the age of all individuals by 1 at each step:
 
 ```{r}
 node_advance_age <- function(data) {
@@ -130,7 +130,7 @@ This particular example could be simulated in a much easier fashion, without rel
 
 # Extending the Simple Example - Recurrent Events
 
-Suppose that the event of interest wasn't `death`, but a cardiovascular event (`cve`). For the case of simplicity we will assume that the same causal structure and causal coefficients from above still apply, but that the event is now no longer terminal and my reoccur arbitrary number of times. First, let's redefine the nodes to get the new name right:
+Suppose that the event of interest wasn't `death`, but a cardiovascular event (`cve`). For the case of simplicity we will assume that the same causal structure and causal coefficients from above still apply, but that the event is now no longer terminal and may re-occur an arbitrary number of times. First, let's redefine the nodes to get the new name right:
 
 ```{r}
 dag <- empty_dag() +
