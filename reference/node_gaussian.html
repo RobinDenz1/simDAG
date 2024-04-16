@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
@@ -86,6 +86,12 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Using the general linear regression equation, the observation-specific value that would be expected given the model is generated for every observation in the dataset generated thus far. We could stop here, but this would create a perfect fit for the node, which is unrealistic. Instead, we add an error term by taking one sample of a normal distribution for each observation with mean zero and standard deviation <code>error</code>. This error term is then added to the predicted mean.</p>
+<p><strong><em>Formal Description</em></strong>:</p>
+<p>Formally, the data generation can be described as:</p>
+<p>$$Y \sim \code{intercept} + \code{parents}_1 \cdot \code{betas}_1 + ... + \code{parents}_n \cdot \code{betas}_n+ N(0, \code{error}),$$</p>
+<p>where \(N(0, \code{error})\) denotes the normal distribution with mean 0 and a standard deviation of <code>error</code> and \(n\) is the number of parents (<code>length(parents)</code>).</p>
+<p>For example, given <code>intercept=-15</code>, <code>parents=c("A", "B")</code>, <code>betas=c(0.2, 1.3)</code> and <code>error=2</code> the data generation process is defined as:</p>
+<p>$$Y \sim -15 + A \cdot 0.2 + B \cdot 1.3 + N(0, 2).$$</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -126,7 +132,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
     </footer></div>
