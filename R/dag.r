@@ -26,7 +26,7 @@ add_node <- function(dag, node) {
   dag_names <- names_DAG(dag)
 
   if (node$name %in% dag_names & !node$time_varying) {
-    stop("A node with the name ", node$name, " is alread present in the",
+    stop("A node with the name ", node$name, " is already present in the",
          " DAG object and will not be overwritten.")
   }
 
@@ -63,7 +63,7 @@ add_node <- function(dag, node) {
       out <- add_node(dag=out, node=object_1[[i]])
     }
   } else {
-    stop("Only output created using the node() or node_td() function can",
+    stop("Only output created using the node() or node_td() functions can",
          " be added to a DAG object.")
   }
   return(out)
@@ -95,15 +95,26 @@ summary.DAG <- function(object, ...) {
   print.DAG(x=object, ...)
 }
 
+# get names of nodes in a DAG at a given level (root, child, tx)
+names_DAG_level <- function(dag, level) {
+
+  if (level=="root") {
+    nodes <- dag$root_nodes
+  } else if (level=="child") {
+    nodes <- dag$child_nodes
+  } else if (level=="tx") {
+    nodes <- dag$tx_nodes
+  }
+  names <- vapply(nodes, FUN=function(x){x$name}, FUN.VALUE=character(1))
+  return(names)
+}
+
 ## extract all node names from DAG objects
 ## NOTE: not an S3 method because that makes it confusing for R-Studio users
-names_DAG <- function(x, include_tx_nodes=FALSE) {
-  root_names <- vapply(x$root_nodes, FUN=function(x){x$name},
-                       FUN.VALUE=character(1))
-  child_names <- vapply(x$child_nodes, FUN=function(x){x$name},
-                        FUN.VALUE=character(1))
-  tx_names <- vapply(x$tx_nodes, FUN=function(x){x$name},
-                     FUN.VALUE=character(1))
+names_DAG <- function(x, include_tx_nodes=FALSE, remove_duplicates=TRUE) {
+  root_names <- names_DAG_level(x, "root")
+  child_names <- names_DAG_level(x, "child")
+  tx_names <- names_DAG_level(x, "tx")
 
   if (include_tx_nodes) {
     out <- c(root_names, child_names, tx_names)
@@ -112,7 +123,9 @@ names_DAG <- function(x, include_tx_nodes=FALSE) {
   }
 
   # in case the node is defined in both fixed and varying
-  out <- out[!duplicated(out)]
+  if (remove_duplicates) {
+    out <- out[!duplicated(out)]
+  }
 
   return(out)
 }

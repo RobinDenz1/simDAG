@@ -32,6 +32,19 @@ A single number specifying the sigma error that should be used when generating t
 }
 \details{
 Using the general linear regression equation, the observation-specific value that would be expected given the model is generated for every observation in the dataset generated thus far. We could stop here, but this would create a perfect fit for the node, which is unrealistic. Instead, we add an error term by taking one sample of a normal distribution for each observation with mean zero and standard deviation \code{error}. This error term is then added to the predicted mean.
+
+\strong{\emph{Formal Description}}:
+
+Formally, the data generation can be described as:
+
+\deqn{Y \sim \code{intercept} + \code{parents}_1 \cdot \code{betas}_1 + ... + \code{parents}_n \cdot \code{betas}_n+ N(0, \code{error}),}
+
+where \eqn{N(0, \code{error})} denotes the normal distribution with mean 0 and a standard deviation of \code{error} and \eqn{n} is the number of parents (\code{length(parents)}).
+
+For example, given \code{intercept=-15}, \code{parents=c("A", "B")}, \code{betas=c(0.2, 1.3)} and \code{error=2} the data generation process is defined as:
+
+\deqn{Y \sim -15 + A \cdot 0.2 + B \cdot 1.3 + N(0, 2).}
+
 }
 \author{
 Robin Denz
