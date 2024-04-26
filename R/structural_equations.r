@@ -1,5 +1,7 @@
 
 ## given a function object, get its' name
+## NOTE: this "fails" if there are two functions that have exactly the same
+#        definition in the same environment
 extract_function_name <- function(fun) {
   env <- environment(fun)
 
@@ -59,38 +61,55 @@ str_eq_root <- function(node) {
 
 ## structural equation for binomial child node
 str_eq_binomial <- function(node) {
-  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
 
-  if (!is.null(node$return_prob) && node$return_prob) {
-    out <- paste0(node$name, " ~ logit(", node$intercept, " + ", beta_eq, ")")
+  if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ Bernoulli(logit())")
   } else {
-    out <- paste0(node$name, " ~ Bernoulli(logit(", node$intercept, " + ",
-                  beta_eq, "))")
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+
+    if (!is.null(node$return_prob) && node$return_prob) {
+      out <- paste0(node$name, " ~ logit(", node$intercept, " + ", beta_eq, ")")
+    } else {
+      out <- paste0(node$name, " ~ Bernoulli(logit(", node$intercept, " + ",
+                    beta_eq, "))")
+    }
   }
   return(out)
 }
 
 ## structural equation for gaussian child node
 str_eq_gaussian <- function(node) {
-  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-  out <- paste0(node$name, " ~ N(", node$intercept, " + ", beta_eq, ", ",
-                node$error, ")")
+  if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ N()")
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+    out <- paste0(node$name, " ~ N(", node$intercept, " + ", beta_eq, ", ",
+                  node$error, ")")
+  }
   return(out)
 }
 
 ## structural equation for poisson node
 str_eq_poisson <- function(node) {
-  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-  out <- paste0(node$name, " ~ Poisson(", node$intercept, " + ", beta_eq,
-                ")")
+  if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ Poisson()")
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+    out <- paste0(node$name, " ~ Poisson(", node$intercept, " + ", beta_eq,
+                  ")")
+  }
   return(out)
 }
 
 ## structural equation for negative binomial node
 str_eq_negative_binomial <- function(node) {
-  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-  out <- paste0(node$name, " ~ NegBinomial(", node$intercept, " + ", beta_eq,
-                " + log(", node$theta, "))")
+  if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ NegBinomial()")
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+    out <- paste0(node$name, " ~ NegBinomial(", node$intercept, " + ", beta_eq,
+                  " + log(", node$theta, "))")
+  }
   return(out)
 }
 
@@ -156,7 +175,8 @@ str_eq_conditional_distr <- function(node) {
   # default distribution
   if (!is.null(node$default_distr)) {
     args_i <- get_param_str(node$default_distr_args)
-    out[length(out)] <- paste0(node$name, "(other) ~ ", node$default_distr,
+    out[length(out)] <- paste0(node$name, "(other) ~ ",
+                               get_distr_default(node$default_distr),
                                "(", args_i, ")")
   } else {
     if (is.null(node$default_val)) {
@@ -195,8 +215,13 @@ str_eq_time_to_event <- function(node) {
                     prob_fun_args, "))")
     } else {
       parents <- paste0(paste0(node$parents, "(t)"), collapse=", ")
-      out <- paste0(node$name, "(t) ~ ", gen, "(", prob_fun_name, "(",
-                    prob_fun_args, ", ", parents, "))")
+      if (prob_fun_args=="") {
+        out <- paste0(node$name, "(t) ~ ", gen, "(", prob_fun_name, "(",
+                      parents, "))")
+      } else {
+        out <- paste0(node$name, "(t) ~ ", gen, "(", prob_fun_name, "(",
+                      prob_fun_args, ", ", parents, "))")
+      }
     }
 
   } else {
@@ -205,8 +230,27 @@ str_eq_time_to_event <- function(node) {
   return(out)
 }
 
+## structural equation for cox regression based nodes
 str_eq_cox <- function(node) {
+  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
 
+  if (node$surv_dist=="weibull") {
+    right <- paste0("(-(log(Unif(0, 1))/(", node$lambda, "*exp(",
+                    beta_eq, "))))^(1/", node$gamma, ")")
+  } else if (node$surv_dist=="exponential") {
+    right <- paste0("-(log(Unif(0, 1))/(", node$lambda, "*exp(", beta_eq, ")))")
+  }
+
+  out_time <- paste0(node$name, "[T] ~ ", right)
+
+  if (!is.null(node$cens_dist)) {
+    out_cens <- paste0(node$name, "[C] ~ ", get_distr_default(node$cens_dist),
+                       "(", get_param_str(node$cens_args, use_names=TRUE), ")")
+  } else {
+    out_cens <- paste0(get_distr_default(node$name), "[C] ~ Inf")
+  }
+
+  return(c(out_time, out_cens))
 }
 
 ## structural equation for custom time-varying nodes
@@ -215,7 +259,11 @@ str_eq_td <- function(node) {
   args <- args[!args %in% c("name", "type", "parents", "time_varying")]
   args <- paste0(args, collapse=", ")
 
-  if (is.null(parents)) {
+  if ("sim_time" %in% names(formals(paste0("node_", node$type)))) {
+    args <- paste0("t, ", args)
+  }
+
+  if (is.null(node$parents)) {
     out <- paste0(node$name, "(t) ~ node_", node$type, "(", args, ")")
   } else {
     parents <- paste0(paste0(node$parents, "(t)"), collapse=", ")
@@ -236,6 +284,13 @@ str_eq_child <- function(node) {
   out <- paste0(node$name, " ~ node_", node$type, "(", parents, ", ",
                 args, ")")
   return(out)
+}
+
+## align structural equations on tilde for printing
+align_str_equations <- function(str_equations) {
+  tilde_pos <- unlist(gregexpr("~", str_equations))
+  spaces <- strrep(" ", max(tilde_pos) - tilde_pos)
+  return(paste0(spaces, str_equations))
 }
 
 ## get structural equation e.g. data generation mechanism from a node in
@@ -264,44 +319,3 @@ structural_equation <- function(node) {
   }
   return(out)
 }
-
-## align structural equations on tilde for printing
-align_str_equations <- function(str_equations) {
-  tilde_pos <- unlist(gregexpr("~", str_equations))
-  spaces <- strrep(" ", max(tilde_pos) - tilde_pos)
-  return(paste0(spaces, str_equations))
-}
-
-new_summary <- function(x) {
-
-  # setup output vector
-  names_dag <- names_DAG(x, remove_duplicates=FALSE, include_tx_nodes=TRUE)
-  str_len <- numeric()
-  str_equations <- character()
-
-  # loop over all node types and all nodes therein,
-  # obtaining the structural equations for each one
-  # NOTE: because some nodes have multiple equations, extra loop with k
-  for (i in seq_len(3)) {
-    for (j in seq_len(length(x[[i]]))) {
-      str_equations_i <- structural_equation(x[[i]][[j]])
-      str_len[length(str_len) + 1] <- length(str_equations_i)
-      for (k in seq_len(length(str_equations_i))) {
-        str_equations[length(str_equations) + 1] <- str_equations_i[k]
-      }
-    }
-  }
-  names(str_equations) <- rep(names_dag, times=str_len)
-  str_equations_print <- align_str_equations(str_equations)
-
-  cat("A DAG object using the following structural equations:\n\n")
-  cat(str_equations_print, sep="\n")
-
-  return(invisible(str_equations))
-}
-
-
-
-
-
-

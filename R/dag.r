@@ -78,7 +78,7 @@ print.DAG <- function(x, ...) {
   n_tx_nodes <- length(x$tx_nodes)
   n_total_nodes <- n_root_nodes + n_child_nodes + n_tx_nodes
 
-  if (n_total_nodes==0) {
+  if (is_empty_dag(x)) {
     cat("An empty DAG object without any nodes.\n")
   } else {
     cat("A DAG object with:\n")
@@ -92,7 +92,37 @@ print.DAG <- function(x, ...) {
 ## S3 summary method for DAG objects
 #' @export
 summary.DAG <- function(object, ...) {
-  print.DAG(x=object, ...)
+
+  if (is_empty_dag(object)) {
+    cat("An empty DAG object without any nodes.\n")
+    return(invisible(character(0)))
+  } else {
+    # setup output vector
+    names_dag <- names_DAG(object, remove_duplicates=FALSE,
+                           include_tx_nodes=TRUE)
+    str_len <- numeric()
+    str_equations <- character()
+
+    # loop over all node types and all nodes therein,
+    # obtaining the structural equations for each one
+    # NOTE: because some nodes have multiple equations, extra loop with k
+    for (i in seq_len(3)) {
+      for (j in seq_len(length(object[[i]]))) {
+        str_equations_i <- structural_equation(object[[i]][[j]])
+        str_len[length(str_len) + 1] <- length(str_equations_i)
+        for (k in seq_len(length(str_equations_i))) {
+          str_equations[length(str_equations) + 1] <- str_equations_i[k]
+        }
+      }
+    }
+    names(str_equations) <- rep(names_dag, times=str_len)
+    str_equations_print <- align_str_equations(str_equations)
+
+    cat("A DAG object using the following structural equations:\n\n")
+    cat(str_equations_print, sep="\n")
+
+    return(invisible(str_equations))
+  }
 }
 
 # get names of nodes in a DAG at a given level (root, child, tx)
@@ -133,4 +163,9 @@ names_DAG <- function(x, include_tx_nodes=FALSE, remove_duplicates=TRUE) {
 ## check if DAG object contains time-varying nodes
 is_time_varying_dag <- function(dag) {
   length(dag$tx_nodes)!=0
+}
+
+## check if DAG object is empty
+is_empty_dag <- function(dag) {
+  (length(dag$root_nodes) + length(dag$child_nodes) + length(dag$tx_nodes))==0
 }

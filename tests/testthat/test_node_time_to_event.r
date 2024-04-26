@@ -12,7 +12,7 @@ dt <- dt %>%
     sickness_time = NA_integer_,
     sickness_past_event_times = NA_integer_)
 
-prob_sick <- function(data, sim_time, rr_smoke0, rr_smoke1) {
+prob_sick <- function(data, sim_time, rr_smoke0, rr_smoke1=5) {
   # smoking-dependent risk
   risk <- fifelse(data$smoking == 1, rr_smoke0, rr_smoke1)
 
@@ -45,7 +45,6 @@ test_that("correct nrow, ncol", {
                             name="sickness",
                             prob_fun=prob_sick,
                             rr_smoke0=1,
-                            rr_smoke1=5,
                             event_duration=1,
                             immunity_duration=100,
                             save_past_events=FALSE,

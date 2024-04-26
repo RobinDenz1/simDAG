@@ -21,3 +21,13 @@ Documentation
 
 * Minor changes to documentation pages
 * Minor changes to vignettes
+
+# simDAG 0.1.2
+
+Enhancements
+
+* Print underlying structural equations in `summary.DAG()` and `summary.DAG.node()`
+
+Bug Fixes
+
+* Fixed a small bug in input checks of the `node_time_to_event()` function, which printed an error when not all arguments to `prob_fun` were supplied, even when these arguments had default values

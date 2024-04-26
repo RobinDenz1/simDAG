@@ -112,6 +112,12 @@ To check whether we got the causal relationships right, we can call the `plot()`
 plot(dag)
 ```
 
+We can also directly print the underlying structural equations using the `summary()` function:
+
+```{r}
+summary(dag)
+```
+
 This is all correct. We can now use this `DAG` object to generate random data using the `sim_from_dag()` function:
 
 ```{r}

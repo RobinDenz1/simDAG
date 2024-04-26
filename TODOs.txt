@@ -15,9 +15,6 @@ print.DAG.node:
 
 - create as.data.table(), as.data.frame() methods for simDT objects that just call
   sim2data() internally, to make more S3 methods available
-- change S3 summary methods DAG objects
-	- should do similar things as print() but with more infos on what nodes have been supplied etc.
-	
 
 ####### New Features: #######
 

@@ -112,10 +112,13 @@ sim <- sim_discrete_time(dag, n_sim=20, max_t=500, save_states="last")
 
 # transform to start-stop format
 d_start_stop <- sim2data(sim, to="start_stop")
+head(d_start_stop)
 
 # transform to long-format
 d_long <- sim2data(sim, to="long")
+head(d_long)
 
 # transform to wide-format
 d_wide <- sim2data(sim, to="wide")
+head(d_wide)
 }
