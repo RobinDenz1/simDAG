@@ -125,6 +125,15 @@ summary.DAG <- function(object, ...) {
   }
 }
 
+## S3 method for DAG object to turn a DAG into an igraph object
+#' @importFrom igraph as.igraph
+#' @export
+as.igraph.DAG <- function(x, ...) {
+  mat <- dag2matrix(dag=x, include_root_nodes=TRUE, include_td_nodes=TRUE)
+  g <- igraph::graph_from_adjacency_matrix(mat, mode="directed")
+  return(g)
+}
+
 # get names of nodes in a DAG at a given level (root, child, tx)
 names_DAG_level <- function(dag, level) {
 

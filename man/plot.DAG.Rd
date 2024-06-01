@@ -133,11 +133,8 @@ dag <- empty_dag() +
 
 plot(dag)
 
-# get plot using igraph
-adj_mat <- dag2matrix(dag)
-
-g1 <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
-
+# get plot using the igraph package instead
+g1 <- as.igraph(dag)
 plot(g1)
 
 # plot with a time-varying node

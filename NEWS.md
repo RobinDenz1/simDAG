@@ -31,3 +31,7 @@ Enhancements
 Bug Fixes
 
 * Fixed a small bug in input checks of the `node_time_to_event()` function, which printed an error when not all arguments to `prob_fun` were supplied, even when these arguments had default values
+
+New Features
+
+* Added the `as.igraph.DAG()` method which extends the generic function `as.igraph()` to conveniently parse `DAG` objects to `igraph` objects
