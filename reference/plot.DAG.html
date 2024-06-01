@@ -202,13 +202,8 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.DAG-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># get plot using igraph</span></span></span>
-<span class="r-in"><span><span class="va">adj_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="dag2matrix.html">dag2matrix</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">g1</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/graph.adjacency.html" class="external-link">graph.adjacency</a></span><span class="op">(</span>adjmatrix<span class="op">=</span><span class="va">adj_mat</span>, mode<span class="op">=</span><span class="st">"directed"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`graph.adjacency()` was deprecated in igraph 2.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `graph_from_adjacency_matrix()` instead.</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get plot using the igraph package instead</span></span></span>
+<span class="r-in"><span><span class="va">g1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/as.igraph.html" class="external-link">as.igraph</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.DAG-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
