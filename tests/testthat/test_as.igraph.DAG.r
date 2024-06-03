@@ -6,5 +6,5 @@ test_that("general test case", {
     node("C", type="binomial", parents=c("A", "B")) +
     node("D", type="gaussian", parents=c("A", "B", "C"))
   g <- as.igraph(dag)
-  expect_true(is.igraph(g))
+  expect_true(igraph::is_igraph(g))
 })

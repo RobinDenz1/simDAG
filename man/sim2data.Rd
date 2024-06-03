@@ -1,5 +1,7 @@
 \name{sim2data}
 \alias{sim2data}
+\alias{as.data.table.simDT}
+\alias{as.data.frame.simDT}
 
 \title{
 Transform \code{sim_discrete_time} output into the start-stop, long- or wide-format
@@ -9,11 +11,22 @@ This function transforms the output of the \code{\link{sim_discrete_time}} funct
 }
 \usage{
 sim2data(sim, to, use_saved_states=sim$save_states=="all",
-         as_data_frame=FALSE, check_inputs=TRUE)
+         as_data_frame=FALSE, check_inputs=TRUE, ...)
+
+\method{as.data.table}{simDT}(x, keep.rownames=FALSE, to,
+              use_saved_states=x$save_states=="all",
+              check_inputs=TRUE, ...)
+
+\method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE,
+              to, use_saved_states=x$save_states=="all",
+              check_inputs=TRUE, ...)
 }
 \arguments{
   \item{sim}{
 An object created with the \code{\link{sim_discrete_time}} function.
+  }
+  \item{x}{
+Equivalent to argument \code{sim}.
   }
   \item{to}{
 Specifies the format of the output data. Must be one of: \code{"start_stop"}, \code{"long"}, \code{"wide"}.
@@ -27,9 +40,21 @@ Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \cod
   \item{check_inputs}{
 Whether to perform input checks (\code{TRUE} by default). Prints warning messages if the output may be incorrect due to missing information.
   }
+  \item{keep.rownames}{
+Currently not used.
+  }
+  \item{row.names}{
+Passed to the \code{as.data.frame} function which is called on the finished \code{data.table}. See \code{?as.data.frame} for more information.
+  }
+  \item{optional}{
+Passed to the \code{as.data.frame} function which is called on the finished \code{data.table}. See \code{?as.data.frame} for more information.
+  }
+  \item{...}{
+Further arguments passed to \code{as.data.frame} (conversion from finished \code{data.table} to \code{data.frame}). Only available when directly calling \code{sim2data} with \code{as_data_frame=TRUE} or when using \code{as.data.frame.simDT}.
+  }
 }
 \details{
-The raw output of the \code{sim_discrete_time} function may be difficult to use for further analysis. Using this function, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.
+The raw output of the \code{sim_discrete_time} function may be difficult to use for further analysis. Using one of these functions, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below. Both \code{as.data.table} and \code{as.data.frame} internally call \code{sim2data} and only exist for user convenience.
 
 \strong{\emph{The start-stop format}:}
 

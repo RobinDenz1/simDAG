@@ -175,7 +175,8 @@ print.DAG.node <- function(x, ...) {
   if (!is.character(x[[1]])) {
     cat("A list of DAG.node objects.")
   # root nodes
-  } else if (length(x$parents) == 0 || all(x$parents=="")) {
+  } else if ((length(x$parents) == 0 || all(x$parents=="")) &&
+             !x$type %in% c("time_to_event", "competing_events")) {
     cat("A DAG.node object specifying a single root node with:\n")
     cat("  - name: '", x$name, "'\n", sep="")
     cat("  - type: '", x$type, "'\n", sep="")
@@ -192,7 +193,10 @@ print.DAG.node <- function(x, ...) {
     cat("A DAG.node object specifying a single child node with:\n")
     cat("  - name: '", x$name, "'\n", sep="")
     cat("  - type: '", x$type, "'\n", sep="")
-    cat("  - parents: '", paste0(x$parents, collapse="', '"), "'\n", sep="")
+
+    if (length(x$parents) > 0) {
+      cat("  - parents: '", paste0(x$parents, collapse="', '"), "'\n", sep="")
+    }
 
     if (length(x)==4) {
       cat("  - no additional parameters\n")

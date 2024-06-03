@@ -98,7 +98,8 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
   }
 
   # igraph object
-  graph <- igraph::graph.adjacency(adjmatrix=adj_mat, mode="directed")
+  graph <- igraph::graph_from_adjacency_matrix(adjmatrix=adj_mat,
+                                               mode="directed")
 
   # node coordinates
   d_nodes <- get_node_data(graph=graph, adj_mat=adj_mat, layout=layout,

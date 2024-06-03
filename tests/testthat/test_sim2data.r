@@ -29,7 +29,9 @@ sim <- sim_discrete_time(n_sim=100,
 test_that("as start_stop data", {
 
   out <- sim2data(sim=sim, to="start_stop")
+  out2 <- as.data.table(sim, to="start_stop")
 
+  expect_equal(out, out2)
   expect_true(inherits(out, "data.table"))
   expect_true(nrow(out)==119)
   expect_equal(colnames(out), c(".id", "start", "stop", "death", "age",
@@ -39,6 +41,7 @@ test_that("as start_stop data", {
 test_that("as long data", {
 
   out <- sim2data(sim=sim, to="long")
+  out2 <- as.data.table(sim, to="long")
 
   expect_true(inherits(out, "data.table"))
   expect_true(nrow(out)==5000)
@@ -49,6 +52,7 @@ test_that("as long data", {
 test_that("as wide data", {
 
   out <- sim2data(sim=sim, to="wide")
+  out2 <- as.data.table(out, to="wide")
 
   expect_true(inherits(out, "data.table"))
   expect_true(nrow(out)==100)
@@ -58,6 +62,7 @@ test_that("as wide data", {
 test_that("as start_stop data, with data.frame output", {
 
   out <- sim2data(sim=sim, to="start_stop", as_data_frame=TRUE)
+  out2 <- as.data.frame(sim, to="start_stop")
 
   expect_true(inherits(out, "data.frame"))
   expect_true(nrow(out)==119)

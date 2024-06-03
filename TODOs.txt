@@ -6,15 +6,6 @@ sim2start_stop:
 
 sim_discrete_time:
 	- should include t = 0 in output (or an option for it)
-	
-print.DAG.node:
-	- printing a time_to_event (or general node_td()) node that does not have
-	  any parents wrongly states "no additional parameters"
-
-####### S3 methods #######
-
-- create as.data.table(), as.data.frame() methods for simDT objects that just call
-  sim2data() internally, to make more S3 methods available
 
 ####### New Features: #######
 

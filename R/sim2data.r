@@ -2,7 +2,7 @@
 ## wrapper function for all data transformations involving simDT objects
 #' @export
 sim2data <- function(sim, to, use_saved_states=sim$save_states=="all",
-                     as_data_frame=FALSE, check_inputs=TRUE) {
+                     as_data_frame=FALSE, check_inputs=TRUE, ...) {
 
   if (check_inputs) {
     check_inputs_sim2data(sim=sim, use_saved_states=use_saved_states, to=to)
@@ -17,8 +17,30 @@ sim2data <- function(sim, to, use_saved_states=sim$save_states=="all",
   }
 
   if (as_data_frame) {
-    data <- as.data.frame(data)
+    data <- as.data.frame(data, ...)
   }
 
   return(data)
+}
+
+## same as sim2data() but extending the as.data.table() generic instead
+#' @importFrom data.table as.data.table
+#' @export
+as.data.table.simDT <- function(x, keep.rownames=FALSE, to,
+                                use_saved_states=x$save_states=="all",
+                                check_inputs=TRUE, ...) {
+  out <- sim2data(sim=x, to=to, use_saved_states=use_saved_states,
+                  as_data_frame=FALSE, check_inputs=check_inputs)
+  return(out)
+}
+
+## same as sim2data() but extending the as.data.frame() generic instead
+#' @export
+as.data.frame.simDT <- function(x, row.names=NULL, optional=FALSE,
+                                to, use_saved_states=x$save_states=="all",
+                                check_inputs=TRUE, ...) {
+  out <- sim2data(sim=x, to=to, use_saved_states=use_saved_states,
+                  as_data_frame=TRUE, check_inputs=check_inputs,
+                  row.names=row.names, optional=optional, ...)
+  return(out)
 }
