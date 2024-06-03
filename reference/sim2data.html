@@ -60,13 +60,26 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim2data</span><span class="op">(</span><span class="va">sim</span>, <span class="va">to</span>, use_saved_states<span class="op">=</span><span class="va">sim</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
-<span>         as_data_frame<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>         as_data_frame<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for simDT</span></span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">x</span>, keep.rownames<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>,</span>
+<span>              use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
+<span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for simDT</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names<span class="op">=</span><span class="cn">NULL</span>, optional<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>              <span class="va">to</span>, use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
+<span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sim</dt>
 <dd><p>An object created with the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function.</p></dd>
+
+  <dt>x</dt>
+<dd><p>Equivalent to argument <code>sim</code>.</p></dd>
 
   <dt>to</dt>
 <dd><p>Specifies the format of the output data. Must be one of: <code>"start_stop"</code>, <code>"long"</code>, <code>"wide"</code>.</p></dd>
@@ -80,10 +93,22 @@
   <dt>check_inputs</dt>
 <dd><p>Whether to perform input checks (<code>TRUE</code> by default). Prints warning messages if the output may be incorrect due to missing information.</p></dd>
 
+  <dt>keep.rownames</dt>
+<dd><p>Currently not used.</p></dd>
+
+  <dt>row.names</dt>
+<dd><p>Passed to the <code>as.data.frame</code> function which is called on the finished <code>data.table</code>. See <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">?as.data.frame</a></code> for more information.</p></dd>
+
+  <dt>optional</dt>
+<dd><p>Passed to the <code>as.data.frame</code> function which is called on the finished <code>data.table</code>. See <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">?as.data.frame</a></code> for more information.</p></dd>
+
+  <dt>...</dt>
+<dd><p>Further arguments passed to <code>as.data.frame</code> (conversion from finished <code>data.table</code> to <code>data.frame</code>). Only available when directly calling <code>sim2data</code> with <code>as_data_frame=TRUE</code> or when using <code>as.data.frame.simDT</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using this function, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below.</p>
+    <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using one of these functions, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below. Both <code>as.data.table</code> and <code>as.data.frame</code> internally call <code>sim2data</code> and only exist for user convenience.</p>
 <p><strong><em>The start-stop format</em>:</strong></p>
 <p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. These intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can simply add 1 to the <code>stop</code> column.</p>
 <p><strong><em>The long format</em>:</strong></p>
