@@ -27,11 +27,13 @@ Documentation
 Enhancements
 
 * Print underlying structural equations in `summary.DAG()` and `summary.DAG.node()`
+* Added the `overlap` argument to both `long2start_stop()` and `sim2data()` to directly create start-stop data with overlapping durations, as needed for some statistical models
 
 Bug Fixes
 
 * Fixed a small bug in input checks of the `node_time_to_event()` function, which printed an error when not all arguments to `prob_fun` were supplied, even when these arguments had default values
 * Fixed bug in `print.DAG.node()` which occurred when a time-to-event node with no parents was supplied
+* Fixed a bug in `sim2data()` which lead to inconsistent results when `event_duration=0` was used in one or more nodes of type "time_to_event" or "competing_events". This made me realize that event durations smaller than 1 make no sense. They are now no longer allowed and the default of the node types has been changed accordingly.
 
 New Features
 

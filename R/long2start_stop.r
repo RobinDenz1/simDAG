@@ -10,7 +10,8 @@
 #' @importFrom data.table is.data.table
 #' @importFrom data.table :=
 #' @export
-long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
+long2start_stop <- function(data, id, time, varying, overlap=FALSE,
+                            check_inputs=TRUE) {
 
   if (!is.data.frame(data)) {
     stop("'data' should be a data.table or an object that can be transformed",
@@ -91,6 +92,10 @@ long2start_stop <- function(data, id, time, varying, check_inputs=TRUE) {
   # fix columns
   data <- data[start!=stop]
   data[, start := start + 1]
+
+  if (overlap) {
+    data[stop < max_t, stop := stop + 1]
+  }
 
   # reorder columns
   first_cols <- c(id, "start", "stop", varying)

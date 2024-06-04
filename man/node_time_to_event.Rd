@@ -9,7 +9,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 }
 \usage{
 node_time_to_event(data, parents, sim_time, name,
-                   prob_fun, ..., event_duration=0,
+                   prob_fun, ..., event_duration=1,
                    immunity_duration=event_duration,
                    time_since_last=FALSE, event_count=FALSE,
                    save_past_events=TRUE, check_inputs=TRUE,
@@ -35,7 +35,7 @@ A function that returns a numeric vector of size \code{nrow(data)} containing on
 An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{event_duration}{
-A single number >= 0 specifying how long the event should last. The point in time at which an event occurs also counts into this duration. For example, if an event occurs at \eqn{t = 2} and it has a duration of 3, the event will be set to \code{TRUE} on \eqn{t \in \{2, 3, 4\}}.
+A single number > 0 specifying how long the event should last. The point in time at which an event occurs also counts into this duration. For example, if an event occurs at \eqn{t = 2} and it has a duration of 3, the event will be set to \code{TRUE} on \eqn{t \in \{2, 3, 4\}}. Therefore, all events must have a duration of at least 1 unit (otherwise they never happened).
   }
   \item{immunity_duration}{
 A single number >= \code{event_duration} specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{event_duration + 10} should be used.

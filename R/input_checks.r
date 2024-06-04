@@ -525,8 +525,9 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
   stopifnot("'prob_fun' must be a function or a single number." =
               is.function(prob_fun) | (is.numeric(prob_fun) &
                                          length(prob_fun)==1))
-  stopifnot("'event_duration' must be a single integer." =
-              (length(event_duration) == 1 && is.numeric(event_duration)))
+  stopifnot("'event_duration' must be a single integer > 0." =
+              (length(event_duration) == 1 && is.numeric(event_duration) &&
+                event_duration > 0))
   stopifnot("'immunity_duration' must be a single integer." =
               (length(immunity_duration) == 1 &&
                  is.numeric(immunity_duration)))
@@ -580,8 +581,9 @@ check_inputs_node_competing_events <- function(data, parents, sim_time, name,
               (length(name) == 1 && is.character(name)))
   stopifnot("'prob_fun' must be a function." =
               is.function(prob_fun))
-  stopifnot("'event_duration' must be a vector of integers." =
-              (length(event_duration) > 1 && is.numeric(event_duration)))
+  stopifnot("'event_duration' must be a vector of integers > 0." =
+              (length(event_duration) > 1 && is.numeric(event_duration) &&
+               all(event_duration > 0)))
   stopifnot(
     "'immunity_duration' must be a single integer >= max(event_duration)." =
               (length(immunity_duration) == 1 &&

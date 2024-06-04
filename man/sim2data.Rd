@@ -11,14 +11,15 @@ This function transforms the output of the \code{\link{sim_discrete_time}} funct
 }
 \usage{
 sim2data(sim, to, use_saved_states=sim$save_states=="all",
-         as_data_frame=FALSE, check_inputs=TRUE, ...)
+         overlap=FALSE, as_data_frame=FALSE, check_inputs=TRUE,
+         ...)
 
-\method{as.data.table}{simDT}(x, keep.rownames=FALSE, to,
+\method{as.data.table}{simDT}(x, keep.rownames=FALSE, to, overlap=FALSE,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 
-\method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE,
-              to, use_saved_states=x$save_states=="all",
+\method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE, to,
+              overlap=FALSE, use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 }
 \arguments{
@@ -33,6 +34,9 @@ Specifies the format of the output data. Must be one of: \code{"start_stop"}, \c
   }
   \item{use_saved_states}{
 Whether the saved simulation states (argument \code{save_states} in \code{sim_discrete_time} function) should be used to construct the resulting data or not. See details.
+  }
+  \item{overlap}{
+Only used when \code{to="start_stop"}. Specifies whether the intervals should overlap or not. If \code{TRUE}, the \code{"stop"} column is simply increased by one, as compared to the output when \code{overlap=FALSE}. This means that changes for a given \eqn{t} are recorded at the start of the next interval, but the previous interval ends on that same day.
   }
   \item{as_data_frame}{
 Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \code{data.table}.
@@ -58,7 +62,7 @@ The raw output of the \code{sim_discrete_time} function may be difficult to use 
 
 \strong{\emph{The start-stop format}:}
 
-The start-stop format (\code{to="start_stop"}), also known as counting process or period format corresponds to a \code{data.table} containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the \code{start} and \code{stop} columns. The \code{start} column gives the time at which the period started, the \code{stop} column denotes the time when the period ended. These intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, \code{start} will be equal to \code{stop}. If non-overlapping periods are desired, the user can simply add 1 to the \code{stop} column.
+The start-stop format (\code{to="start_stop"}), also known as counting process or period format corresponds to a \code{data.table} containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the \code{start} and \code{stop} columns. The \code{start} column gives the time at which the period started, the \code{stop} column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, \code{start} will be equal to \code{stop}. If non-overlapping periods are desired, the user can specify \code{overlap=TRUE} instead.
 
 \strong{\emph{The long format}:}
 

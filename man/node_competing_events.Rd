@@ -9,7 +9,7 @@ This node essentially models a categorical time-dependent variable for which the
 }
 \usage{
 node_competing_events(data, parents, sim_time, name,
-                      prob_fun, ..., event_duration=c(0, 0),
+                      prob_fun, ..., event_duration=c(1, 1),
                       immunity_duration=max(event_duration),
                       save_past_events=TRUE, check_inputs=TRUE,
                       envir)

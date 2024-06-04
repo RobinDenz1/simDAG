@@ -1,19 +1,20 @@
 
 ## transform output from the sim_discrete_time function into the
 ## start-stop format
-sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all") {
+sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all",
+                           overlap=FALSE) {
 
   if (use_saved_states) {
-    data <- sim2start_stop.all(sim=sim)
+    data <- sim2start_stop.all(sim=sim, overlap=overlap)
   } else {
-    data <- sim2start_stop.last(sim=sim)
+    data <- sim2start_stop.last(sim=sim, overlap=overlap)
   }
 
   return(data)
 }
 
 ## used when save_states="all" was used in sim_discrete_time
-sim2start_stop.all <- function(sim) {
+sim2start_stop.all <- function(sim, overlap=FALSE) {
 
   # transform to long format
   data <- sim2long(sim=sim)
@@ -26,7 +27,8 @@ sim2start_stop.all <- function(sim) {
 
   varying <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
   data <- long2start_stop(data=data, id=".id", time=".time",
-                          varying=varying, check_inputs=FALSE)
+                          varying=varying, overlap=overlap,
+                          check_inputs=FALSE)
 
   return(data)
 }
@@ -40,7 +42,7 @@ sim2start_stop.all <- function(sim) {
 #' @importFrom data.table setcolorder
 #' @importFrom data.table dcast
 #' @importFrom data.table :=
-sim2start_stop.last <- function(sim) {
+sim2start_stop.last <- function(sim, overlap=FALSE) {
 
   # temporary error message
   if (length(sim$ce_past_events) > 0) {
@@ -181,6 +183,11 @@ sim2start_stop.last <- function(sim) {
   # correct end of intervals
   data[, stop := stop - 1]
   data <- data[start <= stop & !duplicated(data), ]
+
+  # if intervals should be overlapping, add them back
+  if (overlap) {
+    data[stop < max_t, stop := stop + 1]
+  }
 
   # reorder columns
   first_cols <- c(".id", "start", "stop", tte_names)

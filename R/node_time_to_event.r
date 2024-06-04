@@ -4,7 +4,7 @@
 #' @importFrom data.table fifelse
 #' @export
 node_time_to_event <- function(data, parents, sim_time, name,
-                               prob_fun, ..., event_duration=0,
+                               prob_fun, ..., event_duration=1,
                                immunity_duration=event_duration,
                                time_since_last=FALSE, event_count=FALSE,
                                save_past_events=TRUE, check_inputs=TRUE,

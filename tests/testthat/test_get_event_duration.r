@@ -7,5 +7,5 @@ test_that("works with specified event_duration", {
 })
 
 test_that("takes default if not specified", {
-  expect_equal(get_event_duration(node_without), 0)
+  expect_equal(get_event_duration(node_without), 1)
 })

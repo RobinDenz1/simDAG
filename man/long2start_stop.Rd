@@ -8,7 +8,8 @@ Transform a \code{data.table} in the long-format to a \code{data.table} in the s
 This function transforms a \code{data.table} in the long-format (one row per person per time point) to a \code{data.table} in the start-stop format (one row per person-specific period in which no variables changed).
 }
 \usage{
-long2start_stop(data, id, time, varying, check_inputs=TRUE)
+long2start_stop(data, id, time, varying, overlap=FALSE,
+                check_inputs=TRUE)
 }
 \arguments{
   \item{data}{
@@ -22,6 +23,9 @@ A single character string specifying a time variable included in in \code{data} 
   }
   \item{varying}{
 A character vector specifying names of variables included in in \code{data} that may change over time.
+  }
+  \item{overlap}{
+Specifies whether the intervals should overlap or not. If \code{TRUE}, the \code{"stop"} column is simply increased by one, as compared to the output when \code{overlap=FALSE}. This means that changes for a given \eqn{t} are recorded at the start of the next interval, but the previous interval ends on that same day.
   }
   \item{check_inputs}{
 Whether to check if the user input is correct or not. Can be turned off by setting it to \code{FALSE} to save computation time.
