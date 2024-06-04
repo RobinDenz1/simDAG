@@ -60,16 +60,17 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim2data</span><span class="op">(</span><span class="va">sim</span>, <span class="va">to</span>, use_saved_states<span class="op">=</span><span class="va">sim</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
-<span>         as_data_frame<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>         overlap<span class="op">=</span><span class="cn">FALSE</span>, as_data_frame<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>         <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for simDT</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">x</span>, keep.rownames<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>,</span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">x</span>, keep.rownames<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>, overlap<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>              use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
 <span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for simDT</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names<span class="op">=</span><span class="cn">NULL</span>, optional<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span>              <span class="va">to</span>, use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names<span class="op">=</span><span class="cn">NULL</span>, optional<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>,</span>
+<span>              overlap<span class="op">=</span><span class="cn">FALSE</span>, use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
 <span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,6 +87,9 @@
 
   <dt>use_saved_states</dt>
 <dd><p>Whether the saved simulation states (argument <code>save_states</code> in <code>sim_discrete_time</code> function) should be used to construct the resulting data or not. See details.</p></dd>
+
+  <dt>overlap</dt>
+<dd><p>Only used when <code>to="start_stop"</code>. Specifies whether the intervals should overlap or not. If <code>TRUE</code>, the <code>"stop"</code> column is simply increased by one, as compared to the output when <code>overlap=FALSE</code>. This means that changes for a given \(t\) are recorded at the start of the next interval, but the previous interval ends on that same day.</p></dd>
 
   <dt>as_data_frame</dt>
 <dd><p>Set this argument to <code>TRUE</code> to return a <code>data.frame</code> instead of a <code>data.table</code>.</p></dd>
@@ -110,7 +114,7 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using one of these functions, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below. Both <code>as.data.table</code> and <code>as.data.frame</code> internally call <code>sim2data</code> and only exist for user convenience.</p>
 <p><strong><em>The start-stop format</em>:</strong></p>
-<p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. These intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can simply add 1 to the <code>stop</code> column.</p>
+<p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can specify <code>overlap=TRUE</code> instead.</p>
 <p><strong><em>The long format</em>:</strong></p>
 <p>The long format (<code>to="long"</code>) corresponds to a <code>data.table</code> in which there is one row per person per point in time. The unique person identifier is stored in the <code>.id</code> column and the unique points in time are given in the <code>.time</code> column.</p>
 <p><strong><em>The wide format</em>:</strong></p>
@@ -183,11 +187,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>      .id start  stop car_crash  death    sex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;int&gt; &lt;int&gt; &lt;num&gt;    &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1     1   114     FALSE  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     1   115   417     FALSE  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     1   418   481     FALSE  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     1   482   483     FALSE  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     1   484   498     FALSE  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     1   499   500     FALSE  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     1   115   115      TRUE   TRUE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     1   116   417     FALSE  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     1   418   418      TRUE   TRUE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     1   419   481     FALSE  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     1   482   482      TRUE  FALSE  FALSE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># transform to long-format</span></span></span>
 <span class="r-in"><span><span class="va">d_long</span> <span class="op">&lt;-</span> <span class="fu">sim2data</span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span></span>
@@ -261,7 +265,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         TRUE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_37 car_crash_38 car_crash_39 car_crash_40 car_crash_41</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
@@ -273,7 +277,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_42 car_crash_43 car_crash_44 car_crash_45 car_crash_46</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;       &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         TRUE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:        FALSE        FALSE        FALSE        FALSE        FALSE</span>
@@ -384,7 +388,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_112 car_crash_113 car_crash_114 car_crash_115 car_crash_116</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -413,7 +417,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE          TRUE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_132 car_crash_133 car_crash_134 car_crash_135 car_crash_136</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -429,7 +433,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_142 car_crash_143 car_crash_144 car_crash_145 car_crash_146</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -493,7 +497,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          TRUE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_182 car_crash_183 car_crash_184 car_crash_185 car_crash_186</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -577,7 +581,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_232 car_crash_233 car_crash_234 car_crash_235 car_crash_236</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          TRUE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -589,7 +593,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          TRUE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_242 car_crash_243 car_crash_244 car_crash_245 car_crash_246</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -668,7 +672,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_292 car_crash_293 car_crash_294 car_crash_295 car_crash_296</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
@@ -709,7 +713,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE          TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_317 car_crash_318 car_crash_319 car_crash_320 car_crash_321</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -725,7 +729,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          TRUE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_327 car_crash_328 car_crash_329 car_crash_330 car_crash_331</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -741,7 +745,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE          TRUE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_337 car_crash_338 car_crash_339 car_crash_340 car_crash_341</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -749,7 +753,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE          TRUE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_342 car_crash_343 car_crash_344 car_crash_345 car_crash_346</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -757,7 +761,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          TRUE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_347 car_crash_348 car_crash_349 car_crash_350 car_crash_351</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -793,7 +797,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_367 car_crash_368 car_crash_369 car_crash_370 car_crash_371</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE          TRUE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -804,7 +808,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_377 car_crash_378 car_crash_379 car_crash_380 car_crash_381</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
@@ -845,7 +849,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE          TRUE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_402 car_crash_403 car_crash_404 car_crash_405 car_crash_406</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -872,11 +876,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_417 car_crash_418 car_crash_419 car_crash_420 car_crash_421</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE          TRUE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE          TRUE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_422 car_crash_423 car_crash_424 car_crash_425 car_crash_426</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
@@ -885,7 +889,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE          TRUE         FALSE          TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_427 car_crash_428 car_crash_429 car_crash_430 car_crash_431</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -976,7 +980,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_482 car_crash_483 car_crash_484 car_crash_485 car_crash_486</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          TRUE         FALSE          TRUE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
@@ -1000,7 +1004,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:         FALSE         FALSE         FALSE         FALSE         FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    car_crash_497 car_crash_498 car_crash_499 car_crash_500 death_1 death_2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;        &lt;lgcl&gt;  &lt;lgcl&gt;  &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE         FALSE         FALSE   FALSE   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         FALSE         FALSE          TRUE         FALSE   FALSE   FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:         FALSE         FALSE         FALSE         FALSE   FALSE   FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         FALSE         FALSE         FALSE         FALSE   FALSE   FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:         FALSE         FALSE         FALSE         FALSE   FALSE   FALSE</span>
@@ -1120,7 +1124,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    death_114 death_115 death_116 death_117 death_118 death_119 death_120</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     FALSE      TRUE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
@@ -1141,7 +1145,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     FALSE      TRUE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    death_135 death_136 death_137 death_138 death_139 death_140 death_141</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
@@ -1464,7 +1468,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    death_415 death_416 death_417 death_418 death_419 death_420 death_421</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     FALSE     FALSE     FALSE      TRUE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE     FALSE</span>

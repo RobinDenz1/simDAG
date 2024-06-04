@@ -59,7 +59,8 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">long2start_stop</span><span class="op">(</span><span class="va">data</span>, <span class="va">id</span>, <span class="va">time</span>, <span class="va">varying</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">long2start_stop</span><span class="op">(</span><span class="va">data</span>, <span class="va">id</span>, <span class="va">time</span>, <span class="va">varying</span>, overlap<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>                check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,6 +76,9 @@
 
   <dt>varying</dt>
 <dd><p>A character vector specifying names of variables included in in <code>data</code> that may change over time.</p></dd>
+
+  <dt>overlap</dt>
+<dd><p>Specifies whether the intervals should overlap or not. If <code>TRUE</code>, the <code>"stop"</code> column is simply increased by one, as compared to the output when <code>overlap=FALSE</code>. This means that changes for a given \(t\) are recorded at the start of the next interval, but the previous interval ends on that same day.</p></dd>
 
   <dt>check_inputs</dt>
 <dd><p>Whether to check if the user input is correct or not. Can be turned off by setting it to <code>FALSE</code> to save computation time.</p></dd>
