@@ -186,7 +186,7 @@ sim2start_stop.last <- function(sim, overlap=FALSE) {
 
   # if intervals should be overlapping, add them back
   if (overlap) {
-    data[stop < max_t, stop := stop + 1]
+    data[, stop := stop + 1]
   }
 
   # reorder columns

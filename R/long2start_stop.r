@@ -94,7 +94,7 @@ long2start_stop <- function(data, id, time, varying, overlap=FALSE,
   data[, start := start + 1]
 
   if (overlap) {
-    data[stop < max_t, stop := stop + 1]
+    data[, stop := stop + 1]
   }
 
   # reorder columns
