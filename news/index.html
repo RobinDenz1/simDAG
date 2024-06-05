@@ -76,6 +76,7 @@
 <ul><li>Print underlying structural equations in <code>summary.DAG()</code> and <code>summary.DAG.node()</code>
 </li>
 <li>Added the <code>overlap</code> argument to both <code><a href="../reference/long2start_stop.html">long2start_stop()</a></code> and <code><a href="../reference/sim2data.html">sim2data()</a></code> to directly create start-stop data with overlapping durations, as needed for some statistical models</li>
+<li>Added the <code>target_event</code> and <code>keep_only_first</code> arguments to <code><a href="../reference/sim2data.html">sim2data()</a></code> and related functions, to allow direct transformation into model-ready dataset</li>
 </ul><p>Bug Fixes</p>
 <ul><li>Fixed a small bug in input checks of the <code><a href="../reference/node_time_to_event.html">node_time_to_event()</a></code> function, which printed an error when not all arguments to <code>prob_fun</code> were supplied, even when these arguments had default values</li>
 <li>Fixed bug in <code>print.DAG.node()</code> which occurred when a time-to-event node with no parents was supplied</li>

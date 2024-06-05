@@ -336,9 +336,7 @@ cardiovascular event only lasts 1 year. We also set
 possible recurrent events. Now we call the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function as before:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">10</span>,</span>
-<span>                             dag<span class="op">=</span><span class="va">dag</span>,</span>
-<span>                             max_t<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">10</span>, dag<span class="op">=</span><span class="va">dag</span>, max_t<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         age    sex cve_event cve_time   .id</span></span>
 <span><span class="co">#&gt;       &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;int&gt; &lt;int&gt;</span></span>
@@ -368,8 +366,10 @@ the <code><a href="../reference/sim2data.html">sim2data()</a></code> function to
 <span><span class="co">#&gt; 6:     3     1    50  FALSE 88.25512   TRUE</span></span></code></pre></div>
 <p>In this format, we can clearly see when the events occurred. This
 type of format is usually used to fit statistical models for
-time-to-event data. Another possibility is to transform it into the
-long-format:</p>
+time-to-event data (although before fitting those, you might want to
+take a look at the <code>target_event</code>, <code>overlap</code> and
+<code>keep_only_first</code> arguments of <code><a href="../reference/sim2data.html">sim2data()</a></code>).
+Another possibility is to transform it into the long-format:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim_dat</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">d_long</span><span class="op">)</span></span>
