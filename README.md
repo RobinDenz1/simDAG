@@ -23,7 +23,7 @@ comprehensive framework for conducting discrete-time simulations in a similar fa
 A stable version of this package can be installed from CRAN:
 
 ```R
-install_packages("simDAG")
+install.packages("simDAG")
 ```
 
 and the developmental version may be installed from github using the `remotes` R-Package:

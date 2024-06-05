@@ -11,15 +11,19 @@ This function transforms the output of the \code{\link{sim_discrete_time}} funct
 }
 \usage{
 sim2data(sim, to, use_saved_states=sim$save_states=="all",
-         overlap=FALSE, as_data_frame=FALSE, check_inputs=TRUE,
-         ...)
+         overlap=FALSE, target_event=NULL,
+         keep_only_first=FALSE, as_data_frame=FALSE,
+         check_inputs=TRUE, ...)
 
 \method{as.data.table}{simDT}(x, keep.rownames=FALSE, to, overlap=FALSE,
+              target_event=NULL, keep_only_first=FALSE,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 
 \method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE, to,
-              overlap=FALSE, use_saved_states=x$save_states=="all",
+              overlap=FALSE, target_event=NULL,
+              keep_only_first=FALSE,
+              use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 }
 \arguments{
@@ -37,6 +41,12 @@ Whether the saved simulation states (argument \code{save_states} in \code{sim_di
   }
   \item{overlap}{
 Only used when \code{to="start_stop"}. Specifies whether the intervals should overlap or not. If \code{TRUE}, the \code{"stop"} column is simply increased by one, as compared to the output when \code{overlap=FALSE}. This means that changes for a given \eqn{t} are recorded at the start of the next interval, but the previous interval ends on that same day.
+  }
+  \item{target_event}{
+Only used when \code{to="start_stop"}. By default (keeping this argument at \code{NULL}) all time-to-event nodes are treated equally when creating the start-stop intervals. This can be changed by supplying a single character string to this argument, naming one time-to-event node. This node will then be treated as the outcome. The output then corresponds to what would be needed to fit a Cox proportional hazards model. See details.
+  }
+  \item{keep_only_first}{
+Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, all information after the first event per person will be discarded. Useful when \code{target_event} should be treated as a terminal variable.
   }
   \item{as_data_frame}{
 Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \code{data.table}.
@@ -63,6 +73,8 @@ The raw output of the \code{sim_discrete_time} function may be difficult to use 
 \strong{\emph{The start-stop format}:}
 
 The start-stop format (\code{to="start_stop"}), also known as counting process or period format corresponds to a \code{data.table} containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the \code{start} and \code{stop} columns. The \code{start} column gives the time at which the period started, the \code{stop} column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, \code{start} will be equal to \code{stop}. If non-overlapping periods are desired, the user can specify \code{overlap=TRUE} instead.
+
+By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way. In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the \code{target_event} variable. The previously specified duration of this target event is then ignored. If only the first occurence of the event is of interest, users may also set \code{keep_only_first=TRUE} to keep only information up until the first event per person.
 
 \strong{\emph{The long format}:}
 
@@ -124,23 +136,30 @@ prob_car_crash <- function(data) {
 }
 
 prob_death <- function(data) {
-  ifelse(data$car_crash_event, 0.1, 0.0001)
+  ifelse(data$car_crash_event, 0.1, 0.001)
 }
 
 dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5) +
   node_td("car_crash", type="time_to_event", prob_fun=prob_car_crash,
-          parents="sex") +
+          parents="sex", event_duration=3) +
   node_td("death", type="time_to_event", prob_fun=prob_death,
-          parents="car_crash_event")
+          parents="car_crash_event", event_duration=Inf)
 
 # generate some data, only saving the last state
 # not a problem here, because the only time-varying nodes are
 # time-to-event nodes where the event times are saved
 sim <- sim_discrete_time(dag, n_sim=20, max_t=500, save_states="last")
 
-# transform to start-stop format
+# transform to standard start-stop format
 d_start_stop <- sim2data(sim, to="start_stop")
+head(d_start_stop)
+
+# transform to "death" centric start-stop format
+# and keep only information until death, cause it's a terminal event
+# (this could be used in a Cox model)
+d_start_stop <- sim2data(sim, to="start_stop", target_event="death",
+                         keep_only_first=TRUE, overlap=TRUE)
 head(d_start_stop)
 
 # transform to long-format
@@ -149,5 +168,5 @@ head(d_long)
 
 # transform to wide-format
 d_wide <- sim2data(sim, to="wide")
-head(d_wide)
+#head(d_wide)
 }

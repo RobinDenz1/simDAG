@@ -28,6 +28,7 @@ Enhancements
 
 * Print underlying structural equations in `summary.DAG()` and `summary.DAG.node()`
 * Added the `overlap` argument to both `long2start_stop()` and `sim2data()` to directly create start-stop data with overlapping durations, as needed for some statistical models
+* Added the `target_event` and `keep_only_first` arguments to `sim2data()` and related functions, to allow direct transformation into model-ready dataset
 
 Bug Fixes
 

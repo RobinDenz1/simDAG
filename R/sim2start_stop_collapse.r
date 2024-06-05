@@ -1,26 +1,20 @@
 
-## check if each row is equal to the next row
-check_next_row_equal <- function(x) {
-  shift_x <- data.table::shift(x, n=1, type="lead", fill=NA)
-  return(rowSums(x==shift_x)==ncol(x))
-}
-
 ## given a data.table in the start-stop format as created by the
 ## sim2start_stop() function, create a new data.table in the start-stop
 ## format that is centric to an outcome (e.g. recurrent-events format)
 ## or similar stuff
-# TODO:
-#   - check if this works when there are two events right after each other
-#   - this only works if there are no duplicate rows to begin with,
-#     which is sadly not the case with current sim2start_stop.last()
 #' @importFrom data.table fifelse
 #' @importFrom data.table merge.data.table
 #' @importFrom data.table .SD
-#' @importFrom data.table .SDcols
 #' @importFrom data.table :=
 #' @importFrom data.table shift
 #' @importFrom data.table copy
+#' @importFrom data.table setkey
 collapse_for_target_event <- function(d, target_event, keep_only_first=FALSE) {
+
+  # silence devtools check()
+  .is_equal_to_next <- .event_lag <- .change_row <- .change_row_shift <- NULL
+  . <- .time <- .id <- start <- stop <- NULL
 
   d <- copy(d)
   max_t <- max(d$stop)
@@ -35,7 +29,8 @@ collapse_for_target_event <- function(d, target_event, keep_only_first=FALSE) {
   d[, .event_lag := shift(eval(parse(text=target_event)), -1, fill=FALSE)]
 
   # update stop and target event
-  d[, .change_row := .event_lag==TRUE & .is_equal_to_next==TRUE]
+  d[, .change_row := .event_lag==TRUE & .is_equal_to_next==TRUE &
+      eval(parse(text=target_event))==FALSE]
   d[.change_row==TRUE, stop := stop + 1]
   d[.change_row==TRUE, eval(target_event) := TRUE]
 
@@ -56,6 +51,13 @@ collapse_for_target_event <- function(d, target_event, keep_only_first=FALSE) {
     d <- merge.data.table(d, d_first, by=".id")
     d <- d[stop <= .time]
     d[, .time := NULL]
+    setkey(d, NULL)
   }
   return(d)
+}
+
+## check if each row is equal to the next row
+check_next_row_equal <- function(x) {
+  shift_x <- data.table::shift(x, n=1, type="lead", fill=NA)
+  return(rowSums(x==shift_x)==ncol(x))
 }

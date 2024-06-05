@@ -160,9 +160,7 @@ dag <- dag +
 Apart from changing the node name, we also changed the `event_duration` parameter to 1, meaning that a cardiovascular event only lasts 1 year. We also set `save_past_events` to `TRUE` in order to store the possible recurrent events. Now we call the `sim_discrete_time()` function as before:
 
 ```{r}
-sim_dat <- sim_discrete_time(n_sim=10,
-                             dag=dag,
-                             max_t=50)
+sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50)
 head(sim_dat$data)
 ```
 
@@ -175,7 +173,7 @@ d_start_stop <- sim2data(sim_dat, to="start_stop")
 head(d_start_stop)
 ```
 
-In this format, we can clearly see when the events occurred. This type of format is usually used to fit statistical models for time-to-event data. Another possibility is to transform it into the long-format:
+In this format, we can clearly see when the events occurred. This type of format is usually used to fit statistical models for time-to-event data (although before fitting those, you might want to take a look at the `target_event`, `overlap` and `keep_only_first` arguments of `sim2data()`). Another possibility is to transform it into the long-format:
 
 ```{r warning=FALSE}
 d_long <- sim2data(sim_dat, to="long")

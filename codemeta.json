@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.2.1 (2022-06-23 ucrt)",
+  "runtimePlatform": "R version 4.3.3 (2024-02-29 ucrt)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -108,18 +108,6 @@
     },
     {
       "@type": "SoftwareApplication",
-      "identifier": "igraph",
-      "name": "igraph",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=igraph"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "ggforce",
       "name": "ggforce",
       "provider": {
@@ -133,14 +121,7 @@
     {
       "@type": "SoftwareApplication",
       "identifier": "MASS",
-      "name": "MASS",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=MASS"
+      "name": "MASS"
     },
     {
       "@type": "SoftwareApplication",
@@ -245,9 +226,21 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rlang"
     },
+    "5": {
+      "@type": "SoftwareApplication",
+      "identifier": "igraph",
+      "name": "igraph",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=igraph"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "943.984KB",
+  "fileSize": "1006.032KB",
   "citation": [
     {
       "@type": "CreativeWork",

@@ -1,9 +1,6 @@
 
 ###### Bugs & TODOS ######
 
-sim2start_stop:
-	- .last works now, but adds unneccessary columns if events of the same kind happen right after one another
-
 sim_discrete_time:
 	- should include t = 0 in output (or an option for it)
 
