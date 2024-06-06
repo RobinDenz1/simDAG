@@ -89,7 +89,7 @@
 <dd><p>A named list of additional arguments passed to the <code>t0_transform_fun</code>. Ignored if <code>t0_transform_fun=NULL</code>.</p></dd>
 
   <dt>max_t</dt>
-<dd><p>A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at \(t = 1\) (after creating the starting data with the arguments above) and will continue with until <code>max_t</code> by increasing the time by one unit at every step.</p></dd>
+<dd><p>A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at \(t = 1\) (after creating the starting data with the arguments above) and will continue until <code>max_t</code> by increasing the time by one unit at every step, updating the time-dependent nodes along the way.</p></dd>
 
   <dt>tx_nodes_order</dt>
 <dd><p>A numeric vector specifying the order in which the time-dependent nodes added to the <code>dag</code> object using the <code><a href="node.html">node_td</a></code> function should be executed at each time step. If <code>NULL</code> (default), the nodes will be generated in the order in which they were originally added.</p></dd>

@@ -83,6 +83,16 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Essentially, this function simply calculates the linear predictor defined by the <code>betas</code>-coefficients, the <code>intercept</code> and the values of the <code>parents</code>. The exponential function is then applied to this predictor and the result is passed to the <code><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></code> function. The result is a draw from a subject-specific poisson distribution, resembling the user-defined poisson regression model.</p>
+<p><strong><em>Formal Description</em></strong>:</p>
+<p>Formally, the data generation can be described as:</p>
+<p>$$Y \sim Poisson(\lambda),$$</p>
+<p>where \(Poisson()\) means that the variable is Poisson distributed with:</p>
+<p>$$P_\lambda(k) = \frac{\lambda^k e^{-\lambda}}{k!}.$$</p>
+<p>Here, \(k\) is the count and \(e\) is eulers number. The parameter \(\lambda\) is determined as:</p>
+<p>$$\lambda = \exp(\texttt{intercept} + \texttt{parents}_1 \cdot \texttt{betas}_1 + ... + \texttt{parents}_n \cdot \texttt{betas}_n),$$</p>
+<p>where \(n\) is the number of parents (<code>length(parents)</code>).</p>
+<p>For example, given <code>intercept=-15</code>, <code>parents=c("A", "B")</code>, <code>betas=c(0.2, 1.3)</code> the data generation process is defined as:</p>
+<p>$$Y \sim Poisson(\exp(-15 + A \cdot 0.2 + B \cdot 1.3)).$$</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
