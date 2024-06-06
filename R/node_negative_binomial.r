@@ -17,4 +17,3 @@ node_negative_binomial <- function(data, parents, formula=NULL, betas,
 
   return(out)
 }
-

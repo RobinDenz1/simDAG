@@ -36,7 +36,7 @@ An optional function that takes the data created at \eqn{t = 0} as the first arg
 A named list of additional arguments passed to the \code{t0_transform_fun}. Ignored if \code{t0_transform_fun=NULL}.
   }
   \item{max_t}{
-A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at \eqn{t = 1} (after creating the starting data with the arguments above) and will continue with until \code{max_t} by increasing the time by one unit at every step.
+A single integer specifying the final point in time to which the simulation should be carried out. The simulation will start at \eqn{t = 1} (after creating the starting data with the arguments above) and will continue until \code{max_t} by increasing the time by one unit at every step, updating the time-dependent nodes along the way.
   }
   \item{tx_nodes_order}{
 A numeric vector specifying the order in which the time-dependent nodes added to the \code{dag} object using the \code{\link{node_td}} function should be executed at each time step. If \code{NULL} (default), the nodes will be generated in the order in which they were originally added.

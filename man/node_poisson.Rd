@@ -29,6 +29,26 @@ A single number specifying the intercept that should be used when generating the
 }
 \details{
 Essentially, this function simply calculates the linear predictor defined by the \code{betas}-coefficients, the \code{intercept} and the values of the \code{parents}. The exponential function is then applied to this predictor and the result is passed to the \code{\link[stats]{rpois}} function. The result is a draw from a subject-specific poisson distribution, resembling the user-defined poisson regression model.
+
+\strong{\emph{Formal Description}}:
+
+Formally, the data generation can be described as:
+
+\deqn{Y \sim Poisson(\lambda),}
+
+where \eqn{Poisson()} means that the variable is Poisson distributed with:
+
+\deqn{P_\lambda(k) = \frac{\lambda^k e^{-\lambda}}{k!}.}
+
+Here, \eqn{k} is the count and \eqn{e} is eulers number. The parameter \eqn{\lambda} is determined as:
+
+\deqn{\lambda = \exp(\texttt{intercept} + \texttt{parents}_1 \cdot \texttt{betas}_1 + ... + \texttt{parents}_n \cdot \texttt{betas}_n),}
+
+where \eqn{n} is the number of parents (\code{length(parents)}).
+
+For example, given \code{intercept=-15}, \code{parents=c("A", "B")}, \code{betas=c(0.2, 1.3)} the data generation process is defined as:
+
+\deqn{Y \sim Poisson(\exp(-15 + A \cdot 0.2 + B \cdot 1.3)).}
 }
 \author{
 Robin Denz

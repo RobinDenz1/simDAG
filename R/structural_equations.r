@@ -95,8 +95,8 @@ str_eq_poisson <- function(node) {
     out <- paste0(node$name, " ~ Poisson()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-    out <- paste0(node$name, " ~ Poisson(", node$intercept, " + ", beta_eq,
-                  ")")
+    out <- paste0(node$name, " ~ Poisson(exp(", node$intercept, " + ", beta_eq,
+                  "))")
   }
   return(out)
 }

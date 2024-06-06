@@ -50,8 +50,8 @@ Formally, the data generation process can be described as a series of conditiona
 where:
 
 \deqn{p = \begin{cases}
-			0.5, & \text{if } \code{sex="male"} \\
-			0.7, & \text{if } \code{sex="female"} \\
+			0.5, & \text{if } \texttt{sex="male"} \\
+			0.7, & \text{if } \texttt{sex="female"} \\
 		\end{cases},}
 
 and \eqn{Bernoulli(p)} is the Bernoulli distribution with success probability \eqn{p}. If the outcome has more than two categories, the Bernoulli distribution would be replaced by \eqn{Multinomial(p)} with \eqn{p} being replaced by a matrix of class probabilities. If there are more than two variables, the conditional distribution would be stratified by the intersection of all subgroups defined by the variables.

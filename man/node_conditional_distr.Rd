@@ -46,8 +46,8 @@ Utilizing the user-defined distribution in each stratum of \code{parents} (suppl
 Formally, the data generation process can be described as a series of conditional equations. For example, suppose that there is just one parent node \code{sex} with the levels \code{male} and \code{female} with the goal of creating a continuous outcome that has a normal distribution of \eqn{N(10, 3)} for males and \eqn{N(7, 2)} for females. The conditional equation is then:
 
 \deqn{Y \sim \begin{cases}
-			N(10, 3), & \text{if } \code{sex="male"} \\
-			N(7, 2), & \text{if } \code{sex="female"} \\
+			N(10, 3), & \text{if } \texttt{sex="male"} \\
+			N(7, 2), & \text{if } \texttt{sex="female"} \\
 		\end{cases},}
 
 If there are more than two variables, the conditional distribution would be stratified by the intersection of all subgroups defined by the variables.

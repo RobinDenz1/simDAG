@@ -40,3 +40,8 @@ New Features
 
 * Added the `as.igraph.DAG()` method which extends the generic function `as.igraph()` to conveniently parse `DAG` objects to `igraph` objects
 * Added `as.data.table.simDT()` and `as.data.frame.simDT()` for user convenience
+
+Documentation
+
+* Documentation pages of most nodes now include formal descriptions of the data generation mechanism
+* Re-wrote the documentation page for custom node definition

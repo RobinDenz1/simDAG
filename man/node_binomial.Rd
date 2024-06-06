@@ -48,7 +48,7 @@ Using the normal form a logistic regression model, the observation specific even
 
 Formally, the data generation can be described as:
 
-\deqn{Y \sim Bernoulli(logit(\code{intercept} + \code{parents}_1 \cdot \code{betas}_1 + ... + \code{parents}_n \cdot \code{betas}_n)),}
+\deqn{Y \sim Bernoulli(logit(\texttt{intercept} + \texttt{parents}_1 \cdot \texttt{betas}_1 + ... + \texttt{parents}_n \cdot \texttt{betas}_n)),}
 
 where \eqn{Bernoulli(p)} denotes one Bernoulli trial with success probability \eqn{p}, \eqn{n} is the number of parents (\code{length(parents)}) and the \eqn{logit(x)} function is defined as:
 

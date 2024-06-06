@@ -37,9 +37,9 @@ Using the general linear regression equation, the observation-specific value tha
 
 Formally, the data generation can be described as:
 
-\deqn{Y \sim \code{intercept} + \code{parents}_1 \cdot \code{betas}_1 + ... + \code{parents}_n \cdot \code{betas}_n+ N(0, \code{error}),}
+\deqn{Y \sim \texttt{intercept} + \texttt{parents}_1 \cdot \texttt{betas}_1 + ... + \texttt{parents}_n \cdot \texttt{betas}_n+ N(0, \texttt{error}),}
 
-where \eqn{N(0, \code{error})} denotes the normal distribution with mean 0 and a standard deviation of \code{error} and \eqn{n} is the number of parents (\code{length(parents)}).
+where \eqn{N(0, \texttt{error})} denotes the normal distribution with mean 0 and a standard deviation of \code{error} and \eqn{n} is the number of parents (\code{length(parents)}).
 
 For example, given \code{intercept=-15}, \code{parents=c("A", "B")}, \code{betas=c(0.2, 1.3)} and \code{error=2} the data generation process is defined as:
 
