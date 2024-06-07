@@ -81,6 +81,7 @@
 <ul><li>Fixed a small bug in input checks of the <code><a href="../reference/node_time_to_event.html">node_time_to_event()</a></code> function, which printed an error when not all arguments to <code>prob_fun</code> were supplied, even when these arguments had default values</li>
 <li>Fixed bug in <code>print.DAG.node()</code> which occurred when a time-to-event node with no parents was supplied</li>
 <li>Fixed a bug in <code><a href="../reference/sim2data.html">sim2data()</a></code> which lead to inconsistent results when <code>event_duration=0</code> was used in one or more nodes of type “time_to_event” or “competing_events”. This made me realize that event durations smaller than 1 make no sense. They are now no longer allowed and the default of the node types has been changed accordingly.</li>
+<li>Fixed a bug that resulted in errors when interaction terms were being supplied through <code>formula</code> objects of child nodes</li>
 </ul><p>New Features</p>
 <ul><li>Added the <code><a href="../reference/as.igraph.DAG.html">as.igraph.DAG()</a></code> method which extends the generic function <code><a href="https://r.igraph.org/reference/as.igraph.html" class="external-link">as.igraph()</a></code> to conveniently parse <code>DAG</code> objects to <code>igraph</code> objects</li>
 <li>Added <code><a href="../reference/sim2data.html">as.data.table.simDT()</a></code> and <code><a href="../reference/sim2data.html">as.data.frame.simDT()</a></code> for user convenience</li>
