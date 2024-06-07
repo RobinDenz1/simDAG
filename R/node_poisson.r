@@ -4,7 +4,8 @@
 node_poisson <- function(data, parents, formula=NULL, betas, intercept) {
 
   if (!is.null(formula)) {
-    data <- stats::model.frame(formula=formula, data=data)
+    data <- stats::model.matrix(object=formula, data=data)
+    data <- as.data.frame(data[, -1])
   } else {
     data <- as.data.frame(data[, parents, with=FALSE])
   }

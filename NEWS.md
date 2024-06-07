@@ -35,6 +35,7 @@ Bug Fixes
 * Fixed a small bug in input checks of the `node_time_to_event()` function, which printed an error when not all arguments to `prob_fun` were supplied, even when these arguments had default values
 * Fixed bug in `print.DAG.node()` which occurred when a time-to-event node with no parents was supplied
 * Fixed a bug in `sim2data()` which lead to inconsistent results when `event_duration=0` was used in one or more nodes of type "time_to_event" or "competing_events". This made me realize that event durations smaller than 1 make no sense. They are now no longer allowed and the default of the node types has been changed accordingly.
+* Fixed a bug that resulted in errors when interaction terms were being supplied through `formula` objects of child nodes 
 
 New Features
 

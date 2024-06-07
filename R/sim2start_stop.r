@@ -45,8 +45,7 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
     # length 1 event intervals
     if (event_duration > 1) {
       data[, .event_cumsum := cumsum(eval(parse(text=target_event))), by=.id]
-      data[, (target_event) := fifelse((.event_cumsum %% event_duration)==1,
-                                        TRUE, FALSE)]
+      data[, (target_event) := (.event_cumsum %% event_duration)==1]
       data[, .event_cumsum := NULL]
     }
 
