@@ -10,50 +10,53 @@
 #' @importFrom data.table shift
 #' @importFrom data.table copy
 #' @importFrom data.table setkey
-collapse_for_target_event <- function(d, target_event, keep_only_first=FALSE) {
+collapse_for_target_event <- function(data, target_event,
+                                      keep_only_first=FALSE) {
 
   # silence devtools check()
   .is_equal_to_next <- .event_lag <- .change_row <- .change_row_shift <- NULL
   . <- .time <- .id <- start <- stop <- NULL
 
-  d <- copy(d)
-  max_t <- max(d$stop)
+  data <- copy(data)
+  max_t <- max(data$stop)
 
   # get indicator whether the current row is equal to the next row,
   # including all columns of interest - minus target_event
-  d[, .is_equal_to_next := check_next_row_equal(.SD), by=.id,
-    .SDcols=setdiff(names(d), c(".id", "start", "stop", target_event))]
-  d[is.na(.is_equal_to_next), .is_equal_to_next := FALSE]
+  data[, .is_equal_to_next := check_next_row_equal(.SD), by=.id,
+       .SDcols=setdiff(names(data), c(".id", "start", "stop", target_event))]
+  data[is.na(.is_equal_to_next), .is_equal_to_next := FALSE]
 
   # get lagged version of target event
-  d[, .event_lag := shift(eval(parse(text=target_event)), -1, fill=FALSE)]
+  data[, .event_lag := shift(eval(parse(text=target_event)), -1, fill=FALSE)]
 
   # update stop and target event
-  d[, .change_row := .event_lag==TRUE & .is_equal_to_next==TRUE &
-      eval(parse(text=target_event))==FALSE]
-  d[.change_row==TRUE, stop := stop + 1]
-  d[.change_row==TRUE, eval(target_event) := TRUE]
+  data[, .change_row := .event_lag==TRUE & .is_equal_to_next==TRUE &
+        eval(parse(text=target_event))==FALSE]
+  data[.change_row==TRUE, stop := stop + 1]
+  data[.change_row==TRUE, eval(target_event) := TRUE]
 
   # remove rows no longer needed
-  d[, .change_row_shift := shift(.change_row, type="lag", fill=FALSE), by=.id]
-  d <- d[.change_row_shift==FALSE]
+  data[, .change_row_shift := shift(.change_row, type="lag", fill=FALSE),
+       by=.id]
+  data <- data[.change_row_shift==FALSE]
 
   # remove temporary columns
-  d[, .change_row := NULL]
-  d[, .change_row_shift := NULL]
-  d[, .event_lag := NULL]
-  d[, .is_equal_to_next := NULL]
+  data[, .change_row := NULL]
+  data[, .change_row_shift := NULL]
+  data[, .event_lag := NULL]
+  data[, .is_equal_to_next := NULL]
 
   # remove everything after the first event if specified
   if (keep_only_first) {
-    d_first <- d[, .(.time = fifelse(any(eval(parse(text=target_event))),
-                 stop[which(eval(parse(text=target_event)))[1]], Inf)), by=.id]
-    d <- merge.data.table(d, d_first, by=".id")
-    d <- d[stop <= .time]
-    d[, .time := NULL]
-    setkey(d, NULL)
+    d_first <- data[, .(.time = fifelse(any(eval(parse(text=target_event))),
+                      stop[which(eval(parse(text=target_event)))[1]], Inf)),
+                    by=.id]
+    data <- merge.data.table(data, d_first, by=".id")
+    data <- data[stop <= .time]
+    data[, .time := NULL]
+    setkey(data, NULL)
   }
-  return(d)
+  return(data)
 }
 
 ## check if each row is equal to the next row

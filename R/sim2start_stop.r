@@ -53,6 +53,7 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
     # are not grouped together
     if (event_duration == 1) {
       data[, .event_count := cumsum(eval(parse(text=target_event))), by=.id]
+      varying <- c(varying, ".event_count")
     }
   }
 
@@ -63,11 +64,11 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
 
   # make it outcome centric
   if (!is.null(target_event)) {
-    data <- collapse_for_target_event(data, target_event=target_event,
-                                      keep_only_first=keep_only_first)
     if (event_duration==1) {
       data[, .event_count := NULL]
     }
+    data <- collapse_for_target_event(data, target_event=target_event,
+                                      keep_only_first=keep_only_first)
   }
   return(data)
 }

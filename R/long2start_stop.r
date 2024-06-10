@@ -3,12 +3,15 @@
 ## the start / stop format
 #' @importFrom data.table fifelse
 #' @importFrom data.table data.table
+#' @importFrom data.table setkey
 #' @importFrom data.table setkeyv
 #' @importFrom data.table shift
 #' @importFrom data.table setDT
 #' @importFrom data.table setcolorder
 #' @importFrom data.table is.data.table
 #' @importFrom data.table :=
+#' @importFrom data.table .SD
+#' @importFrom data.table .N
 #' @export
 long2start_stop <- function(data, id, time, varying, overlap=FALSE,
                             check_inputs=TRUE) {
@@ -28,8 +31,10 @@ long2start_stop <- function(data, id, time, varying, overlap=FALSE,
                                  varying=varying)
   }
 
-  start <- NULL
+  start <- .is_equal_to_next <- NULL
   max_t <- max(data[[time]])
+
+  setkeyv(data, c(id, time))
 
   # edge case with no time-varying variables
   if (length(varying)==0) {
@@ -47,51 +52,27 @@ long2start_stop <- function(data, id, time, varying, overlap=FALSE,
     return(data)
   }
 
-  # add 0 rows to data
-  data_0 <- data[data[[time]] == 1,]
-  setkeyv(data_0, cols=c(id, time))
-  data_0[, (time) := 0]
+  # identify rows that changed
+  data[, .is_equal_to_next := check_next_row_equal(.SD), by=eval(id),
+       .SDcols=varying]
+  data[, .is_equal_to_next := shift(.is_equal_to_next, type="lag"),
+       by=eval((id))]
 
-  for (i in seq_len(length(varying))) {
-    col <- varying[i]
-    data_0[, (col) := FALSE]
-  }
-
-  data <- setDT(rbind(data, data_0))
-  setkeyv(data, cols=c(id, time))
-
-  # log in which rows something changed in the varying variables
-  for (i in seq_len(length(varying))) {
-    name <- varying[i]
-    name_shift <- paste0(varying[i], "_shift")
-    name_n_diff <- paste0("n_diff_", name)
-
-    data[, (name_shift) := shift(eval(parse(text=name)),
-                                 type="lead", fill=NA), by=eval((id))]
-    data[, (name_n_diff) := cumsum(eval(parse(text=name)) !=
-                                   eval(parse(text=name_shift))), by=eval((id))]
-    data[(time)==0, (name_n_diff) := 0]
-    data[, (name) := NULL]
-  }
-
-  colnames(data)[colnames(data) %in% paste0(varying, "_shift")] <- varying
-
-  # remove rows without changes
-  by_cols <- colnames(data)[!colnames(data) %in% c(varying, time)]
-  data <- unique(data, by=by_cols)
-  setkeyv(data, cols=c(id, time))
-
-  # remove unneeded columns
-  n_diff_names <- paste0("n_diff_", varying)
-  data[, c(n_diff_names) := NULL]
+  # remove un-needed rows
+  data <- data[eval(parse(text=time))==1 | eval(parse(text=time))==max_t |
+                 !.is_equal_to_next]
+  data[, .is_equal_to_next := NULL]
 
   # assign start and stop
   colnames(data)[colnames(data)==time] <- "start"
   data[, stop := shift(start, type="lead", fill=max_t), by=eval((id))]
 
-  # fix columns
-  data <- data[start!=stop]
-  data[, start := start + 1]
+  # remove more rows
+  data <- unique(data, by=c(id, "stop", varying))
+
+  # correct stop
+  data[, stop := fifelse((stop < max_t) | (stop==max_t & seq_len(.N)!=.N),
+                         stop - 1, stop, na=stop), by=eval(id)]
 
   if (overlap) {
     data[, stop := stop + 1]

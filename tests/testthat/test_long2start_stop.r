@@ -20,6 +20,48 @@ test_that("general test case", {
   expect_equal(out_dat, expected)
 })
 
+test_that("shuffled input", {
+
+  long <- data.table(.id=rep(seq_len(10), each=5),
+                     .simulation_time=rep(seq_len(5), 10),
+                     A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
+                         TRUE),
+                     B=FALSE)
+  long <- long[sample(nrow(long), replace=FALSE),]
+
+  expected <- data.table(.id=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 10),
+                         start=c(rep(1, 9), 4, 1, 4),
+                         stop=c(rep(5, 8), 3, 5, 3, 5),
+                         A=c(rep(FALSE, 9), TRUE, FALSE, TRUE),
+                         B=FALSE)
+
+  out_dat <- long2start_stop(data=long, id=".id", time=".simulation_time",
+                             varying=c("A", "B"))
+
+  expect_equal(out_dat, expected)
+})
+
+test_that("event right at the end", {
+
+  long <- data.table(.id=rep(seq_len(10), each=5),
+                     .simulation_time=rep(seq_len(5), 10),
+                     A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
+                         TRUE),
+                     B=c(rep(FALSE, 49), TRUE))
+  setkey(long, .id, .simulation_time)
+
+  expected <- data.table(.id=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 10, 10),
+                         start=c(rep(1, 9), 4, 1, 4, 5),
+                         stop=c(rep(5, 8), 3, 5, 3, 4, 5),
+                         A=c(rep(FALSE, 9), TRUE, FALSE, TRUE, TRUE),
+                         B=c(rep(FALSE, 12), TRUE))
+
+  out_dat <- long2start_stop(data=long, id=".id", time=".simulation_time",
+                             varying=c("A", "B"))
+
+  expect_equal(out_dat, expected)
+})
+
 test_that("non-logical time-varying variables", {
 
   long <- data.table(.id=rep(seq_len(10), each=5),
@@ -41,7 +83,7 @@ test_that("non-logical time-varying variables", {
   expect_equal(out_dat, expected)
 })
 
-test_that("works with no varying variables", {
+test_that("no varying variables", {
 
   long <- data.frame(.id=rep(seq_len(10), each=5),
                      .simulation_time=rep(seq_len(5), 10),
