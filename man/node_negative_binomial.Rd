@@ -13,7 +13,7 @@ node_negative_binomial(data, parents, formula=NULL, betas,
 }
 \arguments{
   \item{data}{
-A \code{data.frame} containing all columns specified by \code{parents}.
+A \code{data.table} (or something that can be coerced to a \code{data.table}) containing all columns specified by \code{parents}.
   }
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has. If non-linear combinations or interaction effects should be included, the user may specify the \code{formula} argument instead.

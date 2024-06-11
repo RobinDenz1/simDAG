@@ -5,7 +5,7 @@
 Simulate a Time-to-Event Node in Discrete-Time Simulation
 }
 \description{
-This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. See details.
+This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. Can only be used inside of the \code{\link{sim_discrete_time}} function, not outside of it. See details.
 }
 \usage{
 node_time_to_event(data, parents, sim_time, name,
@@ -17,7 +17,7 @@ node_time_to_event(data, parents, sim_time, name,
 }
 \arguments{
   \item{data}{
-A \code{data.frame} containing all columns specified by \code{parents}.
+A \code{data.table} containing all columns specified by \code{parents}. Similar objects such as \code{data.frame}s are not supported.
   }
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has. Those child nodes should be valid column names in \code{data}. Because the state of this variable is by definition dependent on its previous states, the columns produced by this function will automatically be considered its parents without the user having to manually specify this.
@@ -87,6 +87,9 @@ Robin Denz, Katharina Meiszl
 }
 \value{
 Returns a \code{data.table} containing at least two columns with updated values of the node.
+}
+\note{
+This function cannot be called outside of the \code{\link{sim_discrete_time}} function. It only makes sense to use it as a type in a \code{\link{node_td}} function call, as described in the documentation and vignettes.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node_td}}, \code{\link{sim_discrete_time}}

@@ -6,6 +6,10 @@ node_conditional_prob <- function(data, parents, probs, default_probs=NULL,
                                   default_val=NA, labels=NULL,
                                   coerce2factor=FALSE, check_inputs=TRUE) {
 
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
   if (check_inputs) {
     check_inputs_node_conditional_probs(data=data,
                                         parents=parents,

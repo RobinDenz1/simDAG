@@ -8,6 +8,11 @@
 node_multinomial <- function(data, parents, betas, intercepts,
                              labels=NULL, coerce2factor=TRUE,
                              return_prob=FALSE) {
+
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
   # prep data
   mat <- as.matrix(cbind(rep(1, nrow(data)), data[, parents, with=FALSE]))
 

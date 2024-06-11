@@ -14,7 +14,7 @@ node_multinomial(data, parents, betas, intercepts,
 }
 \arguments{
   \item{data}{
-A \code{data.frame} containing all columns specified by \code{parents}.
+A \code{data.table} (or something that can be coerced to a \code{data.table}) containing all columns specified by \code{parents}.
   }
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has.

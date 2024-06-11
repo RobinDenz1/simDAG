@@ -8,13 +8,16 @@ Generate multiple datasets from a single \code{DAG} object
 This function takes a single \code{DAG} object and generates a list of multiple datasets, possible using parallel processing
 }
 \usage{
-sim_n_datasets(dag, n_repeats, n_cores=parallel::detectCores(),
+sim_n_datasets(dag, n_sim, n_repeats, n_cores=parallel::detectCores(),
                data_format="raw", data_format_args=list(),
                seed=stats::runif(1), progressbar=TRUE, ...)
 }
 \arguments{
   \item{dag}{
 A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{?empty_dag} or \code{?node} for more details. If the \code{dag} contains time-varying nodes added using the \code{\link{node_td}} function, the \code{\link{sim_discrete_time}} function will be used to generate the data. Otherwise, the \code{\link{sim_from_dag}} function will be used.
+  }
+  \item{n_sim}{
+A single number specifying how many observations per dataset should be generated.
   }
   \item{n_repeats}{
 A single number specifying how many datasets should be generated.
@@ -35,7 +38,7 @@ A seed for the random number generator. By supplying a value to this argument, t
 Either \code{TRUE} (default) or \code{FALSE}, specifying whether a progressbar should be used. Currently only works if \code{n_cores > 1}, ignored otherwise.
   }
   \item{...}{
-Further arguments passed to the \code{\link{sim_from_dag}} function (if the \code{dag} does not contain time-varying nodes) or the \code{\link{sim_discrete_time}} function (if the \code{dag} contains time-varying nodes). For example, the \code{n_sim} argument needs to be defined in either case when using this function.
+Further arguments passed to the \code{\link{sim_from_dag}} function (if the \code{dag} does not contain time-varying nodes) or the \code{\link{sim_discrete_time}} function (if the \code{dag} contains time-varying nodes).
   }
 }
 \details{

@@ -5,6 +5,10 @@ node_binomial <- function(data, parents, formula=NULL, betas, intercept,
                           return_prob=FALSE, coerce2factor=FALSE,
                           coerce2numeric=FALSE, labels=NULL) {
 
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
   if (!is.null(formula)) {
     data <- stats::model.matrix(object=formula, data=data)
     data <- as.data.frame(data[, -1])

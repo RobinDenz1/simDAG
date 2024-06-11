@@ -5,7 +5,7 @@
 Simulate a Node Using Logistic Regression
 }
 \description{
-Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a bernoulli distribution accordingly.
+Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a Bernoulli distribution accordingly.
 }
 \usage{
 node_binomial(data, parents, formula=NULL, betas, intercept,
@@ -14,7 +14,7 @@ node_binomial(data, parents, formula=NULL, betas, intercept,
 }
 \arguments{
   \item{data}{
-A \code{data.frame} containing all columns specified by \code{parents}.
+A \code{data.table} (or something that can be coerced to a \code{data.table}) containing all columns specified by \code{parents}.
   }
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has. If non-linear combinations or interaction effects should be included, the user may specify the \code{formula} argument instead.

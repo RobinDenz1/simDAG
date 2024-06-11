@@ -5,7 +5,7 @@
 Simulate a Time-to-Event Node with Multiple Mutually Exclusive Events in Discrete-Time Simulation
 }
 \description{
-This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (which type of event the person is currently experiencing) and \code{name_time} (the time at which the current event started). Past events and their kind are stored in two lists. See details.
+This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (which type of event the person is currently experiencing) and \code{name_time} (the time at which the current event started). Can only be used inside of the \code{\link{sim_discrete_time}} function, not outside of it. Past events and their kind are stored in two lists. See details.
 }
 \usage{
 node_competing_events(data, parents, sim_time, name,
@@ -16,7 +16,7 @@ node_competing_events(data, parents, sim_time, name,
 }
 \arguments{
   \item{data}{
-A \code{data.frame} containing all columns specified by \code{parents}.
+A \code{data.table} containing all columns specified by \code{parents}. Similar objects such as \code{data.frame}s are not supported.
   }
   \item{parents}{
 A character vector specifying the names of the parents that this particular child node has.
@@ -80,6 +80,9 @@ Robin Denz
 }
 \value{
 Returns a \code{data.table} containing the updated columns of the node.
+}
+\note{
+This function cannot be called outside of the \code{\link{sim_discrete_time}} function. It only makes sense to use it as a type in a \code{\link{node_td}} function call, as described in the documentation and vignettes.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim_from_dag}}, \code{\link{sim_discrete_time}}

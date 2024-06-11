@@ -4,6 +4,10 @@
 node_negative_binomial <- function(data, parents, formula=NULL, betas,
                                    intercept, theta) {
 
+  if (!data.table::is.data.table(data)) {
+    data.table::setDT(data)
+  }
+
   if (!is.null(formula)) {
     data <- stats::model.matrix(object=formula, data=data)
     data <- as.data.frame(data[, -1])
