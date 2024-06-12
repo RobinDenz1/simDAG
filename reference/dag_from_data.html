@@ -68,7 +68,7 @@
 <dd><p>A partially specified <code>DAG</code> object created using the <code><a href="empty_dag.html">empty_dag</a></code> and <code><a href="node.html">node</a></code> functions. See <code><a href="node.html">?node</a></code> for a more detailed description on how to do this. All nodes need to contain information about their <code>name</code>, <code>type</code> and <code>parents</code>. All other attributes will be added (or overwritten if already in there) when using this function. Currently does not support DAGs with time-dependent nodes added with the <code><a href="node.html">node_td</a></code> function.</p></dd>
 
   <dt>data</dt>
-<dd><p>A <code>data.frame</code> used to obtain the parameters needed in the <code>DAG</code> object. It needs to contain a column for every node specified in the <code>dag</code> argument.</p></dd>
+<dd><p>A <code>data.frame</code> or <code>data.table</code> used to obtain the parameters needed in the <code>DAG</code> object. It needs to contain a column for every node specified in the <code>dag</code> argument.</p></dd>
 
   <dt>return_models</dt>
 <dd><p>Whether to return a list of all models that were fit to estimate the information for all child nodes (elements in <code>dag</code> where the <code>parents</code> argument is not <code>NULL</code>).</p></dd>
