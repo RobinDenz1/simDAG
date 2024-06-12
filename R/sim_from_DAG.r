@@ -5,6 +5,8 @@
 #' @export
 sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
 
+  requireNamespace("data.table")
+
   if (check_inputs) {
     check_inputs_sim_from_dag(dag=dag, n_sim=n_sim, sort_dag=sort_dag)
   }
@@ -28,8 +30,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
 
     data[[i]] <- out
   }
-  data <- dplyr::bind_cols(data)
-  setDT(data)
+  data <- as.data.table(unlist(data, recursive=FALSE), check.names=TRUE)
 
   if (length(dag$child_nodes)==0) {
     return(data)

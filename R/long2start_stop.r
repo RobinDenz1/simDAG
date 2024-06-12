@@ -21,6 +21,8 @@ long2start_stop <- function(data, id, time, varying, overlap=FALSE,
          " to a data.table (data.frame, tibble, ...).")
   }
 
+  requireNamespace("data.table")
+
   # transform to data.table if needed
   if (!is.data.table(data)) {
     setDT(data)

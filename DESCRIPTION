@@ -15,10 +15,8 @@ License: GPL (>= 3)
 URL: https://github.com/RobinDenz1/simDAG,
     https://robindenz1.github.io/simDAG/
 BugReports: https://github.com/RobinDenz1/siMDAG/issues
-Depends:
-	data.table (>= 1.15.0)
 Imports:
-	dplyr,
+	data.table (>= 1.15.0),
 	Rfast,
 	rlang,
 	igraph
