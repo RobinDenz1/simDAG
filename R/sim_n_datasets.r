@@ -37,7 +37,7 @@ sim_n_datasets <- function(dag, n_sim, n_repeats,
     # set up cluster
     cl <- parallel::makeCluster(n_cores, outfile="")
     doSNOW::registerDoSNOW(cl)
-    pckgs <- c("data.table", "simDAG", "dplyr", "Rfast")
+    pckgs <- c("data.table", "simDAG", "Rfast")
     glob_funs <- ls(envir=.GlobalEnv)[sapply(ls(envir=.GlobalEnv), function(obj)
       "function"==class(eval(parse(text=obj)))[1])]
 
