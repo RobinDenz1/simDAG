@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,11 +80,8 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>sim</dt>
+    <dl><dt>sim, x</dt>
 <dd><p>An object created with the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function.</p></dd>
-
-  <dt>x</dt>
-<dd><p>Equivalent to argument <code>sim</code>.</p></dd>
 
   <dt>to</dt>
 <dd><p>Specifies the format of the output data. Must be one of: <code>"start_stop"</code>, <code>"long"</code>, <code>"wide"</code>.</p></dd>
@@ -125,7 +122,7 @@
     <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using one of these functions, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below. Both <code>as.data.table</code> and <code>as.data.frame</code> internally call <code>sim2data</code> and only exist for user convenience.</p>
 <p><strong><em>The start-stop format</em>:</strong></p>
 <p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can specify <code>overlap=TRUE</code> instead.</p>
-<p>By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way. In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the <code>target_event</code> variable. The previously specified duration of this target event is then ignored. If only the first occurence of the event is of interest, users may also set <code>keep_only_first=TRUE</code> to keep only information up until the first event per person.</p>
+<p>By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the <code>target_event</code> variable. The previously specified duration of this target event is then ignored. If only the first occurrence of the event is of interest, users may also set <code>keep_only_first=TRUE</code> to keep only information up until the first event per person.</p>
 <p><strong><em>The long format</em>:</strong></p>
 <p>The long format (<code>to="long"</code>) corresponds to a <code>data.table</code> in which there is one row per person per point in time. The unique person identifier is stored in the <code>.id</code> column and the unique points in time are given in the <code>.time</code> column.</p>
 <p><strong><em>The wide format</em>:</strong></p>
@@ -161,6 +158,10 @@
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="sim_discrete_time.html">sim_discrete_time</a></code></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Sy Han Chiou, Gongjun Xu, Jun Yan, and Chiung-Yu Huang (2023). "Regression Modeling for Recurrent Events Possibly with an Informative Terminal Event Using R Package reReg". In: Journal of Statistical Software. 105.5, pp. 1-34.</p>
     </div>
 
     <div class="section level2">

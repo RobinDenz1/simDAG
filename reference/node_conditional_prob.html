@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,7 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Utilizing the user-defined discrete probability distribution in each stratum of <code>parents</code> (supplied using the <code>probs</code> argument), this function simply calls either the <code><a href="rbernoulli.html">rbernoulli</a></code> or the <code><a href="rcategorical.html">rcategorical</a></code> function.</p>
 <p><strong><em>Formal Description</em></strong>:</p>
-<p>Formally, the data generation process can be described as a series of conditional equations. For example, suppose that there is just one parent node <code>sex</code> with the levels <code>male</code> and <code>female</code> with the goal of creating a binary outcome that has a probability of occurence of 0.5 for males and 0.7 for females. The conditional equation is then:</p>
+<p>Formally, the data generation process can be described as a series of conditional equations. For example, suppose that there is just one parent node <code>sex</code> with the levels <code>male</code> and <code>female</code> with the goal of creating a binary outcome that has a probability of occurrence of 0.5 for males and 0.7 for females. The conditional equation is then:</p>
 <p>$$Y \sim Bernoulli(p),$$</p>
 <p>where:</p>
 <p>$$p = \begin{cases}
