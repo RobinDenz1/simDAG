@@ -17,7 +17,7 @@ If you think that your custom node type might be useful to others, please contac
 Any function that generates some vector of size \eqn{n} with \code{n==nrow(data)}, or a \code{data.frame} with as many rows as the current data can be used as a child node. The only requirement is:
 
 \itemize{
-  \item{\strong{1.)} }{The function should have an argument called \code{n} which controls how many samples to generate.}
+  \item \strong{1.)} The function should have an argument called \code{n} which controls how many samples to generate.
 }
 
 Some examples that are already implemented in R outside of this package are \code{rnorm()}, \code{rgamma()} and \code{rbeta()}. The function may take any amount of further arguments, which will be passed through the three-dot syntax.
@@ -27,10 +27,10 @@ Some examples that are already implemented in R outside of this package are \cod
 Again, almost any function may be used to generate a child node. Only four things are required for this to work properly:
 
 \itemize{
-  \item{\strong{1.)} }{Its' name should start with \code{node_}.}
-  \item{\strong{2.)} }{It should contain an argument called \code{data} (contains the already generated data).}
-  \item{\strong{3.)} }{It should contain an argument called \code{parents} (contains a vector of the child nodes parents).}
-  \item{\strong{4.)} }{It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.}
+  \item \strong{1.)} Its' name should start with \code{node_}.
+  \item \strong{2.)} It should contain an argument called \code{data} (contains the already generated data).
+  \item \strong{3.)} It should contain an argument called \code{parents} (contains a vector of the child nodes parents).
+  \item \strong{4.)} It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
 }
 
 The function may include any amount of additional arguments specified by the user.
@@ -40,10 +40,10 @@ The function may include any amount of additional arguments specified by the use
 By time-dependent nodes we mean nodes that are created using the \code{\link{node_td}} function. In general, this works in essentially the same way as for simple root nodes or child nodes. The requirements are:
 
 \itemize{
-  \item{\strong{1.)} }{Its' name should start with \code{node_}.}
-  \item{\strong{2.)} }{It should contain an argument called \code{data} (contains the already generated data).}
-  \item{\strong{3.)} }{If it is a child node, it should contain an argument called \code{parents} (contains a vector of the child nodes parents). This is not necessary for nodes that are independently generated.}
-  \item{\strong{4.)} }{It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.}
+  \item \strong{1.)} Its' name should start with \code{node_}.
+  \item \strong{2.)} It should contain an argument called \code{data} (contains the already generated data).
+  \item \strong{3.)} If it is a child node, it should contain an argument called \code{parents} (contains a vector of the child nodes parents). This is not necessary for nodes that are independently generated.
+  \item \strong{4.)} It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
 }
 
 Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, users may add an argument to this function called \code{sim_time}. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it.
