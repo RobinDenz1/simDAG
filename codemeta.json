@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.3.3 (2024-02-29 ucrt)",
+  "runtimePlatform": "R version 4.2.1 (2022-06-23 ucrt)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -182,6 +182,7 @@
       "@type": "SoftwareApplication",
       "identifier": "data.table",
       "name": "data.table",
+      "version": ">= 1.15.0",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -191,18 +192,6 @@
       "sameAs": "https://CRAN.R-project.org/package=data.table"
     },
     "2": {
-      "@type": "SoftwareApplication",
-      "identifier": "dplyr",
-      "name": "dplyr",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=dplyr"
-    },
-    "3": {
       "@type": "SoftwareApplication",
       "identifier": "Rfast",
       "name": "Rfast",
@@ -214,7 +203,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=Rfast"
     },
-    "4": {
+    "3": {
       "@type": "SoftwareApplication",
       "identifier": "rlang",
       "name": "rlang",
@@ -226,7 +215,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rlang"
     },
-    "5": {
+    "4": {
       "@type": "SoftwareApplication",
       "identifier": "igraph",
       "name": "igraph",
@@ -240,7 +229,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1006.032KB",
+  "fileSize": "1012.379KB",
   "citation": [
     {
       "@type": "CreativeWork",

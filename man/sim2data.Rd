@@ -27,11 +27,8 @@ sim2data(sim, to, use_saved_states=sim$save_states=="all",
               check_inputs=TRUE, ...)
 }
 \arguments{
-  \item{sim}{
+  \item{sim, x}{
 An object created with the \code{\link{sim_discrete_time}} function.
-  }
-  \item{x}{
-Equivalent to argument \code{sim}.
   }
   \item{to}{
 Specifies the format of the output data. Must be one of: \code{"start_stop"}, \code{"long"}, \code{"wide"}.
@@ -74,7 +71,7 @@ The raw output of the \code{sim_discrete_time} function may be difficult to use 
 
 The start-stop format (\code{to="start_stop"}), also known as counting process or period format corresponds to a \code{data.table} containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the \code{start} and \code{stop} columns. The \code{start} column gives the time at which the period started, the \code{stop} column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, \code{start} will be equal to \code{stop}. If non-overlapping periods are desired, the user can specify \code{overlap=TRUE} instead.
 
-By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way. In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the \code{target_event} variable. The previously specified duration of this target event is then ignored. If only the first occurence of the event is of interest, users may also set \code{keep_only_first=TRUE} to keep only information up until the first event per person.
+By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the \code{target_event} variable. The previously specified duration of this target event is then ignored. If only the first occurrence of the event is of interest, users may also set \code{keep_only_first=TRUE} to keep only information up until the first event per person.
 
 \strong{\emph{The long format}:}
 
@@ -122,6 +119,9 @@ Robin Denz
 }
 \seealso{
 \code{\link{sim_discrete_time}}
+}
+\references{
+Sy Han Chiou, Gongjun Xu, Jun Yan, and Chiung-Yu Huang (2023). "Regression Modeling for Recurrent Events Possibly with an Informative Terminal Event Using R Package reReg". In: Journal of Statistical Software. 105.5, pp. 1-34.
 }
 \examples{
 library(simDAG)

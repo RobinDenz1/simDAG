@@ -3,14 +3,18 @@
 ## NOTE: this "fails" if there are two functions that have exactly the same
 #        definition in the same environment
 extract_function_name <- function(fun) {
-  env <- environment(fun)
 
-  for (obj_name in ls(env)) {
-    if (identical(env[[obj_name]], fun)) {
-      return(obj_name)
+  out <- tryCatch({
+    env <- environment(fun)
+
+    for (obj_name in ls(env)) {
+      if (identical(env[[obj_name]], fun)) {
+        return(obj_name)
+      }
     }
-  }
-  return(NA_character_)
+  }, error=function(err){return(NA_character_)})
+
+  return(out)
 }
 
 ## creates a string like 1.2 * age + ... for structural equations

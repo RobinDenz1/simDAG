@@ -10,6 +10,12 @@ test_that("one parent", {
   expect_equal(str_eq_binomial(test_node), "A ~ Bernoulli(logit(-12 + 1.2*C))")
 })
 
+test_that("one parent with return_prob", {
+  test_node <- node("A", type="binomial", parents="C", betas=1.2,
+                    intercept=-12, return_prob=TRUE)
+  expect_equal(str_eq_binomial(test_node), "A ~ logit(-12 + 1.2*C)")
+})
+
 test_that("multiple parents", {
   test_node <- node("A", type="binomial", parents=c("C", "D", "E"),
                     betas=c(1.2, 0.3, 7), intercept=-12)

@@ -43,7 +43,7 @@ Utilizing the user-defined discrete probability distribution in each stratum of 
 
 \strong{\emph{Formal Description}}:
 
-Formally, the data generation process can be described as a series of conditional equations. For example, suppose that there is just one parent node \code{sex} with the levels \code{male} and \code{female} with the goal of creating a binary outcome that has a probability of occurence of 0.5 for males and 0.7 for females. The conditional equation is then:
+Formally, the data generation process can be described as a series of conditional equations. For example, suppose that there is just one parent node \code{sex} with the levels \code{male} and \code{female} with the goal of creating a binary outcome that has a probability of occurrence of 0.5 for males and 0.7 for females. The conditional equation is then:
 
 \deqn{Y \sim Bernoulli(p),}
 

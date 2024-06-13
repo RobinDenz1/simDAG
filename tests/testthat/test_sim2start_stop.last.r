@@ -50,7 +50,12 @@ test_that("overall test case 1 time_to_event node", {
   )
 
   out_dat <- sim2start_stop.last(sim)
+  expect_equal(out_dat, true_out)
 
+  # with overlap
+  true_out[, stop := stop + 1]
+
+  out_dat <- sim2start_stop.last(sim, overlap=TRUE)
   expect_equal(out_dat, true_out)
 })
 

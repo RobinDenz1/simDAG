@@ -18,6 +18,12 @@ test_that("general test case", {
                              varying=c("A", "B"))
 
   expect_equal(out_dat, expected)
+
+  # with overlap=TRUE
+  expected[, stop := stop + 1]
+  out_dat <- long2start_stop(data=long, id=".id", time=".simulation_time",
+                             varying=c("A", "B"), overlap=TRUE)
+  expect_equal(out_dat, expected)
 })
 
 test_that("shuffled input", {

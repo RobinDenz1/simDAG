@@ -14,6 +14,21 @@ test_that("general test case", {
   expect_equal(mean(dat$gauss), 101.96705, tolerance=0.001)
 })
 
+test_that("calling the function directly", {
+
+  set.seed(43525)
+
+  dag <- empty_dag() +
+    node("A", "rnorm", mean=20, sd=5) +
+    node("B", "rbernoulli", p=0.1)
+  data <- as.data.frame(sim_from_dag(dag, n_sim=1000))
+
+  out <- node_gaussian(data=data, parents=c("A", "B"), betas=c(10, 11),
+                       intercept=-100, error=10)
+
+  expect_equal(mean(out), 101.96705, tolerance=0.001)
+})
+
 test_that("with formula", {
 
   dag <- empty_dag() +

@@ -12,6 +12,19 @@ test_that("sampling events", {
   expect_true(sum(dat$B)==99)
 })
 
+test_that("calling the function directly", {
+
+  set.seed(435)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3)
+  data <- as.data.frame(sim_from_dag(dag=dag, n_sim=100))
+
+  out <- node_binomial(data=data, parents="A", betas=1, intercept=-2)
+
+  expect_true(sum(out)==99)
+})
+
 test_that("getting probabilities", {
 
   set.seed(43565)

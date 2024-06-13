@@ -38,8 +38,8 @@ sim_n_datasets <- function(dag, n_sim, n_repeats,
     cl <- parallel::makeCluster(n_cores, outfile="")
     doSNOW::registerDoSNOW(cl)
     pckgs <- c("data.table", "simDAG", "Rfast")
-    glob_funs <- ls(envir=.GlobalEnv)[sapply(ls(envir=.GlobalEnv), function(obj)
-      "function"==class(eval(parse(text=obj)))[1])]
+    glob_funs <- ls(envir=.GlobalEnv)[vapply(ls(envir=.GlobalEnv), function(obj)
+      "function"==class(eval(parse(text=obj)))[1], FUN.VALUE=logical(1))]
 
     # add progress bar
     if (progressbar) {

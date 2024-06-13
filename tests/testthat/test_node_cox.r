@@ -17,6 +17,24 @@ test_that("with censoring", {
   expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
 })
 
+test_that("calling the function directly", {
+
+  set.seed(3245)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=2) +
+    node("B", type="rbernoulli", p=0.5)
+  data <- as.data.frame(sim_from_dag(dag=dag, n_sim=100))
+
+  out <- node_cox(data=data, parents=c("A", "B"), betas=c(0.2, 1),
+                  lambda=2, gamma=1, surv_dist="weibull", cens_dist="runif",
+                  cens_args=list(min=0, max=10000), name="C")
+
+  expect_equal(colnames(out), c("C_time", "C_status"))
+  expect_true(all(out$C_status==1))
+  expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
+})
+
 test_that("without censoring", {
 
   set.seed(324545)

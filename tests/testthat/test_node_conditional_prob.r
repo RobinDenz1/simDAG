@@ -16,6 +16,23 @@ test_that("two classes, one parent node", {
   expect_true(sum(data$A)==656)
 })
 
+test_that("calling the function directly", {
+
+  set.seed(42)
+
+  probs <- list(male=0.5, female=0.8)
+
+  dag <- empty_dag() +
+    node("sex", type="rcategorical", labels=c("male", "female"),
+         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+    node("chemo", type="rbernoulli", p=0.5)
+  data <- as.data.frame(sim_from_dag(dag=dag, n_sim=1000))
+
+  out <- node_conditional_prob(data=data, parents="sex", probs=probs)
+
+  expect_true(sum(out)==656)
+})
+
 test_that("two classes, one parent node, labels & factor", {
 
   set.seed(42)
