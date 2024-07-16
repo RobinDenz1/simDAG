@@ -5,73 +5,51 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="simDAG">
 <title>Simulating Data from a known DAG • simDAG</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulating Data from a known DAG">
-<meta property="og:description" content="simDAG">
-<meta property="og:image" content="https://robindenz1.github.io/simDAG/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulating Data from a known DAG">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.9000</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a>
-    <a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a>
-    <a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a></li>
+    <li><a class="dropdown-item" href="../articles/v_using_formulas.html">Specifying Formulas in a DAG</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/RobinDenz1/siMDAG/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/RobinDenz1/siMDAG/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -84,7 +62,7 @@
                         <h4 data-toc-skip class="author">Robin Denz</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/HEAD/vignettes/v_sim_from_dag.Rmd" class="external-link"><code>vignettes/v_sim_from_dag.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/main/vignettes/v_sim_from_dag.Rmd" class="external-link"><code>vignettes/v_sim_from_dag.Rmd</code></a></small>
       <div class="d-none name"><code>v_sim_from_dag.Rmd</code></div>
     </div>
 
@@ -108,15 +86,25 @@ later.</p>
 </h2>
 <p>A causal DAG is a DAG in which all nodes correspond to variables and
 the directed edges correspond to direct causal relationships between
-these variables. A direct edge from node <span class="math inline">\(A\)</span> to node <span class="math inline">\(B\)</span> implies that there is direct causal
-effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(B\)</span>. On the other hand, if there is no edge
-from node <span class="math inline">\(A\)</span> to node <span class="math inline">\(B\)</span>, there is no direct causal relationship
-between these variables. Using a DAG in this way makes it easy to encode
-the causal structure of a given system, which is very useful for causal
-inference. This general idea is a centerpiece of the <strong>structural
-approach</strong> to causality developed by Pearl (2002) and Spirtes et
-al. (1993). We strongly encourage the reader to make themselves familiar
-with some of this literature before moving on.</p>
+these variables. A direct edge from node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+to node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+implies that there is direct causal effect of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>.
+On the other hand, if there is no edge from node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+to node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>,
+there is no direct causal relationship between these variables. Using a
+DAG in this way makes it easy to encode the causal structure of a given
+system, which is very useful for causal inference. This general idea is
+a centerpiece of the <strong>structural approach</strong> to causality
+developed by Pearl (2002) and Spirtes et al. (1993). We strongly
+encourage the reader to make themselves familiar with some of this
+literature before moving on.</p>
 <p>It is very simple to generate data from a defined causal DAG. To see
 why we first need to introduce the concept of <strong>root
 nodes</strong> and <strong>child nodes</strong>. A root node is a node
@@ -131,13 +119,31 @@ DAG in figure 1.</p>
 A small DAG with four nodes
 </p>
 </div>
-<p>Nodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are root nodes because they do not have
-any directed edges pointing into them. Nodes <span class="math inline">\(C\)</span> and <span class="math inline">\(D\)</span> on the other hand are child nodes. The
-parents of node <span class="math inline">\(C\)</span> are both <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> because both of these nodes have
-directed edge towards <span class="math inline">\(C\)</span>. Note that
-node <span class="math inline">\(B\)</span> is not a parent of node
-<span class="math inline">\(D\)</span> because there is no edge from
-<span class="math inline">\(B\)</span> to <span class="math inline">\(D\)</span>.</p>
+<p>Nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+are root nodes because they do not have any directed edges pointing into
+them. Nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+on the other hand are child nodes. The parents of node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+are both
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+because both of these nodes have directed edge towards
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>.
+Note that node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+is not a parent of node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+because there is no edge from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>.</p>
 <p>As the name implies, DAGs do not have cycles. Therefore every DAG has
 at least one root node. Generating data for these nodes is the first
 step to simulate data for the whole DAG. Since root nodes have no
@@ -232,12 +238,17 @@ and any kind of relationship.</p>
 <div class="section level3">
 <h3 id="defining-nodes-manually">Defining nodes manually<a class="anchor" aria-label="anchor" href="#defining-nodes-manually"></a>
 </h3>
-<p>Suppose that node <span class="math inline">\(A\)</span> in the
-figure above stands for <code>age</code>, <span class="math inline">\(B\)</span> stands for <code>sex</code>, <span class="math inline">\(C\)</span> stands for the Body-Mass-Index
-(<code>BMI</code>) and <span class="math inline">\(D\)</span> stands for
-<code>death</code>. We have to start by defining what the root nodes
-should look like. We use the following code to define <code>age</code>
-and <code>sex</code>:</p>
+<p>Suppose that node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+in the figure above stands for <code>age</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+stands for <code>sex</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+stands for the Body-Mass-Index (<code>BMI</code>) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+stands for <code>death</code>. We have to start by defining what the
+root nodes should look like. We use the following code to define
+<code>age</code> and <code>sex</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
@@ -273,20 +284,21 @@ a continuous variable modeled using a linear regression by setting
 defined through the use of the <code>intercept</code>,
 <code>betas</code> and <code>error</code> arguments. Our specification
 for the <code>bmi</code> node corresponds to the following equation:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>m</mi><mi>i</mi><mo>=</mo><mn>12</mn><mo>+</mo><mi>s</mi><mi>e</mi><mi>x</mi><mo>⋅</mo><mn>1.1</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
 bmi = 12 + sex \cdot 1.1 + age \cdot 0.4 + N(0, 2),
-\]</span></p>
-<p>where <span class="math inline">\(N(0, 2)\)</span> indicates that the
-error term is modelled as a normally distributed variable with mean 0
-and a standard deviation of 2.</p>
+</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N(0, 2)</annotation></semantics></math>
+indicates that the error term is modelled as a normally distributed
+variable with mean 0 and a standard deviation of 2.</p>
 <p>Since <code>death</code> has only two states (alive vs. dead), we use
 a logistic regression model here instead. We can do this easily by
 setting <code>type="binomial"</code>. The rest of the syntax essentially
 stays the same. The regression equation for <code>death</code> as
 described by the code above is then:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mi>e</mi><mi>a</mi><mi>t</mi><mi>h</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>15</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.1</mn><mo>+</mo><mi>b</mi><mi>m</mi><mi>i</mi><mo>⋅</mo><mn>0.3</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
 logit(death) = -15 + age \cdot 0.1 + bmi \cdot 0.3.
-\]</span></p>
+</annotation></semantics></math></p>
 <p>To check whether we got the causal relationships right, we can call
 the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> function on the DAG object. The output should
 look very similar to the hand-drawn DAG above.</p>
@@ -447,11 +459,23 @@ variables change over time. For example, we can extend the simple
 A small DAG with four nodes
 </p>
 </div>
-<p>Here, nodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are time-constant variables that only
-have a causal effect on the initial state of <span class="math inline">\(C\)</span> and <span class="math inline">\(D\)</span>, while nodes <span class="math inline">\(C\)</span> and <span class="math inline">\(D\)</span> change over time interdependently. If
-we want to simulate data from a DAG that looks like this using the
-<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function, we have to add a node to the for
-every point in time that we want to consider.</p>
+<p>Here, nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+are time-constant variables that only have a causal effect on the
+initial state of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>,
+while nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+change over time interdependently. If we want to simulate data from a
+DAG that looks like this using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function,
+we have to add a node to the for every point in time that we want to
+consider.</p>
 <p>We will quickly go through a somewhat simpler example, considering
 only 2 points in time. We define our nodes in the following way:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -468,12 +492,16 @@ only 2 points in time. We define our nodes in the following way:</p>
 <span>       parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"bmi_t2"</span><span class="op">)</span>, intercept<span class="op">=</span><span class="op">-</span><span class="fl">15</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
-<p>In this example, the <code>bmi</code> at <span class="math inline">\(t = 1\)</span> is a function of both
-<code>sex</code> and <code>age</code>, but the <code>bmi</code> at <span class="math inline">\(t = 2\)</span> is only a function of the previous
-<code>bmi</code>. The <code>death</code> node is determined by the
-initial <code>age</code> and by the time-varying <code>bmi</code>. This
-surely is not the most realistic example. It is only meant to show how
-the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function may be used to incorporate
+<p>In this example, the <code>bmi</code> at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
+is a function of both <code>sex</code> and <code>age</code>, but the
+<code>bmi</code> at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">t = 2</annotation></semantics></math>
+is only a function of the previous <code>bmi</code>. The
+<code>death</code> node is determined by the initial <code>age</code>
+and by the time-varying <code>bmi</code>. This surely is not the most
+realistic example. It is only meant to show how the
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function may be used to incorporate
 time-dependent covariates. If many points in time should be considered
 or there are very complex time-dependent structures that may not be
 easily described using a DAG like the one above, the
@@ -496,7 +524,7 @@ simcausal R Package: Conducting Transparent and Reproducible Simulation
 Studies of Causal Effect Estimation with Complex Longitudinal Data. In:
 Journal of Statistical Software. 81.2, pp. 1-47</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -507,15 +535,15 @@ Journal of Statistical Software. 81.2, pp. 1-47</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
