@@ -59,8 +59,9 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying,
   } else if (!is_node_parents(parents) & !time_varying) {
     stop("The 'parents' argument of a child node must be a character",
          " vector of length > 0.")
-  } else if (!(is_formula(formula) | is.null(formula))) {
-    stop("'formula' must be a valid formula object or NULL.")
+  } else if (!(is_formula(formula) | is.null(formula) |
+               is.character(formula))) {
+    stop("'formula' must be a valid formula object, a special formula or NULL.")
   }
 
   # type specific checks
@@ -78,15 +79,15 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying,
 ## general checks for all regression based nodes
 check_inputs_node_regression <- function(parents, args, type) {
 
-  if (is.null(args$betas)) {
+  if (is.null(args$betas) & !is.character(args$formula)) {
     stop("'betas' must be defined when using type='", type, "'.")
-  } else if (is.null(args$intercept)) {
+  } else if (is.null(args$intercept) & !is.character(args$formula)) {
     stop("'intercept' must be defined when using type='", type, "'.")
   }
 
-  if (!is_betas(args$betas)) {
+  if (!is_betas(args$betas) & !is.character(args$formula)) {
     stop("'betas' must be a numeric vector when using type='", type, "'.")
-  } else if (!is_intercept(args$intercept)) {
+  } else if (!is_intercept(args$intercept) & !is.character(args$formula)) {
     stop("'intercept' must be a single number when using type='", type, "'.")
   } else if ((length(parents) != length(args$betas)) & is.null(args$formula)) {
     stop("'betas' must have the same length as 'parents' when using",

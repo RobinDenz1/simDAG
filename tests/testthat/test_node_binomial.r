@@ -94,3 +94,16 @@ test_that("with formula", {
 
   expect_true(sum(dat$B)==99)
 })
+
+test_that("with special formula", {
+
+  set.seed(435)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", formula=~ -2 + A*1)
+
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_true(sum(dat$B)==99)
+})

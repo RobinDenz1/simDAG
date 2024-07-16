@@ -67,8 +67,8 @@ set.seed(345345)
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
-  node("smoking", type="poisson", parents=c("sex", "age"),
-       betas=c(1.1, 0.4), intercept=-2)
+  node("smoking", type="poisson",
+       formula= ~ -2 + sexTRUE*1.1 + age*0.4)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

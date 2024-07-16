@@ -1,0 +1,125 @@
+---
+title: "Specifying Formulas in a DAG"
+output: rmarkdown::html_vignette
+author: "Robin Denz"
+vignette: >
+  %\VignetteIndexEntry{Specifying Formulas in a DAG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>",
+  fig.align="center"
+)
+```
+
+# Introduction
+
+In this small vignette, we give more detailed examples on how best to use the `formula` argument in the `node()` and `node_td()` functions. This argument allows users to directly specify the full structural equation that should be used to generate the respective node in a clear and easy way, that does not directly rely on the `parents`, `betas` and associated arguments. Note that the `formula` argument may only be used with certain node types, as mentioned in the documentation.
+
+# A simple example
+
+We will start with a very simple example. Suppose we want to generate some data from a simple DAG with no time-varying variables. Consider the following DAG:
+
+```{r}
+library(simDAG)
+
+dag <- empty_dag() +
+  node("A", type="rnorm", mean=0, sd=1) +
+  node("B", type="rbernoulli", p=0.5, output="numeric") +
+  node("C", type="rcategorical", probs=c(0.3, 0.2, 0.5),
+       coerce2factor=TRUE, labels=c("low", "medium", "high"))
+```
+
+This DAG contains only three root nodes of different types. $A$ is normally distributed, $B$ is Bernoulli distributed and $C$ is a simple categorical variable with the levels "low", "medium" and "high". If we generate data from this DAG alone, it would look like this:
+
+```{r}
+set.seed(23143)
+
+dat <- sim_from_dag(dag, n_sim=10)
+head(dat)
+```
+
+Suppose we now want to generate an additional child node called $D$ which should be based on a linear regression model of the form:
+
+$$D \sim -8 + A \cdot 0.4 + B \cdot -2 + N(0, 1.5).$$
+
+We could do this using the `node()` function, by supplying appropriate values to the `parents`, `betas`, `intercept` and `error` arguments. The following code could be used:
+
+```{r}
+dag_without_formula <- dag +
+  node("D", type="gaussian", parents=c("A", "B"), betas=c(0.4, -2),
+       intercept=-8, error=1.5)
+```
+
+This does work just fine, but it may be a little cumbersome to specify the DAG in this way. Since we want to use a linear regression model, we could instead use the `formula` argument like this:
+
+```{r}
+dag_with_formula <- dag +
+  node("D", type="gaussian", formula= ~ -8 + A*0.4 + B*-2, error=1.5)
+```
+
+Given the same random number generator seed, the same output will be produced from both DAGs, as shown below:
+
+```{r}
+set.seed(34)
+dat1 <- sim_from_dag(dag_without_formula, n_sim=100)
+
+set.seed(34)
+dat2 <- sim_from_dag(dag_with_formula, n_sim=100)
+
+all.equal(dat1, dat2)
+```
+
+Formulas should always start with a `~` sign and have nothing else on the left hand side. All parts of the formula should be connected by `+` signs, never `-` signs. The name of the respective variable should always go first, followed by a `*` sign and the associated coefficient. They may also be supplied as strings and will produce the same output.
+
+Apart from being easier to read, this also allows the user a lot more options. Through the use of formulas it is possible to specify nodes that have categorical parents. It is also possible to include any order of interaction effects and cubic terms using formulas, as shown below.
+
+# Using a Categorical Parent Variable
+
+Suppose that $D$ should additionally depend on $C$, a categorical variable. For example, suppose this is the regression model we want to generate data from:
+
+$$D \sim -8 + A \cdot 0.4 + B \cdot -2 + Cmedium \cdot -1 + Chigh \cdot -3 + N(0, 1.5).$$
+
+In this model, the "low" category is used as a reference category. If this is what we want to do, using the simple `parents`, `betas`, `intercept` approach no longer works. We have to use a formula. Fortunately, this is really simple to do using the following code:
+
+```{r}
+dag2 <- dag +
+  node("D", type="gaussian", error=1.5,
+       formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3)
+```
+
+Essentially, all we have to do is use the name of the categorical variable immediately followed by the category name. Note that if a different reference category should be used, the user needs to re-define the factor levels of the categorical variable accordingly first.
+
+# Using Interaction Effects
+
+Interactions of any sort may also be added to the DAG. Suppose we want to generate data from the following regression model:
+
+$$D \sim -8 + A \cdot 0.4 + B \cdot -2 + A*B \cdot -5 + N(0, 1.5),$$
+
+where $A*B$ indicates the interaction between $A$ and $B$. This can be specified in the `formula` argument using the `:` sign:
+
+```{r}
+dag3 <- dag +
+  node("D", type="gaussian", formula= ~ -8 + A*0.4 + B*-2 + A:B*-5, error=1.5)
+```
+
+Since both $A$ and $B$ are coded as numeric variables here, this works fine. If we instead want to include an interaction which includes a categorical variable, we again have to use the name with the respective category appended to it. For example, the following DAG includes an interaction between $A$ and $C$:
+
+```{r}
+dag4 <- dag +
+  node("D", type="gaussian", error=1.5,
+       formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3 + A:Cmedium*0.3 + 
+         A:Chigh*10)
+```
+
+Higher order interactions may be specified in exactly the same way, just using more `:` symbols. It may not always be obvious in which order the variables for the interaction need to be specified. If the "wrong" order was used, the `sim_from_dag()` function will return a helpful error message explaining which ones should be used instead. For example, if we had used "Cmedium:A" instead of "A:Cmedium", this would not work because internally only the latter is recognized as a valid column.
+
+# Using Cubic Terms
+
+
+
+

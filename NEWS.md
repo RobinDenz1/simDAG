@@ -51,3 +51,13 @@ Documentation
 
 * Documentation pages of most nodes now include formal descriptions of the data generation mechanism
 * Re-wrote the documentation page for custom node definition
+
+# simDAG 0.2.0
+
+Enhancements:
+
+* Added the `output` argument to the `rbernoulli()` function to allow different output formats.
+
+New Features:
+
+* Added a new enhanced formula interface, which allows users to directly type out the underlying structural equations for many node types. This replaces the old `formula` argument. Standard formulas (without betas and intercepts) are still supported, but no longer mentioned in the documentation and will be deprecated in future versions.

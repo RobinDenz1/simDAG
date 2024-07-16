@@ -3,7 +3,7 @@
 #' @export
 node <- function(name, type, parents=NULL, formula=NULL, ...) {
 
-  # NOTE: there is a lot of ugly code here because I need to avoid
+  # NOTE: there is a lot of ugly code here because I want to avoid
   #       partial matching of function arguments
   call <- sys.call()
 
@@ -15,9 +15,15 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                                name="parents", position=3)
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
+  formula <- sanitize_formula(formula)
 
   if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
+    warning("Using regular formulas in 'formula' was deprecated in version",
+            " 0.2.0 and will no longer be supported in the next version",
+            " of this package. Please use the new custom formulas instead.")
+  } else if (is.character(formula) & is.null(parents)) {
+    parents <- parse_formula(formula)$formula_parts
   }
 
   # get additional arguments
@@ -52,13 +58,6 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
 }
 
 ## define a single time-varying node to grow DAG objects using the + syntax
-# NOTE: Having a carbon copy of node() looks stupid and I hate doing it.
-#       The reason however is that having two separate functions for
-#       time-fixed and time-varying nodes makes it both easier to use and
-#       allows better documentation. Usually you could create an internal
-#       function and call that one with different arguments. However, due to
-#       the need to avoid R's horrible partial name matching default I was
-#       unable to do this. So this terribleness has to stay for now.
 #' @export
 node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
 
@@ -72,9 +71,15 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
                                name="parents", position=3)
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
+  formula <- sanitize_formula(formula)
 
   if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
+    warning("Using regular formulas in 'formula' was deprecated in version",
+            " 0.2.0 and will no longer be supported in the next version",
+            " of this package. Please use the new custom formulas instead.")
+  } else if (is.character(formula) & is.null(parents)) {
+    parents <- parse_formula(formula)$formula_parts
   }
 
   # get additional arguments

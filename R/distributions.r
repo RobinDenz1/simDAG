@@ -1,8 +1,18 @@
 
 ## efficient bernoulli trials
 #' @export
-rbernoulli <- function(n, p=0.5) {
-  stats::runif(n) > (1 - p)
+rbernoulli <- function(n, p=0.5, output="logical") {
+  out <- stats::runif(n) > (1 - p)
+
+  if (output=="numeric") {
+    out <- as.numeric(out)
+  } else if (output=="character") {
+    out <- as.character(out)
+  } else if (output=="factor") {
+    out <- as.factor(out)
+  }
+
+  return(out)
 }
 
 ## function to take fast random draws from a multinomial distribution,

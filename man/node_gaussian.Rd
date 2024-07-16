@@ -60,11 +60,19 @@ library(simDAG)
 
 set.seed(12455432)
 
+# define a DAG
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
   node("bmi", type="gaussian", parents=c("sex", "age"),
        betas=c(1.1, 0.4), intercept=12, error=2)
+
+# define the same DAG, but with a pretty formula for the child node
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", error=2,
+       formula= ~ 12 + sexTRUE*1.1 + age*0.4)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 }

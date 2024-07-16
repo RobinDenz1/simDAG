@@ -83,6 +83,13 @@ dag <- empty_dag() +
   node("smoking", type="binomial", parents=c("age", "sex"),
        betas=c(1.1, 0.4), intercept=-2)
 
+# define the same DAG, but using a pretty formula
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("smoking", type="binomial",
+       formula= ~ -2 + age*1.1 + sexTRUE*0.4)
+
 # simulate data from it
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 
