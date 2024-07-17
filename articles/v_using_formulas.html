@@ -177,11 +177,35 @@ the following code:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag2</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, error<span class="op">=</span><span class="fl">1.5</span>,</span>
-<span>       formula<span class="op">=</span><span class="op">~</span> <span class="op">-</span><span class="fl">8</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Cmedium</span><span class="op">*</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Chigh</span><span class="op">*</span><span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span>       formula<span class="op">=</span><span class="op">~</span> <span class="op">-</span><span class="fl">8</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Cmedium</span><span class="op">*</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Chigh</span><span class="op">*</span><span class="op">-</span><span class="fl">3</span>,</span>
+<span>       parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Essentially, all we have to do is use the name of the categorical
 variable immediately followed by the category name. Note that if a
 different reference category should be used, the user needs to re-define
 the factor levels of the categorical variable accordingly first.</p>
+<p>Note that we also defined the <code>parents</code> argument in this
+case. This is not strictly necessary to generate the data in this case,
+but it is recommended whenever categorical variables are used in a
+<code>formula</code> for two reasons:</p>
+<ul>
+<li>
+<strong>1.)</strong> If <code>parents</code> is not specified, the
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function will not know that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+is a parent of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>.
+If <code>sort_dag=TRUE</code> and/or the nodes are not specified in a
+correctly topologically sorted order, this may lead to errors when
+trying to generate the data.</li>
+<li>
+<strong>2.)</strong> If <code>parents</code> is not specified, other
+functions that take DAG objects as input (such as the
+<code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> function) may produce incorrect output, because
+they won’t know that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+is a parent of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="using-interaction-effects">Using Interaction Effects<a class="anchor" aria-label="anchor" href="#using-interaction-effects"></a>
@@ -215,7 +239,8 @@ and
 <code class="sourceCode R"><span><span class="va">dag4</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, error<span class="op">=</span><span class="fl">1.5</span>,</span>
 <span>       formula<span class="op">=</span><span class="op">~</span> <span class="op">-</span><span class="fl">8</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Cmedium</span><span class="op">*</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Chigh</span><span class="op">*</span><span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">:</span><span class="va">Cmedium</span><span class="op">*</span><span class="fl">0.3</span> <span class="op">+</span> </span>
-<span>         <span class="va">A</span><span class="op">:</span><span class="va">Chigh</span><span class="op">*</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<span>         <span class="va">A</span><span class="op">:</span><span class="va">Chigh</span><span class="op">*</span><span class="fl">10</span>,</span>
+<span>       parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Higher order interactions may be specified in exactly the same way,
 just using more <code>:</code> symbols. It may not always be obvious in
 which order the variables for the interaction need to be specified. If
@@ -223,11 +248,26 @@ the “wrong” order was used, the <code><a href="../reference/sim_from_DAG.htm
 will return a helpful error message explaining which ones should be used
 instead. For example, if we had used “Cmedium:A” instead of “A:Cmedium”,
 this would not work because internally only the latter is recognized as
-a valid column.</p>
+a valid column. Note that because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+is categorical, we also specified the <code>parents</code> argument here
+just to be safe.</p>
 </div>
 <div class="section level2">
 <h2 id="using-cubic-terms">Using Cubic Terms<a class="anchor" aria-label="anchor" href="#using-cubic-terms"></a>
 </h2>
+<p>Sometimes we also want to include non-linear relationships between a
+continuous variable and the outcome in a data generation process. This
+can be done by including cubic terms of that variable in a formula.
+Suppose the regression model that we want to use has the following
+form:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mo>−</mo><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><msup><mi>A</mi><mn>2</mn></msup><mo>⋅</mo><mn>0.02</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + A^2 \cdot 0.02 + B \cdot -2 + N(0, 1.5).</annotation></semantics></math></p>
+<p>The following code may be used to define such as node:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_with_formula</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">8</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.4</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">A</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="fl">0.02</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">2</span>,</span>
+<span>       error<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
+<p>Users may of course use as many cubic terms as they like.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
