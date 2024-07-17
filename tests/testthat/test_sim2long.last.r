@@ -78,7 +78,7 @@ test_that("no time-to-event nodes in data", {
 
   dag <- empty_dag() +
     node("age", type="rnorm", mean=20, sd=10) +
-    node_td("some_nonsense", type="gaussian", formula=~age,
+    node_td("some_nonsense", type="gaussian", parents="age",
             betas=0.1, intercept=-1, error=5)
 
   sim <- sim_discrete_time(dag=dag, n_sim=10, max_t=20)

@@ -46,6 +46,13 @@ get_distr_default <- function(type) {
   return(type)
 }
 
+# some cosmetic changes to supplied formula
+prep_formula_str_eq <- function(formula) {
+  formula <- gsub("~", "", formula, fixed=TRUE)
+  formula <- gsub(" * ", "*", formula, fixed=TRUE)
+  return(formula)
+}
+
 ## structural equation for a root node
 str_eq_root <- function(node) {
 
@@ -66,7 +73,10 @@ str_eq_root <- function(node) {
 ## structural equation for binomial child node
 str_eq_binomial <- function(node) {
 
-  if (is.null(node$intercept)) {
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    out <- paste0(node$name, " ~ Bernoulli(logit(",
+                  prep_formula_str_eq(node$formula), "))")
+  } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ Bernoulli(logit())")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
@@ -83,7 +93,11 @@ str_eq_binomial <- function(node) {
 
 ## structural equation for gaussian child node
 str_eq_gaussian <- function(node) {
-  if (is.null(node$intercept)) {
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    out <- paste0(node$name, " ~ N(",
+                  prep_formula_str_eq(node$formula), ")")
+  } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ N()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
@@ -95,7 +109,11 @@ str_eq_gaussian <- function(node) {
 
 ## structural equation for poisson node
 str_eq_poisson <- function(node) {
-  if (is.null(node$intercept)) {
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    out <- paste0(node$name, " ~ Poisson(",
+                  prep_formula_str_eq(node$formula), ")")
+  } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ Poisson()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
@@ -107,7 +125,12 @@ str_eq_poisson <- function(node) {
 
 ## structural equation for negative binomial node
 str_eq_negative_binomial <- function(node) {
-  if (is.null(node$intercept)) {
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    out <- paste0(node$name, " ~ NegBinomial(",
+                  prep_formula_str_eq(node$formula),
+                  " + log(", node$theta, "))")
+  } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ NegBinomial()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
@@ -236,7 +259,12 @@ str_eq_time_to_event <- function(node) {
 
 ## structural equation for cox regression based nodes
 str_eq_cox <- function(node) {
-  beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    beta_eq <- prep_formula_str_eq(node$formula)
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+  }
 
   if (node$surv_dist=="weibull") {
     right <- paste0("(-(log(Unif(0, 1))/(", node$lambda, "*exp(",

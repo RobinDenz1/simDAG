@@ -4,11 +4,6 @@
 sim_discrete_time:
 	- should include t = 0 in output (or an option for it)
 
-formula interface:
-	- sort_dag does not work with special formulas because they don't accurately
-	  save the parents of the node
-	- update structural equation printing code
-
 ####### New Features: #######
 
 sim_from_dag:

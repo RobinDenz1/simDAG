@@ -76,11 +76,11 @@ Internally, this function works by first simulating data using the \code{\link{s
 
 \strong{\emph{Specifying the \code{dag} argument}}:
 
-The \code{dag} argument should be specified as described in the \code{\link{node}} documentation page. More examples specific to discrete-time simulations can be found in the vignettes and the examples. The only difference to specifying a \code{dag} for the \code{\link{sim_from_dag}} function is that the \code{dag} here should contain at least one time-dependent node added using the \code{\link{node_td}} function.
+The \code{dag} argument should be specified as described in the \code{\link{node}} documentation page. More examples specific to discrete-time simulations can be found in the vignettes and the examples. The only difference to specifying a \code{dag} for the \code{\link{sim_from_dag}} function is that the \code{dag} here should contain at least one time-dependent node added using the \code{\link{node_td}} function. Usage of the \code{formula} argument is discouraged for performance reasons.
 
 \strong{\emph{Speed Considerations}}:
 
-All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow.
+All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow. Note also that using the \code{formula} argument is a lot more computationally expensive than using the \code{parents}, \code{betas} approach to specify certain nodes.
 
 \strong{\emph{What do I do with the output?}}:
 
