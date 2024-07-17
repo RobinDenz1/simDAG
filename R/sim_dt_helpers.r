@@ -48,6 +48,12 @@ clean_node_args <- function(node) {
 
   node <- add_missing_parents(node)
 
+  # formula stuff
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    node <- args_from_formula(args=node, formula=node$formula,
+                              node_type=node$type)
+  }
+
   # add or remove internal arguments if needed
   if (!"name" %in% fun_pos_args) {
     node$name <- NULL

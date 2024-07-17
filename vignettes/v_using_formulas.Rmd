@@ -89,10 +89,16 @@ In this model, the "low" category is used as a reference category. If this is wh
 ```{r}
 dag2 <- dag +
   node("D", type="gaussian", error=1.5,
-       formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3)
+       formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3,
+       parents=c("A", "B", "C"))
 ```
 
 Essentially, all we have to do is use the name of the categorical variable immediately followed by the category name. Note that if a different reference category should be used, the user needs to re-define the factor levels of the categorical variable accordingly first.
+
+Note that we also defined the `parents` argument in this case. This is not strictly necessary to generate the data in this case, but it is recommended whenever categorical variables are used in a `formula` for two reasons:
+
+* **1.)** If `parents` is not specified, the `sim_from_dag()` function will not know that $C$ is a parent of $D$. If `sort_dag=TRUE` and/or the nodes are not specified in a correctly topologically sorted order, this may lead to errors when trying to generate the data.
+* **2.)** If `parents` is not specified, other functions that take DAG objects as input (such as the `plot.DAG()` function) may produce incorrect output, because they won't know that $C$ is a parent of $D$. 
 
 # Using Interaction Effects
 
@@ -113,13 +119,27 @@ Since both $A$ and $B$ are coded as numeric variables here, this works fine. If 
 dag4 <- dag +
   node("D", type="gaussian", error=1.5,
        formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3 + A:Cmedium*0.3 + 
-         A:Chigh*10)
+         A:Chigh*10,
+       parents=c("A", "B", "C"))
 ```
 
-Higher order interactions may be specified in exactly the same way, just using more `:` symbols. It may not always be obvious in which order the variables for the interaction need to be specified. If the "wrong" order was used, the `sim_from_dag()` function will return a helpful error message explaining which ones should be used instead. For example, if we had used "Cmedium:A" instead of "A:Cmedium", this would not work because internally only the latter is recognized as a valid column.
+Higher order interactions may be specified in exactly the same way, just using more `:` symbols. It may not always be obvious in which order the variables for the interaction need to be specified. If the "wrong" order was used, the `sim_from_dag()` function will return a helpful error message explaining which ones should be used instead. For example, if we had used "Cmedium:A" instead of "A:Cmedium", this would not work because internally only the latter is recognized as a valid column. Note that because $C$ is categorical, we also specified the `parents` argument here just to be safe.
 
 # Using Cubic Terms
 
+Sometimes we also want to include non-linear relationships between a continuous variable and the outcome in a data generation process. This can be done by including cubic terms of that variable in a formula. Suppose the regression model that we want to use has the following form:
+
+$$D \sim -8 + A \cdot 0.4 + A^2 \cdot 0.02 + B \cdot -2 + N(0, 1.5).$$
+
+The following code may be used to define such as node:
+
+```{r}
+dag_with_formula <- dag +
+  node("D", type="gaussian", formula= ~ -8 + A*0.4 + I(A^2)*0.02 + B*-2,
+       error=1.5)
+```
+
+Users may of course use as many cubic terms as they like.
 
 
 

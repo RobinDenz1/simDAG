@@ -63,7 +63,8 @@ sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
     form <- dag$child_nodes[[i]]$formula
 
     if (!is.null(form) && !is_formula(form)) {
-      args <- args_from_formula(args=args, formula=form)
+      args <- args_from_formula(args=args, formula=form,
+                                node_type=dag$child_nodes[[i]]$type)
       args$data <- tryCatch({
         data_for_formula(data=data, args=args)},
         error=function(e){

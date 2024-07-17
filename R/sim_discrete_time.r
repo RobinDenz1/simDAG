@@ -116,7 +116,22 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
 
       # get relevant arguments
       args <- arg_list[[i]]
-      args$data <- data[, args$parents, with=FALSE]
+
+      if (!is.null(tx_nodes[[i]]$formula) &&
+          !is_formula(tx_nodes[[i]]$formula)) {
+
+        # augment data for formula input
+        args$data <- tryCatch({
+          data_for_formula(data=data, args=args)},
+          error=function(e){
+            stop("An error occured when interpreting the formula of node '",
+                 tx_nodes[[i]]$name, "'. The message was:\n", e,
+                 call.=FALSE)
+          }
+        )
+      } else {
+        args$data <- data[, args$parents, with=FALSE]
+      }
 
       # get function
       node_type_fun <- fun_list[[i]]

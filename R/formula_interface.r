@@ -51,7 +51,7 @@ sanitize_formula <- function(formula) {
 
 ## parse custom formulas into betas, formula parts and intercept
 # NOTE: expects formula to be a string, sanitized with sanitize_formula()
-parse_formula <- function(formula) {
+parse_formula <- function(formula, node_type) {
 
   # clean up formula
   formstr <- gsub("~", "", formula, fixed=TRUE)
@@ -62,8 +62,13 @@ parse_formula <- function(formula) {
 
   # extract and check intercept
   ind <- grepl("*", formvec, fixed=TRUE)
-  intercept <- formvec[!ind]
-  check_intercept(intercept)
+
+  if (node_type=="cox") {
+    intercept <- NULL
+  } else {
+    intercept <- formvec[!ind]
+    check_intercept(intercept)
+  }
 
   # split rest further by variable / value pairs
   formvec <- formvec[ind]
@@ -86,15 +91,19 @@ parse_formula <- function(formula) {
   check_betas(betas)
 
   out <- list(formula_parts=formula_parts,
-              betas=betas,
-              intercept=as.numeric(intercept))
+              betas=betas)
+
+  if (node_type!="cox") {
+    out$intercept <- as.numeric(intercept)
+  }
+
   return(out)
 }
 
 ## given a special formula, update the arguments of a node
 # NOTE: expects the formula to be input as string
-args_from_formula <- function(args, formula) {
-  form_parsed <- parse_formula(formula)
+args_from_formula <- function(args, formula, node_type) {
+  form_parsed <- parse_formula(formula, node_type=node_type)
 
   args$parents <- form_parsed$formula_parts
   args$betas <- form_parsed$betas
@@ -137,8 +146,10 @@ data_for_formula <- function(data, args) {
 
   # get full model matrix
   # (and print helpful error if column not found)
-  mod_mat <- as.data.table(stats::model.matrix(stats::as.formula(form_dat),
-                                               data=data))
+  mod_mat <- as.data.table(stats::model.matrix.lm(stats::as.formula(form_dat),
+                                                  data=data,
+                                                  na.action="na.pass"))
+
   mod_mat <- tryCatch({
     mod_mat[, args$parents, with=FALSE]},
     error=function(x){stop(x, "This error may occur when one of the terms in",
@@ -150,7 +161,6 @@ data_for_formula <- function(data, args) {
                            " The variables currently available in data are:\n",
                            paste0(colnames(mod_mat), collapse=", "),
                            call.=FALSE)})
-
   return(mod_mat)
 }
 

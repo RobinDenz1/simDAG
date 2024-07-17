@@ -23,7 +23,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
             " 0.2.0 and will no longer be supported in the next version",
             " of this package. Please use the new custom formulas instead.")
   } else if (is.character(formula) & is.null(parents)) {
-    parents <- parse_formula(formula)$formula_parts
+    parents <- parse_formula(formula, node_type=type)$formula_parts
   }
 
   # get additional arguments
@@ -79,7 +79,7 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
             " 0.2.0 and will no longer be supported in the next version",
             " of this package. Please use the new custom formulas instead.")
   } else if (is.character(formula) & is.null(parents)) {
-    parents <- parse_formula(formula)$formula_parts
+    parents <- parse_formula(formula, node_type=type)$formula_parts
   }
 
   # get additional arguments

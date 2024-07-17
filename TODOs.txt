@@ -7,12 +7,7 @@ sim_discrete_time:
 formula interface:
 	- sort_dag does not work with special formulas because they don't accurately
 	  save the parents of the node
-	- write vignette for formula interface
 	- update structural equation printing code
-	- update code in sim_discrete_time as well so that formulas also work there
-	- special formulas currently dont work for cox nodes due to missing intercept
-	- the update of the parents vector through the formula might cause issues in plot()
-	  and other functions, should probably change this
 
 ####### New Features: #######
 
