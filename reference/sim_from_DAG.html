@@ -45,7 +45,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_from_dag</span><span class="op">(</span><span class="va">dag</span>, <span class="va">n_sim</span>, sort_dag<span class="op">=</span><span class="cn">TRUE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_from_dag</span><span class="op">(</span><span class="va">dag</span>, <span class="va">n_sim</span>, sort_dag<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,7 +58,7 @@
 <dd><p>A single number specifying how many observations should be generated.</p></dd>
 
   <dt id="arg-sort-dag">sort_dag<a class="anchor" aria-label="anchor" href="#arg-sort-dag"></a></dt>
-<dd><p>Whether to topologically sort the DAG before starting the simulation or not. If the nodes in <code>dag</code> were already added in a topologically sorted manner, this argument can be set to <code>FALSE</code> to safe some computation time. This usually won't safe too much time though, because it internally uses the <code>topological_sort</code> function from the <span class="pkg">Rfast</span> package, which is very fast.</p></dd>
+<dd><p>Whether to topologically sort the DAG before starting the simulation or not. If the nodes in <code>dag</code> were already added in a topologically sorted manner, this argument can be kept at <code>FALSE</code> to safe some computation time. This usually won't safe too much time though, because it internally uses the <code>topological_sort</code> function from the <span class="pkg">Rfast</span> package, which is very fast.</p></dd>
 
   <dt id="arg-check-inputs">check_inputs<a class="anchor" aria-label="anchor" href="#arg-check-inputs"></a></dt>
 <dd><p>Whether to perform plausibility checks for the user input or not. Is set to <code>TRUE</code> by default, but can be set to <code>FALSE</code> in order to speed things up when using this function in a simulation study or something similar.</p></dd>

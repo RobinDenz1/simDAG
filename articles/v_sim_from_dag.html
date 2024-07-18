@@ -320,8 +320,7 @@ the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">su
 generate random data using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required namespace: Rfast</span></span></code></pre></div>
+<span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
 <p>Setting a seed for the random number generator is necessary to obtain
 replicable results. The data generated using this code looks like
 this:</p>

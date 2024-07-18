@@ -140,7 +140,6 @@ produced from both DAGs, as shown below:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span></span>
 <span><span class="va">dat1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_without_formula</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required namespace: Rfast</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span></span>
 <span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_with_formula</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
@@ -150,9 +149,13 @@ produced from both DAGs, as shown below:</p>
 <p>Formulas should always start with a <code>~</code> sign and have
 nothing else on the left hand side. All parts of the formula should be
 connected by <code>+</code> signs, never <code>-</code> signs. The name
-of the respective variable should always go first, followed by a
-<code>*</code> sign and the associated coefficient. They may also be
-supplied as strings and will produce the same output.</p>
+of the respective variable should always be connected to the associated
+coefficient by a <code>*</code> sign. It does not matter whether the
+name of the term or the coefficient go first, but it has to be
+consistent in a formula. For example, <code>~ 1 + A*2 + B*3</code>
+works, and <code>~ 1 + 2*A + 3*B</code> also works, but
+<code>~ 1 + 2*A + B*2</code> will produce an error. The formula may also
+be supplied as a string and will produce the same output.</p>
 <p>Apart from being easier to read, this also allows the user a lot more
 options. Through the use of formulas it is possible to specify nodes
 that have categorical parents. It is also possible to include any order
