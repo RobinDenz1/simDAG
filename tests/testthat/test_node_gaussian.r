@@ -152,3 +152,29 @@ test_that("with special formula + interaction term", {
 
   expect_equal(mean(dat$gauss), -83.31415, tolerance=0.001)
 })
+
+test_that("with special formula in reverse order", {
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbernoulli") +
+    node("testin", type="rcategorical", probs=c(0.1, 0.2, 0.2, 0.5),
+         coerce2factor=TRUE) +
+    node("C", type="gaussian", parents=c("A", "B"), betas=c(0.1, 2),
+         error=0.001, intercept=-2)
+
+  dag1 <- dag +
+    node("D", type="binomial", formula=~ -2 + 0.1*A + 2*BTRUE +
+           0.3*A:C + 2*I(A^2))
+
+  dag2 <- dag +
+    node("D", type="binomial", formula=~ -2 + A*0.1 + BTRUE*2 +
+           A:C*0.3 + I(A^2)*2)
+
+  set.seed(2345)
+  data1 <- sim_from_dag(dag1, n_sim=100, sort_dag=FALSE)
+
+  set.seed(2345)
+  data2 <- sim_from_dag(dag2, n_sim=100, sort_dag=FALSE)
+
+  expect_equal(data1, data2)
+})

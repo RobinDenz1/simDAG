@@ -3,7 +3,7 @@
 #' @importFrom data.table data.table
 #' @importFrom data.table setDT
 #' @export
-sim_from_dag <- function(dag, n_sim, sort_dag=TRUE, check_inputs=TRUE) {
+sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
 
   requireNamespace("data.table")
 

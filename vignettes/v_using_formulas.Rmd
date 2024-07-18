@@ -74,7 +74,7 @@ dat2 <- sim_from_dag(dag_with_formula, n_sim=100)
 all.equal(dat1, dat2)
 ```
 
-Formulas should always start with a `~` sign and have nothing else on the left hand side. All parts of the formula should be connected by `+` signs, never `-` signs. The name of the respective variable should always go first, followed by a `*` sign and the associated coefficient. They may also be supplied as strings and will produce the same output.
+Formulas should always start with a `~` sign and have nothing else on the left hand side. All parts of the formula should be connected by `+` signs, never `-` signs. The name of the respective variable should always be connected to the associated coefficient by a `*` sign. It does not matter whether the name of the term or the coefficient go first, but it has to be consistent in a formula. For example, `~ 1 + A*2 + B*3` works, and `~ 1 + 2*A + 3*B` also works, but `~ 1 + 2*A + B*2` will produce an error. The formula may also be supplied as a string and will produce the same output.
 
 Apart from being easier to read, this also allows the user a lot more options. Through the use of formulas it is possible to specify nodes that have categorical parents. It is also possible to include any order of interaction effects and cubic terms using formulas, as shown below.
 

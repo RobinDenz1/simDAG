@@ -42,7 +42,8 @@ sanitize_formula <- function(formula) {
     out <- formula
   }
 
-  if (!is.null(out) && !grepl("\\*\\s*\\d+", out)) {
+  if (!is.null(out) && !grepl("\\*\\s*\\d+", out) &&
+      !grepl("\\d+\\s*\\*", out)) {
     out <- formula
   }
 
@@ -81,9 +82,18 @@ parse_formula <- function(formula, node_type) {
   formula_parts <- character(n_parents)
   betas <- character(n_parents)
 
+  # determine order of formula
+  if (is.na(suppressWarnings(as.numeric(formlist[[1]][[1]])))) {
+    ind1 <- 1
+    ind2 <- 2
+  } else {
+    ind1 <- 2
+    ind2 <- 1
+  }
+
   for (i in seq_len(n_parents)) {
-    formula_parts[i] <- formlist[[i]][1]
-    betas[i] <- formlist[[i]][2]
+    formula_parts[i] <- formlist[[i]][ind1]
+    betas[i] <- formlist[[i]][ind2]
   }
 
   # create betas
