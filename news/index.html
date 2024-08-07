@@ -81,12 +81,15 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="simdag-020">simDAG 0.2.0<a class="anchor" aria-label="anchor" href="#simdag-020"></a></h2>
-<p>Enhancements:</p>
+<p>Enhancements</p>
 <ul><li>Added the <code>output</code> argument to the <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> function to allow different output formats.</li>
-<li>Change default of <code>sort_dag</code> in <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> from <code>TRUE</code> to <code>FALSE</code>
-</li>
-</ul><p>New Features:</p>
+<li>Change default of <code>sort_dag</code> in <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> from <code>TRUE</code> to <code>FALSE</code>.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>The <code>node_fill</code> argument of the <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> function is no longer being ignored if <code>mark_td_nodes</code> was set to <code>TRUE</code>.</li>
+</ul><p>New Features</p>
 <ul><li>Added a new enhanced formula interface, which allows users to directly type out the underlying structural equations for many node types. This replaces the old <code>formula</code> argument. Standard formulas (without betas and intercepts) are still supported, but no longer mentioned in the documentation and will be deprecated in future versions.</li>
+</ul><p>Documentation</p>
+<ul><li>Added a new vignette explaining in detail how the new enhanced formula interface for the <code><a href="../reference/node.html">node()</a></code> function works.</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
