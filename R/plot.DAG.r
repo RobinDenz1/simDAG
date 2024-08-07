@@ -113,7 +113,7 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
   # plot nodes
   p <- ggplot2::ggplot(data=NULL)
 
-  if (mark_td_nodes) {
+  if (mark_td_nodes && is_time_varying_dag(x)) {
     tx_names <- vapply(x$tx_nodes, FUN=function(x){x$name},
                        FUN.VALUE=character(1))
     d_nodes$td_node <- d_nodes$name %in% tx_names

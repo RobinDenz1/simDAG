@@ -54,11 +54,19 @@ Documentation
 
 # simDAG 0.2.0
 
-Enhancements:
+Enhancements
 
 * Added the `output` argument to the `rbernoulli()` function to allow different output formats.
-* Change default of `sort_dag` in `sim_from_dag()` from `TRUE` to `FALSE`
+* Change default of `sort_dag` in `sim_from_dag()` from `TRUE` to `FALSE`.
 
-New Features:
+Bug Fixes
+
+* The `node_fill` argument of the `plot.DAG()` function is no longer being ignored if `mark_td_nodes` was set to `TRUE`.
+
+New Features
 
 * Added a new enhanced formula interface, which allows users to directly type out the underlying structural equations for many node types. This replaces the old `formula` argument. Standard formulas (without betas and intercepts) are still supported, but no longer mentioned in the documentation and will be deprecated in future versions.
+
+Documentation
+
+* Added a new vignette explaining in detail how the new enhanced formula interface for the `node()` function works.

@@ -20,6 +20,10 @@ test_that("change node_size", {
   expect_snapshot_output(plot(dag, node_size=0.1))
 })
 
+test_that("change node_fill", {
+  expect_snapshot_output(plot(dag, node_fill="lightblue"))
+})
+
 test_that("change node_names", {
   expect_snapshot_output(plot(dag, node_names=c("1", "2", "3", "4", "5")))
 })

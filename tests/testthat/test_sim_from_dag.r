@@ -95,3 +95,21 @@ test_that("helpful error message child nodes", {
                       "(function (data, parents) : failed instantly"),
                fixed=TRUE)
 })
+
+test_that("helpful error message formula error", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node("B", type="gaussian", formula= ~ -1 + A*2 + C*3)
+
+  expect_error(sim_from_dag(dag, n_sim=100),
+               paste0("An error occured when interpreting the formula of ",
+               "node 'B'. The message was:\nError: Error: column(s) not ",
+               "found: [A, C]\nThis error may occur when one of the terms ",
+               "in a supplied ", "formula does not match any variables ",
+               "in the generated data.\n Please check whether all terms ",
+               "in your supplied formula occur in the data generated up ",
+               "to this point.\n The variables currently available in ",
+               "data are:\n(Intercept), ATRUE"), fixed=TRUE)
+
+})
