@@ -18,7 +18,7 @@ rbernoulli <- function(n, p=0.5, output="logical") {
 ## function to take fast random draws from a multinomial distribution,
 ## possibly with different probabilities for each individual
 #' @export
-rcategorical <- function(n, probs, labels=NULL, coerce2factor=FALSE) {
+rcategorical <- function(n, probs, labels=NULL, output="numeric") {
 
   u <- stats::runif(n=n, min=0, max=1)
 
@@ -41,12 +41,14 @@ rcategorical <- function(n, probs, labels=NULL, coerce2factor=FALSE) {
     observed <- sort(unique(out)) + 1
   }
 
-  if (coerce2factor & is.null(labels)) {
+  if (output=="factor" & is.null(labels)) {
     out <- factor(out)
-  } else if (coerce2factor) {
+  } else if (output=="factor") {
     out <- factor(out, labels=labels[observed])
   } else if (!is.null(labels)) {
     out <- as.character(factor(out, labels=labels[observed]))
+  } else if (output=="character") {
+    out <- as.character(out)
   }
 
   return(out)

@@ -79,7 +79,7 @@ probs <- list(male=0.5, female=0.8)
 # define DAG
 dag <- empty_dag() +
   node("sex", type="rcategorical", labels=c("male", "female"),
-       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+       output="factor", probs=c(0.5, 0.5)) +
   node("chemo", type="rbernoulli", p=0.5) +
   node("A", type="conditional_prob", parents="sex", probs=probs)
 
@@ -95,7 +95,7 @@ probs <- list(male=c(0.5, 0.2, 0.3), female=c(0.8, 0.1, 0.1))
 # define DAG
 dag <- empty_dag() +
   node("sex", type="rcategorical", labels=c("male", "female"),
-       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+       output="factor", probs=c(0.5, 0.5)) +
   node("chemo", type="rbernoulli", p=0.5) +
   node("A", type="conditional_prob", parents="sex", probs=probs)
 
@@ -114,7 +114,7 @@ probs <- list(male.FALSE=0.5,
 # define DAG
 dag <- empty_dag() +
   node("sex", type="rcategorical", labels=c("male", "female"),
-       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+       output="factor", probs=c(0.5, 0.5)) +
   node("chemo", type="rbernoulli", p=0.5) +
   node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
 
@@ -133,7 +133,7 @@ probs <- list(male.FALSE=c(0.5, 0.1, 0.4),
 # define dag
 dag <- empty_dag() +
   node("sex", type="rcategorical", labels=c("male", "female"),
-       coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+       output="factor", probs=c(0.5, 0.5)) +
   node("chemo", type="rbernoulli", p=0.5) +
   node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
 

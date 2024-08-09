@@ -31,7 +31,7 @@ dag <- empty_dag() +
   node("A", type="rnorm", mean=0, sd=1) +
   node("B", type="rbernoulli", p=0.5, output="numeric") +
   node("C", type="rcategorical", probs=c(0.3, 0.2, 0.5),
-       coerce2factor=TRUE, labels=c("low", "medium", "high"))
+       output="factor", labels=c("low", "medium", "high"))
 ```
 
 This DAG contains only three root nodes of different types. $A$ is normally distributed, $B$ is Bernoulli distributed and $C$ is a simple categorical variable with the levels "low", "medium" and "high". If we generate data from this DAG alone, it would look like this:

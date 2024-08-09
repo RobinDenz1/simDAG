@@ -6,7 +6,7 @@
 #       the first category!
 #' @export
 node_multinomial <- function(data, parents, betas, intercepts,
-                             labels=NULL, coerce2factor=TRUE,
+                             labels=NULL, output="factor",
                              return_prob=FALSE) {
 
   if (!data.table::is.data.table(data)) {
@@ -27,7 +27,7 @@ node_multinomial <- function(data, parents, betas, intercepts,
 
   # sample from those
   out <- rcategorical(n=nrow(data), probs=probs, labels=labels,
-                      coerce2factor=coerce2factor)
+                      output=output)
 
   if (return_prob) {
     return(probs)

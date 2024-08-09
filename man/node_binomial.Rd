@@ -9,8 +9,7 @@ Data from the parents is used to generate the node using logistic regression by 
 }
 \usage{
 node_binomial(data, parents, formula=NULL, betas, intercept,
-              return_prob=FALSE, coerce2factor=FALSE,
-              coerce2numeric=FALSE, labels=NULL)
+              return_prob=FALSE, output="logical", labels=NULL)
 }
 \arguments{
   \item{data}{
@@ -31,14 +30,11 @@ A single number specifying the intercept that should be used when generating the
   \item{return_prob}{
 Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the calculated probability is returned instead of the results of bernoulli trials.
   }
-  \item{coerce2factor}{
-Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the resulting vector is coerced to a factor variable. Levels of this factor can be set using the \code{labels} argument.
-  }
-  \item{coerce2numeric}{
-Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the resulting vector is coerced to a numeric variable (0/1).
+  \item{output}{
+A single character string, must be either \code{"logical"} (default), \code{"numeric"}, \code{"character"} or \code{"factor"}. If \code{output="character"} or \code{output="factor"}, the labels (or levels in case of a factor) can be set using the \code{labels} argument.
   }
   \item{labels}{
-A character vector of length 2 or \code{NULL} (default). If \code{NULL}, the resulting vector is returned as is. If a character vector is supplied all \code{TRUE} values are replaced by the first entry of this vector and all \code{FALSE} values are replaced by the second argument of this vector. The output will then be a character variable, unless \code{coerce2factor} is set to \code{TRUE} in which case it will be a factor variable.
+A character vector of length 2 or \code{NULL} (default). If \code{NULL}, the resulting vector is returned as is. If a character vector is supplied and \code{output="character"} or \code{output="factor"} is used, all \code{TRUE} values are replaced by the first entry of this vector and all \code{FALSE} values are replaced by the second argument of this vector. The output will then be a character variable or factor variable, depending on the \code{output} argument. This argument is ignored if \code{output} is set to \code{"numeric"} or \code{"logical"}.
   }
 }
 \details{
@@ -60,7 +56,7 @@ For example, given \code{intercept=-15}, \code{parents=c("A", "B")} and \code{be
 
 \strong{\emph{Output Format}}:
 
-By default this function returns a logical vector containing only \code{TRUE} and \code{FALSE} entries, where \code{TRUE} corresponds to an event and \code{FALSE} to no event. If those should be coded as 0/1 instead, the user can use the \code{coerce2numeric} argument. If they should be coded as a character with specific labels, the user can use the \code{labels} argument. To additionally output it as a factor, the user may use the \code{coerce2factor} argument. If both \code{coerce2factor} and \code{coerce2numeric} are set to \code{TRUE}, the result will be a factor. The last three arguments of this function are ignored if \code{return_prob} is set to \code{TRUE}.
+By default this function returns a logical vector containing only \code{TRUE} and \code{FALSE} entries, where \code{TRUE} corresponds to an event and \code{FALSE} to no event. This may be changed by using the \code{output} and \code{labels} arguments. The last three arguments of this function are ignored if \code{return_prob} is set to \code{TRUE}.
 }
 \author{
 Robin Denz

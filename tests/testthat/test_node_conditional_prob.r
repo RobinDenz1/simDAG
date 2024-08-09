@@ -7,7 +7,7 @@ test_that("two classes, one parent node", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents="sex", probs=probs)
 
@@ -24,7 +24,7 @@ test_that("calling the function directly", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5)
   data <- as.data.frame(sim_from_dag(dag=dag, n_sim=1000))
 
@@ -41,7 +41,7 @@ test_that("two classes, one parent node, labels & factor", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents="sex", probs=probs,
          labels=c("A", "B"), coerce2factor=TRUE)
@@ -59,7 +59,7 @@ test_that("two classes, one parent node, factor", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents="sex", probs=probs,
          coerce2factor=TRUE)
@@ -77,7 +77,7 @@ test_that("two classes, one parent node with default_prob", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents="sex", probs=probs,
          default_prob=0.8)
@@ -95,7 +95,7 @@ test_that("three classes, one parent node", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents="sex", probs=probs)
 
@@ -115,7 +115,7 @@ test_that("two classes, two parent nodes", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
 
@@ -135,7 +135,7 @@ test_that("three classes, two parent nodes", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.5, 0.5)) +
+         output="factor", probs=c(0.5, 0.5)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_prob", parents=c("sex", "chemo"), probs=probs)
 

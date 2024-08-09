@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using multinomial regression 
 }
 \usage{
 node_multinomial(data, parents, betas, intercepts,
-                 labels=NULL, coerce2factor=TRUE,
+                 labels=NULL, output="factor",
                  return_prob=FALSE)
 }
 \arguments{
@@ -28,8 +28,8 @@ A numeric vector with one entry for each class that should be simulated, specify
   \item{labels}{
 An optional character vector giving the factor levels of the generated classes. If \code{NULL} (default), the integers are simply used as factor levels.
   }
-  \item{coerce2factor}{
-A single logical value specifying whether to return the drawn events as a factor (default) or as integers.
+  \item{output}{
+A single character string specifying the output format. Must be one of \code{"factor"} (default), \code{"character"} or \code{"numeric"}. If the argument \code{labels} is supplied, the output will coerced to \code{"character"} by default.
   }
   \item{return_prob}{
 Either \code{TRUE} or \code{FALSE} (default). Specifies whether to return the matrix of class probabilities or not. If you are using this function inside of a \code{\link{node}} call, you cannot set this to \code{TRUE} because it will return a matrix. It may, however, be useful when using this function by itself, or as a probability generating function for the \code{\link{node_competing_events}} function.

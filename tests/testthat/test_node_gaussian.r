@@ -66,7 +66,7 @@ test_that("with formula + categorical independent variable", {
 
   dag <- empty_dag() +
     node("A", "rnorm", mean=20, sd=5) +
-    node("B", "rcategorical", probs=c(0.1, 0.3, 0.6), coerce2factor=TRUE) +
+    node("B", "rcategorical", probs=c(0.1, 0.3, 0.6), output="factor") +
     node("gauss", type="gaussian", formula=~ A + B, betas=c(10, 11, -10),
          intercept=-100, error=10)
 
@@ -127,7 +127,7 @@ test_that("with special formula + categorical independent variable", {
 
   dag <- empty_dag() +
     node("A", "rnorm", mean=20, sd=5) +
-    node("B", "rcategorical", probs=c(0.1, 0.3, 0.6), coerce2factor=TRUE) +
+    node("B", "rcategorical", probs=c(0.1, 0.3, 0.6), output="factor") +
     node("gauss", type="gaussian", formula=~ -100 + A*10 + B1*11 + B2*-10,
          error=10)
 
@@ -158,7 +158,7 @@ test_that("with special formula in reverse order", {
     node("A", type="rnorm") +
     node("B", type="rbernoulli") +
     node("testin", type="rcategorical", probs=c(0.1, 0.2, 0.2, 0.5),
-         coerce2factor=TRUE) +
+         output="factor") +
     node("C", type="gaussian", parents=c("A", "B"), betas=c(0.1, 2),
          error=0.001, intercept=-2)
 

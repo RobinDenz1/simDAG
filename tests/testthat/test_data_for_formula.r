@@ -3,7 +3,7 @@ dag <- empty_dag() +
   node("A", type="rnorm") +
   node(c("B", "B_clone"), type="rbernoulli") +
   node("test", type="rcategorical", probs=c(0.1, 0.2, 0.2, 0.5),
-       coerce2factor=TRUE) +
+       output="factor") +
   node("C", type="gaussian", parents=c("A", "B"), betas=c(0.1, 2),
        error=0.001, intercept=-2)
 

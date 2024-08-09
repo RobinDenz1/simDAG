@@ -5,7 +5,7 @@ test_that("general test case", {
   dag <- empty_dag() +
     node("A", "rbernoulli") +
     node("B", "rnorm") +
-    node("C", "rcategorical", probs=c(0.2, 0.2, 0.8), coerce2factor=TRUE)
+    node("C", "rcategorical", probs=c(0.2, 0.2, 0.8), output="factor")
   data <- sim_from_dag(dag, n_sim=200)
   data$D <- c(rep("Test1", 100), rep("Test2", 100))
 

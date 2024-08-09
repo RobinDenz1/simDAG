@@ -8,7 +8,7 @@ test_that("with one parent node", {
 
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.4, 0.6)) +
+         output="factor", probs=c(0.4, 0.6)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_distr", parents="sex", distr=distr)
 
@@ -34,7 +34,7 @@ test_that("with two parent nodes", {
   # define DAG
   dag <- empty_dag() +
     node("sex", type="rcategorical", labels=c("male", "female"),
-         coerce2factor=TRUE, probs=c(0.4, 0.6)) +
+         output="factor", probs=c(0.4, 0.6)) +
     node("chemo", type="rbernoulli", p=0.5) +
     node("A", type="conditional_distr", parents=c("sex", "chemo"), distr=distr)
 

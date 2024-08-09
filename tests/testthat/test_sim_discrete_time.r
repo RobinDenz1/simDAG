@@ -256,7 +256,7 @@ test_that("works with formulas", {
     node("A", type="rnorm", mean=0, sd=1) +
     node("B", type="rbernoulli", p=0.5, output="numeric") +
     node("C", type="rcategorical", probs=c(0.3, 0.2, 0.5),
-         coerce2factor=TRUE, labels=c("low", "medium", "high")) +
+         output="factor", labels=c("low", "medium", "high")) +
     node_td("D", type="gaussian", formula= ~ -2 + A*1 + B*3, error=2)
 
   set.seed(234245)

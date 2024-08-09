@@ -61,7 +61,7 @@ node_conditional_prob <- function(data, parents, probs, default_probs=NULL,
         n=sum(dep_var==dep_levels_def[i]),
               probs=probs[[dep_levels_def[i]]],
               labels=NULL,
-              coerce2factor=FALSE
+              output="numeric"
         )
     }
   }

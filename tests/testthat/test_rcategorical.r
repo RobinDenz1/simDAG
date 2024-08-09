@@ -36,18 +36,31 @@ test_that("matrix probs, three classes", {
   expect_equal(as.vector(table(out)), c(2, 2, 1))
 })
 
-test_that("coerce2factor", {
+test_that("as factor without labels", {
 
-  out <- rcategorical(n=10, probs=c(0.1, 0.9), coerce2factor=TRUE)
+  out <- rcategorical(n=10, probs=c(0.1, 0.9), output="factor")
 
   expect_equal(levels(out), c("0", "1"))
   expect_true(is.factor(out))
 })
 
+test_that("as character without labels", {
+
+  out <- rcategorical(n=10, probs=c(0.1, 0.9), output="character")
+
+  expect_true(all(out %in% c("0", "1")))
+  expect_true(!is.factor(out))
+})
+
 test_that("setting labels", {
 
-  out <- rcategorical(n=100, probs=c(0.1, 0.9), labels=c("alpha", "beta"))
+  set.seed(234)
+  out <- rcategorical(n=100, probs=c(0.1, 0.9), labels=c("alpha", "beta"),
+                      output="character")
+  set.seed(234)
+  out2 <- rcategorical(n=100, probs=c(0.1, 0.9), labels=c("alpha", "beta"))
 
+  expect_equal(out, out2)
   expect_equal(unique(out), c("beta", "alpha"))
   expect_true(!is.factor(out))
 })
@@ -57,7 +70,8 @@ test_that("labels work when not all events are observed", {
   set.seed(2345235)
 
   out <- rcategorical(n=2, probs=c(0.1, 0.2, 0.3, 0.4),
-                      labels=c("A", "B", "C", "D"))
+                      labels=c("A", "B", "C", "D"),
+                      output="character")
 
   expect_equal(out, c("A", "D"))
 })

@@ -8,7 +8,7 @@ Generate Random Draws from a Discrete Set of Labels with Associated Probabilitie
 Allows different class probabilities for each person by supplying a matrix with one column for each class and one row for each person.
 }
 \usage{
-rcategorical(n, probs, labels=NULL, coerce2factor=FALSE)
+rcategorical(n, probs, labels=NULL, output="numeric")
 }
 \arguments{
   \item{n}{
@@ -20,8 +20,8 @@ Either a numeric vector of probabilities which sums to one or a matrix with one 
   \item{labels}{
 A vector of labels to draw from. If \code{NULL} (default), it simply uses integers starting from 1. Passed to the \code{x} argument of the \code{sample} function if \code{probs} is not a matrix.
   }
-  \item{coerce2factor}{
-A single logical value specifying whether to return the drawn events as a factor or not.
+  \item{output}{
+A single character string specifying the output format of the results. Must be either \code{"numeric"} (default), \code{"character"} or \code{"factor"}. If labels are supplied, the output will be parsed as characters by default.
   }
 }
 \details{
