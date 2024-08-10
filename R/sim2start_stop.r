@@ -102,7 +102,7 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
 
   # get names of time-varying variables
   tx_names <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$name}))
-  tx_type <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$type}))
+  tx_type <- unlist(lapply(sim$tx_nodes, FUN=function(x){x$type_str}))
   tte_names <- tx_names[tx_type=="time_to_event"]
   non_tte_names <- tx_names[tx_type!="time_to_event"]
 

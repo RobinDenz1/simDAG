@@ -63,8 +63,8 @@ get_right_box_labels <- function(tx_names, tx_nodes) {
   labels <- character(length=length(tx_nodes))
   for (i in seq_len(length(tx_nodes))) {
 
-    if (tx_nodes[[i]]$type=="time_to_event" |
-        tx_nodes[[i]]$type=="competing_events") {
+    if (tx_nodes[[i]]$type_str=="time_to_event" |
+        tx_nodes[[i]]$type_str=="competing_events") {
       label_i <- paste0("Probability dependent on:\n'",
                         paste(tx_nodes[[i]]$parents, collapse="', '"), "'")
     } else {

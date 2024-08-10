@@ -64,7 +64,11 @@ parse_formula <- function(formula, node_type) {
   # extract and check intercept
   ind <- grepl("*", formvec, fixed=TRUE)
 
-  if (node_type=="cox") {
+  is_cox_node <- (is.function(node_type) &&
+                  is_same_object(node_type, node_cox)) ||
+    (!is.function(node_type) && node_type=="cox")
+
+  if (is_cox_node) {
     intercept <- NULL
   } else {
     intercept <- formvec[!ind]
@@ -103,7 +107,7 @@ parse_formula <- function(formula, node_type) {
   out <- list(formula_parts=formula_parts,
               betas=betas)
 
-  if (node_type!="cox") {
+  if (!is_cox_node) {
     out$intercept <- as.numeric(intercept)
   }
 
@@ -235,4 +239,11 @@ get_interaction_term_for_formula <- function(parts, data, d_combs) {
 
   term <- paste0(cols, collapse=" * ")
   return(term)
+}
+
+## check if two objects are the same
+## this is essentially equivalent to the new version of isTRUE(all.equal())
+is_same_object <- function(fun1, fun2) {
+  out <- all.equal(fun1, fun2)
+  return(is.logical(out) && length(out)==1 && !is.na(out) && out)
 }

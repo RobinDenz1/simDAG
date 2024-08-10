@@ -85,7 +85,7 @@ add_optional_cols_long.last <- function(data, tx_nodes) {
   .id <- NULL
 
   # identify which nodes have optional columns
-  tx_nodes_type <- vapply(tx_nodes, FUN=function(x){x$type},
+  tx_nodes_type <- vapply(tx_nodes, FUN=function(x){x$type_str},
                           FUN.VALUE=character(1))
   tx_nodes <- tx_nodes[tx_nodes_type=="time_to_event"]
 

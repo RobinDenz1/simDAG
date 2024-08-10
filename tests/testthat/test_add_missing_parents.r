@@ -1,5 +1,10 @@
 
 test_that("node of unrelated type", {
+  node_custom <- function(data, parents) {
+    return(1)
+  }
+  assign("node_custom", node_custom, envir=.GlobalEnv)
+
   node <- node("test", type="custom", parents=c("A", "B"))
   node2 <- add_missing_parents(node)
 

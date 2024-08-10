@@ -75,7 +75,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
   # get relevant node names
   tx_node_names <- vapply(tx_nodes, function(x){x$name},
                           FUN.VALUE=character(1))
-  tx_node_types <- vapply(tx_nodes, function(x){x$type},
+  tx_node_types <- vapply(tx_nodes, function(x){x$type_str},
                           FUN.VALUE=character(1))
 
   data <- initialize_columns(data=data,
@@ -86,7 +86,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
   # define a list of arguments once so it doesn't have to be changed
   # inside the double for loop
   arg_list <- lapply(tx_nodes, clean_node_args)
-  fun_list <- lapply(tx_nodes, FUN=function(x){get(paste0("node_", x$type))})
+  fun_list <- lapply(tx_nodes, FUN=function(x){x$type_fun})
 
   # get current environment
   envir <- environment()

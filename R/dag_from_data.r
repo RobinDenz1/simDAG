@@ -13,7 +13,8 @@ gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
 
   # extract coef, intercept
   out <- list(name=name,
-              type=type,
+              type_str=type,
+              type_fun=get(paste0("node_", type)),
               parents=parents,
               time_varying=FALSE,
               betas=as.vector(model$coefficients[-1]),
@@ -65,7 +66,8 @@ gen_node_negative_binomial <- function(name, parents, data, return_model,
 
   # extract needed information
   out <- list(name=name,
-              type="negative_binomial",
+              type_str="negative_binomial",
+              type_fun=node_negative_binomial,
               parents=parents,
               time_varying=FALSE,
               betas=as.vector(model$coefficients[-1]),
@@ -98,7 +100,8 @@ gen_node_conditional_prob <- function(data, name, parents, return_model,
   names(probs) <- data$..interact_parents..
 
   out <- list(name=name,
-              type="conditional_prob",
+              type_str="conditional_prob",
+              type_fun=node_conditional_prob,
               parents=parents,
               time_varying=FALSE,
               probs=probs)
@@ -109,7 +112,8 @@ gen_node_conditional_prob <- function(data, name, parents, return_model,
 ## gaussian root node from data
 gen_node_rnorm <- function(data, name, na.rm) {
   out <- list(name=name,
-              type="rnorm",
+              type_str="rnorm",
+              type_fun=stats::rnorm,
               parents=NULL,
               time_varying=FALSE,
               params=list(mean=mean(data[[name]], na.rm=na.rm),
@@ -120,7 +124,8 @@ gen_node_rnorm <- function(data, name, na.rm) {
 ## binomial root node from data
 gen_node_rbernoulli <- function(data, name, na.rm) {
   out <- list(name=name,
-              type="rbernoulli",
+              type_str="rbernoulli",
+              type_fun=rbernoulli,
               parents=NULL,
               time_varying=FALSE,
               params=list(p=mean(data[[name]], na.rm=na.rm)))
@@ -131,7 +136,8 @@ gen_node_rbernoulli <- function(data, name, na.rm) {
 gen_node_rcategorical <- function(data, name, na.rm) {
   tab <- prop.table(table(data[[name]]))
   out <- list(name=name,
-              type="rcategorical",
+              type_str="rcategorical",
+              type_fun=rcategorical,
               parents=NULL,
               time_varying=FALSE,
               params=list(labels=names(tab), probs=as.vector(tab)))
@@ -158,7 +164,7 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
   # fill new_dag with new root nodes
   for (i in seq_len(length(dag$root_nodes))) {
 
-    fun_name <- paste0("gen_node_", dag$root_nodes[[i]]$type)
+    fun_name <- paste0("gen_node_", dag$root_nodes[[i]]$type_str)
 
     if (!exists(fun_name, mode="function")) {
       stop("The function '", fun_name, "' neccessary to create the node",
@@ -180,7 +186,7 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
   # fill new_dag with new child nodes
   for (i in seq_len(length(dag$child_nodes))) {
 
-    fun_name <- paste0("gen_node_", dag$child_nodes[[i]]$type)
+    fun_name <- paste0("gen_node_", dag$child_nodes[[i]]$type_str)
 
     if (!exists(fun_name, mode="function")) {
       stop("The function '", fun_name, "' neccessary to create the node",

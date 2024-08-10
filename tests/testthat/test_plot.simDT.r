@@ -2,7 +2,7 @@
 # fake simDT object with one node
 sim_1_node <- list(tx_nodes=list(
   list(name="sickness_1",
-       type="time_to_event",
+       type_str="time_to_event",
        parents=c("age", "sex", "bmi"))),
   max_t=100
 )
@@ -11,10 +11,10 @@ class(sim_1_node) <- "simDT"
 # fake simDT object with two nodes
 sim_2_node <- list(tx_nodes=list(
   list(name="sickness_1",
-       type="time_to_event",
+       type_str="time_to_event",
        parents=c("age", "sex", "bmi")),
   list(name="sickness_2",
-       type="time_to_event",
+       type_str="time_to_event",
        parents=c("age", "sex", "bmi"))),
   max_t=100
 )

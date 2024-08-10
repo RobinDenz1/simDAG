@@ -1,9 +1,41 @@
 
 #### testing root nodes output
 
+test_that("root: accepts built-in function in type", {
+  expected <- list(name="C",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
+                   parents=NULL,
+                   time_varying=FALSE,
+                   params=list())
+  class(expected) <- "DAG.node"
+
+  out <- node("C", rbernoulli, NULL)
+  expect_equal(out, expected)
+})
+
+test_that("root: accepts custom function in type", {
+
+  rtesting <- function(n) {
+    return(n)
+  }
+
+  expected <- list(name="C",
+                   type_str="rtesting",
+                   type_fun=rtesting,
+                   parents=NULL,
+                   time_varying=FALSE,
+                   params=list())
+  class(expected) <- "DAG.node"
+
+  out <- node("C", rtesting, NULL)
+  expect_equal(out, expected)
+})
+
 test_that("root: all positional, no additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list())
@@ -15,12 +47,14 @@ test_that("root: all positional, no additional", {
 
 test_that("root: multiple names, all positional, no additional", {
   expected <- list(list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list()),
                    list(name="D",
-                        type="rbernoulli",
+                        type_str="rbernoulli",
+                        type_fun=rbernoulli,
                         parents=NULL,
                         time_varying=FALSE,
                         params=list()))
@@ -34,7 +68,8 @@ test_that("root: multiple names, all positional, no additional", {
 
 test_that("root: all positional, with additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(p=0.5))
@@ -46,7 +81,8 @@ test_that("root: all positional, with additional", {
 
 test_that("root: no positional, no additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list())
@@ -63,7 +99,8 @@ test_that("root: no positional, no additional", {
 
 test_that("root: no positional, with additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(p=0.5))
@@ -80,7 +117,8 @@ test_that("root: no positional, with additional", {
 
 test_that("root: name positional, rest named, no additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list())
@@ -97,7 +135,8 @@ test_that("root: name positional, rest named, no additional", {
 
 test_that("root: name positional, rest named, with additional", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(p=0.5))
@@ -115,9 +154,47 @@ test_that("root: name positional, rest named, with additional", {
 
 #### testing child nodes output
 
+test_that("child: accepts built-in function in type", {
+  expected <- list(name="C",
+                   type_str="binomial",
+                   type_fun=node_binomial,
+                   parents=c("A", "B"),
+                   time_varying=FALSE,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", node_binomial, c("A", "B"), betas=c(1, 2), intercept=-10,
+              p=0.1)
+  expect_equal(out, expected)
+})
+
+test_that("child: accepts custom function in type", {
+
+  some_test_fun <- function(data, parents) {
+    return("ay")
+  }
+
+  expected <- list(name="C",
+                   type_str="some_test_fun",
+                   type_fun=some_test_fun,
+                   parents=c("A", "B"),
+                   time_varying=FALSE,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node("C", some_test_fun, c("A", "B"), betas=c(1, 2), intercept=-10,
+              p=0.1)
+  expect_equal(out, expected)
+})
+
 test_that("child: all positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    betas=c(1, 2),
@@ -132,14 +209,16 @@ test_that("child: all positional", {
 
 test_that("child: multiple, all positional", {
   expected <- list(list(name="C",
-                        type="binomial",
+                        type_str="binomial",
+                        type_fun=node_binomial,
                         parents=c("A", "B"),
                         time_varying=FALSE,
                         betas=c(1, 2),
                         intercept=-10,
                         p=0.1),
                    list(name="D",
-                        type="binomial",
+                        type_str="binomial",
+                        type_fun=node_binomial,
                         parents=c("A", "B"),
                         time_varying=FALSE,
                         betas=c(1, 2),
@@ -156,7 +235,8 @@ test_that("child: multiple, all positional", {
 
 test_that("child: all positional with formula", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    formula=~ A + B,
@@ -172,7 +252,8 @@ test_that("child: all positional with formula", {
 
 test_that("child: only name positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    betas=c(1, 2),
@@ -187,7 +268,8 @@ test_that("child: only name positional", {
 
 test_that("child: only name positional with formula", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    formula=~ A + B + I(A^2),
@@ -204,7 +286,8 @@ test_that("child: only name positional with formula", {
 
 test_that("child: name & type positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    betas=c(1, 2),
@@ -219,7 +302,8 @@ test_that("child: name & type positional", {
 
 test_that("child: no positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    betas=c(1, 2),
@@ -234,7 +318,8 @@ test_that("child: no positional", {
 
 test_that("child: no positional with formula", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=FALSE,
                    formula=~ A + B + I(A^2),
@@ -251,9 +336,47 @@ test_that("child: no positional with formula", {
 
 #### testing child nodes output with time-varying=TRUE
 
+test_that("time-varying: accepts built-in fun in type", {
+  expected <- list(name="C",
+                   type_str="binomial",
+                   type_fun=node_binomial,
+                   parents=c("A", "B"),
+                   time_varying=TRUE,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node_td("C", node_binomial, c("A", "B"), NULL,
+                 betas=c(1, 2), intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
+test_that("time-varying: accepts custom fun in type", {
+
+  custom_fun <- function(data, parents) {
+    return("ahh")
+  }
+
+  expected <- list(name="C",
+                   type_str="custom_fun",
+                   type_fun=custom_fun,
+                   parents=c("A", "B"),
+                   time_varying=TRUE,
+                   betas=c(1, 2),
+                   intercept=-10,
+                   p=0.1)
+  class(expected) <- "DAG.node"
+
+  out <- node_td("C", custom_fun, c("A", "B"), NULL,
+                 betas=c(1, 2), intercept=-10, p=0.1)
+  expect_equal(out, expected, ignore_formula_env=TRUE)
+})
+
 test_that("time-varying: all positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=TRUE,
                    formula= ~ A + B,
@@ -269,7 +392,8 @@ test_that("time-varying: all positional", {
 
 test_that("time-varying: multiple, all positional", {
   expected <- list(list(name="C",
-                        type="binomial",
+                        type_str="binomial",
+                        type_fun=node_binomial,
                         parents=c("A", "B"),
                         time_varying=TRUE,
                         formula= ~ A + B,
@@ -277,7 +401,8 @@ test_that("time-varying: multiple, all positional", {
                         intercept=-10,
                         p=0.1),
                    list(name="D",
-                        type="binomial",
+                        type_str="binomial",
+                        type_fun=node_binomial,
                         parents=c("A", "B"),
                         time_varying=TRUE,
                         formula= ~ A + B,
@@ -295,7 +420,8 @@ test_that("time-varying: multiple, all positional", {
 
 test_that("time-varying: only name positional", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=TRUE,
                    betas=c(1, 2),
@@ -310,7 +436,8 @@ test_that("time-varying: only name positional", {
 
 test_that("time-varying: only name positional with formula", {
   expected <- list(name="C",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents=c("A", "B"),
                    time_varying=TRUE,
                    formula=~ A + B + I(A^2),
@@ -327,7 +454,8 @@ test_that("time-varying: only name positional with formula", {
 
 test_that("time-varying: no parents", {
   expected <- list(name="C",
-                   type="time_to_event",
+                   type_str="time_to_event",
+                   type_fun=node_time_to_event,
                    parents=NULL,
                    time_varying=TRUE,
                    prob_fun=0.001)
@@ -339,7 +467,8 @@ test_that("time-varying: no parents", {
 
 test_that("call with only two unnamed arguments", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list())
@@ -351,7 +480,8 @@ test_that("call with only two unnamed arguments", {
 
 test_that("call with only two named arguments", {
   expected <- list(name="C",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list())

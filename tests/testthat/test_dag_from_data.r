@@ -57,10 +57,14 @@ test_that("child node function not defined", {
                      B=rnorm(10),
                      C=rnorm(10))
 
+  not_defined <- function(data, parents) {
+    return(1)
+  }
+
   dag_empty <- empty_dag() +
     node("A", type="rnorm") +
     node("B", type="gaussian", parents=c("A")) +
-    node("C", type="not_defined", parents=c("A", "B"))
+    node("C", type=not_defined, parents=c("A", "B"))
 
   expect_error(dag_from_data(dag_empty, data))
 })
@@ -70,7 +74,8 @@ test_that("gen_node_rnorm", {
   data <- data.table::data.table(y=c(1, 2, 3, 4, 5))
 
   expected <- list(name="y",
-                   type="rnorm",
+                   type_str="rnorm",
+                   type_fun=rnorm,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(mean=3,
@@ -86,7 +91,8 @@ test_that("gen_node_rbernoulli", {
   data <- data.table::data.table(y=c(0, 0, 1, 0, 0))
 
   expected <- list(name="y",
-                   type="rbernoulli",
+                   type_str="rbernoulli",
+                   type_fun=rbernoulli,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(p=0.2))
@@ -101,7 +107,8 @@ test_that("gen_node_rcategorical", {
   data <- data.table::data.table(y=c("0", "2", "1", "2", "0"))
 
   expected <- list(name="y",
-                   type="rcategorical",
+                   type_str="rcategorical",
+                   type_fun=rcategorical,
                    parents=NULL,
                    time_varying=FALSE,
                    params=list(labels=c("0", "1", "2"), probs=c(0.4, 0.2, 0.4)))
@@ -117,7 +124,8 @@ test_that("gen_node_conditional_prob", {
                                  y=c(1, 1, 0, 0, 0, 0))
 
   expected <- list(name="y",
-                   type="conditional_prob",
+                   type_str="conditional_prob",
+                   type_fun=node_conditional_prob,
                    parents="x",
                    time_varying=FALSE,
                    probs=list(A=2/3, B=0))
@@ -134,7 +142,8 @@ test_that("gen_node_gaussian", {
                                  y=c(3, 4, 5, 6, 10))
 
   expected <- list(name="y",
-                   type="gaussian",
+                   type_str="gaussian",
+                   type_fun=node_gaussian,
                    parents="x",
                    time_varying=FALSE,
                    betas=1.6,
@@ -153,7 +162,8 @@ test_that("gen_node_binomial", {
                                  y=c(0, 0, 1, 0, 1))
 
   expected <- list(name="y",
-                   type="binomial",
+                   type_str="binomial",
+                   type_fun=node_binomial,
                    parents="x",
                    time_varying=FALSE,
                    betas=1.090426,
@@ -171,7 +181,8 @@ test_that("gen_node_poisson", {
                                  y=c(3, 4, 5, 6, 10))
 
   expected <- list(name="y",
-                   type="poisson",
+                   type_str="poisson",
+                   type_fun=node_poisson,
                    parents="x",
                    time_varying=FALSE,
                    betas=0.2964423,
@@ -189,7 +200,8 @@ test_that("gen_node_negative_binomial", {
                      y=c(3, 4, 5, 6, 10, 14, 12, 11))
 
   expected <- list(name="y",
-                   type="negative_binomial",
+                   type_str="negative_binomial",
+                   type_fun=node_negative_binomial,
                    parents="x",
                    time_varying=FALSE,
                    betas=0.3158466,

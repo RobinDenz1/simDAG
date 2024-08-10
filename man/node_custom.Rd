@@ -27,7 +27,7 @@ Some examples that are already implemented in R outside of this package are \cod
 Again, almost any function may be used to generate a child node. Only four things are required for this to work properly:
 
 \itemize{
-  \item \strong{1.)} Its' name should start with \code{node_}.
+  \item \strong{1.)} Its' name should start with \code{node_} (if you want to use a string to define it in \code{type}).
   \item \strong{2.)} It should contain an argument called \code{data} (contains the already generated data).
   \item \strong{3.)} It should contain an argument called \code{parents} (contains a vector of the child nodes parents).
   \item \strong{4.)} It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
@@ -40,7 +40,7 @@ The function may include any amount of additional arguments specified by the use
 By time-dependent nodes we mean nodes that are created using the \code{\link{node_td}} function. In general, this works in essentially the same way as for simple root nodes or child nodes. The requirements are:
 
 \itemize{
-  \item \strong{1.)} Its' name should start with \code{node_}.
+  \item \strong{1.)} Its' name should start with \code{node_} (if you want to use a string to define it in \code{type}).
   \item \strong{2.)} It should contain an argument called \code{data} (contains the already generated data).
   \item \strong{3.)} If it is a child node, it should contain an argument called \code{parents} (contains a vector of the child nodes parents). This is not necessary for nodes that are independently generated.
   \item \strong{4.)} It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
@@ -77,6 +77,10 @@ custom_root <- function(n, min=0, max=1, mean=0, sd=1) {
 dag <- empty_dag() +
   node("A", type="custom_root", min=0, max=10, mean=5, sd=2)
 
+# equivalently, the function can be supplied directly
+dag <- empty_dag() +
+  node("A", type=custom_root, min=0, max=10, mean=5, sd=2)
+
 ############### Custom Child Nodes ###################
 
 # create a custom node function, which is just a gaussian node that
@@ -91,7 +95,7 @@ node_gaussian_trunc <- function(data, parents, betas, intercept, error,
 }
 
 # another custom node function, which simply returns a sum of the parents
-node_parents_sum <- function(data, parents, betas=NULL) {
+parents_sum <- function(data, parents, betas=NULL) {
   out <- rowSums(data[, parents, with=FALSE])
   return(out)
 }
@@ -102,7 +106,7 @@ dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5) +
   node("custom_1", type="gaussian_trunc", parents=c("sex", "age"),
        betas=c(1.1, 0.4), intercept=-2, error=2, left=10, right=25) +
-  node("custom_2", type="parents_sum", parents=c("age", "custom_1"))
+  node("custom_2", type=parents_sum, parents=c("age", "custom_1"))
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 
@@ -118,7 +122,7 @@ node_custom_root_td <- function(data, n, mean=0, sd=1) {
 n_sim <- 100
 
 dag <- empty_dag() +
-  node_td(name="Something", type="custom_root_td", n=n_sim, mean=10, sd=5)
+  node_td(name="Something", type=node_custom_root_td, n=n_sim, mean=10, sd=5)
 
 sim <- sim_discrete_time(dag, n_sim=n_sim, max_t=10)
 
@@ -148,7 +152,7 @@ node_square_sim_time <- function(data, sim_time, n_sim) {
 # note that we should not actually define the sim_time argument in the
 # node_td() call below, because it will be passed internally, just like data
 dag <- empty_dag() +
-  node_td("unclear", type="square_sim_time", n_sim=100)
+  node_td("unclear", type=node_square_sim_time, n_sim=100)
 
 sim <- sim_discrete_time(dag, n_sim=100, max_t=10)
 }

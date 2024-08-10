@@ -152,8 +152,23 @@ create_node_list <- function(name, type, parents, formula, time_varying,
 create_DAG.node <- function(name, type, parents, formula, time_varying,
                             root, args) {
 
+  # create type_str and type_fun
+  if (is.function(type)) {
+    type_str <- extract_function_name(type)
+    type_fun <- type
+  } else if (root) {
+    type_str <- type
+    type_fun <- get(type)
+  } else {
+    type_str <- type
+    type_fun <- get(paste0("node_", type))
+  }
+
+  type_str <- correct_type_str(type_str)
+
   node_list <- list(name=name,
-                    type=type,
+                    type_str=type_str,
+                    type_fun=type_fun,
                     parents=parents,
                     time_varying=time_varying)
 
@@ -172,6 +187,20 @@ create_DAG.node <- function(name, type, parents, formula, time_varying,
   return(node_list)
 }
 
+## replaces the type "node_.." with just the latter for built in
+## node types to produce the same output when supplied a function or string
+correct_type_str <- function(type_str) {
+
+  if (type_str %in% c("node_gaussian", "node_binomial", "node_conditional_prob",
+                      "node_conditional_distr", "node_multinomial",
+                      "node_poisson", "node_negative_binomial", "node_cox",
+                      "node_time_to_event", "node_competing_events")) {
+    type_str <- gsub("node_", "", type_str)
+  }
+
+  return(type_str)
+}
+
 ## S3 print method for DAG.node objects
 #' @export
 print.DAG.node <- function(x, ...) {
@@ -181,10 +210,10 @@ print.DAG.node <- function(x, ...) {
     cat("A list of DAG.node objects.")
   # root nodes
   } else if ((length(x$parents) == 0 || all(x$parents=="")) &&
-             !x$type %in% c("time_to_event", "competing_events")) {
+             !x$type_str %in% c("time_to_event", "competing_events")) {
     cat("A DAG.node object specifying a single root node with:\n")
     cat("  - name: '", x$name, "'\n", sep="")
-    cat("  - type: '", x$type, "'\n", sep="")
+    cat("  - type: '", x$type_str, "'\n", sep="")
 
     if (length(x$params)==0) {
       cat("  - no additional parameters\n")
@@ -197,13 +226,13 @@ print.DAG.node <- function(x, ...) {
   } else {
     cat("A DAG.node object specifying a single child node with:\n")
     cat("  - name: '", x$name, "'\n", sep="")
-    cat("  - type: '", x$type, "'\n", sep="")
+    cat("  - type: '", x$type_str, "'\n", sep="")
 
     if (length(x$parents) > 0) {
       cat("  - parents: '", paste0(x$parents, collapse="', '"), "'\n", sep="")
     }
 
-    if (length(x)==4) {
+    if (length(x)==5) {
       cat("  - no additional parameters\n")
     } else {
 
@@ -215,8 +244,8 @@ print.DAG.node <- function(x, ...) {
         cat("  - intercept: ", x$intercept, "\n", sep="")
       }
 
-      other_args <- names(x)[!names(x) %in% c("name", "type", "parents",
-                                              "betas", "intercept",
+      other_args <- names(x)[!names(x) %in% c("name", "type_str", "type_fun",
+                                              "parents", "betas", "intercept",
                                               "time_varying")]
       if (length(other_args) > 0) {
         param_str <- paste0(other_args, collapse=", ")

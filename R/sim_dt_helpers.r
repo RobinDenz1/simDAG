@@ -16,7 +16,7 @@ add_node_to_data <- function(data, new, name) {
 add_missing_parents <- function(node) {
 
   # change parents arguments if time_to_event node
-  if (node$type=="time_to_event" | node$type=="competing_events") {
+  if (node$type_str=="time_to_event" | node$type_str=="competing_events") {
     parents <- c(".id", node$parents,
                  paste0(node$name, c("_event", "_time")))
   } else {
@@ -24,12 +24,12 @@ add_missing_parents <- function(node) {
   }
 
   # add optional columns if time-to-event node
-  if (node$type=="time_to_event" && !is.null(node$time_since_last) &&
+  if (node$type_str=="time_to_event" && !is.null(node$time_since_last) &&
       node$time_since_last) {
     parents <- c(parents, paste0(node$name, "_time_since_last"))
   }
 
-  if (node$type=="time_to_event" && !is.null(node$event_count) &&
+  if (node$type_str=="time_to_event" && !is.null(node$event_count) &&
       node$event_count) {
     parents <- c(parents, paste0(node$name, "_event_count"))
   }
@@ -43,22 +43,22 @@ add_missing_parents <- function(node) {
 clean_node_args <- function(node) {
 
   # get function
-  node_type_fun <- get(paste0("node_", node$type))
-  fun_pos_args <- names(formals(node_type_fun))
+  fun_pos_args <- names(formals(node$type_fun))
 
   node <- add_missing_parents(node)
 
   # formula stuff
   if (!is.null(node$formula) && !is_formula(node$formula)) {
     node <- args_from_formula(args=node, formula=node$formula,
-                              node_type=node$type)
+                              node_type=node$type_str)
   }
 
   # add or remove internal arguments if needed
   if (!"name" %in% fun_pos_args) {
     node$name <- NULL
   }
-  node$type <- NULL
+  node$type_str <- NULL
+  node$type_fun <- NULL
   node$time_varying <- NULL
 
   return(node)
