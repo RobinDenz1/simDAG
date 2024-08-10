@@ -12,6 +12,12 @@ test_that("without td, basecase", {
   expect_true(inherits(out[[1]], "data.table"))
 })
 
+test_that("without td, parallel", {
+  out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=2, n_sim=10)
+  expect_true(length(out) == 10)
+  expect_true(inherits(out[[1]], "data.table"))
+})
+
 test_that("without td, data_format", {
 
   dat_transform <- function(data) {
@@ -51,4 +57,3 @@ test_that("with td, data_format", {
   expect_true(length(out) == 10)
   expect_true(inherits(out[[1]], "data.table"))
 })
-

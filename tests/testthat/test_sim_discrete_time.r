@@ -190,9 +190,6 @@ test_that("helpful error message node processing working", {
 
 test_that("helpful error message adding node to data working", {
 
-  dag <- empty_dag() +
-    node_td("custom_nonsense", type="nonsense")
-
   node_nonsense <- function(data, sim_time) {
     if (sim_time < 100) {
       return(10)
@@ -202,6 +199,9 @@ test_that("helpful error message adding node to data working", {
   }
 
   assign("node_nonsense", value=node_nonsense, envir=.GlobalEnv)
+
+  dag <- empty_dag() +
+    node_td("custom_nonsense", type="nonsense")
 
   expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120),
                paste0("An error occured when trying to add the output of ",
@@ -235,9 +235,6 @@ test_that("helpful error message when processing tx_transform_fun", {
 
 test_that("using a custom node", {
 
-  dag <- empty_dag() +
-    node_td("custom_nonsense", type="sim_time_multiplier")
-
   node_sim_time_multiplier <- function(data, sim_time) {
     return(sim_time * 2)
   }
@@ -246,9 +243,28 @@ test_that("using a custom node", {
   assign("node_sim_time_multiplier", value=node_sim_time_multiplier,
          envir=.GlobalEnv)
 
+  dag <- empty_dag() +
+    node_td("custom_nonsense", type="sim_time_multiplier")
+
   sim <- sim_discrete_time(dag=dag, n_sim=100, max_t=20)
 
   expect_equal(sim$data$custom_nonsense, rep(40, 100))
+})
+
+test_that("using a custom node", {
+
+  sim_time_multiplier <- function(data, sim_time) {
+    return(sim_time * 2)
+  }
+
+  dag <- empty_dag() +
+    node_td("A", type=node_time_to_event, prob_fun=0.01) +
+    node_td("custom_nonsense", type=sim_time_multiplier)
+
+  sim <- sim_discrete_time(dag=dag, n_sim=100, max_t=20)
+
+  expect_equal(sim$data$custom_nonsense, rep(40, 100))
+  expect_true(is.logical(sim$data$A_event))
 })
 
 test_that("works with formulas", {

@@ -1,14 +1,17 @@
 
-root_nodes <- list(list(type="rnorm",
+root_nodes <- list(list(type_str="rnorm",
+                        type_fun=rnorm,
                         params=list(mean=17, sd=4),
                         name="age",
                         time_varying=FALSE),
-                   list(type="rbernoulli",
+                   list(type_str="rbernoulli",
+                        type_fun=rbernoulli,
                         params=list(p=0.7),
                         name="sex",
                         time_varying=FALSE))
 child_nodes <- list(list(parents=c("sex", "age"),
-                         type="gaussian",
+                         type_str="gaussian",
+                         type_fun=node_gaussian,
                          name="bmi",
                          betas=c(2.1, 1.4),
                          intercept=14,
@@ -36,14 +39,16 @@ test_that("snapshot test", {
 
 test_that("sort_dag working", {
   child_nodes <- list(list(parents=c("sex", "age", "income"),
-                           type="gaussian",
+                           type_str="gaussian",
+                           type_fun=node_gaussian,
                            name="bmi",
                            betas=c(2.1, 1.4, 0.1),
                            intercept=14,
                            error=2,
                            time_varying=FALSE),
                       list(parents=c("sex", "age"),
-                           type="gaussian",
+                           type_str="gaussian",
+                           type_fun=node_gaussian,
                            name="income",
                            betas=c(0.1, 0.7),
                            intercept=100,
@@ -56,6 +61,24 @@ test_that("sort_dag working", {
   expect_true(nrow(sim_dat)==20)
   expect_true(ncol(sim_dat)==4)
   expect_error(sim_from_dag(n_sim=20, dag=dag, sort_dag=FALSE))
+})
+
+test_that("accepts nodes directly passed in type", {
+
+  custom_fun <- function(data, parents) {
+    rbernoulli(n=nrow(data))
+  }
+
+  dag <- empty_dag() +
+    node("A", type=rbernoulli, p=0.4, output="numeric") +
+    node("B", type=node_gaussian, formula=~ -1 + A*3, error=2) +
+    node("C", type=custom_fun, parents=c("A", "B"))
+  dat <- sim_from_dag(dag, n_sim=10)
+
+  expect_true(nrow(dat)==10)
+  expect_true(ncol(dat)==3)
+  expect_true(is.numeric(dat$B))
+  expect_true(is.logical(dat$C))
 })
 
 test_that("helpful error message root nodes", {
