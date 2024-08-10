@@ -57,7 +57,7 @@
 <dd><p>A character vector with at least one entry specifying the name of the node. If a character vector containing multiple different names is supplied, one separate node will be created for each name. These nodes are completely independent, but have the exact same node definition as supplied by the user. If only a single character string is provided, only one node is generated.</p></dd>
 
   <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>A single character string specifying the type of the node. Depending on whether the node is a root node, a child node or a time-dependent node different node types are allowed. See details.</p></dd>
+<dd><p>A single character string specifying the type of the node. Depending on whether the node is a root node, a child node or a time-dependent node different node types are allowed. See details. Alternatively, a suitable function may be passed directly to this argument.</p></dd>
 
   <dt id="arg-parents">parents<a class="anchor" aria-label="anchor" href="#arg-parents"></a></dt>
 <dd><p>A character vector of names, specifying the parents of the node or <code>NULL</code> (default). If <code>NULL</code>, the node is treated as a root node. For convenience it is also allowed to set <code>parents=""</code> to indicate that the node is a root node.</p></dd>
@@ -131,9 +131,10 @@
 <span class="r-in"><span>  <span class="fu">node</span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">30</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># creating a DAG with multiple root nodes</span></span></span>
+<span class="r-in"><span><span class="co"># (passing the functions directly to 'type' works too)</span></span></span>
 <span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>  <span class="fu">node</span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>  <span class="fu">node</span><span class="op">(</span><span class="st">"income"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">2700</span>, sd<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">node</span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="va">rbernoulli</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu">node</span><span class="op">(</span><span class="st">"income"</span>, type<span class="op">=</span><span class="va">rnorm</span>, mean<span class="op">=</span><span class="fl">2700</span>, sd<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># creating a DAG with multiple root nodes + multiple names in one node</span></span></span>
 <span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
