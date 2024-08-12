@@ -247,3 +247,13 @@ is_same_object <- function(fun1, fun2) {
   out <- all.equal(fun1, fun2)
   return(is.logical(out) && length(out)==1 && !is.na(out) && out)
 }
+
+## get parents out of a special formula object
+parents_from_formula <- function(formula, node_type) {
+
+  formula_parts <- parse_formula(formula, node_type=node_type)$formula_parts
+  raw_formula <- stats::as.formula(paste0("~ ", paste0(formula_parts,
+                                   collapse=" + ")))
+
+  return(all.vars(raw_formula))
+}
