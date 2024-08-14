@@ -9,8 +9,19 @@ test_that("bernoulli distribution", {
   expect_equal(str_eq_root(test_node), "test ~ Bernoulli(0.6)")
 })
 
+test_that("bernoulli distribution with output", {
+  test_node <- node("test", type="rbernoulli", p=0.6, output="numeric")
+  expect_equal(str_eq_root(test_node), "test ~ Bernoulli(0.6)")
+})
+
 test_that("multinomial distribution", {
   test_node <- node("test", type="rcategorical", probs=c(0.1, 0.7, 0.2))
+  expect_equal(str_eq_root(test_node),"test ~ Multinomial(c(0.1, 0.7, 0.2))")
+})
+
+test_that("multinomial distribution, with labels & output", {
+  test_node <- node("test", type="rcategorical", probs=c(0.1, 0.7, 0.2),
+                    output="factor", labels=c("A", "B", "C"))
   expect_equal(str_eq_root(test_node),"test ~ Multinomial(c(0.1, 0.7, 0.2))")
 })
 

@@ -37,7 +37,7 @@ sanitize_formula <- function(formula) {
   if (is.null(formula)) {
     out <- NULL
   } else if (is_formula(formula)) {
-    out <- paste0(deparse(formula), collapse="")
+    out <- paste0(str_trim(deparse(formula)), collapse="")
   } else if (is.vector(formula)) {
     out <- formula
   }
@@ -48,6 +48,11 @@ sanitize_formula <- function(formula) {
   }
 
   return(out)
+}
+
+## removes all whitespaces from start of string
+str_trim <- function(string) {
+  return(gsub("^\\s+", "", string))
 }
 
 ## parse custom formulas into betas, formula parts and intercept

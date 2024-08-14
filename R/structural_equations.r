@@ -62,7 +62,8 @@ str_eq_root <- function(node) {
   # get param string
   use_names <- !node$type_str %in% c("rnorm", "rbernoulli", "rcategorical",
                                      "rconstant")
-  params <- get_param_str(node$params, use_names=use_names)
+  params <- node$params[!names(node$params) %in% c("output", "labels")]
+  params <- get_param_str(params, use_names=use_names)
 
   # put together
   out <- paste0(node$name, " ~ ", type_str, "(", params, ")")
