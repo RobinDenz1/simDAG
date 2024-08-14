@@ -491,6 +491,14 @@ test_that("call with only two named arguments", {
   expect_equal(out, expected)
 })
 
+test_that("cubic terms showing up in parents", {
+  dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node("C", type="gaussian", formula= ~ -2 + A*1 + I(B^2)*0.3, error=2)
+
+  expect_equal(dag$child_nodes[[1]]$parents, c("A", "B"))
+})
+
 test_that("node: error when name or type missing", {
   expect_error(empty_dag() + node())
   expect_error(empty_dag() + node(name="A"))
