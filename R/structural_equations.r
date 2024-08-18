@@ -97,7 +97,7 @@ str_eq_gaussian <- function(node) {
 
   if (!is.null(node$formula) && !is_formula(node$formula)) {
     out <- paste0(node$name, " ~ N(",
-                  prep_formula_str_eq(node$formula), ")")
+                  prep_formula_str_eq(node$formula), ", ", node$error, ")")
   } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ N()")
   } else {

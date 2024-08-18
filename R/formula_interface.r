@@ -42,8 +42,8 @@ sanitize_formula <- function(formula) {
     out <- formula
   }
 
-  if (!is.null(out) && !grepl("\\*\\s*\\d+", out) &&
-      !grepl("\\d+\\s*\\*", out)) {
+  if (!is.null(out) && !grepl("\\*\\s*-?\\d+", out) &&
+      !grepl("\\d+-?\\s*\\*", out)) {
     out <- formula
   }
 
@@ -135,6 +135,11 @@ args_from_formula <- function(args, formula, node_type) {
 ## create a fitting dataset for special formula based nodes
 #' @importFrom data.table as.data.table
 data_for_formula <- function(data, args) {
+
+  # just return the relevant parts of the data.table if possible
+  if (all(args$parents %in% colnames(data))) {
+    return(data[, args$parents, with=FALSE])
+  }
 
   # add all variables to model matrix
   form_dat <- paste0("~ ", paste0(colnames(data), collapse=" + "))

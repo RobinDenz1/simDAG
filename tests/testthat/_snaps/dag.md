@@ -29,7 +29,7 @@
     
        A ~ Bernoulli(0.1)
        B ~ Bernoulli(0.2)
-       C ~ N(-10 + A*0.1 + B*0.2)
+       C ~ N(-10 + A*0.1 + B*0.2, 10)
        D ~ Bernoulli(logit(-5 + B*7 + C*1))
        E ~ Poisson(-2 + A*4 + C*3 + A:B*2)
        F ~ NegBinomial(-2 + A*4 + C*3 + A:B*2 + log(0.34))
