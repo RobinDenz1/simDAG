@@ -16,6 +16,10 @@ test_that("change layout", {
   expect_snapshot_output(plot(dag, layout="in_circle"))
 })
 
+test_that("change layout with extra arguments", {
+  expect_snapshot_output(plot(dag, layout="as_tree", flip.y=FALSE))
+})
+
 test_that("change node_size", {
   expect_snapshot_output(plot(dag, node_size=0.1))
 })

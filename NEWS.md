@@ -60,6 +60,7 @@ Enhancements
 * Change default of `sort_dag` in `sim_from_dag()` from `TRUE` to `FALSE`.
 * Moved the functionality of the `coerce2factor` and `coerce2numeric` arguments in `rcategorical()`, `node_multinomial()` and `node_binomial()` to the `output` argument for a more consistent syntax and easier usage.
 * It is now allowed to directly supply functions to the `type` argument in `node()` and `node_td()`.
+* Passing optional arguments to the `layout` function in `plot.DAG()` is now supported.
 
 Bug Fixes
 

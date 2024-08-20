@@ -99,7 +99,7 @@ Whether to include time-varying nodes added to the \code{dag} using the \code{\l
 Whether to distinguish time-varying and time-fixed nodes by \code{fill} color. If \code{TRUE}, the color will be set automatically using the standard \code{ggplot2} palette, ignoring the color specified in \code{node_fill}. Ignored if \code{include_td_nodes=FALSE} or if there are no time-varying variables.
   }
   \item{...}{
-Currently not used.
+Further arguments passed to the \code{layout} function specified by the argument of the same name.
   }
 }
 \details{
