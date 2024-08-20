@@ -42,8 +42,10 @@ sanitize_formula <- function(formula) {
     out <- formula
   }
 
-  if (!is.null(out) && !grepl("\\*\\s*-?\\d+", out) &&
-      !grepl("\\d+-?\\s*\\*", out)) {
+  # if it is not an enhanced formula, return it as formula
+  if (!is.null(out) &&
+      !grepl("\\*\\s*(-?\\d+|[a-zA-Z]+\\s*\\(-?\\d+\\))", out) &&
+      !grepl("\\d+\\)?\\s*\\*", out)) {
     out <- formula
   }
 
@@ -53,6 +55,17 @@ sanitize_formula <- function(formula) {
 ## removes all whitespaces from start of string
 str_trim <- function(string) {
   return(gsub("^\\s+", "", string))
+}
+
+## parses both numbers and functions calling numbers to their numeric value
+str2numeric <- function(string) {
+
+  out <- tryCatch({vapply(string, FUN=function(x){eval(str2lang(x))},
+                          FUN.VALUE=numeric(1), USE.NAMES=FALSE)},
+                  error=function(e){
+                    stop("One or more of the supplied beta coefficients ",
+                         "in 'formula' are not numbers.")})
+  return(out)
 }
 
 ## parse custom formulas into betas, formula parts and intercept
@@ -92,7 +105,7 @@ parse_formula <- function(formula, node_type) {
   betas <- character(n_parents)
 
   # determine order of formula
-  if (is.na(suppressWarnings(as.numeric(formlist[[1]][[1]])))) {
+  if (!is_valid_number(formlist[[1]][[1]])) {
     ind1 <- 1
     ind2 <- 2
   } else {
@@ -106,7 +119,7 @@ parse_formula <- function(formula, node_type) {
   }
 
   # create betas
-  betas <- as.numeric(betas)
+  betas <- str2numeric(betas)
   check_betas(betas)
 
   out <- list(formula_parts=formula_parts,
@@ -256,6 +269,11 @@ get_interaction_term_for_formula <- function(parts, data, d_combs) {
 is_same_object <- function(fun1, fun2) {
   out <- all.equal(fun1, fun2)
   return(is.logical(out) && length(out)==1 && !is.na(out) && out)
+}
+
+## check whether a string is a number or a function called on a number
+is_valid_number <- function(string) {
+  return(grepl("^(\\d+(\\.\\d+)?|[a-zA-Z]+\\(\\d+(\\.\\d+)?\\))$", string))
 }
 
 ## get parents out of a special formula object

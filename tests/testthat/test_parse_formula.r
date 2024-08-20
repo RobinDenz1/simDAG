@@ -69,3 +69,15 @@ test_that("beta not a number", {
                paste0("One or more of the supplied beta coefficients ",
                       "in 'formula' are not numbers."))
 })
+
+test_that("allows functions of numbers", {
+  # one way
+  formula <- "~ 3 + A*log(2) + B*exp(-1) + C*1.5"
+  out <- parse_formula(formula, node_type="binomial")
+  expect_equal(out$betas, c(log(2), exp(-1), 1.5))
+
+  # other way
+  formula <- "~ 3 + log(2)*A + exp(-1)*B + 1.5*C"
+  out <- parse_formula(formula, node_type="binomial")
+  expect_equal(out$betas, c(log(2), exp(-1), 1.5))
+})
