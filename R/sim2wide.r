@@ -20,5 +20,12 @@ sim2wide <- function(sim, use_saved_states=sim$save_states=="all") {
                             formula=stats::as.formula(form),
                             value.var=varying_cols)
 
+  # rename columns if there is only one time-varying variable
+  if (length(varying_cols)==1) {
+    n_t <- ncol(data) - length(fixed_cols)
+    cnames <- c(fixed_cols, paste0(varying_cols, 1:n_t, sep="_"))
+    colnames(data) <- cnames
+  }
+
   return(data)
 }

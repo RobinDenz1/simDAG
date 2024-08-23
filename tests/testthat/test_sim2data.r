@@ -57,6 +57,7 @@ test_that("as wide data", {
   expect_true(inherits(out, "data.table"))
   expect_true(nrow(out)==100)
   expect_true(ncol(out)==54)
+  expect_true(!"1" %in% colnames(out) & !"death_1" %in% colnames(out))
 })
 
 test_that("as start_stop data, with data.frame output", {
@@ -85,4 +86,12 @@ test_that("as wide data, save_states='all'", {
   expect_true(inherits(out, "data.table"))
   expect_true(nrow(out)==100)
   expect_true(ncol(out)==54)
+})
+
+test_that("as wide data, with multiple time-varying variables", {
+  dag <- dag + node_td("More", type="time_to_event", prob_fun=0.01)
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=50)
+  dat <- sim2data(sim, to="wide")
+
+  expect_true("death_1" %in% colnames(dat))
 })
