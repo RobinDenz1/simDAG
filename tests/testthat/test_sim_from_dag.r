@@ -95,7 +95,7 @@ test_that("helpful error message root nodes", {
 
   expect_error(sim_from_dag(dag, n=10),
                paste0("An error occured when processing root node 'B'. ",
-                      "The message was: Error in (function (n) : ",
+                      "The message was:\nError in (function (n) : ",
                       "failed instantly"),
                fixed=TRUE)
 })
@@ -114,7 +114,7 @@ test_that("helpful error message child nodes", {
 
   expect_error(sim_from_dag(dag, n=10),
                paste0("An error occured when processing node 'B'. ",
-                      "The message was: Error in ",
+                      "The message was:\nError in ",
                       "(function (data, parents) : failed instantly"),
                fixed=TRUE)
 })

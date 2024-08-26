@@ -183,7 +183,7 @@ test_that("helpful error message node processing working", {
 
   expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120),
                paste0("An error occured when processing node 'car_crash'",
-                      " at time t = 100. The message was: Error in (",
+                      " at time t = 100. The message was:\nError in (",
                       "function (data, sim_time, base_p) : Error at",
                       " t = 100"), fixed=TRUE)
 })
@@ -206,7 +206,7 @@ test_that("helpful error message adding node to data working", {
   expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120),
                paste0("An error occured when trying to add the output of ",
                       "node 'custom_nonsense' at time t = 100 to the ",
-                      "current data. The message was: Error in ",
+                      "current data. The message was:\nError in ",
                       "`[<-.data.table`(`*tmp*`, , name, value = list(20, ",
                       "12)): Supplied 2 items to be assigned to 10 items ",
                       "of column 'custom_nonsense'. If you wish to ",
@@ -229,7 +229,7 @@ test_that("helpful error message when processing tx_transform_fun", {
   expect_error(sim_discrete_time(dag=dag, n_sim=10, max_t=120,
                                  tx_transform_fun=transform_fun),
                paste0("An error occured when calling the tx_transform() ",
-                      "function at t = 1. The message was: Error in ",
+                      "function at t = 1. The message was:\nError in ",
                       "(function (data) : failed instantly"), fixed=TRUE)
 })
 

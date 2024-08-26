@@ -141,6 +141,9 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
       if ("sim_time" %in% fun_pos_args) {
         args$sim_time <- t
       }
+      if ("past_states" %in% fun_pos_args) {
+        args$past_states <- past_states
+      }
       if (!"parents" %in% fun_pos_args) {
         args$parents <- NULL
       }
@@ -155,7 +158,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
         do.call(node_type_fun, args)},
         error=function(e){
           stop("An error occured when processing node '", tx_nodes[[i]]$name,
-               "' at time t = ", t, ". The message was: ", e)
+               "' at time t = ", t, ". The message was:\n", e, call.=FALSE)
         }
       )
 
@@ -166,7 +169,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
         error=function(e){
           stop("An error occured when trying to add the output of node '",
                tx_nodes[[i]]$name, "' at time t = ", t, " to the current",
-               " data. The message was: ", e)
+               " data. The message was:\n", e, call.=FALSE)
         }
       )
     }
@@ -178,7 +181,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
         do.call(tx_transform_fun, args=tx_transform_args)},
         error=function(e){
           stop("An error occured when calling the tx_transform() function",
-               " at t = ", t, ". The message was: ", e)
+               " at t = ", t, ". The message was:\n", e, call.=FALSE)
         }
       )
     }

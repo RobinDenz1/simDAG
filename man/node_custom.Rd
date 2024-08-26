@@ -46,7 +46,7 @@ By time-dependent nodes we mean nodes that are created using the \code{\link{nod
   \item \strong{4.)} It should return either a vector of length \code{n_sim} or a \code{data.frame} with any number of columns and \code{n_sim} rows.
 }
 
-Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, users may add an argument to this function called \code{sim_time}. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it.
+Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, users may add an argument to this function called \code{sim_time}. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it. Similarly, the argument \code{past_states} may be added. If done so, a list containing all previous states of the simulation (as saved using the \code{save_states} argument of the \code{\link{sim_discrete_time}}) function) will be passed to it internally, giving the user access to the data generated at previous points in time.
 }
 \value{
 Should return either a vector of length \code{nrow(data)} or a \code{data.table} or \code{data.frame} with \code{nrow(data)} rows.
@@ -155,4 +155,24 @@ dag <- empty_dag() +
   node_td("unclear", type=node_square_sim_time, n_sim=100)
 
 sim <- sim_discrete_time(dag, n_sim=100, max_t=10)
+
+## a node using previous states of the simulation
+
+# this function simply returns the value used two simulation time steps ago +
+# a normally distributed random value
+node_prev_state <- function(data, past_states, sim_time) {
+  if (sim_time < 3) {
+    return(rnorm(n=nrow(data)))
+  } else {
+    return(past_states[[sim_time-2]]$A + rnorm(n=nrow(data)))
+  }
+}
+
+# note that we again do not specify the sim_time and past_states argument
+# directly here, because they are set internally
+dag <- empty_dag() +
+  node_td("A", type=node_prev_state, parents="A")
+
+# save_states="all" is needed, because we use them internally
+sim <- sim_discrete_time(dag, n_sim=100, max_t=10, save_states="all")
 }

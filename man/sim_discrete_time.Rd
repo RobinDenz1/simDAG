@@ -76,7 +76,7 @@ Internally, this function works by first simulating data using the \code{\link{s
 
 \strong{\emph{Specifying the \code{dag} argument}}:
 
-The \code{dag} argument should be specified as described in the \code{\link{node}} documentation page. More examples specific to discrete-time simulations can be found in the vignettes and the examples. The only difference to specifying a \code{dag} for the \code{\link{sim_from_dag}} function is that the \code{dag} here should contain at least one time-dependent node added using the \code{\link{node_td}} function. Usage of the \code{formula} argument is discouraged for performance reasons.
+The \code{dag} argument should be specified as described in the \code{\link{node}} documentation page. More examples specific to discrete-time simulations can be found in the vignettes and the examples. The only difference to specifying a \code{dag} for the \code{\link{sim_from_dag}} function is that the \code{dag} here should contain at least one time-dependent node added using the \code{\link{node_td}} function. Usage of the \code{formula} argument with non-linear or interaction terms is discouraged for performance reasons.
 
 \strong{\emph{Speed Considerations}}:
 

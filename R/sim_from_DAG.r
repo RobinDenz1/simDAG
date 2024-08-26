@@ -23,7 +23,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
       data.table(do.call(dag$root_nodes[[i]]$type_fun, args))},
       error=function(e){
         stop("An error occured when processing root node '",
-             dag$root_nodes[[i]]$name, "'. The message was: ", e)
+             dag$root_nodes[[i]]$name, "'. The message was:\n", e, call.=FALSE)
       }
     )
     colnames(out) <- dag$root_nodes[[i]]$name
@@ -81,7 +81,8 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
       do.call(dag$child_nodes[[i]]$type_fun, args)},
       error=function(e){
         stop("An error occured when processing node '",
-             dag$child_nodes[[i]]$name, "'. The message was: ", e)
+             dag$child_nodes[[i]]$name, "'. The message was:\n", e,
+             call.=FALSE)
       }
     )
     data <- add_node_to_data(data=data, new=node_out,
