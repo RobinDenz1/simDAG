@@ -195,9 +195,12 @@ dag <- empty_dag() +
 # generate some data
 sim <- sim_discrete_time(dag, n_sim=20, max_t=500, save_states="last")
 
+if (requireNamespace("ggplot2")) {
+
 # default plot
 plot(sim)
 
 # removing boxes on the right
 plot(sim, right_boxes=FALSE)
+}
 }

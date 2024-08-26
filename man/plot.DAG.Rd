@@ -120,9 +120,6 @@ Returns a standard \code{ggplot2} object.
 }
 \examples{
 library(simDAG)
-library(ggplot2)
-library(igraph)
-library(ggforce)
 
 # 2 root nodes, 1 child node
 dag <- empty_dag() +
@@ -130,6 +127,12 @@ dag <- empty_dag() +
   node("sex", type="rbernoulli", p=0.5) +
   node("smoking", type="binomial", parents=c("sex", "age"), betas=c(1.1, 0.4),
        intercept=-2)
+
+if (requireNamespace("ggplot2") & requireNamespace("ggforce")) {
+
+library(ggplot2)
+library(igraph)
+library(ggforce)
 
 plot(dag)
 
@@ -142,4 +145,5 @@ dag <- dag +
   node_td("lottery", type="time_to_event", parents=c("age", "smoking"))
 
 plot(dag)
+}
 }
