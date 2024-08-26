@@ -65,7 +65,7 @@
 <li><p><strong>2.)</strong> It should contain an argument called <code>data</code> (contains the already generated data).</p></li>
 <li><p><strong>3.)</strong> If it is a child node, it should contain an argument called <code>parents</code> (contains a vector of the child nodes parents). This is not necessary for nodes that are independently generated.</p></li>
 <li><p><strong>4.)</strong> It should return either a vector of length <code>n_sim</code> or a <code>data.frame</code> with any number of columns and <code>n_sim</code> rows.</p></li>
-</ul><p>Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, users may add an argument to this function called <code>sim_time</code>. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it.</p>
+</ul><p>Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, users may add an argument to this function called <code>sim_time</code>. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it. Similarly, the argument <code>past_states</code> may be added. If done so, a list containing all previous states of the simulation (as saved using the <code>save_states</code> argument of the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code>) function) will be passed to it internally, giving the user access to the data generated at previous points in time.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -167,7 +167,8 @@
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get(paste0("node_", type)):</span> object 'node_custom_child' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">50</span>, max_t<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in value[[3L]](cond):</span> An error occured when trying to add the output of node 'Something' at time t = 1 to the current data. The message was: Error in `[&lt;-.data.table`(`*tmp*`, , name, value = c(6.19202228675257, : Supplied 100 items to be assigned to 50 items of column 'Something'. If you wish to 'recycle' the RHS please use rep() to make this intent clear to readers of your code.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> An error occured when trying to add the output of node 'Something' at time t = 1 to the current data. The message was:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Error in `[&lt;-.data.table`(`*tmp*`, , name, value = c(6.19202228675257, : Supplied 100 items to be assigned to 50 items of column 'Something'. If you wish to 'recycle' the RHS please use rep() to make this intent clear to readers of your code.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## using the sim_time argument in a custom node function</span></span></span>
 <span class="r-in"><span><span class="co"># this function returns a continuous variable that is simply the</span></span></span>
@@ -182,6 +183,26 @@
 <span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"unclear"</span>, type<span class="op">=</span><span class="va">node_square_sim_time</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">100</span>, max_t<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## a node using previous states of the simulation</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># this function simply returns the value used two simulation time steps ago +</span></span></span>
+<span class="r-in"><span><span class="co"># a normally distributed random value</span></span></span>
+<span class="r-in"><span><span class="va">node_prev_state</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">past_states</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">past_states</span><span class="op">[[</span><span class="va">sim_time</span><span class="op">-</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">A</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># note that we again do not specify the sim_time and past_states argument</span></span></span>
+<span class="r-in"><span><span class="co"># directly here, because they are set internally</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"A"</span>, type<span class="op">=</span><span class="va">node_prev_state</span>, parents<span class="op">=</span><span class="st">"A"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># save_states="all" is needed, because we use them internally</span></span></span>
+<span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">100</span>, max_t<span class="op">=</span><span class="fl">10</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
