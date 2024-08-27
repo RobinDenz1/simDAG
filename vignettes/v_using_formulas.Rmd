@@ -141,5 +141,13 @@ dag_with_formula <- dag +
 
 Users may of course use as many cubic terms as they like.
 
+# Using Functions in formula
 
+There is also limited support for including functions in the formula as well. For example, it is allowed to call any function on the beta coefficients, which is useful to specify betas on a different scale (for example using Odds-Ratios instead of betas). For example:
 
+```{r}
+dag_with_fun <- dag +
+  node("D", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2)
+```
+
+is valid syntax. Any function can be used in the place of `log()`, as long as it is a single function that is called on a beta-coefficient.

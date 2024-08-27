@@ -43,9 +43,7 @@ sanitize_formula <- function(formula) {
   }
 
   # if it is not an enhanced formula, return it as formula
-  if (!is.null(out) &&
-      !grepl("\\*\\s*(-?\\d+|[a-zA-Z]+\\s*\\(-?\\d+\\))", out) &&
-      !grepl("\\d+\\)?\\s*\\*", out)) {
+  if (!is.null(out) && !is_enhanced_formula(out)) {
     out <- formula
   }
 
@@ -274,6 +272,14 @@ is_same_object <- function(fun1, fun2) {
 ## check whether a string is a number or a function called on a number
 is_valid_number <- function(string) {
   return(grepl("^(\\d+(\\.\\d+)?|[a-zA-Z]+\\(\\d+(\\.\\d+)?\\))$", string))
+}
+
+## check whether a string represents an enhanced formula as implemented
+## in this package
+is_enhanced_formula <- function(string) {
+  out <- grepl("\\*\\s*(-?\\d+|[a-zA-Z]+\\s*\\(-?\\d+\\))", string) ||
+    grepl("\\d+\\)?\\s*\\*", string)
+  return(out)
 }
 
 ## get parents out of a special formula object
