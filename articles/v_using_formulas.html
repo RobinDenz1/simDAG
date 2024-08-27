@@ -272,6 +272,20 @@ form:</p>
 <span>       error<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
 <p>Users may of course use as many cubic terms as they like.</p>
 </div>
+<div class="section level2">
+<h2 id="using-functions-in-formula">Using Functions in formula<a class="anchor" aria-label="anchor" href="#using-functions-in-formula"></a>
+</h2>
+<p>There is also limited support for including functions in the formula
+as well. For example, it is allowed to call any function on the beta
+coefficients, which is useful to specify betas on a different scale (for
+example using Odds-Ratios instead of betas). For example:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_with_fun</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<p>is valid syntax. Any function can be used in the place of
+<code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code>, as long as it is a single function that is called on
+a beta-coefficient.</p>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
