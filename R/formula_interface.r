@@ -57,8 +57,8 @@ str_trim <- function(string) {
 
 ## parses both numbers and functions calling numbers to their numeric value
 str2numeric <- function(string) {
-
-  out <- tryCatch({vapply(string, FUN=function(x){eval(str2lang(x))},
+  out <- tryCatch({vapply(string,
+                          FUN=function(x){eval.parent(str2lang(x), n=6)},
                           FUN.VALUE=numeric(1), USE.NAMES=FALSE)},
                   error=function(e){
                     stop("One or more of the supplied beta coefficients ",
@@ -270,14 +270,31 @@ is_same_object <- function(fun1, fun2) {
 }
 
 ## check whether a string is a number or a function called on a number
+## or in a special case, eval() called on a variable
 is_valid_number <- function(string) {
-  return(grepl("^(\\d+(\\.\\d+)?|[a-zA-Z]+\\(\\d+(\\.\\d+)?\\))$", string))
+  out <-
+    grepl("^(-?\\d+(\\.\\d+)?)$", string) ||
+    grepl("^([a-zA-Z0-9_\\.]+\\(-?\\d+(\\.\\d+)?\\))$", string) ||
+    grepl("^(eval\\([a-zA-Z0-9_\\.]*\\))$", string)
+  return(out)
 }
 
 ## check whether a string represents an enhanced formula as implemented
 ## in this package
 is_enhanced_formula <- function(string) {
-  out <- grepl("\\*\\s*(-?\\d+|[a-zA-Z]+\\s*\\(-?\\d+\\))", string) ||
+
+  # remove white space
+  string <- gsub(" ", "", string, fixed=TRUE)
+
+  # checks in this order:
+  # 1. contains *NUMBER
+  # 2. contains *FUNCTION(NUMBER)
+  # 3. contains eval(VARIABLE)
+  # 4. contains NUMBER*
+  out <-
+    grepl("\\*-?\\d+(\\.\\d+)?", string) ||
+    grepl("\\*[a-zA-Z0-9_\\.]+\\(-?\\d+(\\.\\d+)?\\)", string) ||
+    grepl("eval\\([a-zA-Z0-9_\\.]*\\)", string) ||
     grepl("\\d+\\)?\\s*\\*", string)
   return(out)
 }

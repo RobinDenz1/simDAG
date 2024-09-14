@@ -150,4 +150,17 @@ dag_with_fun <- dag +
   node("D", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2)
 ```
 
-is valid syntax. Any function can be used in the place of `log()`, as long as it is a single function that is called on a beta-coefficient.
+is valid syntax. Any function can be used in the place of `log()`, as long as it is a single function that is called on a beta-coefficient. It is, however, not supported to use functions on the variables themselves. For example, using something like `~ -3 + log(A)*0.5 + B*0.2` would not work.
+
+# Using External Coefficients (Advanced Usage)
+
+Sometimes it may be useful to define the causal coefficients in external variables, for example when writing a function that creates a `DAG` objects with some set coefficients. This is supported through the use of the `eval()` function as well. For example:
+
+```{r}
+beta_coef <- log(0.5)
+
+dag_with_external <- dag +
+  node("D", type="binomial", formula= ~ -3 + A*eval(beta_coef) + B*0.2)
+```
+
+is valid syntax. Note that this only works if the variable wrapped in the `eval()` function call is defined in the same environment in which the `DAG` object is being created. If this is not the case, some weird error messages may be produced, depending on the code used.
