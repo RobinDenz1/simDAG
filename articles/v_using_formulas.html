@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Robin Denz</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/v0.2.0/vignettes/v_using_formulas.Rmd" class="external-link"><code>vignettes/v_using_formulas.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/main/vignettes/v_using_formulas.Rmd" class="external-link"><code>vignettes/v_using_formulas.Rmd</code></a></small>
       <div class="d-none name"><code>v_using_formulas.Rmd</code></div>
     </div>
 
@@ -284,7 +284,28 @@ example using Odds-Ratios instead of betas). For example:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p>is valid syntax. Any function can be used in the place of
 <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code>, as long as it is a single function that is called on
-a beta-coefficient.</p>
+a beta-coefficient. It is, however, not supported to use functions on
+the variables themselves. For example, using something like
+<code>~ -3 + log(A)*0.5 + B*0.2</code> would not work.</p>
+</div>
+<div class="section level2">
+<h2 id="using-external-coefficients-advanced-usage">Using External Coefficients (Advanced Usage)<a class="anchor" aria-label="anchor" href="#using-external-coefficients-advanced-usage"></a>
+</h2>
+<p>Sometimes it may be useful to define the causal coefficients in
+external variables, for example when writing a function that creates a
+<code>DAG</code> objects with some set coefficients. This is supported
+through the use of the <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> function as well. For
+example:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">beta_coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dag_with_external</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="va">beta_coef</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<p>is valid syntax. Note that this only works if the variable wrapped in
+the <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> function call is defined in the same environment
+in which the <code>DAG</code> object is being created. If this is not
+the case, some weird error messages may be produced, depending on the
+code used.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
