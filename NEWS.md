@@ -73,3 +73,14 @@ New Features
 Documentation
 
 * Added a new vignette explaining in detail how the new enhanced formula interface for the `node()` function works.
+
+# simDAG 0.2.1
+
+Enhancements
+
+* External variables may now be used in the formula interface using `eval()` calls.
+
+Documentation
+
+* Added more examples in the formula vignette.
+
