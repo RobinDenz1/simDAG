@@ -295,6 +295,24 @@ this:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="using-special-characters-in-formula">Using Special Characters in formula<a class="anchor" aria-label="anchor" href="#using-special-characters-in-formula"></a>
+</h2>
+<p>Although not recommended, it is possible to use variable names
+containing special characters in <code>formula</code>, by escaping them
+using the usual R syntax. For example, if the user wanted to use
+<code>this-var</code> as a variable name and use that variable as a
+parent node in a <code>formula</code>, this could be done using the
+following code:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_with_fun</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"this-var"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">5</span> <span class="op">+</span> <span class="va">`this-var`</span><span class="op">*</span><span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
+<p>There are, however, three special characters that may not be used in
+<code>formula</code>: spaces, <code>+</code> and <code>*</code>. Errors
+may be produced when using these characters in variable names. It is
+best to avoid special characters though, just to be safe.</p>
+</div>
+<div class="section level2">
 <h2 id="using-external-coefficients-advanced-usage">Using External Coefficients (Advanced Usage)<a class="anchor" aria-label="anchor" href="#using-external-coefficients-advanced-usage"></a>
 </h2>
 <p>Sometimes it may be useful to define the causal coefficients in
@@ -302,7 +320,7 @@ external variables, for example when writing a function that creates a
 <code>DAG</code> objects with some set coefficients. This is supported
 through the use of the <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> function as well. For
 example:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beta_coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag_with_external</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
