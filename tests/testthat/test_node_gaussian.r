@@ -211,3 +211,18 @@ test_that("with special formula + external coefficients", {
 
   expect_equal(mean(dat$gauss), 106.147, tolerance=0.001)
 })
+
+test_that("with special formula + special characters in it", {
+
+  dag <- empty_dag() +
+    node("A", "rnorm", mean=20, sd=5) +
+    node("B-/", "rbernoulli", p=0.5, output="numeric") +
+    node("gauss", type="gaussian", formula=~ -100 + A*log(10) + `B-/`*log(11),
+         error=10)
+
+  set.seed(43525)
+
+  dat <- sim_from_dag(dag, n_sim=1000)
+
+  expect_equal(mean(dat$gauss), -52.60826, tolerance=0.001)
+})

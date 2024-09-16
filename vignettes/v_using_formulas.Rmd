@@ -159,6 +159,18 @@ dag_with_fun <- dag +
   node("D", type="binomial", formula= ~ -3 + I(log(A))*0.5 + B*0.2)
 ```
 
+# Using Special Characters in formula
+
+Although not recommended, it is possible to use variable names containing special characters in `formula`, by escaping them using the usual R syntax. For example, if the user wanted to use `this-var` as a variable name and use that variable as a parent node in a `formula`, this could be done using the following code:
+
+```{r}
+dag_with_fun <- dag +
+  node("this-var", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2) +
+  node("D", type="binomial", formula= ~ 5 + `this-var`*0.3)
+```
+
+There are, however, three special characters that may not be used in `formula`: spaces, `+` and `*`. Errors may be produced when using these characters in variable names. It is best to avoid special characters though, just to be safe.
+
 # Using External Coefficients (Advanced Usage)
 
 Sometimes it may be useful to define the causal coefficients in external variables, for example when writing a function that creates a `DAG` objects with some set coefficients. This is supported through the use of the `eval()` function as well. For example:

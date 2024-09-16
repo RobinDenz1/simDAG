@@ -153,7 +153,7 @@ data_for_formula <- function(data, args) {
   }
 
   # add all variables to model matrix
-  form_dat <- paste0("~ ", paste0(colnames(data), collapse=" + "))
+  form_dat <- paste0("~ `", paste0(colnames(data), collapse="` + `"), "`")
 
   # identify interactions
   form_int <- args$parents[grepl(":", args$parents, fixed=TRUE)]
