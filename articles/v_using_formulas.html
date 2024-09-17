@@ -275,7 +275,7 @@ form:</p>
 <div class="section level2">
 <h2 id="using-functions-in-formula">Using Functions in formula<a class="anchor" aria-label="anchor" href="#using-functions-in-formula"></a>
 </h2>
-<p>There is also limited support for including functions in the formula
+<p>There is also direct support for including functions in the formula
 as well. For example, it is allowed to call any function on the beta
 coefficients, which is useful to specify betas on a different scale (for
 example using Odds-Ratios instead of betas). For example:</p>
@@ -284,15 +284,11 @@ example using Odds-Ratios instead of betas). For example:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p>is valid syntax. Any function can be used in the place of
 <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code>, as long as it is a single function that is called on
-a beta-coefficient. It is, however, not supported to use functions on
-the variables themselves. For example, using something like
-<code>~ -3 + log(A)*0.5 + B*0.2</code> would not work.</p>
-<p>Additionally, it is also possible to call any function on the
-variables as well, by wrapping them in a <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> call like
-this:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dag_with_fun</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+a beta-coefficient. It is also possible to use functions on the
+variables themselves. However, it is required to wrap them in a
+<code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> call. For example, using something like
+<code>~ -3 + log(A)*0.5 + B*0.2</code> would not work, but
+<code>~ -3 + I(log(A))*0.5 + B*0.2</code> is valid syntax.</p>
 </div>
 <div class="section level2">
 <h2 id="using-special-characters-in-formula">Using Special Characters in formula<a class="anchor" aria-label="anchor" href="#using-special-characters-in-formula"></a>
@@ -303,7 +299,7 @@ using the usual R syntax. For example, if the user wanted to use
 <code>this-var</code> as a variable name and use that variable as a
 parent node in a <code>formula</code>, this could be done using the
 following code:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag_with_fun</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"this-var"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">5</span> <span class="op">+</span> <span class="va">`this-var`</span><span class="op">*</span><span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
@@ -320,7 +316,7 @@ external variables, for example when writing a function that creates a
 <code>DAG</code> objects with some set coefficients. This is supported
 through the use of the <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> function as well. For
 example:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beta_coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag_with_external</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
