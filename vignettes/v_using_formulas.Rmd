@@ -143,21 +143,14 @@ Users may of course use as many cubic terms as they like.
 
 # Using Functions in formula
 
-There is also limited support for including functions in the formula as well. For example, it is allowed to call any function on the beta coefficients, which is useful to specify betas on a different scale (for example using Odds-Ratios instead of betas). For example:
+There is also direct support for including functions in the formula as well. For example, it is allowed to call any function on the beta coefficients, which is useful to specify betas on a different scale (for example using Odds-Ratios instead of betas). For example:
 
 ```{r}
 dag_with_fun <- dag +
   node("D", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2)
 ```
 
-is valid syntax. Any function can be used in the place of `log()`, as long as it is a single function that is called on a beta-coefficient. It is, however, not supported to use functions on the variables themselves. For example, using something like `~ -3 + log(A)*0.5 + B*0.2` would not work.
-
-Additionally, it is also possible to call any function on the variables as well, by wrapping them in a `I()` call like this:
-
-```{r}
-dag_with_fun <- dag +
-  node("D", type="binomial", formula= ~ -3 + I(log(A))*0.5 + B*0.2)
-```
+is valid syntax. Any function can be used in the place of `log()`, as long as it is a single function that is called on a beta-coefficient. It is also possible to use functions on the variables themselves. However, it is required to wrap them in a `I()` call. For example, using something like `~ -3 + log(A)*0.5 + B*0.2` would not work, but `~ -3 + I(log(A))*0.5 + B*0.2` is valid syntax.
 
 # Using Special Characters in formula
 

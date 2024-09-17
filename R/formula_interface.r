@@ -57,12 +57,15 @@ str_trim <- function(string) {
 
 ## parses both numbers and functions calling numbers to their numeric value
 str2numeric <- function(string) {
-  out <- tryCatch({vapply(string,
-                          FUN=function(x){eval.parent(str2lang(x), n=6)},
-                          FUN.VALUE=numeric(1), USE.NAMES=FALSE)},
-                  error=function(e){
-                    stop("One or more of the supplied beta coefficients ",
-                         "in 'formula' are not numbers.")})
+  out <- tryCatch({
+    vapply(string,
+           FUN=function(x){eval.parent(str2lang(x), n=6)},
+           FUN.VALUE=numeric(1),
+           USE.NAMES=FALSE)},
+    error=function(e){
+      stop("One or more of the supplied beta coefficients ",
+           "in 'formula' are not numbers.")}
+  )
   return(out)
 }
 
