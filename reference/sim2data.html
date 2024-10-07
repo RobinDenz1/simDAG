@@ -47,19 +47,20 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim2data</span><span class="op">(</span><span class="va">sim</span>, <span class="va">to</span>, use_saved_states<span class="op">=</span><span class="va">sim</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
 <span>         overlap<span class="op">=</span><span class="cn">FALSE</span>, target_event<span class="op">=</span><span class="cn">NULL</span>,</span>
-<span>         keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, as_data_frame<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span>         check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>         keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, remove_not_at_risk<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>         as_data_frame<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'simDT'</span></span>
 <span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">x</span>, keep.rownames<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>, overlap<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>              target_event<span class="op">=</span><span class="cn">NULL</span>, keep_only_first<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>              remove_not_at_risk<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>              use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
 <span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'simDT'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names<span class="op">=</span><span class="cn">NULL</span>, optional<span class="op">=</span><span class="cn">FALSE</span>, <span class="va">to</span>,</span>
 <span>              overlap<span class="op">=</span><span class="cn">FALSE</span>, target_event<span class="op">=</span><span class="cn">NULL</span>,</span>
-<span>              keep_only_first<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>              keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, remove_not_at_risk<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>              use_saved_states<span class="op">=</span><span class="va">x</span><span class="op">$</span><span class="va">save_states</span><span class="op">==</span><span class="st">"all"</span>,</span>
 <span>              check_inputs<span class="op">=</span><span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -85,6 +86,9 @@
   <dt id="arg-keep-only-first">keep_only_first<a class="anchor" aria-label="anchor" href="#arg-keep-only-first"></a></dt>
 <dd><p>Only used when <code>to="start_stop"</code> and <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, all information after the first event per person will be discarded. Useful when <code>target_event</code> should be treated as a terminal variable.</p></dd>
 
+  <dt id="arg-remove-not-at-risk">remove_not_at_risk<a class="anchor" aria-label="anchor" href="#arg-remove-not-at-risk"></a></dt>
+<dd><p>Only used when <code>to="start_stop"</code> and <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, the <code>event_duration</code> and <code>immunity_duration</code> of the <code>target_event</code> are taken into account when constructing the start-stop data. More precisely, the time in which individuals are not at-risk because they are either still currently experiencing the event or because they are immune to the event is removed from the start-stop data. This may be necessary when fitting some survival regression models, because these time-periods should not be counted as time at-risk.</p></dd>
+
   <dt id="arg-as-data-frame">as_data_frame<a class="anchor" aria-label="anchor" href="#arg-as-data-frame"></a></dt>
 <dd><p>Set this argument to <code>TRUE</code> to return a <code>data.frame</code> instead of a <code>data.table</code>.</p></dd>
 
@@ -109,7 +113,7 @@
     <p>The raw output of the <code>sim_discrete_time</code> function may be difficult to use for further analysis. Using one of these functions, it is straightforward to transform that output into three different formats, which are described below. Note that some caution needs to be applied when using this function, which is also described below. Both <code>as.data.table</code> and <code>as.data.frame</code> internally call <code>sim2data</code> and only exist for user convenience.</p>
 <p><strong><em>The start-stop format</em>:</strong></p>
 <p>The start-stop format (<code>to="start_stop"</code>), also known as counting process or period format corresponds to a <code>data.table</code> containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the <code>start</code> and <code>stop</code> columns. The <code>start</code> column gives the time at which the period started, the <code>stop</code> column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, <code>start</code> will be equal to <code>stop</code>. If non-overlapping periods are desired, the user can specify <code>overlap=TRUE</code> instead.</p>
-<p>By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the <code>target_event</code> variable. The previously specified duration of this target event is then ignored. If only the first occurrence of the event is of interest, users may also set <code>keep_only_first=TRUE</code> to keep only information up until the first event per person.</p>
+<p>By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the <code>target_event</code> variable. The previously specified duration of this target event is then ignored. To additionally remove all time periods in which individuals are not at-risk due to the event still going on or them being immune to it (as specified using the <code>event_duration</code> and <code>immunity_duration</code> parameters of <code><a href="node_time_to_event.html">node_time_to_event</a></code>), users may set <code>remove_not_at_risk=TRUE</code>. If only the first occurrence of the event is of interest, users may also set <code>keep_only_first=TRUE</code> to keep only information up until the first event per person.</p>
 <p><strong><em>The long format</em>:</strong></p>
 <p>The long format (<code>to="long"</code>) corresponds to a <code>data.table</code> in which there is one row per person per point in time. The unique person identifier is stored in the <code>.id</code> column and the unique points in time are given in the <code>.time</code> column.</p>
 <p><strong><em>The wide format</em>:</strong></p>
@@ -232,7 +236,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
