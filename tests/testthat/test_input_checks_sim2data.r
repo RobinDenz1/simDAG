@@ -20,6 +20,11 @@ test_that("wrong overlap", {
                "'overlap' must be either TRUE or FALSE.")
 })
 
+test_that("wrong remove_not_at_risk", {
+  expect_error(sim2data(sim, to="long", remove_not_at_risk="left"),
+               "'remove_not_at_risk' must be either TRUE or FALSE.")
+})
+
 test_that("wrong keep_only_first", {
   expect_error(sim2data(sim, to="long", keep_only_first=NULL),
                "'keep_only_first' must be either TRUE or FALSE.")

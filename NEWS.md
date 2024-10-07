@@ -79,6 +79,7 @@ Documentation
 Enhancements
 
 * External variables may now be used in the formula interface using `eval()` calls.
+* Added the `remove_not_at_risk` argument to the `sim2data()` function.
 
 Documentation
 

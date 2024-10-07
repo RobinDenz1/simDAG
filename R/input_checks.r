@@ -247,7 +247,8 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
 
 ## check user inputs to sim2data function
 check_inputs_sim2data <- function(sim, use_saved_states, to, target_event,
-                                  keep_only_first, overlap) {
+                                  keep_only_first, overlap,
+                                  remove_not_at_risk) {
 
   # errors
   if (!inherits(sim, "simDT")) {
@@ -266,6 +267,9 @@ check_inputs_sim2data <- function(sim, use_saved_states, to, target_event,
     stop("'keep_only_first' must be either TRUE or FALSE.")
   } else if (!(is.logical(overlap) & length(overlap)==1)) {
     stop("'overlap' must be either TRUE or FALSE.")
+  } else if (!(is.logical(remove_not_at_risk) &
+               length(remove_not_at_risk)==1)) {
+    stop("'remove_not_at_risk' must be either TRUE or FALSE.")
   }
 
   # extract node_time_to_event objects

@@ -3,16 +3,18 @@
 ## start-stop format
 sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all",
                            overlap=FALSE, target_event=NULL,
-                           keep_only_first=FALSE) {
+                           keep_only_first=FALSE, remove_not_at_risk=FALSE) {
 
   if (use_saved_states) {
     data <- sim2start_stop.all(sim=sim, overlap=overlap,
                                target_event=target_event,
-                               keep_only_first=keep_only_first)
+                               keep_only_first=keep_only_first,
+                               remove_not_at_risk=remove_not_at_risk)
   } else {
     data <- sim2start_stop.last(sim=sim, overlap=overlap,
                                 target_event=target_event,
-                                keep_only_first=keep_only_first)
+                                keep_only_first=keep_only_first,
+                                remove_not_at_risk=remove_not_at_risk)
   }
 
   return(data)
@@ -20,7 +22,8 @@ sim2start_stop <- function(sim, use_saved_states=sim$save_states=="all",
 
 ## used when save_states="all" was used in sim_discrete_time
 sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
-                               keep_only_first=FALSE) {
+                               keep_only_first=FALSE,
+                               remove_not_at_risk=FALSE) {
 
   .id <- .event_count <- .event_cumsum <- NULL
 
@@ -64,11 +67,23 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
 
   # make it outcome centric
   if (!is.null(target_event)) {
+
     if (event_duration==1) {
       data[, .event_count := NULL]
     }
     data <- collapse_for_target_event(data, target_event=target_event,
                                       keep_only_first=keep_only_first)
+
+    # remove time not at-risk after event onset if specified
+    if (remove_not_at_risk) {
+      target_duration <-
+        get_event_duration(node=sim$tx_nodes[varying==target_event][[1]],
+                           type="immunity_duration")
+
+      data <- remove_not_at_risk(data=data, duration=target_duration,
+                                 target_event=target_event,
+                                 overlap=overlap)
+    }
   }
   return(data)
 }
@@ -83,7 +98,8 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
 #' @importFrom data.table dcast
 #' @importFrom data.table :=
 sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
-                                keep_only_first=FALSE) {
+                                keep_only_first=FALSE,
+                                remove_not_at_risk=FALSE) {
 
   # temporary error message
   if (length(sim$ce_past_events) > 0) {
@@ -234,6 +250,18 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
   if (!is.null(target_event)) {
     data <- collapse_for_target_event(data, target_event=target_event,
                                       keep_only_first=keep_only_first)
+
+    # remove time after event onset where people are not at risk if
+    # specified by user
+    if (remove_not_at_risk) {
+
+      target_duration <- get_event_duration(
+        node=sim$tx_nodes[tx_names==target_event][[1]],
+        type="immunity_duration"
+      )
+      data <- remove_not_at_risk(data=data, duration=target_duration,
+                                 target_event=target_event, overlap=FALSE)
+    }
   }
 
   # if intervals should be overlapping, add them back
@@ -291,14 +319,20 @@ merge_nested_lists <- function(nested_list) {
   return(out)
 }
 
-## given a node list, returns the used event duration
+## given a node list, returns the used event_duration or immunity_duration
 ## if not specified by user, returns default value
-get_event_duration <- function(node) {
+get_event_duration <- function(node, type="event_duration") {
 
-  if (is.null(node$event_duration)) {
-    dur <- formals(node_time_to_event)$event_duration
+  in_node <- node[[type]]
+
+  if (is.null(in_node) && type=="immunity_duration") {
+    in_node <- node[["event_duration"]]
+  }
+
+  if (is.null(in_node)) {
+    dur <- formals(node_time_to_event)[["event_duration"]]
   } else {
-    dur <- node$event_duration
+    dur <- in_node
   }
   return(dur)
 }

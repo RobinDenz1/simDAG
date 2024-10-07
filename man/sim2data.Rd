@@ -12,17 +12,18 @@ This function transforms the output of the \code{\link{sim_discrete_time}} funct
 \usage{
 sim2data(sim, to, use_saved_states=sim$save_states=="all",
          overlap=FALSE, target_event=NULL,
-         keep_only_first=FALSE, as_data_frame=FALSE,
-         check_inputs=TRUE, ...)
+         keep_only_first=FALSE, remove_not_at_risk=FALSE,
+         as_data_frame=FALSE, check_inputs=TRUE, ...)
 
 \method{as.data.table}{simDT}(x, keep.rownames=FALSE, to, overlap=FALSE,
               target_event=NULL, keep_only_first=FALSE,
+              remove_not_at_risk=FALSE,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 
 \method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE, to,
               overlap=FALSE, target_event=NULL,
-              keep_only_first=FALSE,
+              keep_only_first=FALSE, remove_not_at_risk=FALSE,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 }
@@ -44,6 +45,9 @@ Only used when \code{to="start_stop"}. By default (keeping this argument at \cod
   }
   \item{keep_only_first}{
 Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, all information after the first event per person will be discarded. Useful when \code{target_event} should be treated as a terminal variable.
+  }
+  \item{remove_not_at_risk}{
+Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the \code{event_duration} and \code{immunity_duration} of the \code{target_event} are taken into account when constructing the start-stop data. More precisely, the time in which individuals are not at-risk because they are either still currently experiencing the event or because they are immune to the event is removed from the start-stop data. This may be necessary when fitting some survival regression models, because these time-periods should not be counted as time at-risk.
   }
   \item{as_data_frame}{
 Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \code{data.table}.
@@ -71,7 +75,7 @@ The raw output of the \code{sim_discrete_time} function may be difficult to use 
 
 The start-stop format (\code{to="start_stop"}), also known as counting process or period format corresponds to a \code{data.table} containing multiple rows per person, where each row corresponds to a period of time in which no variables changed. These intervals are defined by the \code{start} and \code{stop} columns. The \code{start} column gives the time at which the period started, the \code{stop} column denotes the time when the period ended. By default these intervals are coded to be non-overlapping, meaning that the edges of the periods are included in the period itself. For example, if the respective period is exactly 1 point in time long, \code{start} will be equal to \code{stop}. If non-overlapping periods are desired, the user can specify \code{overlap=TRUE} instead.
 
-By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the \code{target_event} variable. The previously specified duration of this target event is then ignored. If only the first occurrence of the event is of interest, users may also set \code{keep_only_first=TRUE} to keep only information up until the first event per person.
+By default, all time-to-event nodes are treated equally. This is not optimal when the goal is to fit survival regression models. In this case, we usually want the target event to be treated in a special way (see for example Chiou et al. 2023). In general, instead of creating new intervals for it we want existing intervals to end at event times with the corresponding event indicator. This can be achieved by naming the target outcome in the \code{target_event} variable. The previously specified duration of this target event is then ignored. To additionally remove all time periods in which individuals are not at-risk due to the event still going on or them being immune to it (as specified using the \code{event_duration} and \code{immunity_duration} parameters of \code{\link{node_time_to_event}}), users may set \code{remove_not_at_risk=TRUE}. If only the first occurrence of the event is of interest, users may also set \code{keep_only_first=TRUE} to keep only information up until the first event per person.
 
 \strong{\emph{The long format}:}
 
