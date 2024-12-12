@@ -1,9 +1,15 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
+![Project Status: Active - The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)\](<https://www.repostatus.org/#active>)
 [![](https://www.r-pkg.org/badges/version/simDAG?color=green)](https://cran.r-project.org/package=simDAG)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
-[![R-CMD-check](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/RobinDenz1/simDAG/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main)
+[![R-CMD-check](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/RobinDenz1/simDAG/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main)
 <!-- badges: end -->
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />
@@ -12,23 +18,28 @@ Author: Robin Denz
 
 ## Description
 
-`simDAG` is an R-Package which can be used to generate data from a known directed acyclic graph (DAG) with associated information
-on distributions and causal coefficients. The root nodes are sampled first and each subsequent child node is generated according to a
-regression model (linear, logistic, multinomial, cox, ...) or other function. The result is a dataset that has the same causal structure as the
-specified DAG and by expectation the same distributions and coefficients as initially specified. It also implements a
-comprehensive framework for conducting discrete-time simulations in a similar fashion.
+`simDAG` is an R-Package which can be used to generate data from a known
+directed acyclic graph (DAG) with associated information on
+distributions and causal coefficients. The root nodes are sampled first
+and each subsequent child node is generated according to a regression
+model (linear, logistic, multinomial, cox, …) or other function. The
+result is a dataset that has the same causal structure as the specified
+DAG and by expectation the same distributions and coefficients as
+initially specified. It also implements a comprehensive framework for
+conducting discrete-time simulations in a similar fashion.
 
 ## Installation
 
 A stable version of this package can be installed from CRAN:
 
-```R
+``` r
 install.packages("simDAG")
 ```
 
-and the developmental version may be installed from github using the `remotes` R-Package:
+and the developmental version may be installed from github using the
+`remotes` R-Package:
 
-```R
+``` r
 library(remotes)
 
 remotes::install_github("RobinDenz1/simDAG")
@@ -36,51 +47,104 @@ remotes::install_github("RobinDenz1/simDAG")
 
 ## Bug Reports and Feature Requests
 
-If you encounter any bugs or have any specific feature requests, please file an [Issue](https://github.com/RobinDenz1/simDAG/issues).
+If you encounter any bugs or have any specific feature requests, please
+file an [Issue](https://github.com/RobinDenz1/simDAG/issues).
 
 ## Examples
 
 Suppose we want to generate data with the following causal structure:
 
 <p align="center">
-	<img src="man/figures/example_DAG.png" width="450" />
+<img src="man/figures/example_DAG.png" width="450" />
 </p>
 
-where `age` is normally distributed with a mean of 50 and a standard deviation of 4 and `sex` is bernoulli distributed with `p = 0.5` (equal number of men and women).
-Both of these "root nodes" (meaning they have no parents - no arrows pointing into them) have a direct causal effect on the `bmi`.
-The causal coefficients are 1.1 and 0.4 respectively, with an intercept of 12 and a sigma standard deviation of 2. `death` is modeled as a bernoulli variable, which is
-caused by both `age` and `bmi` with causal coefficients of 0.1 and 0.3 respectively. As intercept we use -15.
+where `age` is normally distributed with a mean of 50 and a standard
+deviation of 4 and `sex` is bernoulli distributed with `p = 0.5` (equal
+number of men and women). Both of these “root nodes” (meaning they have
+no parents - no arrows pointing into them) have a direct causal effect
+on the `bmi`. The causal coefficients are 1.1 and 0.4 respectively, with
+an intercept of 12 and a sigma standard deviation of 2. `death` is
+modeled as a bernoulli variable, which is caused by both `age` and `bmi`
+with causal coefficients of 0.1 and 0.3 respectively. As intercept we
+use -15.
 
-The following code can be used to generate 10000 samples from these specifications:
+The following code can be used to generate 10000 samples from these
+specifications:
 
-```R
+``` r
+library(simDAG)
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
-  node("bmi", type="gaussian", parents=c("age", "sex"), betas=c(1.1, 0.4),
-    intercept=12, error=2) +
-  node("death", type="binomial", parents=c("age", "bmi"), betas=c(0.1, 0.3),
-    intercept=-15)
+  node("bmi", type="gaussian", formula= ~ 12 + age*1.1 + sex*0.4, error=2) +
+  node("death", type="binomial", formula= ~ -15 + age*0.1 + bmi*0.3)
 
 sim_dat <- sim_from_dag(dag, n_sim=10000)
 ```
 
-By fitting appropriate regression models, we can check if the data really does approximately conform to our specifications.
-First, lets look at the `bmi`:
+By fitting appropriate regression models, we can check if the data
+really does approximately conform to our specifications. First, lets
+look at the `bmi`:
 
-```R
+``` r
 mod_bmi <- glm(bmi ~ age + sex, data=sim_dat, family="gaussian")
 summary(mod_bmi)
+#> 
+#> Call:
+#> glm(formula = bmi ~ age + sex, family = "gaussian", data = sim_dat)
+#> 
+#> Deviance Residuals: 
+#>     Min       1Q   Median       3Q      Max  
+#> -7.8706  -1.3466   0.0009   1.3519   6.9241  
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 11.910096   0.247279   48.16   <2e-16 ***
+#> age          1.101721   0.004913  224.25   <2e-16 ***
+#> sexTRUE      0.428610   0.039527   10.84   <2e-16 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> (Dispersion parameter for gaussian family taken to be 3.90573)
+#> 
+#>     Null deviance: 235878  on 9999  degrees of freedom
+#> Residual deviance:  39046  on 9997  degrees of freedom
+#> AIC: 42008
+#> 
+#> Number of Fisher Scoring iterations: 2
 ```
 
 This seems about right. Now we look at `death`:
 
-```R
+``` r
 mod_death <- glm(death ~ age + bmi, data=sim_dat, family="binomial")
 summary(mod_death)
+#> 
+#> Call:
+#> glm(formula = death ~ age + bmi, family = "binomial", data = sim_dat)
+#> 
+#> Deviance Residuals: 
+#>     Min       1Q   Median       3Q      Max  
+#> -4.0659   0.0124   0.0168   0.0221   0.0895  
+#> 
+#> Coefficients:
+#>             Estimate Std. Error z value Pr(>|z|)
+#> (Intercept)  -2.7355     9.1456  -0.299    0.765
+#> age          -0.1223     0.4215  -0.290    0.772
+#> bmi           0.2639     0.3460   0.763    0.446
+#> 
+#> (Dispersion parameter for binomial family taken to be 1)
+#> 
+#>     Null deviance: 38.068  on 9999  degrees of freedom
+#> Residual deviance: 36.581  on 9997  degrees of freedom
+#> AIC: 42.581
+#> 
+#> Number of Fisher Scoring iterations: 12
 ```
 
-The estimated coefficients are also very close to the ones we specified. More examples can be found in the documentation and the vignette.
+The estimated coefficients are also very close to the ones we specified.
+More examples can be found in the documentation and the vignette.
 
 ## Citation
 
@@ -90,4 +154,6 @@ Use `citation("simDAG")` to get the relevant citation information.
 
 © 2023 Robin Denz
 
-The contents of this repository are distributed under the GNU General Public License. You can find the full text of this License in this github repository. Alternatively, see <http://www.gnu.org/licenses/>.
+The contents of this repository are distributed under the GNU General
+Public License. You can find the full text of this License in this
+github repository. Alternatively, see <http://www.gnu.org/licenses/>.
