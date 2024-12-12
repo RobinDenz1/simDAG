@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 <!-- badges: start -->
-![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![](https://www.r-pkg.org/badges/version/simDAG?color=green)](https://cran.r-project.org/package=simDAG)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
 [![R-CMD-check](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml)
@@ -70,7 +70,9 @@ dag <- empty_dag() +
   node("bmi", type="gaussian", formula= ~ 12 + age*1.1 + sex*0.4, error=2) +
   node("death", type="binomial", formula= ~ -15 + age*0.1 + bmi*0.3)
 
-sim_dat <- sim_from_dag(dag, n_sim=10000)
+set.seed(42)
+
+sim_dat <- sim_from_dag(dag, n_sim=100000)
 ```
 
 By fitting appropriate regression models, we can check if the data really does approximately conform to our specifications. First, lets look at the `bmi`:
@@ -95,6 +97,6 @@ Use `citation("simDAG")` to get the relevant citation information.
 
 ## License
 
-© 2023 Robin Denz
+© 2024 Robin Denz
 
 The contents of this repository are distributed under the GNU General Public License. You can find the full text of this License in this github repository. Alternatively, see <http://www.gnu.org/licenses/>.

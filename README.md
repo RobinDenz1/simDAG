@@ -2,9 +2,9 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-![Project Status: Active - The project has reached a stable, usable
+[![Project Status: Active - The project has reached a stable, usable
 state and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)\](<https://www.repostatus.org/#active>)
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![](https://www.r-pkg.org/badges/version/simDAG?color=green)](https://cran.r-project.org/package=simDAG)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
 [![R-CMD-check](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml)
@@ -80,7 +80,9 @@ dag <- empty_dag() +
   node("bmi", type="gaussian", formula= ~ 12 + age*1.1 + sex*0.4, error=2) +
   node("death", type="binomial", formula= ~ -15 + age*0.1 + bmi*0.3)
 
-sim_dat <- sim_from_dag(dag, n_sim=10000)
+set.seed(42)
+
+sim_dat <- sim_from_dag(dag, n_sim=100000)
 ```
 
 By fitting appropriate regression models, we can check if the data
@@ -96,21 +98,21 @@ summary(mod_bmi)
 #> 
 #> Deviance Residuals: 
 #>     Min       1Q   Median       3Q      Max  
-#> -7.8706  -1.3466   0.0009   1.3519   6.9241  
+#> -8.4802  -1.3555   0.0005   1.3423   8.6826  
 #> 
 #> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 11.910096   0.247279   48.16   <2e-16 ***
-#> age          1.101721   0.004913  224.25   <2e-16 ***
-#> sexTRUE      0.428610   0.039527   10.84   <2e-16 ***
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 11.89194    0.07954  149.51   <2e-16 ***
+#> age          1.10220    0.00158  697.41   <2e-16 ***
+#> sexTRUE      0.40447    0.01268   31.89   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> (Dispersion parameter for gaussian family taken to be 3.90573)
+#> (Dispersion parameter for gaussian family taken to be 4.022026)
 #> 
-#>     Null deviance: 235878  on 9999  degrees of freedom
-#> Residual deviance:  39046  on 9997  degrees of freedom
-#> AIC: 42008
+#>     Null deviance: 2361465  on 99999  degrees of freedom
+#> Residual deviance:  402190  on 99997  degrees of freedom
+#> AIC: 422971
 #> 
 #> Number of Fisher Scoring iterations: 2
 ```
@@ -126,21 +128,23 @@ summary(mod_death)
 #> 
 #> Deviance Residuals: 
 #>     Min       1Q   Median       3Q      Max  
-#> -4.0659   0.0124   0.0168   0.0221   0.0895  
+#> -4.4111   0.0035   0.0066   0.0126   0.2883  
 #> 
 #> Coefficients:
-#>             Estimate Std. Error z value Pr(>|z|)
-#> (Intercept)  -2.7355     9.1456  -0.299    0.765
-#> age          -0.1223     0.4215  -0.290    0.772
-#> bmi           0.2639     0.3460   0.763    0.446
+#>             Estimate Std. Error z value Pr(>|z|)    
+#> (Intercept) -14.6833     3.5538  -4.132  3.6e-05 ***
+#> age           0.2607     0.1698   1.535    0.125    
+#> bmi           0.1842     0.1402   1.314    0.189    
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> (Dispersion parameter for binomial family taken to be 1)
 #> 
-#>     Null deviance: 38.068  on 9999  degrees of freedom
-#> Residual deviance: 36.581  on 9997  degrees of freedom
-#> AIC: 42.581
+#>     Null deviance: 258.65  on 99999  degrees of freedom
+#> Residual deviance: 214.03  on 99997  degrees of freedom
+#> AIC: 220.03
 #> 
-#> Number of Fisher Scoring iterations: 12
+#> Number of Fisher Scoring iterations: 13
 ```
 
 The estimated coefficients are also very close to the ones we specified.
@@ -152,7 +156,7 @@ Use `citation("simDAG")` to get the relevant citation information.
 
 ## License
 
-© 2023 Robin Denz
+© 2024 Robin Denz
 
 The contents of this repository are distributed under the GNU General
 Public License. You can find the full text of this License in this
