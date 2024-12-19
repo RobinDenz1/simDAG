@@ -176,6 +176,8 @@ initialize an empty <code>DAG</code> object like this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -224,6 +226,9 @@ probabilities (binary / categorical data).</li>
 <li>
 <code>node_conditional_distr</code>: A node based on conditional
 distributions (any data type).</li>
+<li>
+<code>node_identity</code>: A node that is just some <code>R</code>
+expression of other nodes (any data type).</li>
 </ul>
 <p>All of these nodes have their own documentation page containing a
 detailed description on how data is generated from them. Although this
