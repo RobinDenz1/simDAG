@@ -44,6 +44,10 @@ check_inputs_root_node <- function(name, type) {
   } else if (!is_node_dist(type)) {
     stop("The 'type' parameter of a root node must be a single",
          " character string naming a defined function.")
+  } else if (any(name %in% c("identity", "node_identity"))) {
+    stop("Nodes of type 'identity' cannot be used as root nodes, e.g. at",
+         " least one variable name has to be mentioned in 'formula'. Use",
+         " type='rconstant' instead to specify a constant value.")
   }
 }
 
@@ -124,6 +128,13 @@ check_inputs_node_poisson <- function(parents, args) {
 check_inputs_node_negative_binomial <- function(parents, args) {
   check_inputs_node_regression(parents=parents, args=args,
                                type="negative_binomial")
+}
+
+## input checks for identity nodes
+check_inputs_node_identity <- function(parents, args) {
+  if (is.null(args$formula)) {
+    stop("'formula' must be specified when using type='identity'.")
+  }
 }
 
 ## checking the inputs of the sim_from_dag function

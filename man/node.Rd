@@ -69,6 +69,7 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_poisson]{poisson}": A node based on poisson regression.}
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
+  \item{"\link[=node_identity]{identity}": A node that is just some R expression of other nodes.}
 }
 
 For custom child node types, see below.

@@ -15,9 +15,16 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                                name="parents", position=3)
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
-  formula <- sanitize_formula(formula)
 
-  if (inherits(formula, "formula")) {
+  if (!is_identity_node(type)) {
+    formula <- sanitize_formula(formula)
+  }
+
+  if (is_identity_node(type)) {
+    if (is.null(parents)) {
+      parents <- all.vars(formula)
+    }
+  } else if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
     warning("Using regular formulas in 'formula' was deprecated in version",
             " 0.2.0 and will no longer be supported in the next version",
@@ -71,9 +78,16 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
                                name="parents", position=3)
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
-  formula <- sanitize_formula(formula)
 
-  if (inherits(formula, "formula")) {
+  if (!is_identity_node(type)) {
+    formula <- sanitize_formula(formula)
+  }
+
+  if (is_identity_node(type)) {
+    if (is.null(parents)) {
+      parents <- all.vars(formula)
+    }
+  } else if (inherits(formula, "formula")) {
     parents <- all.vars(formula)
     warning("Using regular formulas in 'formula' was deprecated in version",
             " 0.2.0 and will no longer be supported in the next version",

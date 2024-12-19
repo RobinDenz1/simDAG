@@ -81,6 +81,10 @@ Enhancements
 * External variables may now be used in the formula interface using `eval()` calls.
 * Added the `remove_not_at_risk` argument to the `sim2data()` function.
 
+New Features
+
+* Added the `node_identity()` function to allow users to directly calculate nodes as an R expression of other nodes without the need to define a new function.
+
 Documentation
 
 * Added more examples in the formula vignette.

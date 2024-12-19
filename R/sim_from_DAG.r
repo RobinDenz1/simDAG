@@ -63,7 +63,8 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     # if a special formula is supplied, change arguments accordingly
     form <- dag$child_nodes[[i]]$formula
 
-    if (!is.null(form) && !is_formula(form)) {
+    if (!is.null(form) && !is_formula(form) &&
+        dag$child_nodes[[i]]$type_str != "identity") {
       args <- args_from_formula(args=args, formula=form,
                                 node_type=dag$child_nodes[[i]]$type_str)
       args$data <- tryCatch({

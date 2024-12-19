@@ -67,6 +67,7 @@ The `simDAG` package implements the following types of `child_nodes` directly:
 * `node_cox`: A node based on cox regression (time-to-event data).
 * `node_conditional_prob`: A node based on conditional probabilities (binary / categorical data).
 * `node_conditional_distr`: A node based on conditional distributions (any data type).
+* `node_identity`: A node that is just some `R` expression of other nodes (any data type).
 
 All of these nodes have their own documentation page containing a detailed description on how data is generated from them. Although this collection of nodes covers a lot of data types, it is still a somewhat limited collection. If, for example, we wanted to add a child node that is normally distributed but also truncated at specific values, we could not do this using just the offered node functions. For this reason, the `sim_from_dag()` function also allows the user to use custom functions as nodes, which makes it possible to model any kind of data and any kind of relationship.
 
