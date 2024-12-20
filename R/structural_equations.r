@@ -321,6 +321,43 @@ str_eq_child <- function(node) {
   return(out)
 }
 
+## breaks very long structural equations into multiple lines for printing
+add_line_breaks <- function(str, char_max=60, pad=NULL) {
+
+  if (nchar(str) <= char_max) {
+    return(str)
+  }
+
+  # find last + symbol before the n_break character limit
+  last_plus <- regexpr("\\+[^\\+]*$", substr(str, 1, char_max))[[1]]
+
+  if (last_plus==-1) {
+    return(str)
+  }
+
+  # break string into two parts
+  part1 <- substr(str, 1, last_plus)
+  part2 <- substr(str, last_plus + 1, nchar(str))
+
+  # count characters before first (
+  if (is.null(pad)) {
+    pad <- regexpr("\\(", part1)[[1]][1]
+  }
+
+  # adjust second part
+  part2 <- paste0(paste0(rep(" ", pad), collapse=""), part2)
+
+  # if still to long, recursively apply same strategy to second part again
+  if (nchar(part2) >= char_max) {
+    part2 <- add_line_breaks(str=part2, char_max=char_max, pad=pad)
+  }
+
+  # put back together as one string on two lines
+  out <- paste0(part1, "\n", part2)
+
+  return(out)
+}
+
 ## align structural equations on tilde for printing
 align_str_equations <- function(str_equations) {
   tilde_pos <- unlist(gregexpr("~", str_equations))

@@ -91,7 +91,7 @@ print.DAG <- function(x, ...) {
 
 ## S3 summary method for DAG objects
 #' @export
-summary.DAG <- function(object, ...) {
+summary.DAG <- function(object, char_max=60, ...) {
 
   if (is_empty_dag(object)) {
     cat("An empty DAG object without any nodes.\n")
@@ -116,7 +116,12 @@ summary.DAG <- function(object, ...) {
       }
     }
     names(str_equations) <- rep(names_dag, times=str_len)
+
     str_equations_print <- align_str_equations(str_equations)
+    str_equations_print <- vapply(str_equations_print,
+                                  FUN=add_line_breaks,
+                                  FUN.VALUE=character(1),
+                                  char_max=char_max)
 
     cat("A DAG object using the following structural equations:\n\n")
     cat(str_equations_print, sep="\n")

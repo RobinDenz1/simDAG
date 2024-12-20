@@ -33,6 +33,7 @@
        D ~ Bernoulli(logit(-5 + B*7 + C*1))
        E ~ Poisson(-2 + A*4 + C*3 + A:B*2)
        F ~ NegBinomial(-2 + A*4 + C*3 + A:B*2 + log(0.34))
-    G[T] ~ (-(log(Unif(0, 1))/(10*exp(A*4 + C*3 + A:B*2))))^(1/0.23)
+    G[T] ~ (-(log(Unif(0, 1))/(10*exp(A*4 + C*3 +
+             A:B*2))))^(1/0.23)
     G[C] ~ Inf
 
