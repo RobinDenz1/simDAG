@@ -68,6 +68,49 @@ test_that("event right at the end", {
   expect_equal(out_dat, expected)
 })
 
+test_that("event right at the start", {
+
+  long <- data.table(.id=rep(seq_len(10), each=5),
+                     .simulation_time=rep(seq_len(5), 10),
+                     A=!c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
+                          TRUE),
+                     B=c(rep(FALSE, 49), TRUE))
+  setkey(long, .id, .simulation_time)
+
+  expected <- data.table(.id=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 10, 10),
+                         start=c(rep(1, 9), 4, 1, 4, 5),
+                         stop=c(rep(5, 8), 3, 5, 3, 4, 5),
+                         A=!c(rep(FALSE, 9), TRUE, FALSE, TRUE, TRUE),
+                         B=c(rep(FALSE, 12), TRUE))
+
+  out_dat <- long2start_stop(data=long, id=".id", time=".simulation_time",
+                             varying=c("A", "B"))
+
+  expect_equal(out_dat, expected)
+})
+
+test_that("event of length 1 right at the start", {
+
+  long <- data.table(.id=c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
+                     .time=c(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3),
+                     A=c(TRUE, FALSE, FALSE,
+                         FALSE, FALSE, FALSE,
+                         TRUE, TRUE, TRUE,
+                         FALSE, TRUE, TRUE),
+                     B=FALSE)
+  setkey(long, .id, .time)
+
+  expected <- data.table(.id=c(1, 1, 2, 3, 4, 4),
+                         start=c(1, 2, 1, 1, 1, 2),
+                         stop=c(1, 3, 3, 3, 1, 3),
+                         A=c(TRUE, FALSE, FALSE, TRUE, FALSE, TRUE),
+                         B=FALSE)
+
+  out_dat <- long2start_stop(data=long, id=".id", time=".time",
+                             varying=c("A", "B"))
+  expect_equal(out_dat, expected)
+})
+
 test_that("non-logical time-varying variables", {
 
   long <- data.table(.id=rep(seq_len(10), each=5),
@@ -92,7 +135,7 @@ test_that("non-logical time-varying variables", {
 test_that("no varying variables", {
 
   long <- data.frame(.id=rep(seq_len(10), each=5),
-                     .simulation_time=rep(seq_len(5), 10),
+                     time=rep(seq_len(5), 10),
                      A=c(rep(FALSE, 43), TRUE, TRUE, rep(FALSE, 3), TRUE,
                          TRUE),
                      B=FALSE)
@@ -103,7 +146,7 @@ test_that("no varying variables", {
                          A=FALSE,
                          B=FALSE)
 
-  out_dat <- long2start_stop(data=long, id=".id", time=".simulation_time",
+  out_dat <- long2start_stop(data=long, id=".id", time="time",
                              varying=NULL, check_inputs=FALSE)
 
   expect_equal(out_dat, expected)

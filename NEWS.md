@@ -81,6 +81,11 @@ Enhancements
 * External variables may now be used in the formula interface using `eval()` calls.
 * Added the `remove_not_at_risk` argument to the `sim2data()` function.
 
+Bug Fixes
+
+* Using `sim2data()` with time-dependent nodes of type `node_competing_events()` no longer results in an unwarranted error message.
+* Using the column name `"time"` in the `time` argument of `long2start_stop()` now works properly.
+
 New Features
 
 * Added the `node_identity()` function to allow users to directly calculate nodes as an R expression of other nodes without the need to define a new function.
@@ -88,4 +93,3 @@ New Features
 Documentation
 
 * Added more examples in the formula vignette.
-

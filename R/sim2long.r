@@ -18,7 +18,7 @@ sim2long <- function(sim, use_saved_states=sim$save_states=="all") {
 sim2long.all <- function(sim) {
 
   .id <- .time <- NULL
-  tte_names <- names(sim$tte_past_events)
+  tte_names <- c(names(sim$tte_past_events), names(sim$ce_past_events))
 
   # simply bind together all previous states into one data.table
   data <- data.table::rbindlist(sim$past_states)

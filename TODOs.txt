@@ -1,15 +1,11 @@
 
 ###### Bugs & TODOS ######
 
-sim_discrete_time:
-	- should include t = 0 in output (or an option for it)
-	
-long2start_stop:
-	- does not work properly if "time" is not called ".time"
-	- skips first interval sometimes
-	- this function should be moved to the MatchTime package eventually
 
 ####### New Features: #######
+
+sim_discrete_time:
+	- maybe include t = 0 in output (or an option for it)?
 
 sim_from_dag:
 	- implement more node types:
