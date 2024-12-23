@@ -217,6 +217,14 @@ str_eq_conditional_distr <- function(node) {
   return(out)
 }
 
+## structural equation for identity nodes
+str_eq_identity <- function(node) {
+  form_str <- paste0(str_trim(deparse(node$formula)), collapse="")
+  form_str <- substr(form_str, 2, nchar(form_str))
+  out <- paste0(node$name, " ~ ", form_str)
+  return(out)
+}
+
 ## structural equation for time-to-event / competing events node
 str_eq_time_to_event <- function(node) {
 
@@ -379,7 +387,7 @@ structural_equation <- function(node) {
   } else if (!is.null(node$parents)) {
     if (node$type_str %in% c("gaussian", "binomial", "conditional_prob",
                              "conditional_distr", "multinomial", "poisson",
-                             "negative_binomial", "cox")) {
+                             "negative_binomial", "cox", "identity")) {
       str_eq_fun <- get(paste0("str_eq_", node$type_str))
       out <- str_eq_fun(node)
     } else {

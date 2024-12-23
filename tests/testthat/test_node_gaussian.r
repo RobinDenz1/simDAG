@@ -226,3 +226,13 @@ test_that("with special formula + special characters in it", {
 
   expect_equal(mean(dat$gauss), -52.60826, tolerance=0.001)
 })
+
+test_that("with special formula but NA in betas", {
+  expect_error({
+    dag <- empty_dag() +
+      node("A", type="rnorm") +
+      node("C", type="rbernoulli") +
+      node("B", type="gaussian", formula= ~ -2 + A*NA + C*2)
+  },
+  "One or more of the supplied beta coefficients in 'formula' are not numbers.")
+})

@@ -18,7 +18,7 @@ A \code{data.table} (or something that can be coerced to a \code{data.table}) co
 A character vector specifying the names of the parents that this particular child node has. When using this function as a node type in \code{\link{node}} or \code{\link{node_td}}, this argument usually does not need to be specified because the \code{formula} argument is required and contains all needed information already.
   }
   \item{formula}{
-A \code{formula} object containing a \code{~} symbol with nothing on the LHS, and any valid R expression that can be evaluated on \code{data} on the RHS. This expression needs to contain at least one variable name (otherwise users may simply use \code{\link{rconstant}} as node type). It may contain any number of function calls or other valid R syntax, given that all contained objects are included in the global environment.
+A \code{formula} object containing a \code{~} symbol with nothing on the LHS, and any valid R expression that can be evaluated on \code{data} on the RHS. This expression needs to contain at least one variable name (otherwise users may simply use \code{\link{rconstant}} as node type). It may contain any number of function calls or other valid R syntax, given that all contained objects are included in the global environment. Note that contrary to the other node types supporting this argument, using interactions or levels of a categorical variable are not supported when specifying the formula here.
   }
 }
 \details{

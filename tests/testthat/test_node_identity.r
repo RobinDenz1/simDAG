@@ -110,3 +110,14 @@ test_that("as time-varying node, parents not specified", {
 
   expect_equal(sim_dat$combine, sim_dat$combine2)
 })
+
+test_that("error when used as root node", {
+
+  expect_error({
+    dag <- empty_dag() +
+    node("A", type="identity", formula= ~ 20)},
+  paste0("Nodes of type 'identity' cannot be used as root nodes, e.g. at",
+         " least one variable name has to be\nmentioned in 'formula'. Use",
+         " type='rconstant' instead to specify a constant value.")
+  )
+})

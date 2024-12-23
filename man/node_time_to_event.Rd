@@ -8,7 +8,7 @@ Simulate a Time-to-Event Node in Discrete-Time Simulation
 This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. Can only be used inside of the \code{\link{sim_discrete_time}} function, not outside of it. See details.
 }
 \usage{
-node_time_to_event(data, parents, sim_time, name,
+node_time_to_event(data, parents, sim_time, past_states, name,
                    prob_fun, ..., event_duration=1,
                    immunity_duration=event_duration,
                    time_since_last=FALSE, event_count=FALSE,
@@ -23,7 +23,10 @@ A \code{data.table} containing all columns specified by \code{parents}. Similar 
 A character vector specifying the names of the parents that this particular child node has. Those child nodes should be valid column names in \code{data}. Because the state of this variable is by definition dependent on its previous states, the columns produced by this function will automatically be considered its parents without the user having to manually specify this.
   }
   \item{sim_time}{
-The current time of the simulation.
+The current time of the simulation. If \code{sim_time} is an argument in the function passed to the \code{prob_fun} argument, this time will automatically be passed to it as well.
+  }
+  \item{past_states}{
+A list of \code{data.table}s including previous states of the simulation. This argument cannot be specified directly by the user. Instead, it is passed to this function internally whenever a function is passed to the \code{prob_fun} argument which includes a named argument called \code{past_states}. May be useful to specify nodes that are dependent on specific past states of the simulation.
   }
   \item{name}{
 The name of the node. This will be used as prefix before the \code{_event}, \code{_time} columns. If the \code{time_since_last} or \code{event_count} arguments are set to \code{TRUE}, this will also be used as prefix for those respective columns.

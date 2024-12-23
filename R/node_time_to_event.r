@@ -3,8 +3,8 @@
 ## discrete-time simulations
 #' @importFrom data.table fifelse
 #' @export
-node_time_to_event <- function(data, parents, sim_time, name,
-                               prob_fun, ..., event_duration=1,
+node_time_to_event <- function(data, parents, sim_time, past_states,
+                               name, prob_fun, ..., event_duration=1,
                                immunity_duration=event_duration,
                                time_since_last=FALSE, event_count=FALSE,
                                save_past_events=TRUE, check_inputs=TRUE,
@@ -16,6 +16,10 @@ node_time_to_event <- function(data, parents, sim_time, name,
 
   if (is.function(prob_fun) && "sim_time" %in% names(formals(prob_fun))) {
     prob_fun_args$sim_time <- sim_time
+  }
+
+  if (is.function(prob_fun) && "past_states" %in% names(formals(prob_fun))) {
+    prob_fun_args$past_states <- past_states
   }
 
   if (check_inputs) {

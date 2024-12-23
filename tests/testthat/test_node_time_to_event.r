@@ -121,3 +121,19 @@ test_that("event_count working", {
                                      "sick_event_count"))
   expect_true(is.numeric(sim$data$sick_event_count))
 })
+
+test_that("using past_states in prob_fun", {
+  set.seed(3245354)
+
+  prob_sick <- function(data, past_states) {
+    return(0.01)
+  }
+
+  dag <- empty_dag() +
+    node_td("sick", type="time_to_event", prob_fun=prob_sick,
+            event_duration=3)
+
+  sim <- sim_discrete_time(dag, n_sim=10, max_t=100, save_states="all")
+
+  expect_equal(colnames(sim$data), c(".id", "sick_event", "sick_time"))
+})
