@@ -45,7 +45,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_time_to_event</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">sim_time</span>, <span class="va">name</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_time_to_event</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">sim_time</span>, <span class="va">past_states</span>, <span class="va">name</span>,</span>
 <span>                   <span class="va">prob_fun</span>, <span class="va">...</span>, event_duration<span class="op">=</span><span class="fl">1</span>,</span>
 <span>                   immunity_duration<span class="op">=</span><span class="va">event_duration</span>,</span>
 <span>                   time_since_last<span class="op">=</span><span class="cn">FALSE</span>, event_count<span class="op">=</span><span class="cn">FALSE</span>,</span>
@@ -63,7 +63,10 @@
 <dd><p>A character vector specifying the names of the parents that this particular child node has. Those child nodes should be valid column names in <code>data</code>. Because the state of this variable is by definition dependent on its previous states, the columns produced by this function will automatically be considered its parents without the user having to manually specify this.</p></dd>
 
   <dt id="arg-sim-time">sim_time<a class="anchor" aria-label="anchor" href="#arg-sim-time"></a></dt>
-<dd><p>The current time of the simulation.</p></dd>
+<dd><p>The current time of the simulation. If <code>sim_time</code> is an argument in the function passed to the <code>prob_fun</code> argument, this time will automatically be passed to it as well.</p></dd>
+
+  <dt id="arg-past-states">past_states<a class="anchor" aria-label="anchor" href="#arg-past-states"></a></dt>
+<dd><p>A list of <code>data.table</code>s including previous states of the simulation. This argument cannot be specified directly by the user. Instead, it is passed to this function internally whenever a function is passed to the <code>prob_fun</code> argument which includes a named argument called <code>past_states</code>. May be useful to specify nodes that are dependent on specific past states of the simulation.</p></dd>
 
   <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p>The name of the node. This will be used as prefix before the <code>_event</code>, <code>_time</code> columns. If the <code>time_since_last</code> or <code>event_count</code> arguments are set to <code>TRUE</code>, this will also be used as prefix for those respective columns.</p></dd>

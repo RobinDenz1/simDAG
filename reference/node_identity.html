@@ -58,7 +58,7 @@
 <dd><p>A character vector specifying the names of the parents that this particular child node has. When using this function as a node type in <code><a href="node.html">node</a></code> or <code><a href="node.html">node_td</a></code>, this argument usually does not need to be specified because the <code>formula</code> argument is required and contains all needed information already.</p></dd>
 
   <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>A <code>formula</code> object containing a <code>~</code> symbol with nothing on the LHS, and any valid R expression that can be evaluated on <code>data</code> on the RHS. This expression needs to contain at least one variable name (otherwise users may simply use <code><a href="rconstant.html">rconstant</a></code> as node type). It may contain any number of function calls or other valid R syntax, given that all contained objects are included in the global environment.</p></dd>
+<dd><p>A <code>formula</code> object containing a <code>~</code> symbol with nothing on the LHS, and any valid R expression that can be evaluated on <code>data</code> on the RHS. This expression needs to contain at least one variable name (otherwise users may simply use <code><a href="rconstant.html">rconstant</a></code> as node type). It may contain any number of function calls or other valid R syntax, given that all contained objects are included in the global environment. Note that contrary to the other node types supporting this argument, using interactions or levels of a categorical variable are not supported when specifying the formula here.</p></dd>
 
 </dl></div>
     <div class="section level2">
