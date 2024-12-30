@@ -37,32 +37,6 @@ test_that("snapshot test", {
                c(13.707, 1.639, 1.434))
 })
 
-test_that("sort_dag working", {
-  child_nodes <- list(list(parents=c("sex", "age", "income"),
-                           type_str="gaussian",
-                           type_fun=node_gaussian,
-                           name="bmi",
-                           betas=c(2.1, 1.4, 0.1),
-                           intercept=14,
-                           error=2,
-                           time_varying=FALSE),
-                      list(parents=c("sex", "age"),
-                           type_str="gaussian",
-                           type_fun=node_gaussian,
-                           name="income",
-                           betas=c(0.1, 0.7),
-                           intercept=100,
-                           error=10,
-                           time_varying=FALSE))
-  dag$child_nodes <- child_nodes
-
-  sim_dat <- sim_from_dag(n_sim=20, dag=dag, sort_dag=TRUE)
-  expect_true(data.table::is.data.table(sim_dat))
-  expect_true(nrow(sim_dat)==20)
-  expect_true(ncol(sim_dat)==4)
-  expect_error(sim_from_dag(n_sim=20, dag=dag, sort_dag=FALSE))
-})
-
 test_that("accepts nodes directly passed in type", {
 
   custom_fun <- function(data, parents) {
@@ -137,3 +111,40 @@ test_that("helpful error message formula error", {
                " data are:\n(Intercept), ATRUE"), fixed=TRUE)
 
 })
+
+on_ci <- getFromNamespace("on_ci", ns="testthat")
+on_cran <- getFromNamespace("on_cran", ns="testthat")
+
+# due to a bug on github actions, only run these tests locally for now
+# NOTE: the bug is due to RcppZiggurat not being installed properly
+# https://github.com/eddelbuettel/rcppziggurat/issues/22
+# so it has nothing to do with the simDAG package or the functionality tested
+# here
+if (!(on_ci())) {
+
+  test_that("sort_dag working", {
+    child_nodes <- list(list(parents=c("sex", "age", "income"),
+                             type_str="gaussian",
+                             type_fun=node_gaussian,
+                             name="bmi",
+                             betas=c(2.1, 1.4, 0.1),
+                             intercept=14,
+                             error=2,
+                             time_varying=FALSE),
+                        list(parents=c("sex", "age"),
+                             type_str="gaussian",
+                             type_fun=node_gaussian,
+                             name="income",
+                             betas=c(0.1, 0.7),
+                             intercept=100,
+                             error=10,
+                             time_varying=FALSE))
+    dag$child_nodes <- child_nodes
+
+    sim_dat <- sim_from_dag(n_sim=20, dag=dag, sort_dag=TRUE)
+    expect_true(data.table::is.data.table(sim_dat))
+    expect_true(nrow(sim_dat)==20)
+    expect_true(ncol(sim_dat)==4)
+    expect_error(sim_from_dag(n_sim=20, dag=dag, sort_dag=FALSE))
+  })
+}

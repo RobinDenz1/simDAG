@@ -12,12 +12,6 @@ test_that("without td, basecase", {
   expect_true(inherits(out[[1]], "data.table"))
 })
 
-test_that("without td, parallel", {
-  out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=2, n_sim=10)
-  expect_true(length(out) == 10)
-  expect_true(inherits(out[[1]], "data.table"))
-})
-
 test_that("without td, data_format", {
 
   dat_transform <- function(data) {
@@ -39,6 +33,29 @@ test_that("with td, basecase", {
   expect_true(inherits(out[[1]], "simDT"))
 })
 
+test_that("with td, data_format", {
+  out <- sim_n_datasets(dag=dag_td, n_repeats=10, n_cores=1, n_sim=10,
+                        max_t=100, data_format="start_stop")
+  expect_true(length(out) == 10)
+  expect_true(inherits(out[[1]], "data.table"))
+})
+
+on_ci <- getFromNamespace("on_ci", ns="testthat")
+on_cran <- getFromNamespace("on_cran", ns="testthat")
+
+# due to a bug on github actions, only run these tests locally for now
+# NOTE: the bug is due to RcppZiggurat not being installed properly
+# https://github.com/eddelbuettel/rcppziggurat/issues/22
+# so it has nothing to do with the simDAG package or the functionality tested
+# here
+if (!(on_ci())) {
+
+test_that("without td, parallel", {
+  out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=2, n_sim=10)
+  expect_true(length(out) == 10)
+  expect_true(inherits(out[[1]], "data.table"))
+})
+
 test_that("with td, parallel", {
   out <- sim_n_datasets(dag=dag_td, n_repeats=10, n_cores=2, n_sim=10,
                         max_t=100, progressbar=FALSE)
@@ -51,9 +68,4 @@ test_that("with td, parallel", {
                                max_t=100))
 })
 
-test_that("with td, data_format", {
-  out <- sim_n_datasets(dag=dag_td, n_repeats=10, n_cores=1, n_sim=10,
-                        max_t=100, data_format="start_stop")
-  expect_true(length(out) == 10)
-  expect_true(inherits(out[[1]], "data.table"))
-})
+}
