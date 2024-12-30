@@ -49,7 +49,7 @@ We are also working on a separate article on this package that is going to be pu
 
 \strong{\emph{I have a problem using the \code{sim_discrete_time} function}}
 
-The \code{sim_discrete_time} function can become difficult to use depending on what kind of data the user wants to generate. For this reason we put in extra effort to make the documentation and examples as clear and helpful as possible. Please consult the relevant documentation pages and the vignettes before contacting the authors directly with programming related questions that are not clearly bugs in the code.
+The \code{\link{sim_discrete_time}} function can become difficult to use depending on what kind of data the user wants to generate. For this reason we put in extra effort to make the documentation and examples as clear and helpful as possible. Please consult the relevant documentation pages and the vignettes before contacting the authors directly with programming related questions that are not clearly bugs in the code.
 
 \strong{\emph{I want to suggest a new feature / I want to report a bug. Where can I do this?}}
 
