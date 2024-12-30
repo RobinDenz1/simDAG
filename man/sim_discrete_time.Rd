@@ -8,7 +8,7 @@ Using Discrete-Time Simulation to Generate Complex Data from a Given DAG and Nod
 Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given DAG. In contrast to the \code{sim_from_dag} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
 }
 \usage{
-sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=TRUE,
+sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
                   t0_data=NULL, t0_transform_fun=NULL,
                   t0_transform_args=list(), max_t,
                   tx_nodes_order=NULL, tx_transform_fun=NULL,
@@ -27,7 +27,7 @@ A single number specifying how many observations should be generated. If a \code
 Corresponds to the \code{sort_dag} argument in the \code{\link{sim_from_dag}} function. Ignored if \code{t0_data} is specified.
   }
   \item{t0_data}{
-An optional \code{data.table} like object (also accepts a \code{data.frame}, \code{tibble} etc.) containing values for all relevant variables at \eqn{t = 0}. This dataset will then be transformed over time according to the node functions specified in \code{tx_nodes}. Alternatively, data for \eqn{t = 0} may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}.
+An optional \code{data.table} like object (also accepts a \code{data.frame}, \code{tibble} etc.) containing values for all relevant variables at \eqn{t = 0}. This dataset will then be transformed over time according to the nodes specified using \code{\link{node_td}} calls in \code{dag}. Alternatively, data for \eqn{t = 0} may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}.
   }
   \item{t0_transform_fun}{
 An optional function that takes the data created at \eqn{t = 0} as the first argument. The function will be applied to the starting data and its output will replace the \code{data.table}. Can be used to perform arbitrary data transformations after the starting data was created. Set to \code{NULL} (default) to not use this functionality.

@@ -2,7 +2,7 @@
 ## perform a discrete time simulation based on
 ## previously defined functions and nodes
 #' @export
-sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=TRUE,
+sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                               t0_data=NULL, t0_transform_fun=NULL,
                               t0_transform_args=list(), max_t,
                               tx_nodes_order=NULL,

@@ -80,6 +80,7 @@ Enhancements
 
 * External variables may now be used in the formula interface using `eval()` calls.
 * Added the `remove_not_at_risk` argument to the `sim2data()` function.
+* Change default of `t0_sort_dag` in `sim_discrete_time()` from `TRUE` to `FALSE` for more consistency with `sim_from_dag()`.
 
 Bug Fixes
 

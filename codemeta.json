@@ -8,13 +8,13 @@
   "codeRepository": "https://github.com/RobinDenz1/simDAG",
   "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.3.3 (2024-02-29 ucrt)",
+  "runtimePlatform": "R version 4.2.1 (2022-06-23 ucrt)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -229,7 +229,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1229.156KB",
+  "fileSize": "1258.808KB",
   "citation": [
     {
       "@type": "CreativeWork",
@@ -252,6 +252,7 @@
   ],
   "releaseNotes": "https://github.com/RobinDenz1/simDAG/blob/master/NEWS.md",
   "readme": "https://github.com/RobinDenz1/simDAG/blob/main/README.md",
-  "contIntegration": ["https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main"],
-  "developmentStatus": "https://www.repostatus.org/#active"
+  "contIntegration": ["https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main"],
+  "developmentStatus": "https://www.repostatus.org/#active",
+  "keywords": ["causal-inference", "directed-acyclic-graph", "simulation"]
 }
