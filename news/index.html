@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,7 @@
 <p>Enhancements</p>
 <ul><li>External variables may now be used in the formula interface using <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> calls.</li>
 <li>Added the <code>remove_not_at_risk</code> argument to the <code><a href="../reference/sim2data.html">sim2data()</a></code> function.</li>
+<li>Change default of <code>t0_sort_dag</code> in <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> from <code>TRUE</code> to <code>FALSE</code> for more consistency with <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code>.</li>
 </ul><p>Bug Fixes</p>
 <ul><li>Using <code><a href="../reference/sim2data.html">sim2data()</a></code> with time-dependent nodes of type <code><a href="../reference/node_competing_events.html">node_competing_events()</a></code> no longer results in an unwarranted error message.</li>
 <li>Using the column name <code>"time"</code> in the <code>time</code> argument of <code><a href="../reference/long2start_stop.html">long2start_stop()</a></code> now works properly.</li>

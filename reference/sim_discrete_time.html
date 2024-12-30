@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_discrete_time</span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="cn">NULL</span>, t0_sort_dag<span class="op">=</span><span class="cn">TRUE</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_discrete_time</span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="cn">NULL</span>, t0_sort_dag<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                  t0_data<span class="op">=</span><span class="cn">NULL</span>, t0_transform_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                  t0_transform_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">max_t</span>,</span>
 <span>                  tx_nodes_order<span class="op">=</span><span class="cn">NULL</span>, tx_transform_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
@@ -67,7 +67,7 @@
 <dd><p>Corresponds to the <code>sort_dag</code> argument in the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function. Ignored if <code>t0_data</code> is specified.</p></dd>
 
   <dt id="arg-t-data">t0_data<a class="anchor" aria-label="anchor" href="#arg-t-data"></a></dt>
-<dd><p>An optional <code>data.table</code> like object (also accepts a <code>data.frame</code>, <code>tibble</code> etc.) containing values for all relevant variables at \(t = 0\). This dataset will then be transformed over time according to the node functions specified in <code>tx_nodes</code>. Alternatively, data for \(t = 0\) may be generated automatically by this function if standard <code><a href="node.html">node</a></code> calls were added to the <code>dag</code>.</p></dd>
+<dd><p>An optional <code>data.table</code> like object (also accepts a <code>data.frame</code>, <code>tibble</code> etc.) containing values for all relevant variables at \(t = 0\). This dataset will then be transformed over time according to the nodes specified using <code><a href="node.html">node_td</a></code> calls in <code>dag</code>. Alternatively, data for \(t = 0\) may be generated automatically by this function if standard <code><a href="node.html">node</a></code> calls were added to the <code>dag</code>.</p></dd>
 
   <dt id="arg-t-transform-fun">t0_transform_fun<a class="anchor" aria-label="anchor" href="#arg-t-transform-fun"></a></dt>
 <dd><p>An optional function that takes the data created at \(t = 0\) as the first argument. The function will be applied to the starting data and its output will replace the <code>data.table</code>. Can be used to perform arbitrary data transformations after the starting data was created. Set to <code>NULL</code> (default) to not use this functionality.</p></dd>
