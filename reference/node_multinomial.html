@@ -78,7 +78,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function works essentially like the <code><a href="node_binomial.html">node_binomial</a></code> function. First, the matrix of <code>betas</code> coefficients is used in conjunction with the values defined in the <code>parents</code> nodes and the <code>intercepts</code> to calculate the expected subject-specific probabilities of occurrence for each possible category. This is done using the standard multinomial regression equations. Using those probabilities in conjunction with the <code><a href="rcategorical.html">rcategorical</a></code> function, a single one of the possible categories is drawn for each individual.</p>
-<p>Since this function produces categorical output (as it should), it may be difficult to use this node type as a parent for other nodes. Nevertheless, it is of course possible using a user-defined node type (see <code><a href="node_custom.html">node_custom</a></code> for some infos on how to define those).</p>
+<p>When actually fitting a multinomial regression model (with functions such as <code>multinom</code> from the <span class="pkg">nnet</span> package), the coefficients will usually not be equal to the ones supplied in <code>betas</code>. The reason is that these functions usually standardize the coefficients to the coefficient of the reference category.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
