@@ -38,7 +38,7 @@ Either \code{TRUE} or \code{FALSE} (default). Specifies whether to return the ma
 \details{
 This function works essentially like the \code{\link{node_binomial}} function. First, the matrix of \code{betas} coefficients is used in conjunction with the values defined in the \code{parents} nodes and the \code{intercepts} to calculate the expected subject-specific probabilities of occurrence for each possible category. This is done using the standard multinomial regression equations. Using those probabilities in conjunction with the \code{\link{rcategorical}} function, a single one of the possible categories is drawn for each individual.
 
-Since this function produces categorical output (as it should), it may be difficult to use this node type as a parent for other nodes. Nevertheless, it is of course possible using a user-defined node type (see \code{\link{node_custom}} for some infos on how to define those).
+When actually fitting a multinomial regression model (with functions such as \code{multinom} from the \pkg{nnet} package), the coefficients will usually not be equal to the ones supplied in \code{betas}. The reason is that these functions usually standardize the coefficients to the coefficient of the reference category.
 }
 \author{
 Robin Denz
