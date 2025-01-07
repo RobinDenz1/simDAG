@@ -229,7 +229,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1258.808KB",
+  "fileSize": "1259.968KB",
   "citation": [
     {
       "@type": "CreativeWork",
@@ -252,7 +252,7 @@
   ],
   "releaseNotes": "https://github.com/RobinDenz1/simDAG/blob/master/NEWS.md",
   "readme": "https://github.com/RobinDenz1/simDAG/blob/main/README.md",
-  "contIntegration": ["https://github.com/RUB-AMIB/simDAG/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main"],
+  "contIntegration": ["https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main"],
   "developmentStatus": "https://www.repostatus.org/#active",
   "keywords": ["causal-inference", "directed-acyclic-graph", "simulation"]
 }
