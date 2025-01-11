@@ -73,9 +73,17 @@ add_node <- function(dag, node) {
 #' @export
 print.DAG <- function(x, ...) {
 
-  n_root_nodes <- length(x$root_nodes)
-  n_child_nodes <- length(x$child_nodes)
-  n_tx_nodes <- length(x$tx_nodes)
+  root_names <- names_DAG_level(x, "root")
+  child_names <- names_DAG_level(x, "child")
+  tx_names <- names_DAG_level(x, "tx")
+
+  # remove names from roots / children that are also time-varying
+  root_names <- root_names[!root_names %in% tx_names]
+  child_names <- child_names[!child_names %in% tx_names]
+
+  n_root_nodes <- length(root_names)
+  n_child_nodes <- length(child_names)
+  n_tx_nodes <- length(tx_names)
   n_total_nodes <- n_root_nodes + n_child_nodes + n_tx_nodes
 
   if (is_empty_dag(x)) {

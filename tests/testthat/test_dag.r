@@ -30,6 +30,16 @@ test_that("S3 print method with filled dag", {
   expect_snapshot_output(print(dag))
 })
 
+test_that("S3 print method with node that is both time-dependent and not", {
+
+  dag <- empty_dag() +
+    node("calories", type="rnorm", mean=2500, sd=150) +
+    node_td("calories", type="gaussian",
+            formula= ~ 1 + calories*1.1, error=1)
+
+  expect_snapshot(print(dag))
+})
+
 test_that("S3 summary method with empty dag", {
 
   dag <- empty_dag()

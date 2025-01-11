@@ -10,6 +10,17 @@
       -  2  of which are child nodes
       -  0  of which are time-varying nodes
 
+# S3 print method with node that is both time-dependent and not
+
+    Code
+      print(dag)
+    Output
+      A DAG object with:
+        -  1  nodes in total
+        -  0  of which are root nodes
+        -  0  of which are child nodes
+        -  1  of which are time-varying nodes
+
 # S3 summary method with empty dag
 
     An empty DAG object without any nodes.

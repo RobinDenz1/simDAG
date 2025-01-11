@@ -94,3 +94,9 @@ New Features
 Documentation
 
 * Added more examples in the formula vignette.
+
+# simDAG 0.2.2
+
+Bug Fixes
+
+* When specifying a node as both a root or child node and as a time-dependent node, it is no longer counted twice in `print.DAG()`
