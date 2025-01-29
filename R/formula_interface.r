@@ -166,10 +166,12 @@ data_for_formula <- function(data, args) {
     # get all relevant interaction terms
     d_combs <- get_cat_col_levs(data)
 
-    form_int_terms <- strsplit(form_int, ":") |>
-      vapply(get_interaction_term_for_formula, FUN.VALUE=character(1),
-             data=data, d_combs=d_combs) |>
-      unique()
+    form_int_terms <- unique(
+      vapply(X=strsplit(form_int, ":"),
+             get_interaction_term_for_formula,
+             FUN.VALUE=character(1),
+             data=data, d_combs=d_combs)
+    )
 
     # add them to the formula
     form_dat <- paste0(form_dat, " + ", paste0(form_int_terms, collapse=" + "))

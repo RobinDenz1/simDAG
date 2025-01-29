@@ -27,7 +27,7 @@ Using the node information contained in the \code{DAG} object this function plot
 A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{\link{empty_dag}} or \code{\link{node}} for more details.
   }
   \item{layout}{
-A single character string specifying the layout of the plot. This internally calls the \code{layout_} function of the \pkg{igraph} package, which offers a great variety of ways to layout the nodes of a graph. Defaults to \code{"nicely"}. Some other options are: \code{"as_star"}, \code{"as_tree"}, \code{"in_circle"}, \code{"on_spere"}, \code{"randomly"} and many more. For more details see \code{?layout_}.
+A single character string specifying the layout of the plot. This internally calls the \code{layout_} function of the \pkg{igraph} package, which offers a great variety of ways to layout the nodes of a graph. Defaults to \code{"nicely"}. Some other options are: \code{"as_star"}, \code{"as_tree"}, \code{"in_circle"}, \code{"on_sphere"}, \code{"randomly"} and many more. For more details see \code{?layout_}.
   }
   \item{node_size}{
 Either a single positive number or a numeric vector with one entry per node in the DAG, specifying the radius of the circles used to draw the nodes. If a single number is supplied, all nodes will be the same size (default).

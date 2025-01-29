@@ -132,7 +132,7 @@ node_time_to_event <- function(data, parents, sim_time, past_states,
 ## storing previous events for all time_to_event nodes
 # NOTE: i is a string specifying which variable, j is the time index
 assign2list <- function(name, i, j, value, envir) {
-  paste0(name, "[['", i, "']][[", j, "]] <- ", value) |>
-    str2lang() |>
-    eval(envir=envir)
+  eval(str2lang(
+    paste0(name, "[['", i, "']][[", j, "]] <- ", value)
+  ), envir=envir)
 }
