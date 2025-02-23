@@ -100,3 +100,4 @@ Documentation
 Bug Fixes
 
 * When specifying a node as both a root or child node and as a time-dependent node, it is no longer counted twice in `print.DAG()`
+* Fix small error in tests due to changes in `data.table`
