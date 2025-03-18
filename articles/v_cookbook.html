@@ -208,23 +208,47 @@ these individuals stop taking their pills with each passing week. Once
 they stop, they never start taking them again. The continuous outcome at
 each observation time depends on how many pills each individual took in
 total. None of the individuals in the control group start taking pills.
-For simplicity, the simulation is done without any further
-covariates.</p>
+For simplicity, the simulation is run without any further covariates for
+5 weeks.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># function to calculate the probability of taking the pill at t,</span></span>
 <span><span class="co"># given the current treatment status of the person</span></span>
 <span><span class="va">prob_treat</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="op">!</span><span class="va">data</span><span class="op">$</span><span class="va">Treatment</span>, <span class="fl">0</span>, <span class="fl">0.95</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="op">!</span><span class="va">data</span><span class="op">$</span><span class="va">Treatment_event</span>, <span class="fl">0</span>, <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co">#dag &lt;- empty_dag() +</span></span>
-<span><span class="co">#  node("Treatment", type="rbernoulli", p=0.5) +</span></span>
-<span><span class="co">#  node_td("Treatment", type="time_to_event", parents=c("Treatment"),</span></span>
-<span><span class="co">#          prob_fun=prob_treat, event_count=TRUE, event_duration=1) +</span></span>
-<span><span class="co">#  node_td("Outcome", type="gaussian", formula= ~ -2 + Treatment_event_count*-0.3,</span></span>
-<span><span class="co">#          error=2)</span></span>
-<span><span class="co">#sim &lt;- sim_discrete_time(dag, n_sim=1000, max_t=5, save_states="all")</span></span>
-<span><span class="co">#data &lt;- sim2data(sim, to="long")</span></span></code></pre></div>
+<span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Treatment_event"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Treatment"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Treatment_event"</span><span class="op">)</span>,</span>
+<span>          prob_fun<span class="op">=</span><span class="va">prob_treat</span>, event_count<span class="op">=</span><span class="cn">TRUE</span>, event_duration<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Treatment_event_count</span><span class="op">*</span><span class="op">-</span><span class="fl">0.3</span>,</span>
+<span>          error<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span>, max_t<span class="op">=</span><span class="fl">5</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Key: &lt;.id, .time&gt;</span></span>
+<span><span class="co">#&gt;      .id .time Treatment   Outcome Treatment_event_count</span></span>
+<span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt;    &lt;lgcl&gt;     &lt;num&gt;                 &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     1     1      TRUE -2.988481                     1</span></span>
+<span><span class="co">#&gt; 2:     1     2      TRUE -2.545962                     2</span></span>
+<span><span class="co">#&gt; 3:     1     3      TRUE -3.029647                     3</span></span>
+<span><span class="co">#&gt; 4:     1     4      TRUE -2.593921                     4</span></span>
+<span><span class="co">#&gt; 5:     1     5      TRUE  2.327432                     5</span></span>
+<span><span class="co">#&gt; 6:     2     1      TRUE -3.427912                     1</span></span></code></pre></div>
+<p>What this DAG essentially means is that first, the
+<code>Treatment_event</code> column is generated, which includes the
+assigned treatment at baseline. We called it
+<code>Treatment_event</code> here instead of just
+<code>Treatment</code>, because the value in this column should be
+updated with each iteration and nodes of type
+<code>"time_to_event"</code> always split the node into two columns:
+status and time. By setting <code>event_count=TRUE</code> in the
+<code><a href="../reference/node.html">node_td()</a></code> call for the <code>Treatment</code> node, a count
+of the amount of pills taken up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+is directly calculated at each point in time (column
+<code>Treatment_event_count</code>), which can then be used directly to
+generate the <code>Outcome</code> node.</p>
 <p>This simulation could be made more realistic (or just more complex),
 by for example adding either of the following things:</p>
 <ul>
@@ -257,12 +281,12 @@ using the following syntax:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Clinic Treatment Outcome</span></span>
 <span><span class="co">#&gt;     &lt;int&gt;    &lt;lgcl&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:      9     FALSE       0</span></span>
-<span><span class="co">#&gt; 2:     27      TRUE       2</span></span>
-<span><span class="co">#&gt; 3:     12     FALSE       0</span></span>
-<span><span class="co">#&gt; 4:     11     FALSE       0</span></span>
-<span><span class="co">#&gt; 5:     23     FALSE       0</span></span>
-<span><span class="co">#&gt; 6:      2     FALSE       0</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:      5     FALSE       0</span></span>
+<span><span class="co">#&gt; 2:      9     FALSE       0</span></span>
+<span><span class="co">#&gt; 3:     19     FALSE       0</span></span>
+<span><span class="co">#&gt; 4:     17     FALSE       0</span></span>
+<span><span class="co">#&gt; 5:     11     FALSE       0</span></span>
+<span><span class="co">#&gt; 6:      3     FALSE       0</span></span></code></pre></div>
 <p>In this DGP, each individual is randomly assigned to one of 50
 Clinics with equal probability. All patients in clinics numbered 0-24
 are assigned to the control group, while the other patients are assigned
@@ -301,6 +325,10 @@ observational study data.</p>
 </div>
 <div class="section level3">
 <h3 id="very-heterogeneous-data">Very Heterogeneous Data<a class="anchor" aria-label="anchor" href="#very-heterogeneous-data"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="ensuring-event-order-in-discrete-time-simulations">Ensuring Event-Order in Discrete-Time Simulations<a class="anchor" aria-label="anchor" href="#ensuring-event-order-in-discrete-time-simulations"></a>
 </h3>
 </div>
 </div>
