@@ -107,6 +107,8 @@ Bug Fixes
 Enhancements
 
 * Added the `reference` argument to `rbernoulli()` and `rcategorical()` to make it easier to specify the reference category when coding the output as a factor variable.
+* `+.DAG` now checks whether the `DAG` would become cyclic when adding a `node()` and returns an error if it does.
+* Added the `include_td_nodes` and `include_root_nodes` arguments to `as.igraph.DAG()`.
 
 Documentation
 

@@ -57,8 +57,8 @@ dag2matrix(dag, include_root_nodes=FALSE)
 dag <- dag +
   node_td("disease", type="time_to_event", parents=c("age", "smoking"),
           prob_fun=0.01) +
-  node_td("death", type="time_to_event", parents=c("age", "sex", "smoking",
-                                                   "disease"),
+  node_td("cve", type="time_to_event", parents=c("age", "sex", "smoking",
+                                                 "disease"),
           prob_fun=0.001, event_duration=Inf)
 
 # get adjacency matrix including all nodes

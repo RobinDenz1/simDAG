@@ -8,11 +8,18 @@ Transform a DAG object into an \code{igraph} object
 This function extends the \code{as.igraph} function from the \code{igraph} package to allow the input of a \code{DAG} object. The result is an \code{igraph} object that includes only the structure of the DAG, not any specifications. May be useful for plotting purposes.
 }
 \usage{
-\method{as.igraph}{DAG}(x, ...)
+\method{as.igraph}{DAG}(x, include_root_nodes=TRUE,
+          include_td_nodes=TRUE, ...)
 }
 \arguments{
   \item{x}{
 A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See \code{?empty_dag} or \code{?node} for more details. Supports DAGs with time-dependent nodes added using the \code{\link{node_td}} function. However, including such DAGs may result in cyclic causal structures, because time is not represented in the output matrix.
+  }
+  \item{include_root_nodes}{
+Whether to include root nodes in the output matrix. Should usually be kept at \code{TRUE} (default).
+  }
+  \item{include_td_nodes}{
+Whether to include time-dependent nodes added to the \code{dag} using the \code{\link{node_td}} function or not. When including these types of nodes, it is possible for the adjacency matrix to contain cycles, e.g. that it is not a classic DAG anymore, due to the matrix not representing the passage of time.
   }
   \item{...}{
 Currently not used.

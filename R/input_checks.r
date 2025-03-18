@@ -523,7 +523,7 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
     names_args <- names(tx_transform_args)
     if (!all(names_args %in% names_fun)) {
       stop("The following arguments are in 'tx_transform_args' but are",
-           " not define in 'tx_transform_fun': ",
+           " not defined in 'tx_transform_fun': ",
            paste0(names_args[!names_args %in% names_fun], collapse=","))
     }
   }

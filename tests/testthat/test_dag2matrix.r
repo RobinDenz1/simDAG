@@ -50,7 +50,7 @@ test_that("including td_nodes, no doubles", {
          intercept=-10, error=10) +
     node("D", type="binomial", parents=c("B", "C"), betas=c(7, 1),
          intercept=-5) +
-    node_td("E", type="time_to_event", parents=c("A", "C"))
+    node_td("E", type="binomial", parents=c("A", "C"))
 
   expected <- matrix(c(0, 0, 1, 0, 1,
                        0 ,0, 1, 1, 0,
@@ -74,7 +74,7 @@ test_that("including td_nodes, with doubles", {
          intercept=-10, error=10) +
     node("D", type="binomial", parents=c("B", "C"), betas=c(7, 1),
          intercept=-5) +
-    node_td("B", type="time_to_event", parents=c("A", "C"))
+    node_td("B", type="binomial", parents=c("A", "C"))
 
   expected <- matrix(c(0, 1, 1, 0,
                        0 ,0, 1, 1,

@@ -1,8 +1,22 @@
 
 ###### Bugs & TODOS ######
 
-- sim2long() may fail when node appears as root node + time-dependent node
-- nodes of type time_to_event should allow previous generation of starting values
+
+
+###### For the Review #####
+
+- enhance plot.DAG() to show different relationship strengths
+- allow function to generate DAG in sim_n_datasets()
+- finish cookbook vignette
+- implement random intercepts / random slope support
+
+# Changes in the manuscript
+
+- better explanation of sim_discrete_time()
+- mention dag_from_data()
+- explain event order thing
+- write more explictly that the package is not mainly about data synthesis in discussion
+- check that i followed all the journal style stuff
 
 ####### New Features: #######
 

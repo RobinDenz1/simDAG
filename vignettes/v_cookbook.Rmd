@@ -88,24 +88,27 @@ head(data)
 
 Previously we assumed that the treatment was assigned at baseline and never changed throughout the study. In real RCTs, individuals are often assigned to *treatment strategies* instead (for example: one pill per week). Some individuals might not adhere to their assigned treatment strategy, by for example "switching back" to not taking the pill.
 
-The following code shows one possible way to simulate such data. In the shown DGP, individuals are assigned to a treatment strategy at baseline. Here, `Treatment = FALSE` refers to the control condition in which the individual should not take any pills. In the intervention group (`Treatment = TRUE`), however, the individual is assigned to take a pill every week. On average, 5% of these individuals stop taking their pills with each passing week. Once they stop, they never start taking them again. The continuous outcome at each observation time depends on how many pills each individual took in total. None of the individuals in the control group start taking pills. For simplicity, the simulation is done without any further covariates.
+The following code shows one possible way to simulate such data. In the shown DGP, individuals are assigned to a treatment strategy at baseline. Here, `Treatment = FALSE` refers to the control condition in which the individual should not take any pills. In the intervention group (`Treatment = TRUE`), however, the individual is assigned to take a pill every week. On average, 5% of these individuals stop taking their pills with each passing week. Once they stop, they never start taking them again. The continuous outcome at each observation time depends on how many pills each individual took in total. None of the individuals in the control group start taking pills. For simplicity, the simulation is run without any further covariates for 5 weeks.
 
 ```{r}
 # function to calculate the probability of taking the pill at t,
 # given the current treatment status of the person
 prob_treat <- function(data) {
-  fifelse(!data$Treatment, 0, 0.95)
+  fifelse(!data$Treatment_event, 0, 0.95)
 }
 
-#dag <- empty_dag() +
-#  node("Treatment", type="rbernoulli", p=0.5) +
-#  node_td("Treatment", type="time_to_event", parents=c("Treatment"),
-#          prob_fun=prob_treat, event_count=TRUE, event_duration=1) +
-#  node_td("Outcome", type="gaussian", formula= ~ -2 + Treatment_event_count*-0.3,
-#          error=2)
-#sim <- sim_discrete_time(dag, n_sim=1000, max_t=5, save_states="all")
-#data <- sim2data(sim, to="long")
+dag <- empty_dag() +
+  node("Treatment_event", type="rbernoulli", p=0.5) +
+  node_td("Treatment", type="time_to_event", parents=c("Treatment_event"),
+          prob_fun=prob_treat, event_count=TRUE, event_duration=1) +
+  node_td("Outcome", type="gaussian", formula= ~ -2 + Treatment_event_count*-0.3,
+          error=2)
+sim <- sim_discrete_time(dag, n_sim=1000, max_t=5, save_states="all")
+data <- sim2data(sim, to="long")
+head(data)
 ```
+
+What this DAG essentially means is that first, the `Treatment_event` column is generated, which includes the assigned treatment at baseline. We called it `Treatment_event` here instead of just `Treatment`, because the value in this column should be updated with each iteration and nodes of type `"time_to_event"` always split the node into two columns: status and time. By setting `event_count=TRUE` in the `node_td()` call for the `Treatment` node, a count of the amount of pills taken up to $t$ is directly calculated at each point in time (column `Treatment_event_count`), which can then be used directly to generate the `Outcome` node.
 
 This simulation could be made more realistic (or just more complex), by for example adding either of the following things:
 
@@ -149,6 +152,6 @@ In all previous examples, the variable of interest was a treatment that was rand
 
 ## Very Heterogeneous Data
 
-
+## Ensuring Event-Order in Discrete-Time Simulations
 
 

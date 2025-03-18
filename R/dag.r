@@ -25,7 +25,9 @@ add_node <- function(dag, node) {
 
   dag_names <- names_DAG(dag)
 
-  if (node$name %in% dag_names & !node$time_varying) {
+  if (node$name %in% dag_names & (!node$time_varying |
+      (node$time_varying &
+       node$type_str %in% c("time_to_event", "competing_events")))) {
     stop("A node with the name ", node$name, " is already present in the",
          " DAG object and will not be overwritten.")
   }
@@ -37,6 +39,17 @@ add_node <- function(dag, node) {
     dag$root_nodes[[length(dag$root_nodes) + 1]] <- node
   } else {
     dag$child_nodes[[length(dag$child_nodes) + 1]] <- node
+  }
+
+  # if not acyclic after adding node, return error
+  g <- as.igraph(x=dag, include_root_nodes=TRUE, include_td_nodes=FALSE)
+
+  if (!igraph::is_acyclic(g)) {
+    cycle <- paste0(names(igraph::eulerian_cycle(g)$vpath), collapse=" -> ")
+
+    stop("Adding node '", node$name, "' as specified is impossible, ",
+         "because it would make the DAG cyclic through the path:\n",
+         cycle, call.=FALSE)
   }
 
   return(dag)
@@ -141,8 +154,10 @@ summary.DAG <- function(object, char_max=60, ...) {
 ## S3 method for DAG object to turn a DAG into an igraph object
 #' @importFrom igraph as.igraph
 #' @export
-as.igraph.DAG <- function(x, ...) {
-  mat <- dag2matrix(dag=x, include_root_nodes=TRUE, include_td_nodes=TRUE)
+as.igraph.DAG <- function(x, include_root_nodes=TRUE, include_td_nodes=TRUE,
+                          ...) {
+  mat <- dag2matrix(dag=x, include_root_nodes=include_root_nodes,
+                    include_td_nodes=include_td_nodes)
   g <- igraph::graph_from_adjacency_matrix(mat, mode="directed")
   return(g)
 }

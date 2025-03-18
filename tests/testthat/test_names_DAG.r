@@ -17,7 +17,7 @@ test_that("no tx_node names", {
 })
 
 test_that("node in both", {
-  dag <- dag + node_td("A", "time_to_event")
+  dag <- dag + node_td("A", "gaussian")
 
   expected <- c("A", "B", "C")
   out <- names_DAG(dag, include_tx_nodes=TRUE)
