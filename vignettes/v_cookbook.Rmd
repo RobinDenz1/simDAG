@@ -1,0 +1,154 @@
+---
+title: "simDAG Cookbook"
+output: rmarkdown::html_vignette
+author: "Robin Denz"
+vignette: >
+  %\VignetteIndexEntry{simDAG Cookbook}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>",
+  fig.align="center"
+)
+```
+
+# Introduction
+
+The `simDAG` package can be used to generate all kinds of data, as shown in the many examples and other vignettes of this package. In this vignette we will further illustrate the capabilities of the package, by giving very short and simplified examples on how to use `simDAG` to generate multiple different kinds of data. The vignette can be seen as a sort of "cookbook", in the sense that it includes the building blocks for many different possible data generation processes (DGP), which users can expand on for their specific needs. Note that the examples shown are not meant to be realistic, they are only meant to show the general structure of the required code.
+
+This vignette assumes that the reader is already somewhat familiar with the `simDAG` syntax. More detailed explanations of how to simulate data using a time-fixed DAG and DAGs including time-dependent variables is given in other vignettes and the documentation of the functions.
+
+```{r, message=FALSE, warning=FALSE}
+library(simDAG)
+library(data.table)
+```
+
+# Randomized Controlled Trials
+
+First, we will give some examples on how data for randomized controlled trials (RCT) could be generated. In a classic RCT, the treatment of interest (below named `Treatment`) is randomly assigned to the individuals of the study, making it a "root node" in the terminology of DAGs.
+
+## Two Treatment Groups
+
+Below is an example for an RCT with two treatment groups, a binary outcome and two baseline covariates (`Age` and `Sex`):
+
+```{r}
+dag <- empty_dag() +
+  node("Age", type="rnorm", mean=55, sd=5) +
+  node("Sex", type="rbernoulli", p=0.5) +
+  node("Treatment", type="rbernoulli", p=0.5) +
+  node("Outcome", type="binomial",
+       formula= ~ -12 + Age*0.2 + Sex*1.1 + Treatment*-0.5)
+
+data <- sim_from_dag(dag, n_sim=1000)
+head(data)
+```
+
+## Three or More Treatment Groups
+
+The example from earlier can easily be made a little more complex, by including three treatment groups instead of just two. This can be achieved by using the `rcategorical()` function as node type instead of the `rbernoulli()` function.
+
+```{r}
+dag <- empty_dag() +
+  node("Age", type="rnorm", mean=55, sd=5) +
+  node("Sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("Treatment", type="rcategorical", probs=c(0.33333, 0.33333, 0.33333),
+       labels=c("Placebo", "Med1", "Med2"), output="factor") +
+  node("Outcome", type="binomial",
+       formula= ~ -12 + Age*0.2 + Sex*1.1 + TreatmentMed1*-0.5 + 
+         TreatmentMed2*-1)
+
+data <- sim_from_dag(dag, n_sim=1000)
+head(data)
+```
+
+By setting `probs=c(0.33333, 0.33333, 0.33333)`, each treatment group is choosen with a probability of 0.33333, meaning that the resulting groups should be roughly of equal size in expectation.
+
+## Multiple Outcome Measurements
+
+The previous two examples assumed that there was a single fixed time at which the binary outcome was measured. Below we switch things up a bit by using a continuous outcome that is measured at 5 different points in time after baseline. The syntax is nearly the same as before, with the major difference being that we now use a `node_td()` call to define the outcome, because it is time-dependent. Additionally, because of this inclusion of a time-dependent node, we have to use the `sim_discrete_time()` function instead of the `sim_from_dag()` function. Finally, the `sim2data()` has to be called to obtain the desired output in the long-format.
+
+```{r}
+dag <- empty_dag() +
+  node("Age", type="rnorm", mean=55, sd=5) +
+  node("Sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("Treatment", type="rbernoulli", p=0.5) +
+  node_td("Outcome", type="gaussian",
+          formula= ~ -12 + Age*0.2 + Sex*1.1 + Treatment*-0.5, error=1)
+
+sim <- sim_discrete_time(dag, n_sim=1000, max_t=5, save_states="all")
+data <- sim2data(sim, to="long")
+head(data)
+```
+
+## Non-Compliance to Treatment Assignment
+
+Previously we assumed that the treatment was assigned at baseline and never changed throughout the study. In real RCTs, individuals are often assigned to *treatment strategies* instead (for example: one pill per week). Some individuals might not adhere to their assigned treatment strategy, by for example "switching back" to not taking the pill.
+
+The following code shows one possible way to simulate such data. In the shown DGP, individuals are assigned to a treatment strategy at baseline. Here, `Treatment = FALSE` refers to the control condition in which the individual should not take any pills. In the intervention group (`Treatment = TRUE`), however, the individual is assigned to take a pill every week. On average, 5% of these individuals stop taking their pills with each passing week. Once they stop, they never start taking them again. The continuous outcome at each observation time depends on how many pills each individual took in total. None of the individuals in the control group start taking pills. For simplicity, the simulation is done without any further covariates.
+
+```{r}
+# function to calculate the probability of taking the pill at t,
+# given the current treatment status of the person
+prob_treat <- function(data) {
+  fifelse(!data$Treatment, 0, 0.95)
+}
+
+#dag <- empty_dag() +
+#  node("Treatment", type="rbernoulli", p=0.5) +
+#  node_td("Treatment", type="time_to_event", parents=c("Treatment"),
+#          prob_fun=prob_treat, event_count=TRUE, event_duration=1) +
+#  node_td("Outcome", type="gaussian", formula= ~ -2 + Treatment_event_count*-0.3,
+#          error=2)
+#sim <- sim_discrete_time(dag, n_sim=1000, max_t=5, save_states="all")
+#data <- sim2data(sim, to="long")
+```
+
+This simulation could be made more realistic (or just more complex), by for example adding either of the following things:
+
+* making the probability of switching dependent on the outcome at $t - 1$
+* making the probability of switching dependent on other variables
+* allowing patients to switch back to taking the pill after discontinuation
+* allowing patients in the control group to switch to the treatment
+
+These additions are left as an exercise to the user.
+
+## With Cluster Randomization
+
+Instead of randomly assigning *individuals* to the treatment, many trials actually randomly assign the treatment at the level of clinics or other forms of *clusters*, which is fittingly called cluster randomization. This may be implemented in `simDAG` using the following syntax:
+
+```{r}
+dag <- empty_dag() +
+  node("Clinic", type="rcategorical", probs=rep(0.02, 50)) +
+  node("Treatment", type="identity", formula= ~ Clinic >= 25) +
+  node("Outcome", type="poisson", formula= ~ -5 + Treatment*4) # TODO: needs random effect
+data <- sim_from_dag(dag, n_sim=1000)
+head(data)
+```
+
+In this DGP, each individual is randomly assigned to one of 50 Clinics with equal probability. All patients in clinics numbered 0-24 are assigned to the control group, while the other patients are assigned to the treatment group. The outcome is then generated using a Poisson regression with a random intercept based on the clinic.
+
+
+# Observational Studies
+
+In all previous examples, the variable of interest was a treatment that was randomly assigned and did not depend on other variables (excluding the `Clinic` for the cluster randomization example). In observational studies, the variable of interest is usually not randomly assigned. Below are some examples for generating such observational study data.
+
+## Crossectional Data
+
+## Panel Data
+
+
+# Miscellaneous
+
+## Including "Outliers"
+
+## Including Missing Values
+
+## Very Heterogeneous Data
+
+
+
+

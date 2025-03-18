@@ -101,3 +101,13 @@ Bug Fixes
 
 * When specifying a node as both a root or child node and as a time-dependent node, it is no longer counted twice in `print.DAG()`
 * Fix small error in tests due to changes in `data.table`
+
+# simDAG 0.2.3
+
+Enhancements
+
+* Added the `reference` argument to `rbernoulli()` and `rcategorical()` to make it easier to specify the reference category when coding the output as a factor variable.
+
+Documentation
+
+* Added new "cookbook" vignette to showcase more possible use cases of the package.

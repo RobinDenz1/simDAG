@@ -1,7 +1,7 @@
 
 ## efficient bernoulli trials
 #' @export
-rbernoulli <- function(n, p=0.5, output="logical") {
+rbernoulli <- function(n, p=0.5, output="logical", reference=NULL) {
   out <- stats::runif(n) > (1 - p)
 
   if (output=="numeric") {
@@ -10,6 +10,9 @@ rbernoulli <- function(n, p=0.5, output="logical") {
     out <- as.character(out)
   } else if (output=="factor") {
     out <- as.factor(out)
+    if (!is.null(reference) && reference %in% out) {
+      out <- stats::relevel(out, ref=reference)
+    }
   }
 
   return(out)
@@ -18,7 +21,8 @@ rbernoulli <- function(n, p=0.5, output="logical") {
 ## function to take fast random draws from a multinomial distribution,
 ## possibly with different probabilities for each individual
 #' @export
-rcategorical <- function(n, probs, labels=NULL, output="numeric") {
+rcategorical <- function(n, probs, labels=NULL, output="numeric",
+                         reference=NULL) {
 
   u <- stats::runif(n=n, min=0, max=1)
 
@@ -49,6 +53,10 @@ rcategorical <- function(n, probs, labels=NULL, output="numeric") {
     out <- as.character(factor(out, labels=labels[observed]))
   } else if (output=="character") {
     out <- as.character(out)
+  }
+
+  if (output=="factor" && !is.null(reference) && reference %in% out) {
+    out <- stats::relevel(out, ref=reference)
   }
 
   return(out)

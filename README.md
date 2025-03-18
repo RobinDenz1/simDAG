@@ -9,7 +9,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![](http://cranlogs.r-pkg.org/badges/grand-total/simDAG?color=blue)](https://cran.r-project.org/package=simDAG)
 [![R-CMD-check](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/RobinDenz1/simDAG/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RobinDenz1/simDAG?branch=main)
+coverage](https://codecov.io/gh/RobinDenz1/simDAG/graph/badge.svg)](https://app.codecov.io/gh/RobinDenz1/simDAG)
 <!-- badges: end -->
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />

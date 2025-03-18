@@ -1,6 +1,8 @@
 
 ###### Bugs & TODOS ######
 
+- sim2long() may fail when node appears as root node + time-dependent node
+- nodes of type time_to_event should allow previous generation of starting values
 
 ####### New Features: #######
 

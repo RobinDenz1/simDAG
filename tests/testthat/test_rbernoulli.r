@@ -23,3 +23,10 @@ test_that("output factor", {
   out <- rbernoulli(n=5, p=0.1, output="factor")
   expect_true(is.factor(out))
 })
+
+test_that("output factor with reference", {
+  set.seed(3244)
+  out <- rbernoulli(n=5, p=0.5, output="factor", reference="TRUE")
+  expect_true(is.factor(out))
+  expect_equal(levels(out), c("TRUE", "FALSE"))
+})

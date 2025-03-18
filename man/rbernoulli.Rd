@@ -8,7 +8,7 @@ Generate Random Draws from a Bernoulli Distribution
 A very fast implementation for generating bernoulli trials. Can take a vector of probabilities which makes it very useful for simulation studies.
 }
 \usage{
-rbernoulli(n, p=0.5, output="logical")
+rbernoulli(n, p=0.5, output="logical", reference=NULL)
 }
 \arguments{
   \item{n}{
@@ -19,6 +19,9 @@ A numeric vector of probabilities, used when drawing the trials.
   }
   \item{output}{
 A single character string, specifying which format the output should be returned as. Must be one of \code{"logical"} (default), \code{"numeric"}, \code{"character"} or \code{"factor"}.
+  }
+  \item{reference}{
+A single character string, specifying which of the two possible values should be considered the reference when \code{output="factor"} (ignored otherwise).
   }
 }
 \details{
