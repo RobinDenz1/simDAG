@@ -5,7 +5,6 @@
 
 ###### For the Review #####
 
-- enhance plot.DAG() to show different relationship strengths
 - allow function to generate DAG in sim_n_datasets()
 - finish cookbook vignette
 - implement random intercepts / random slope support
@@ -16,7 +15,6 @@
 - mention dag_from_data()
 - explain event order thing
 - write more explictly that the package is not mainly about data synthesis in discussion
-- check that i followed all the journal style stuff
 
 ####### New Features: #######
 

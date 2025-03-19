@@ -4,8 +4,7 @@
 ## with or without parallel processing
 #' @importFrom data.table setDTthreads
 #' @export
-sim_n_datasets <- function(dag, n_sim, n_repeats,
-                           n_cores=parallel::detectCores(),
+sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
                            data_format="raw", data_format_args=list(),
                            seed=stats::runif(1), progressbar=TRUE, ...) {
 
@@ -15,7 +14,7 @@ sim_n_datasets <- function(dag, n_sim, n_repeats,
                               progressbar=progressbar)
 
   # without parallel processing
-  if (n_cores == 1) {
+  if (n_cores==1) {
 
     set.seed(seed)
     out <- vector(mode="list", length=n_repeats)

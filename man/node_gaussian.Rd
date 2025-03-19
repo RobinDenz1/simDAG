@@ -27,7 +27,7 @@ A numeric vector with length equal to \code{parents}, specifying the causal beta
 A single number specifying the intercept that should be used when generating the node.
   }
   \item{error}{
-A single number specifying the sigma error that should be used when generating the node.
+A single number specifying the sigma error that should be used when generating the node. By setting this argument to 0, the linear predictor is returned directly.
   }
 }
 \details{

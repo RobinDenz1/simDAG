@@ -8,7 +8,7 @@ Generate multiple datasets from a single \code{DAG} object
 This function takes a single \code{DAG} object and generates a list of multiple datasets, possible using parallel processing
 }
 \usage{
-sim_n_datasets(dag, n_sim, n_repeats, n_cores=parallel::detectCores(),
+sim_n_datasets(dag, n_sim, n_repeats, n_cores=1,
                data_format="raw", data_format_args=list(),
                seed=stats::runif(1), progressbar=TRUE, ...)
 }
