@@ -124,6 +124,8 @@
 <li>
 <code>+.DAG</code> now checks whether the <code>DAG</code> would become cyclic when adding a <code><a href="../reference/node.html">node()</a></code> and returns an error if it does.</li>
 <li>Added the <code>include_td_nodes</code> and <code>include_root_nodes</code> arguments to <code><a href="../reference/as.igraph.DAG.html">as.igraph.DAG()</a></code>.</li>
+<li>Changed the default of <code>n_cores</code> in the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to 1 from <code>parallel::detectCores()-1</code>
+</li>
 </ul><p>Documentation</p>
 <ul><li>Added new “cookbook” vignette to showcase more possible use cases of the package.</li>
 </ul></div>
