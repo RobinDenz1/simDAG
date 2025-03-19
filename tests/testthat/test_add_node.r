@@ -38,11 +38,11 @@ test_that("error when DAG would become cyclic", {
   expect_error({
     dag <- empty_dag() +
       node("X", type="rnorm") +
-      node("A", type="binomial", formula= ~ -2 + B*1) +
+      node("A", type="binomial", formula= ~ -2 + B*1 + X*2) +
       node("B", type="binomial", formula= ~ -3 + A*1)
   }, paste0("Adding node 'B' as specified is impossible, ",
             "because it would make the DAG cyclic through the path:\n",
-            "A -> B -> A"))
+            "B -> A -> B"))
 })
 
 test_that("works with multiple names", {
