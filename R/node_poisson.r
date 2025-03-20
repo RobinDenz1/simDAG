@@ -1,7 +1,16 @@
 
 ## a node modeled using poisson-regression
 #' @export
-node_poisson <- function(data, parents, formula=NULL, betas, intercept) {
+node_poisson <- function(data, parents, formula=NULL, betas, intercept,
+                         var_corr=NULL) {
+
+  # if formula includes random effects, use node_lmer() instead
+  if (!is.null(formula) & !is.null(var_corr)) {
+    out <- node_lmer(data=data, formula=formula, betas=betas,
+                     intercept=intercept, var_corr=var_corr,
+                     family="poisson")
+    return(out)
+  }
 
   if (!data.table::is.data.table(data)) {
     data.table::setDT(data)

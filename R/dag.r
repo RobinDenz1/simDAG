@@ -45,9 +45,7 @@ add_node <- function(dag, node) {
   g <- as.igraph(x=dag, include_root_nodes=TRUE, include_td_nodes=FALSE)
 
   if (!igraph::is_acyclic(g)) {
-
     cycle <- paste0(find_cycle(graph=g, start=node$name), collapse=" -> ")
-
     stop("Adding node '", node$name, "' as specified is impossible, ",
          "because it would make the DAG cyclic through the path:\n",
          cycle, call.=FALSE)

@@ -146,6 +146,8 @@ In all previous examples, the variable of interest was a treatment that was rand
 
 # Miscellaneous
 
+## Including Multi-Level Data
+
 ## Including "Outliers"
 
 ## Including Missing Values

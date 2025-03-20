@@ -32,7 +32,8 @@ Suggests:
 	foreach,
 	doSNOW,
 	doRNG,
-	parallel
+	parallel,
+	simr
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

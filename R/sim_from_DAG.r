@@ -77,6 +77,11 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
       )
     }
 
+    # remove temporary mixed model stuff if there
+    if (!is.null(args$mixed_terms)) {
+      args$mixed_terms <- NULL
+    }
+
     # call needed node function, add node name to possible errors
     node_out <- tryCatch({
       do.call(dag$child_nodes[[i]]$type_fun, args)},

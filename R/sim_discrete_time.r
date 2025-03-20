@@ -133,6 +133,11 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
         args$data <- data[, args$parents, with=FALSE]
       }
 
+      # remove temporary mixed model stuff if there
+      if (!is.null(args$mixed_terms)) {
+        args$mixed_terms <- NULL
+      }
+
       # get function
       node_type_fun <- fun_list[[i]]
       fun_pos_args <- names(formals(node_type_fun))

@@ -1,13 +1,17 @@
 
 ###### Bugs & TODOS ######
 
+- when printing structural equation for rbernoulli without p, p=0.5 missing from output
 
+###### Mixed Model Update ######
+
+- random effects parts need to be extracted before other parsings of the
+  formula, because they can include a +, such as (1 + G | J)
 
 ###### For the Review #####
 
 - allow function to generate DAG in sim_n_datasets()
 - finish cookbook vignette
-- implement random intercepts / random slope support
 
 # Changes in the manuscript
 

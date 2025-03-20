@@ -104,6 +104,10 @@ Bug Fixes
 
 # simDAG 0.2.3
 
+New Features
+
+* Support for random effects and random slopes (mixed model syntax) has been added to the `formula` interface of `node()` and `node_td()` when using nodes of type `"gaussian"`, `"binomial"` or `"poisson"`. 
+
 Enhancements
 
 * Added the `reference` argument to `rbernoulli()` and `rcategorical()` to make it easier to specify the reference category when coding the output as a factor variable.

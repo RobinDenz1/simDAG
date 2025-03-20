@@ -162,7 +162,37 @@ dag_with_fun <- dag +
   node("D", type="binomial", formula= ~ 5 + `this-var`*0.3)
 ```
 
-There are, however, three special characters that may not be used in `formula`: spaces, `+` and `*`. Errors may be produced when using these characters in variable names. It is best to avoid special characters though, just to be safe.
+There are, however, six special characters that may not be used in `formula`: spaces, `+`, `*`, `(`, `)` and `|`. Errors may be produced when using these characters in variable names, because they are used internally to figure out which variables belong together and how (the latter three mostly for mixed model syntax). It is best to avoid special characters though, just to be safe.
+
+# Using Random Effects and Random Slopes
+
+Currently, three node types (`"gaussian"`, `"binomial"` and `"poisson"`) directly allow the user to specify random effects and random slopes in the `formula`. These should be specified exactly as they would be in a regular call to the `lmer()` function. For example, consider the following `DAG`:
+
+```{r}
+dag_mixed <- empty_dag() +
+  node("School", type="rcategorical", probs=rep(0.1, 10),
+       labels=LETTERS[1:10]) +
+  node("Age", type="rnorm", mean=12, sd=2) +
+  node("Grade", type="gaussian", formula= ~ -2 + Age*1.2 + (1|School),
+       error=1, var_corr=0.3)
+```
+
+Here, we have a `School` variable in which students of different `Age`s are nested. To simulate the `Grade` of each student, we want to use a random intercept per `School`, so we simply add the classic `(1|School)` term to the `formula`. Whenever this is done, the `var_corr` argument also has to be specified, which allows users to control over the standard deviation of the random effects. Internally, the `makeLmer()` and `doSim()` functions form the `simr` package are used to simulate these types of nodes. Please consult the documentation of that package for details on how to specify more complex mixed model structures, for example using multiple correlated random effects.
+
+In principle, arbitrary amounts of random effects can be added. Random slopes can similarly be defined using the standard syntax. In the following `DAG`, we use a random slope for `Age` per `School` in addition to the random effect of `School`:
+
+```{r}
+var_corr <- matrix(c(0.5, 0.05, 0.05, 0.1), 2)
+
+dag_mixed <- empty_dag() +
+  node("School", type="rcategorical", probs=rep(0.1, 10),
+       labels=LETTERS[1:10]) +
+  node("Age", type="rnorm", mean=12, sd=2) +
+  node("Grade", type="gaussian", formula= ~ -2 + Age*1.2 + (Age|School),
+       error=1, var_corr=var_corr)
+```
+
+Note that in this example, we defined the correlation between the random effect and slopes using arbitrarily picked numbers using the `var_corr` argument. Because of the much more complex DGP and the computational overhead required to re-structure the data internally, simulations including mixed model syntax is usually much slower than simulations without them. In small samples this is not an issue, but very large values for `n_sim` or using these specifications in discrete-time simulations with large `max_t` may be difficult in some cases.
 
 # Using External Coefficients (Advanced Usage)
 

@@ -2,6 +2,7 @@
 test_that("only column names", {
   formula <- "~ -1 + A*2 + B*3 + C*3"
   expected <- list(formula_parts=c("A", "B", "C"),
+                   mixed_terms=character(0),
                    betas=c(2, 3, 3),
                    intercept=-1)
   out <- parse_formula(formula, node_type="gaussian")
@@ -11,6 +12,7 @@ test_that("only column names", {
 test_that("no intercept with cox node", {
   formula <- "~ A*2 + B*3 + C*3"
   expected <- list(formula_parts=c("A", "B", "C"),
+                   mixed_terms=character(0),
                    betas=c(2, 3, 3))
   out <- parse_formula(formula, node_type="cox")
   expect_equal(out, expected)
@@ -19,6 +21,7 @@ test_that("no intercept with cox node", {
 test_that("with cubic terms", {
   formula <- "~ -1 + A*2 + B*3 + C*3 + I(A^2)*-7"
   expected <- list(formula_parts=c("A", "B", "C", "I(A^2)"),
+                   mixed_terms=character(0),
                    betas=c(2, 3, 3, -7),
                    intercept=-1)
   out <- parse_formula(formula, node_type="gaussian")
@@ -28,6 +31,7 @@ test_that("with cubic terms", {
 test_that("with interactions", {
   formula <- "~ -1 + A*2 + B*3 + C*3 + A:C*0.3"
   expected <- list(formula_parts=c("A", "B", "C", "A:C"),
+                   mixed_terms=character(0),
                    betas=c(2, 3, 3, 0.3),
                    intercept=-1)
   out <- parse_formula(formula, node_type="gaussian")

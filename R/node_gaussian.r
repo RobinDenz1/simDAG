@@ -2,7 +2,15 @@
 ## a node modeled using linear regression
 #' @export
 node_gaussian <- function(data, parents, formula=NULL, betas,
-                          intercept, error) {
+                          intercept, error, var_corr=NULL) {
+
+  # if formula includes random effects, use node_lmer() instead
+  if (!is.null(formula) & !is.null(var_corr)) {
+    out <- node_lmer(data=data, formula=formula, betas=betas,
+                     intercept=intercept, var_corr=var_corr, error=error,
+                     family="gaussian")
+    return(out)
+  }
 
   if (!data.table::is.data.table(data)) {
     data.table::setDT(data)

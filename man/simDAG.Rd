@@ -43,6 +43,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_sim_discrete_time", package="simDAG")}}
   \item{\code{vignette(topic="v_covid_example", package="simDAG")}}
   \item{\code{vignette(topic="v_using_formulas", package="simDAG")}}
+  \item{\code{vignette(topic="v_cookbook", package="simDAG")}}
 }
 
 We are also working on a separate article on this package that is going to be published in a peer-reviewed journal.
