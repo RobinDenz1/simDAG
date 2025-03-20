@@ -60,7 +60,7 @@
 <dd><p>A character vector specifying the names of the parents that this particular child node has. If non-linear combinations or interaction effects should be included, the user may specify the <code>formula</code> argument instead.</p></dd>
 
   <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>An optional <code>formula</code> object to describe how the node should be generated or <code>NULL</code> (default). If supplied it should start with <code>~</code>, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as <code>A + B</code> or <code>A + B + I(A^2)</code>, allowing non-linear effects. If this argument is defined, there is no need to define the <code>parents</code> argument. For example, using <code>parents=c("A", "B")</code> is equal to using <code>formula= ~ A + B</code>.</p></dd>
+<dd><p>An optional <code>formula</code> object to describe how the node should be generated or <code>NULL</code> (default). If supplied it should start with <code>~</code>, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as <code>A + B</code> or <code>A + B + I(A^2)</code>, allowing non-linear effects. If this argument is defined, there is no need to define the <code>parents</code> argument. For example, using <code>parents=c("A", "B")</code> is equal to using <code>formula= ~ A + B</code>. Contrary to the <code><a href="node_gaussian.html">node_gaussian</a></code>, <code><a href="node_binomial.html">node_binomial</a></code> and <code><a href="node_poisson.html">node_poisson</a></code> node types, random effects and random slopes are currently not supported here.</p></dd>
 
   <dt id="arg-betas">betas<a class="anchor" aria-label="anchor" href="#arg-betas"></a></dt>
 <dd><p>A numeric vector with length equal to <code>parents</code>, specifying the causal beta coefficients used to generate the node.</p></dd>
@@ -75,6 +75,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function uses the linear predictor defined by the <code>betas</code> and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the <code>data</code>, <code>betas</code> and <code>intercept</code>, exponentiating it and passing it to the <code>mu</code> argument of the <code>rnbinom</code> function of the <span class="pkg">stats</span> package.</p>
+<p>This node type currently does not support inclusion of random effects or random slopes in the <code>formula</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

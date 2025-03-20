@@ -119,7 +119,9 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="simdag-023">simDAG 0.2.3<a class="anchor" aria-label="anchor" href="#simdag-023"></a></h2>
-<p>Enhancements</p>
+<p>New Features</p>
+<ul><li>Support for random effects and random slopes (mixed model syntax) has been added to the <code>formula</code> interface of <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> when using nodes of type <code>"gaussian"</code>, <code>"binomial"</code> or <code>"poisson"</code>.</li>
+</ul><p>Enhancements</p>
 <ul><li>Added the <code>reference</code> argument to <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> and <code><a href="../reference/rcategorical.html">rcategorical()</a></code> to make it easier to specify the reference category when coding the output as a factor variable.</li>
 <li>
 <code>+.DAG</code> now checks whether the <code>DAG</code> would become cyclic when adding a <code><a href="../reference/node.html">node()</a></code> and returns an error if it does.</li>

@@ -304,10 +304,65 @@ following code:</p>
 <code class="sourceCode R"><span><span class="va">dag_with_fun</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"this-var"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">5</span> <span class="op">+</span> <span class="va">`this-var`</span><span class="op">*</span><span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
-<p>There are, however, three special characters that may not be used in
-<code>formula</code>: spaces, <code>+</code> and <code>*</code>. Errors
-may be produced when using these characters in variable names. It is
-best to avoid special characters though, just to be safe.</p>
+<p>There are, however, six special characters that may not be used in
+<code>formula</code>: spaces, <code>+</code>, <code>*</code>,
+<code>(</code>, <code>)</code> and <code>|</code>. Errors may be
+produced when using these characters in variable names, because they are
+used internally to figure out which variables belong together and how
+(the latter three mostly for mixed model syntax). It is best to avoid
+special characters though, just to be safe.</p>
+</div>
+<div class="section level2">
+<h2 id="using-random-effects-and-random-slopes">Using Random Effects and Random Slopes<a class="anchor" aria-label="anchor" href="#using-random-effects-and-random-slopes"></a>
+</h2>
+<p>Currently, three node types (<code>"gaussian"</code>,
+<code>"binomial"</code> and <code>"poisson"</code>) directly allow the
+user to specify random effects and random slopes in the
+<code>formula</code>. These should be specified exactly as they would be
+in a regular call to the <code><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer()</a></code> function. For example,
+consider the following <code>DAG</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_mixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"School"</span>, type<span class="op">=</span><span class="st">"rcategorical"</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>       labels<span class="op">=</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">12</span>, sd<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Grade"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Age</span><span class="op">*</span><span class="fl">1.2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">School</span><span class="op">)</span>,</span>
+<span>       error<span class="op">=</span><span class="fl">1</span>, var_corr<span class="op">=</span><span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we have a <code>School</code> variable in which students of
+different <code>Age</code>s are nested. To simulate the
+<code>Grade</code> of each student, we want to use a random intercept
+per <code>School</code>, so we simply add the classic
+<code>(1|School)</code> term to the <code>formula</code>. Whenever this
+is done, the <code>var_corr</code> argument also has to be specified,
+which allows users to control over the standard deviation of the random
+effects. Internally, the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer()</a></code> and
+<code><a href="https://rdrr.io/pkg/simr/man/doSim.html" class="external-link">doSim()</a></code> functions form the <code>simr</code> package are
+used to simulate these types of nodes. Please consult the documentation
+of that package for details on how to specify more complex mixed model
+structures, for example using multiple correlated random effects.</p>
+<p>In principle, arbitrary amounts of random effects can be added.
+Random slopes can similarly be defined using the standard syntax. In the
+following <code>DAG</code>, we use a random slope for <code>Age</code>
+per <code>School</code> in addition to the random effect of
+<code>School</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">var_corr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dag_mixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"School"</span>, type<span class="op">=</span><span class="st">"rcategorical"</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>       labels<span class="op">=</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">12</span>, sd<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Grade"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Age</span><span class="op">*</span><span class="fl">1.2</span> <span class="op">+</span> <span class="op">(</span><span class="va">Age</span><span class="op">|</span><span class="va">School</span><span class="op">)</span>,</span>
+<span>       error<span class="op">=</span><span class="fl">1</span>, var_corr<span class="op">=</span><span class="va">var_corr</span><span class="op">)</span></span></code></pre></div>
+<p>Note that in this example, we defined the correlation between the
+random effect and slopes using arbitrarily picked numbers using the
+<code>var_corr</code> argument. Because of the much more complex DGP and
+the computational overhead required to re-structure the data internally,
+simulations including mixed model syntax is usually much slower than
+simulations without them. In small samples this is not an issue, but
+very large values for <code>n_sim</code> or using these specifications
+in discrete-time simulations with large <code>max_t</code> may be
+difficult in some cases.</p>
 </div>
 <div class="section level2">
 <h2 id="using-external-coefficients-advanced-usage">Using External Coefficients (Advanced Usage)<a class="anchor" aria-label="anchor" href="#using-external-coefficients-advanced-usage"></a>
@@ -317,7 +372,7 @@ external variables, for example when writing a function that creates a
 <code>DAG</code> objects with some set coefficients. This is supported
 through the use of the <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> function as well. For
 example:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beta_coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag_with_external</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>

@@ -46,7 +46,8 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_gaussian</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>, <span class="va">intercept</span>, <span class="va">error</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_gaussian</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>, <span class="va">intercept</span>, <span class="va">error</span>,</span>
+<span>              var_corr<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,7 +60,7 @@
 <dd><p>A character vector specifying the names of the parents that this particular child node has. If non-linear combinations or interaction effects should be included, the user may specify the <code>formula</code> argument instead.</p></dd>
 
   <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>An optional <code>formula</code> object to describe how the node should be generated or <code>NULL</code> (default). If supplied it should start with <code>~</code>, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as <code>A + B</code> or <code>A + B + I(A^2)</code>, allowing non-linear effects. If this argument is defined, there is no need to define the <code>parents</code> argument. For example, using <code>parents=c("A", "B")</code> is equal to using <code>formula= ~ A + B</code>.</p></dd>
+<dd><p>An optional <code>formula</code> object to describe how the node should be generated or <code>NULL</code> (default). If supplied it should start with <code>~</code>, having nothing else on the left hand side. The right hand side may contain any valid formula syntax, such as <code>A + B</code> or <code>A + B + I(A^2)</code>, allowing non-linear effects. If this argument is defined, there is no need to define the <code>parents</code> argument. For example, using <code>parents=c("A", "B")</code> is equal to using <code>formula= ~ A + B</code>. May contain random effects and random slopes, in which case the <span class="pkg">simr</span> package is used to generate the data. See details.</p></dd>
 
   <dt id="arg-betas">betas<a class="anchor" aria-label="anchor" href="#arg-betas"></a></dt>
 <dd><p>A numeric vector with length equal to <code>parents</code>, specifying the causal beta coefficients used to generate the node.</p></dd>
@@ -68,7 +69,10 @@
 <dd><p>A single number specifying the intercept that should be used when generating the node.</p></dd>
 
   <dt id="arg-error">error<a class="anchor" aria-label="anchor" href="#arg-error"></a></dt>
-<dd><p>A single number specifying the sigma error that should be used when generating the node. By setting this argument to 0, the linear predictor is returned directly.</p></dd>
+<dd><p>A single number specifying the sigma error that should be used when generating the node. By setting this argument to 0, the linear predictor is returned directly. If <code>formula</code> contains mixed model syntax, this argument is passed to the <code>sigma</code> argument of the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer</a></code> function of the <span class="pkg">simr</span> package.</p></dd>
+
+  <dt id="arg-var-corr">var_corr<a class="anchor" aria-label="anchor" href="#arg-var-corr"></a></dt>
+<dd><p>Variances and covariances for random effects. Only used when <code>formula</code> contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. This argument is directly passed to the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer</a></code> function of the <span class="pkg">simr</span> package. Please consult the documentation of that package for more information on how mixed models should be specified.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -80,6 +84,8 @@
 <p>where \(N(0, \texttt{error})\) denotes the normal distribution with mean 0 and a standard deviation of <code>error</code> and \(n\) is the number of parents (<code>length(parents)</code>).</p>
 <p>For example, given <code>intercept=-15</code>, <code>parents=c("A", "B")</code>, <code>betas=c(0.2, 1.3)</code> and <code>error=2</code> the data generation process is defined as:</p>
 <p>$$Y \sim -15 + A \cdot 0.2 + B \cdot 1.3 + N(0, 2).$$</p>
+<p><strong><em>Random Effects and Random Slopes</em></strong>:</p>
+<p>This function also allows users to arbitrary amounts of random slopes and random effects using the <code>formula</code> argument. If this is done, the <code>formula</code>, and <code>data</code> arguments are passed to the variables of the same name in the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer</a></code> function of the <span class="pkg">simr</span> package. The <code>fixef</code> argument of that function will be passed the numeric vector <code>c(intercept, betas)</code> and the <code>VarCorr</code> argument receives the <code>var_corr</code> argument as input. If used as a node type in a <code>DAG</code>, all of this is taken care of behind the scenes. Users can simply use the regular enhanced formula interface of the <code><a href="node.html">node</a></code> function to define these formula terms, as shown in detail in the formula vignette (<code><a href="../articles/v_using_formulas.html">vignette(topic="v_using_formulas", package="simDAG")</a></code>). Please consult that vignette for examples. Also, please note that inclusion of random effects or random slopes usually results in significantly longer computation times.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -115,6 +121,21 @@
 <span class="r-in"><span>       formula<span class="op">=</span> <span class="op">~</span> <span class="fl">12</span> <span class="op">+</span> <span class="va">sexTRUE</span><span class="op">*</span><span class="fl">1.1</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">0.4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## an example using a random effect</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"simr"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pitakakariki/simr" class="external-link">simr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dag_mixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"School"</span>, type<span class="op">=</span><span class="st">"rcategorical"</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       labels<span class="op">=</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"Age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">12</span>, sd<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"Grade"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Age</span><span class="op">*</span><span class="fl">1.2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">School</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       var_corr<span class="op">=</span><span class="fl">0.3</span>, error<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag_mixed</span>, n_sim<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
