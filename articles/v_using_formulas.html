@@ -289,7 +289,11 @@ a beta-coefficient. It is also possible to use functions on the
 variables themselves. However, it is required to wrap them in a
 <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> call. For example, using something like
 <code>~ -3 + log(A)*0.5 + B*0.2</code> would not work, but
-<code>~ -3 + I(log(A))*0.5 + B*0.2</code> is valid syntax.</p>
+<code>~ -3 + I(log(A))*0.5 + B*0.2</code> is valid syntax. Although
+supported in most cases, we strongly advise against using function names
+with special characters. These might lead to weird errors when random
+effects or random slopes are also contained in the
+<code>formula</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="using-special-characters-in-formula">Using Special Characters in formula<a class="anchor" aria-label="anchor" href="#using-special-characters-in-formula"></a>
