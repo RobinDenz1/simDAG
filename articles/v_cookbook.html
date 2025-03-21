@@ -276,16 +276,18 @@ using the following syntax:</p>
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Clinic"</span>, type<span class="op">=</span><span class="st">"rcategorical"</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.02</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Treatment"</span>, type<span class="op">=</span><span class="st">"identity"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="va">Clinic</span> <span class="op">&gt;=</span> <span class="fl">25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"poisson"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">5</span> <span class="op">+</span> <span class="va">Treatment</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span> <span class="co"># TODO: needs random effect</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"poisson"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Treatment</span><span class="op">*</span><span class="fl">4</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Clinic</span><span class="op">)</span>,</span>
+<span>       var_corr<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required namespace: simr</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Clinic Treatment Outcome</span></span>
-<span><span class="co">#&gt;     &lt;int&gt;    &lt;lgcl&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:      5     FALSE       0</span></span>
+<span><span class="co">#&gt;     &lt;int&gt;    &lt;lgcl&gt;   &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:      5     FALSE       2</span></span>
 <span><span class="co">#&gt; 2:      9     FALSE       0</span></span>
 <span><span class="co">#&gt; 3:     19     FALSE       0</span></span>
 <span><span class="co">#&gt; 4:     17     FALSE       0</span></span>
-<span><span class="co">#&gt; 5:     11     FALSE       0</span></span>
+<span><span class="co">#&gt; 5:     11     FALSE       4</span></span>
 <span><span class="co">#&gt; 6:      3     FALSE       0</span></span></code></pre></div>
 <p>In this DGP, each individual is randomly assigned to one of 50
 Clinics with equal probability. All patients in clinics numbered 0-24
@@ -340,12 +342,12 @@ missing values in their data:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       A_real A_missing A_observed</span></span>
 <span><span class="co">#&gt;        &lt;num&gt;    &lt;lgcl&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:  8.614947     FALSE   8.614947</span></span>
-<span><span class="co">#&gt; 2: 12.102518     FALSE  12.102518</span></span>
-<span><span class="co">#&gt; 3:  9.792132     FALSE   9.792132</span></span>
-<span><span class="co">#&gt; 4: 11.092641      TRUE         NA</span></span>
-<span><span class="co">#&gt; 5: 16.440288     FALSE  16.440288</span></span>
-<span><span class="co">#&gt; 6: 12.146488     FALSE  12.146488</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:  2.369101     FALSE   2.369101</span></span>
+<span><span class="co">#&gt; 2:  7.264412     FALSE   7.264412</span></span>
+<span><span class="co">#&gt; 3:  9.898841      TRUE         NA</span></span>
+<span><span class="co">#&gt; 4: 11.659773     FALSE  11.659773</span></span>
+<span><span class="co">#&gt; 5:  8.254293      TRUE         NA</span></span>
+<span><span class="co">#&gt; 6: 10.118722     FALSE  10.118722</span></span></code></pre></div>
 <p>In this DAG, the real values of node <code>A</code> are generated
 first. Afterwards, an indicator of whether the corresponding values is
 observed is drawn randomly for each individual in node
@@ -372,14 +374,14 @@ following code instead:</p>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        A_real B_real A_missing B_missing A_observed B_observed</span></span>
-<span><span class="co">#&gt;         &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;      &lt;num&gt;     &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: -0.2844169   TRUE     FALSE     FALSE -0.2844169       TRUE</span></span>
-<span><span class="co">#&gt; 2: -0.9272721   TRUE      TRUE     FALSE         NA       TRUE</span></span>
-<span><span class="co">#&gt; 3: -1.1370159  FALSE     FALSE     FALSE -1.1370159      FALSE</span></span>
-<span><span class="co">#&gt; 4:  1.5727315  FALSE     FALSE     FALSE  1.5727315      FALSE</span></span>
-<span><span class="co">#&gt; 5: -0.5678503  FALSE     FALSE     FALSE -0.5678503      FALSE</span></span>
-<span><span class="co">#&gt; 6: -0.9173047   TRUE     FALSE     FALSE -0.9173047       TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt;         A_real B_real A_missing B_missing  A_observed B_observed</span></span>
+<span><span class="co">#&gt;          &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;       &lt;num&gt;     &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:  1.63506163  FALSE     FALSE     FALSE  1.63506163      FALSE</span></span>
+<span><span class="co">#&gt; 2: -0.84444739  FALSE     FALSE     FALSE -0.84444739      FALSE</span></span>
+<span><span class="co">#&gt; 3:  0.36543159  FALSE     FALSE     FALSE  0.36543159      FALSE</span></span>
+<span><span class="co">#&gt; 4:  0.17905683  FALSE     FALSE     FALSE  0.17905683      FALSE</span></span>
+<span><span class="co">#&gt; 5: -0.02785668   TRUE     FALSE     FALSE -0.02785668       TRUE</span></span>
+<span><span class="co">#&gt; 6: -1.37807369  FALSE     FALSE     FALSE -1.37807369      FALSE</span></span></code></pre></div>
 <p>Here, the missingness in <code>A_observed</code> is again MCAR,
 because it is independent of everything. The missingness in
 <code>B_observed</code>, however, is MAR because the probability of
@@ -407,11 +409,11 @@ shown for missing values could be used to simulate such data using
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Disease_real Disease_observed</span></span>
 <span><span class="co">#&gt;          &lt;lgcl&gt;           &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 2:        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 1:        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 2:         TRUE             TRUE</span></span>
 <span><span class="co">#&gt; 3:        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 4:         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 5:         TRUE            FALSE</span></span>
+<span><span class="co">#&gt; 4:        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 5:        FALSE            FALSE</span></span>
 <span><span class="co">#&gt; 6:         TRUE             TRUE</span></span></code></pre></div>
 <p>In this example, the disease is present in 50% of all individuals. By
 using a node with <code>type="conditional_prob"</code> we can easily
@@ -435,12 +437,12 @@ another variable:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       Sex Disease_real Disease_observed</span></span>
 <span><span class="co">#&gt;    &lt;lgcl&gt;       &lt;lgcl&gt;           &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:   TRUE        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 1:  FALSE         TRUE             TRUE</span></span>
 <span><span class="co">#&gt; 2:   TRUE        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 3:  FALSE         TRUE             TRUE</span></span>
+<span><span class="co">#&gt; 3:   TRUE        FALSE            FALSE</span></span>
 <span><span class="co">#&gt; 4:  FALSE        FALSE            FALSE</span></span>
 <span><span class="co">#&gt; 5:  FALSE        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 6:  FALSE        FALSE            FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 6:  FALSE         TRUE             TRUE</span></span></code></pre></div>
 <p>In this extended example, <code>Sex</code> is equally distributed
 among the population (with <code>TRUE</code> = “female” and
 <code>FALSE</code> = “male”). In this example, the probability of being

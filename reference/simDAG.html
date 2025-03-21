@@ -13,8 +13,8 @@ When should I use sim_from_dag and when sim_discrete_time?
 If you want to simulate data that is easily described using a standard DAG without time-varying variables, you should use the sim_from_dag function. If the DAG includes time-varying variables, but you only want to consider a few points in time and can easily describe the relations between those manually, you can still use the sim_from_dag function. If you want more complex data with time-varying variables, particularly with time-to-event outcomes, you should consider using the sim_discrete_time function.
 What features are missing from this package?
 The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalized mixed linear models or more complex survival time models.
-Why should I use this package instead of the simCausal package?
-The simCausal package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the simCausal package does not.
+Why should I use this package instead of the simcausal package?
+The simCausal package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the simcausal package does not.
 Where can I get more information?
 The documentation pages contain a lot of information, relevant examples and some literature references. Additional examples can be found in the vignettes of this package, which can be accessed using:
 
@@ -43,8 +43,8 @@ When should I use sim_from_dag and when sim_discrete_time?
 If you want to simulate data that is easily described using a standard DAG without time-varying variables, you should use the sim_from_dag function. If the DAG includes time-varying variables, but you only want to consider a few points in time and can easily describe the relations between those manually, you can still use the sim_from_dag function. If you want more complex data with time-varying variables, particularly with time-to-event outcomes, you should consider using the sim_discrete_time function.
 What features are missing from this package?
 The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalized mixed linear models or more complex survival time models.
-Why should I use this package instead of the simCausal package?
-The simCausal package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the simCausal package does not.
+Why should I use this package instead of the simcausal package?
+The simCausal package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the simcausal package does not.
 Where can I get more information?
 The documentation pages contain a lot of information, relevant examples and some literature references. Additional examples can be found in the vignettes of this package, which can be accessed using:
 
@@ -115,8 +115,8 @@ Bug reports, suggestions and feature requests are highly welcome. Please file an
 <p>If you want to simulate data that is easily described using a standard DAG without time-varying variables, you should use the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function. If the DAG includes time-varying variables, but you only want to consider a few points in time and can easily describe the relations between those manually, you can still use the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function. If you want more complex data with time-varying variables, particularly with time-to-event outcomes, you should consider using the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function.</p>
 <p><strong><em>What features are missing from this package?</em></strong></p>
 <p>The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalized mixed linear models or more complex survival time models.</p>
-<p><strong><em>Why should I use this package instead of the <span class="pkg">simCausal</span> package?</em></strong></p>
-<p>The <span class="pkg">simCausal</span> package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the <span class="pkg">simCausal</span> package does not.</p>
+<p><strong><em>Why should I use this package instead of the <span class="pkg">simcausal</span> package?</em></strong></p>
+<p>The <span class="pkg">simCausal</span> package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the <span class="pkg">simcausal</span> package does not.</p>
 <p><strong><em>Where can I get more information?</em></strong></p>
 <p>The documentation pages contain a lot of information, relevant examples and some literature references. Additional examples can be found in the vignettes of this package, which can be accessed using:</p>
 <ul><li><p><code><a href="../articles/v_sim_from_dag.html">vignette(topic="v_sim_from_dag", package="simDAG")</a></code></p></li>
