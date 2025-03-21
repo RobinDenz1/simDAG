@@ -33,7 +33,9 @@ Suggests:
 	doSNOW,
 	doRNG,
 	parallel,
-	simr
+	utils,
+	simr,
+	rsurv
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

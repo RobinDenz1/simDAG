@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using cox-regression using th
 }
 \usage{
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
-         cens_dist, cens_args, name)
+         cens_dist, cens_args, name, as_two_cols=TRUE)
 }
 \arguments{
   \item{data}{
@@ -34,7 +34,7 @@ A single number used as parameter defined by \code{surv_dist}.
 A single number used as parameter defined by \code{surv_dist}.
   }
   \item{cens_dist}{
-A single character naming the distribution function that should be used to generate the censoring times. For example, \code{"runif"} could be used to generate uniformly distributed censoring times. Set to \code{NULL} to get no censoring.
+A single character naming the distribution function that should be used to generate the censoring times or a suitable function. For example, \code{"runif"} could be used to generate uniformly distributed censoring times. Set to \code{NULL} to get no censoring.
   }
   \item{cens_args}{
 A list of named arguments which will be passed to the function specified by the \code{cens_dist} argument.
@@ -42,11 +42,14 @@ A list of named arguments which will be passed to the function specified by the 
   \item{name}{
 A single character string specifying the name of the node.
   }
+  \item{as_two_cols}{
+Either \code{TRUE} or \code{FALSE}, specifying whether the output should be divided into two columns. When \code{cens_dist} is specified, this argument will always be treated as \code{TRUE} because two columns are needed to encode both the time to the event and the status indicator. When no censoring is applied, however, users may set this argument to \code{FALSE} to simply return the numbers as they are.
+  }
 }
 \details{
 The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.
 
-Unlike the other \code{\link{node}} type functions, this function adds \strong{two} columns to the resulting dataset instead of one. The first column is called \code{paste0(name, "_event")} and is a logical variable, where \code{TRUE} indicates that the event has happened and \code{FALSE} indicates right-censoring. The second column is named \code{paste0(name, "_time")} and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates.
+Unlike the other \code{\link{node}} type functions, this function usually adds \strong{two} columns to the resulting dataset instead of one. The first column is called \code{paste0(name, "_event")} and is a logical variable, where \code{TRUE} indicates that the event has happened and \code{FALSE} indicates right-censoring. The second column is named \code{paste0(name, "_time")} and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the \code{as_two_cols} argument.
 
 To simulate more complex time-to-event data, the user may need to use the \code{\link{sim_discrete_time}} function instead.
 }
@@ -57,7 +60,7 @@ Bender R, Augustin T, Blettner M. Generating survival times to simulate Cox prop
 Robin Denz
 }
 \value{
-Returns a \code{data.table} of length \code{nrow(data)} containing two columns. Both starting with the nodes \code{name} and ending with \code{_event} and \code{_time}. The first is a logical vector, the second a numeric one.
+Returns a \code{data.table} of length \code{nrow(data)} containing two columns if \code{as_two_cols=TRUE} and always when \code{cens_dist} is specified. In this case, both colums start with the nodes \code{name} and end with \code{_event} and \code{_time}. The first is a logical vector, the second a numeric one. If \code{as_two_cols=FALSE} and \code{cens_dist} is \code{NULL}, a numeric vector is returned instead.
 }
 \examples{
 library(simDAG)

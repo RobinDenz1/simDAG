@@ -107,6 +107,7 @@ Bug Fixes
 New Features
 
 * Support for random effects and random slopes (mixed model syntax) has been added to the `formula` interface of `node()` and `node_td()` when using nodes of type `"gaussian"`, `"binomial"` or `"poisson"`. 
+* Added three new node types: `node_aftreg()`, `node_ahreg()` and `node_poreg()`
 
 Enhancements
 
@@ -114,6 +115,8 @@ Enhancements
 * `+.DAG` now checks whether the `DAG` would become cyclic when adding a `node()` and returns an error if it does.
 * Added the `include_td_nodes` and `include_root_nodes` arguments to `as.igraph.DAG()`.
 * Changed the default of `n_cores` in the `sim_n_datasets()` function to 1 from `parallel::detectCores()-1`
+* Function input to the `cens_dist` argument in the `node_cox()` function is now allowed.
+* The argument `as_two_cols` was added to the `node_cox()` function to allow users to return only the time-to-event as a single column if no censoring is applied.
 
 Documentation
 

@@ -15,7 +15,8 @@ sim_surv_time <- function(row, betas, dist, lambda, gamma) {
 ## a node modeled using cox-regression
 #' @export
 node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
-                     lambda, gamma, cens_dist, cens_args, name) {
+                     lambda, gamma, cens_dist, cens_args, name,
+                     as_two_cols=TRUE) {
 
   if (!data.table::is.data.table(data)) {
     data.table::setDT(data)
@@ -33,17 +34,34 @@ node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
                 FUN=sim_surv_time, betas=betas, dist=surv_dist,
                 lambda=lambda, gamma=gamma)
 
-  # add censoring, if specified
+  if (!as_two_cols && is.null(cens_dist)) {
+    out_data <- time
+  } else {
+    out_data <- add_censoring(times=time, cens_dist=cens_dist,
+                              cens_args=cens_args, name=name)
+  }
+
+  return(out_data)
+}
+
+## add censoring to a survival time, if specified
+add_censoring <- function(times, cens_dist, cens_args, name) {
+
   if (!is.null(cens_dist)) {
-    cens_fun <- get(cens_dist)
-    cens_time <- do.call(cens_fun, c(n=nrow(data), cens_args))
-    status <- ifelse(time < cens_time, 1, 0)
-    time <- ifelse(time < cens_time, time, cens_time)
+
+    if (!is.function(cens_dist)) {
+      cens_dist <- get(cens_dist)
+    }
+
+    cens_time <- do.call(cens_dist, c(n=length(times), cens_args))
+    status <- ifelse(times < cens_time, 1, 0)
+    times <- ifelse(times < cens_time, times, cens_time)
   } else {
     status <- 1
   }
 
-  out_data <- data.table::data.table(time=time, status=status)
+  # put together in two columns
+  out_data <- data.table::data.table(time=times, status=status)
   colnames(out_data) <- c(paste0(name, "_time"), paste0(name, "_status"))
 
   return(out_data)

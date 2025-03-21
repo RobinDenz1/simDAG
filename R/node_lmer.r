@@ -54,7 +54,8 @@ supports_mixed_terms <- function(node_type) {
 
 ## extracts random effects and random slope syntax from a formula string
 extract_mixed_terms <- function(formula) {
-  regmatches(formula, gregexpr("(?<!I|eval)\\(.*?\\)", formula, perl=TRUE))[[1]]
+  regmatches(formula,
+             gregexpr("(?<![a-zA-Z0-9])\\(.*?\\)", formula, perl=TRUE))[[1]]
 }
 
 ## same as gsub() with fixed=TRUE, but allowing a character vector in

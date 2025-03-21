@@ -56,7 +56,8 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     args$type_fun <- NULL
     args$time_varying <- NULL
 
-    if (dag$child_nodes[[i]]$type_str!="cox") {
+    needs_name <- c("cox", "aftreg", "ahreg", "poreg")
+    if (!dag$child_nodes[[i]]$type_str %in% needs_name) {
       args$name <- NULL
     }
 

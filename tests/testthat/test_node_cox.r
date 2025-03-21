@@ -7,7 +7,7 @@ test_that("with censoring", {
     node("A", type="rnorm", mean=10, sd=2) +
     node("B", type="rbernoulli", p=0.5) +
     node("C", type="cox", parents=c("A", "B"), betas=c(0.2, 1),
-         lambda=2, gamma=1, surv_dist="weibull", cens_dist="runif",
+         lambda=2, gamma=1, surv_dist="weibull", cens_dist=runif,
          cens_args=list(min=0, max=10000))
 
   out <- sim_from_dag(dag=dag, n_sim=100)
@@ -94,11 +94,22 @@ test_that("without censoring: exponential", {
 
   dag <- empty_dag() +
     node("A", type="rnorm", mean=10, sd=2) +
-    node("B", type="rbernoulli", p=0.5) +
+    node("B", type="rbernoulli", p=0.5)
+
+  # still putting it out in two columns
+  dag1 <- dag +
     node("C", type="cox", parents=c("A", "B"), betas=c(0.2, 1),
          lambda=2, gamma=1, surv_dist="exponential", cens_dist=NULL)
 
-  out <- sim_from_dag(dag=dag, n_sim=100)
-
+  out <- sim_from_dag(dag=dag1, n_sim=100)
   expect_equal(colnames(out), c("A", "B", "C_time", "C_status"))
+
+  # returning only the time as one columns
+  dag2 <- dag +
+    node("C", type="cox", parents=c("A", "B"), betas=c(0.2, 1),
+         lambda=2, gamma=1, surv_dist="exponential", cens_dist=NULL,
+         as_two_cols=FALSE)
+
+  out <- sim_from_dag(dag=dag2, n_sim=100)
+  expect_equal(colnames(out), c("A", "B", "C"))
 })

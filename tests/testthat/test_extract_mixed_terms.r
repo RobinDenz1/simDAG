@@ -30,3 +30,15 @@ test_that("with additional eval() terms", {
   out <- extract_mixed_terms(formstr)
   expect_equal(out, c("(1|D)", "(G|H)"))
 })
+
+test_that("with function of coefficient containing only letters", {
+  formstr <- "-2+A*3+B*-2+(1|D)+(G|H)+variable*log(0.3)+L*EXP(7)"
+  out <- extract_mixed_terms(formstr)
+  expect_equal(out, c("(1|D)", "(G|H)"))
+})
+
+test_that("with function of coefficient containing only letters and numbers", {
+  formstr <- "-2+A*3+B*-2+(1|D)+(G|H)+variable*log2(0.3)+L*E2X5P2(7)"
+  out <- extract_mixed_terms(formstr)
+  expect_equal(out, c("(1|D)", "(G|H)"))
+})

@@ -69,6 +69,16 @@ str2numeric <- function(string) {
   return(out)
 }
 
+## check if the node needs an intercept
+node_needs_intercept <- function(node_type) {
+  !(!is.function(node_type) &&
+     node_type %in% c("cox", "aftreg", "ahreg", "poreg")) ||
+    (is.function(node_type) && (is_same_object(node_type, node_cox) ||
+                                is_same_object(node_type, node_aftreg) ||
+                                is_same_object(node_type, node_ahreg) ||
+                                is_same_object(node_type, node_poreg)))
+}
+
 ## parse custom formulas into betas, formula parts and intercept
 # NOTE: expects formula to be a string, sanitized with sanitize_formula()
 parse_formula <- function(formula, node_type) {
@@ -102,12 +112,9 @@ parse_formula <- function(formula, node_type) {
 
   # extract and check intercept
   has_star <- grepl("*", formvec, fixed=TRUE)
+  needs_intercept <- node_needs_intercept(node_type)
 
-  is_cox_node <- (is.function(node_type) &&
-                  is_same_object(node_type, node_cox)) ||
-    (!is.function(node_type) && node_type=="cox")
-
-  if (is_cox_node) {
+  if (!needs_intercept) {
     intercept <- NULL
   } else {
     intercept <- formvec[!has_star]
@@ -147,7 +154,7 @@ parse_formula <- function(formula, node_type) {
               mixed_terms=mixed_terms,
               betas=betas)
 
-  if (!is_cox_node) {
+  if (needs_intercept) {
     out$intercept <- as.numeric(intercept)
   }
 
