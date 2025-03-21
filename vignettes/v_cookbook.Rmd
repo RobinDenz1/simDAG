@@ -127,7 +127,8 @@ Instead of randomly assigning *individuals* to the treatment, many trials actual
 dag <- empty_dag() +
   node("Clinic", type="rcategorical", probs=rep(0.02, 50)) +
   node("Treatment", type="identity", formula= ~ Clinic >= 25) +
-  node("Outcome", type="poisson", formula= ~ -5 + Treatment*4) # TODO: needs random effect
+  node("Outcome", type="poisson", formula= ~ -1 + Treatment*4 + (1|Clinic),
+       var_corr=0.5)
 data <- sim_from_dag(dag, n_sim=1000)
 head(data)
 ```

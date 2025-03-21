@@ -177,7 +177,7 @@ dag_mixed <- empty_dag() +
        error=1, var_corr=0.3)
 ```
 
-Here, we have a `School` variable in which students of different `Age`s are nested. To simulate the `Grade` of each student, we want to use a random intercept per `School`, so we simply add the classic `(1|School)` term to the `formula`. Whenever this is done, the `var_corr` argument also has to be specified, which allows users to control over the standard deviation of the random effects. Internally, the `makeLmer()` and `doSim()` functions form the `simr` package are used to simulate these types of nodes. Please consult the documentation of that package for details on how to specify more complex mixed model structures, for example using multiple correlated random effects.
+Here, we have a `School` variable in which students of different `Age`s are nested. To simulate the `Grade` of each student, we want to use a random intercept per `School`, so we simply add the classic `(1|School)` term to the `formula`. Whenever this is done, the `var_corr` argument also has to be specified, which allows users to control the standard deviation of the random effects. Internally, the `makeLmer()` and `doSim()` functions form the `simr` package are used to simulate these types of nodes. Please consult the documentation of that package for details on how to specify more complex mixed model structures, for example using multiple correlated random effects.
 
 In principle, arbitrary amounts of random effects can be added. Random slopes can similarly be defined using the standard syntax. In the following `DAG`, we use a random slope for `Age` per `School` in addition to the random effect of `School`:
 
@@ -205,4 +205,15 @@ dag_with_external <- dag +
   node("D", type="binomial", formula= ~ -3 + A*eval(beta_coef) + B*0.2)
 ```
 
-is valid syntax. Note that this only works if the variable wrapped in the `eval()` function call is defined in the same environment in which the `DAG` object is being created. If this is not the case, some weird error messages may be produced, depending on the code used.
+is valid syntax. Note that this only works if the variable wrapped in the `eval()` function call is defined in the same environment in which the `DAG` object is being created. If this is not the case, some weird error messages may be produced, depending on the code used. Another option is to put the formula together as a string before passing it to `node()` like this:
+
+```{r}
+beta_coef <- log(0.5)
+
+form_D <- paste("~ -3 + A*", beta_coef, "+ B*0.2")
+
+dag_with_external <- dag +
+  node("D", type="binomial", formula=form_D)
+```
+
+Since `formula` may always also be passed as a single string, this is perfectly valid syntax and might allow users even more flexibility when creating formulas inside functions.

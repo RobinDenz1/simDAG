@@ -280,6 +280,20 @@ test_that("with random effects and random slopes", {
   expect_equal(round(mean(data$Y), 3), 0.57)
 })
 
+test_that("mixed model term with + in it", {
+
+  set.seed(324)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=0, sd=1) +
+    node(c("E", "G"), type="rcategorical", probs=rep(0.1, 10),
+         labels=LETTERS[1:10]) +
+    node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1 + A|E),
+         var_corr=matrix(c(0.5, 0.05, 0.05, 0.1), 2), error=1)
+  data <- sim_from_dag(dag, n_sim=1000)
+  expect_equal(round(mean(data$Y), 3), -2.365)
+})
+
 test_that("at least one fixed effect needs to be there", {
   expect_error({
     dag <- empty_dag() +

@@ -61,12 +61,12 @@ For convenience, this package additionally includes three custom root-node funct
 Currently, the following node types are implemented directly for convenience:
 
 \itemize{
-  \item{"\link[=node_gaussian]{gaussian}": A node based on linear regression.}
-  \item{"\link[=node_binomial]{binomial}": A node based on logistic regression.}
+  \item{"\link[=node_gaussian]{gaussian}": A node based on (mixed) linear regression.}
+  \item{"\link[=node_binomial]{binomial}": A node based on (mixed) logistic regression.}
   \item{"\link[=node_conditional_prob]{conditional_prob}": A node based on conditional probabilities.}
   \item{"\link[=node_conditional_distr]{conditional_distr}": A node based on conditional draws from different distributions.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
-  \item{"\link[=node_poisson]{poisson}": A node based on poisson regression.}
+  \item{"\link[=node_poisson]{poisson}": A node based on (mixed) poisson regression.}
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
   \item{"\link[=node_identity]{identity}": A node that is just some R expression of other nodes.}

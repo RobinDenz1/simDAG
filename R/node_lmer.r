@@ -51,3 +51,32 @@ supports_mixed_terms <- function(node_type) {
                                   is_same_object(node_type, node_binomial) ||
                                   is_same_object(node_type, node_poisson)))
 }
+
+## extracts random effects and random slope syntax from a formula string
+extract_mixed_terms <- function(formula) {
+  regmatches(formula, gregexpr("(?<!I|eval)\\(.*?\\)", formula, perl=TRUE))[[1]]
+}
+
+## same as gsub() with fixed=TRUE, but allowing a character vector in
+## the pattern argument
+str_replace_all <- function(string, replace) {
+  cleaned <- string
+  for (i in seq_len(length(replace))) {
+    cleaned <- gsub(replace[i], "", cleaned, fixed=TRUE)
+  }
+  return(cleaned)
+}
+
+## cleans up a formula string if there are too many + signs, usually
+## because of the removal of random effects and slope terms
+remove_mistaken_plus <- function(formula) {
+  formula <- gsub("(\\+)\\1+", "\\1", formula)
+
+  if (endsWith(formula, "+")) {
+    formula <- substr(formula, 1, nchar(formula)-1)
+  }
+  if (startsWith(formula, "+")) {
+    formula <- substr(formula, 2, nchar(formula))
+  }
+  return(formula)
+}

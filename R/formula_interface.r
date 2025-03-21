@@ -83,12 +83,25 @@ parse_formula <- function(formula, node_type) {
   formstr <- gsub("~", "", formula, fixed=TRUE)
   formstr <- gsub(" ", "", formstr, fixed=TRUE)
 
+  # processing of random effects and slopes
+  if (has_mixed_terms(formstr)) {
+    mixed_terms <- extract_mixed_terms(formstr)
+    formstr <- str_replace_all(formstr, mixed_terms)
+    formstr <- remove_mistaken_plus(formstr)
+  } else {
+    mixed_terms <- NULL
+  }
+
   # split into additive parts
   formvec <- strsplit(formstr, "+", fixed=TRUE)[[1]]
 
+  if (length(formvec) <= 1) {
+    stop("A 'formula' cannot consist soley of random effects and/or random",
+         " slopes. At least one fixed effect must also be supplied.")
+  }
+
   # extract and check intercept
   has_star <- grepl("*", formvec, fixed=TRUE)
-  has_parenthesis <- startsWith(formvec, "(")
 
   is_cox_node <- (is.function(node_type) &&
                   is_same_object(node_type, node_cox)) ||
@@ -97,19 +110,12 @@ parse_formula <- function(formula, node_type) {
   if (is_cox_node) {
     intercept <- NULL
   } else {
-    intercept <- formvec[!has_star & !has_parenthesis]
+    intercept <- formvec[!has_star]
     check_intercept(intercept)
   }
 
   # split rest further by variable / value pairs
-  mixed_terms <- formvec[has_parenthesis]
   formvec <- formvec[has_star]
-
-  if (length(formvec)==0) {
-    stop("A 'formula' cannot consist soley of random effects and/or random",
-         " slopes. At least one fixed effect must also be supplied.")
-  }
-
   formlist <- strsplit(formvec[grepl("*", formvec, fixed=TRUE)], "*",
                        fixed=TRUE)
   check_formlist(formlist)

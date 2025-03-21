@@ -30,9 +30,9 @@ If you want to simulate data that is easily described using a standard DAG witho
 
 The package currently only implements some possible child nodes. In the future we would like to implement more child node types, such as nodes with generalized mixed linear models or more complex survival time models.
 
-\strong{\emph{Why should I use this package instead of the \pkg{simCausal} package?}}
+\strong{\emph{Why should I use this package instead of the \pkg{simcausal} package?}}
 
-The \pkg{simCausal} package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the \pkg{simCausal} package does not.
+The \pkg{simCausal} package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the \pkg{simcausal} package does not.
 
 \strong{\emph{Where can I get more information?}}
 

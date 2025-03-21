@@ -2,10 +2,10 @@
 \alias{node_binomial}
 
 \title{
-Simulate a Node Using Logistic Regression
+Simulate a Node Using (Mixed) Logistic Regression
 }
 \description{
-Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a Bernoulli distribution accordingly.
+Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a Bernoulli distribution accordingly. Allows inclusion of arbitrary random effects and slopes.
 }
 \usage{
 node_binomial(data, parents, formula=NULL, betas, intercept,
@@ -64,7 +64,7 @@ By default this function returns a logical vector containing only \code{TRUE} an
 
 \strong{\emph{Random Effects and Random Slopes}}:
 
-This function also allows users to arbitrary amounts of random slopes and random effects using the \code{formula} argument. If this is done, the \code{formula}, and \code{data} arguments are passed to the variables of the same name in the \code{\link[simr]{makeGlmer}} function of the \pkg{simr} package. The \code{fixef} argument of that function will be passed the numeric vector \code{c(intercept, betas)} and the \code{VarCorr} argument receives the \code{var_corr} argument as input. If used as a node type in a \code{DAG}, all of this is taken care of behind the scenes. Users can simply use the regular enhanced formula interface of the \code{\link{node}} function to define these formula terms, as shown in detail in the formula vignette (\code{vignette(topic="v_using_formulas", package="simDAG")}). Please consult that vignette for examples. Also, please note that inclusion of random effects or random slopes usually results in significantly longer computation times.
+This function also allows users to include arbitrary amounts of random slopes and random effects using the \code{formula} argument. If this is done, the \code{formula}, and \code{data} arguments are passed to the variables of the same name in the \code{\link[simr]{makeGlmer}} function of the \pkg{simr} package. The \code{fixef} argument of that function will be passed the numeric vector \code{c(intercept, betas)} and the \code{VarCorr} argument receives the \code{var_corr} argument as input. If used as a node type in a \code{DAG}, all of this is taken care of behind the scenes. Users can simply use the regular enhanced formula interface of the \code{\link{node}} function to define these formula terms, as shown in detail in the formula vignette (\code{vignette(topic="v_using_formulas", package="simDAG")}). Please consult that vignette for examples. Also, please note that inclusion of random effects or random slopes usually results in significantly longer computation times.
 
 }
 \author{
