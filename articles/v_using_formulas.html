@@ -398,6 +398,151 @@ before passing it to <code><a href="../reference/node.html">node()</a></code> li
 string, this is perfectly valid syntax and might allow users even more
 flexibility when creating formulas inside functions.</p>
 </div>
+<div class="section level2">
+<h2 id="using-formulas-in-custom-node-types-advanced-usage">Using Formulas in Custom Node Types (Advanced Usage)<a class="anchor" aria-label="anchor" href="#using-formulas-in-custom-node-types-advanced-usage"></a>
+</h2>
+<p>One of the great things about this package is that users can supply
+<em>any</em> function to the <code>type</code> argument of
+<code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code>, as long as it fulfills
+some minimal requirements (as described in <code><a href="../reference/node_custom.html">?node_custom</a></code>).
+Whenever such a function is supplied, users may still use the enhanced
+<code>formula</code> interface!</p>
+<p>Internally, whenever an enhanced <code>formula</code> is supplied to
+<code><a href="../reference/node.html">node()</a></code> or <code><a href="../reference/node.html">node_td()</a></code>, the formula is parsed to
+extract all variable names and beta-coefficients. If cubic terms,
+interactions or levels of categorical parent nodes are included in
+<code>formula</code>, the data will be re-structured in a way that it
+includes a single column for each term in <code>formula</code>. Consider
+the following example:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">custom_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">intercept</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">parents</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">betas</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">intercept</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">dag_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"C"</span>, type<span class="op">=</span><span class="st">"rcategorical"</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lev1"</span>, <span class="st">"lev2"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we defined a custom function for a node called
+<code>custom_fun</code>, which really only returns 1, regardless of the
+input. However, it also prints the first few lines of the input
+<code>data</code>, the <code>parents</code>, the <code>betas</code> and
+the <code>intercept</code> it is passed, so that we can see whats going
+on under the hood. Next, we defined some arbitrary <code>DAG</code>
+containing two numerical root nodes and a binary root node. Here is what
+happens if we use <code>custom_fun</code> with a <code>formula</code>
+input:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_custom2</span> <span class="op">&lt;-</span> <span class="va">dag_custom</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="va">custom_fun</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">5</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_custom2</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              A          B</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: -0.56047565  1.2240818</span></span>
+<span><span class="co">#&gt; 2: -0.23017749  0.3598138</span></span>
+<span><span class="co">#&gt; 3:  1.55870831  0.4007715</span></span>
+<span><span class="co">#&gt; 4:  0.07050839  0.1106827</span></span>
+<span><span class="co">#&gt; 5:  0.12928774 -0.5558411</span></span>
+<span><span class="co">#&gt; 6:  1.71506499  1.7869131</span></span>
+<span><span class="co">#&gt; [1] "A" "B"</span></span>
+<span><span class="co">#&gt; [1]  2.0 -0.4</span></span>
+<span><span class="co">#&gt; [1] -5</span></span></code></pre></div>
+<p>We can see that it simply took the <code>data</code> that was
+required and printed it. Note that in the <code><a href="../reference/node.html">node()</a></code>
+definition, we did not need to specify the <code>parents</code>,
+<code>betas</code> or <code>intercept</code> arguments of the custom
+node, all we had to do was pass it the enhanced <code>formula</code> and
+it happily extracted this information from it and passed it to
+<code>custom_fun</code> directly. The only requirement for this to work
+is that <code>custom_fun</code> does have these arguments. Now lets see
+what happens with special terms in <code>formula</code>:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag_custom2</span> <span class="op">&lt;-</span> <span class="va">dag_custom</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="va">custom_fun</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">5</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">A</span><span class="op">:</span><span class="va">B</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> </span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">A</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">Clev2</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_custom2</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             A          B         A:B     I(A^2) Clev2</span></span>
+<span><span class="co">#&gt;         &lt;num&gt;      &lt;num&gt;       &lt;num&gt;      &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:  0.4264642 -0.6947070 -0.29626767 0.18187173     0</span></span>
+<span><span class="co">#&gt; 2: -0.2950715 -0.2079173  0.06135046 0.08706718     1</span></span>
+<span><span class="co">#&gt; 3:  0.8951257 -1.2653964 -1.13268875 0.80124995     1</span></span>
+<span><span class="co">#&gt; 4:  0.8781335  2.1689560  1.90463287 0.77111842     0</span></span>
+<span><span class="co">#&gt; 5:  0.8215811  1.2079620  0.99243873 0.67499547     0</span></span>
+<span><span class="co">#&gt; 6:  0.6886403 -1.1231086 -0.77341778 0.47422540     1</span></span>
+<span><span class="co">#&gt; [1] "A"      "B"      "A:B"    "I(A^2)" "Clev2" </span></span>
+<span><span class="co">#&gt; [1]  2.0 -0.4  0.1 -0.1  0.2</span></span>
+<span><span class="co">#&gt; [1] -5</span></span></code></pre></div>
+<p>Now we can see a slightly different picture. Instead of simply
+returning the relevant parts of <code>data</code>, the function has
+re-structured it in a way similar to the <code><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix()</a></code>
+function, allowing us to directly apply the <code>betas</code> to it.
+Note that the <code>betas</code> will always be in the right order,
+meaning that the first entry in <code>betas</code> corresponds to the
+first term named in <code>parents</code>. The following code is an
+example how one could re-build a linear regression using this
+interface:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">custom_linreg</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">intercept</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">intercept</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="st">"*"</span>, <span class="va">data</span>, <span class="va">betas</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">dag_custom3</span> <span class="op">&lt;-</span> <span class="va">dag_custom</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="va">custom_linreg</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">5</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">A</span><span class="op">:</span><span class="va">B</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> </span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">A</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">Clev2</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_custom3</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             A          B      C         Y</span></span>
+<span><span class="co">#&gt;         &lt;num&gt;      &lt;num&gt; &lt;char&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:  0.3796395  1.0527115   lev1 -4.841552</span></span>
+<span><span class="co">#&gt; 2: -0.5023235 -1.0491770   lev1 -4.906313</span></span>
+<span><span class="co">#&gt; 3: -0.3332074 -1.2601552   lev1 -4.857700</span></span>
+<span><span class="co">#&gt; 4: -1.0185754  3.2410399   lev2 -7.542767</span></span>
+<span><span class="co">#&gt; 5: -1.0717912 -0.4168576   lev2 -6.029375</span></span>
+<span><span class="co">#&gt; 6:  0.3035286  0.2982276   lev2 -4.522188</span></span></code></pre></div>
+<p>Here, we simply calculate the linear predictor using the sum of the
+rows after multiplying each value with the corresponding
+<code>betas</code> coefficient and add a normally distributed error term
+with standard deviation of 1 afterwards. Of course users can use this
+type of strategy for much more complex node types. Note that the
+intercept is not required to be there. By omitting it from the supplied
+function, it will automatically no longer be required in
+<code>formula</code> (and will be ignored if still specified):</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># same as before, but without an intercept (same as setting intercept=0)</span></span>
+<span><span class="va">custom_linreg2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="st">"*"</span>, <span class="va">data</span>, <span class="va">betas</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">dag_custom4</span> <span class="op">&lt;-</span> <span class="va">dag_custom</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="va">custom_linreg2</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="va">A</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span> <span class="op">+</span> <span class="va">A</span><span class="op">:</span><span class="va">B</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> </span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">A</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">Clev2</span><span class="op">*</span><span class="fl">0.2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag_custom4</span>, n_sim<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             A          B      C          Y</span></span>
+<span><span class="co">#&gt;         &lt;num&gt;      &lt;num&gt; &lt;char&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:  0.8719650 -0.8338436   lev1  2.4685174</span></span>
+<span><span class="co">#&gt; 2: -0.3484724  0.5787224   lev1 -0.3442883</span></span>
+<span><span class="co">#&gt; 3:  0.5185038 -1.0875807   lev2  2.2053315</span></span>
+<span><span class="co">#&gt; 4: -0.3906850  1.4840309   lev1 -3.1403262</span></span>
+<span><span class="co">#&gt; 5: -1.0927872 -1.1862066   lev2 -1.1321410</span></span>
+<span><span class="co">#&gt; 6:  1.2100105  0.1010792   lev2  3.4132667</span></span></code></pre></div>
+<p>Note that if you passed the <code>custom_linreg</code> function to
+the <code><a href="../reference/node.html">node()</a></code> call above instead, you would receive an error
+message because of the missing intercept. All of this of course also
+works with time-dependent nodes specified using <code><a href="../reference/node.html">node_td()</a></code>
+calls.</p>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
