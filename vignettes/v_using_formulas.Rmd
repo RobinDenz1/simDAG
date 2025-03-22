@@ -217,3 +217,79 @@ dag_with_external <- dag +
 ```
 
 Since `formula` may always also be passed as a single string, this is perfectly valid syntax and might allow users even more flexibility when creating formulas inside functions.
+
+# Using Formulas in Custom Node Types (Advanced Usage)
+
+One of the great things about this package is that users can supply *any* function to the `type` argument of `node()` and `node_td()`, as long as it fulfills some minimal requirements (as described in `?node_custom`). Whenever such a function is supplied, users may still use the enhanced `formula` interface!
+
+Internally, whenever an enhanced `formula` is supplied to `node()` or `node_td()`, the formula is parsed to extract all variable names and beta-coefficients. If cubic terms, interactions or levels of categorical parent nodes are included in `formula`, the data will be re-structured in a way that it includes a single column for each term in `formula`. Consider the following example:
+
+```{r}
+set.seed(123)
+
+custom_fun <- function(data, parents, betas, intercept) {
+  print(head(data))
+  print(parents)
+  print(betas)
+  print(intercept)
+  return(rep(1, nrow(data)))
+}
+
+dag_custom <- empty_dag() +
+  node(c("A", "B"), type="rnorm", mean=0, sd=1) +
+  node("C", type="rcategorical", probs=c(0.5, 0.5), labels=c("lev1", "lev2"))
+```
+
+Here, we defined a custom function for a node called `custom_fun`, which really only returns 1, regardless of the input. However, it also prints the first few lines of the input `data`, the `parents`, the `betas` and the `intercept` it is passed, so that we can see whats going on under the hood. Next, we defined some arbitrary `DAG` containing two numerical root nodes and a binary root node. Here is what happens if we use `custom_fun` with a `formula` input:
+
+```{r}
+dag_custom2 <- dag_custom +
+  node("Y", type=custom_fun, formula= ~ -5 + A*2 + B*-0.4)
+
+data <- sim_from_dag(dag_custom2, n_sim=10)
+```
+
+We can see that it simply took the `data` that was required and printed it. Note that in the `node()` definition, we did not need to specify the `parents`, `betas` or `intercept` arguments of the custom node, all we had to do was pass it the enhanced `formula` and it happily extracted this information from it and passed it to `custom_fun` directly. The only requirement for this to work is that `custom_fun` does have these arguments. Now lets see what happens with special terms in `formula`:
+
+```{r}
+dag_custom2 <- dag_custom +
+  node("Y", type=custom_fun, formula= ~ -5 + A*2 + B*-0.4 + A:B*0.1 + 
+         I(A^2)*-0.1 + Clev2*0.2)
+
+data <- sim_from_dag(dag_custom2, n_sim=10)
+```
+
+Now we can see a slightly different picture. Instead of simply returning the relevant parts of `data`, the function has re-structured it in a way similar to the `model.matrix()` function, allowing us to directly apply the `betas` to it. Note that the `betas` will always be in the right order, meaning that the first entry in `betas` corresponds to the first term named in `parents`. The following code is an example how one could re-build a linear regression using this interface:
+
+```{r}
+custom_linreg <- function(data, parents, betas, intercept) {
+  intercept + rowSums(mapply("*", data, betas)) +
+    rnorm(n=nrow(data), mean=0, sd=1)
+}
+
+dag_custom3 <- dag_custom +
+  node("Y", type=custom_linreg, formula= ~ -5 + A*2 + B*-0.4 + A:B*0.1 + 
+         I(A^2)*-0.1 + Clev2*0.2)
+
+data <- sim_from_dag(dag_custom3, n_sim=100)
+head(data)
+```
+
+Here, we simply calculate the linear predictor using the sum of the rows after multiplying each value with the corresponding `betas` coefficient and add a normally distributed error term with standard deviation of 1 afterwards. Of course users can use this type of strategy for much more complex node types. Note that the intercept is not required to be there. By omitting it from the supplied function, it will automatically no longer be required in `formula` (and will be ignored if still specified):
+
+```{r}
+# same as before, but without an intercept (same as setting intercept=0)
+custom_linreg2 <- function(data, parents, betas) {
+  rowSums(mapply("*", data, betas)) +
+    rnorm(n=nrow(data), mean=0, sd=1)
+}
+
+dag_custom4 <- dag_custom +
+  node("Y", type=custom_linreg2, formula= ~ A*2 + B*-0.4 + A:B*0.1 + 
+         I(A^2)*-0.1 + Clev2*0.2)
+
+data <- sim_from_dag(dag_custom4, n_sim=100)
+head(data)
+```
+
+Note that if you passed the `custom_linreg` function to the `node()` call above instead, you would receive an error message because of the missing intercept. All of this of course also works with time-dependent nodes specified using `node_td()` calls.

@@ -38,7 +38,7 @@ A single character string, must be either \code{"logical"} (default), \code{"num
 A character vector of length 2 or \code{NULL} (default). If \code{NULL}, the resulting vector is returned as is. If a character vector is supplied and \code{output="character"} or \code{output="factor"} is used, all \code{TRUE} values are replaced by the first entry of this vector and all \code{FALSE} values are replaced by the second argument of this vector. The output will then be a character variable or factor variable, depending on the \code{output} argument. This argument is ignored if \code{output} is set to \code{"numeric"} or \code{"logical"}.
   }
   \item{var_corr}{
-Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified.
+Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official \pkg{simr} github page.
   }
 }
 \details{

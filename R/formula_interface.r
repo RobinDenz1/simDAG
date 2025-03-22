@@ -71,12 +71,17 @@ str2numeric <- function(string) {
 
 ## check if the node needs an intercept
 node_needs_intercept <- function(node_type) {
-  !(!is.function(node_type) &&
-     node_type %in% c("cox", "aftreg", "ahreg", "poreg")) ||
-    (is.function(node_type) && (is_same_object(node_type, node_cox) ||
-                                is_same_object(node_type, node_aftreg) ||
-                                is_same_object(node_type, node_ahreg) ||
-                                is_same_object(node_type, node_poreg)))
+
+  if (!is.function(node_type)) {
+    fun_name <- paste0("node_", node_type)
+
+    if (!exists(fun_name)) {
+      fun_name <- node_type
+    }
+    node_type <- get(fun_name)
+  }
+
+  return("intercept" %in% names(formals(node_type)))
 }
 
 ## parse custom formulas into betas, formula parts and intercept

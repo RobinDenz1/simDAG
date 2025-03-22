@@ -31,7 +31,7 @@ A single number specifying the intercept that should be used when generating the
 A single number specifying the sigma error that should be used when generating the node. By setting this argument to 0, the linear predictor is returned directly. If \code{formula} contains mixed model syntax, this argument is passed to the \code{sigma} argument of the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package.
   }
   \item{var_corr}{
-Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified.
+Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official \pkg{simr} github page.
   }
 }
 \details{

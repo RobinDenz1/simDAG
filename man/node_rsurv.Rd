@@ -8,7 +8,7 @@
 Simulate a Node Using Parametric Survival Models
 }
 \description{
-Data from the parents is used to generate the node using either an accelerated failure time model, an accelerated hazard model or an proportional odds model, as implemented in the \pkg{rsurv} package (Demarqui 2024).
+Data from the parents is used to generate the node using either an accelerated failure time model, an accelerated hazard model or a proportional odds model, as implemented in the \pkg{rsurv} package (Demarqui 2024).
 }
 \usage{
 node_aftreg(data, parents, betas, baseline, dist=NULL,

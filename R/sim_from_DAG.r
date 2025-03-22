@@ -49,6 +49,9 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
   # go through DAG step by step
   for (i in index_children) {
 
+    # get the names of the nodes generating function
+    fun_pos_args <- names(formals(dag$child_nodes[[i]]$type_fun))
+
     # get relevant arguments
     args <- dag$child_nodes[[i]]
     args$data <- data
@@ -56,8 +59,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     args$type_fun <- NULL
     args$time_varying <- NULL
 
-    needs_name <- c("cox", "aftreg", "ahreg", "poreg")
-    if (!dag$child_nodes[[i]]$type_str %in% needs_name) {
+    if (!"name" %in% fun_pos_args) {
       args$name <- NULL
     }
 
@@ -78,6 +80,10 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
       )
     }
 
+    # remove intercept if not needed
+    if (!"intercept" %in% fun_pos_args) {
+      args$intercept <- NULL
+    }
     # remove temporary mixed model stuff if there
     if (!is.null(args$mixed_terms)) {
       args$mixed_terms <- NULL

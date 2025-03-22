@@ -224,3 +224,6 @@ In this extended example, `Sex` is equally distributed among the population (wit
 ## Very Heterogeneous Data
 
 ## Ensuring Event-Order in Discrete-Time Simulations
+
+## Correlated Error Terms
+
