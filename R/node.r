@@ -31,6 +31,8 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
             " of this package. Please use the new custom formulas instead.")
   } else if (is.character(formula) & is.null(parents)) {
     parents <- parents_from_formula(formula, node_type=type)
+  } else if (is.null(parents) && is_zeroinfl_node(type)) {
+    parents <- parents_from_zeroinfl(...)
   }
 
   # get additional arguments
@@ -94,6 +96,8 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
             " of this package. Please use the new custom formulas instead.")
   } else if (is.character(formula) & is.null(parents)) {
     parents <- parents_from_formula(formula, node_type=type)
+  } else if (is.null(parents) && is_zeroinfl_node(type)) {
+    parents <- parents_from_zeroinfl(...)
   }
 
   # get additional arguments

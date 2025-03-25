@@ -68,11 +68,14 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
   \item{"\link[=node_poisson]{poisson}": A node based on (mixed) poisson regression.}
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
+  \item{"\link[=node_zeroinfl]{zeroinfl}": A node based on a zero-inflated poisson or negative binomial regression.}
+  \item{"\link[=node_identity]{identity}": A node that is just some R expression of other nodes.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}
   \item{"\link[=node_aftreg]{aftreg}": A node based on an accelerated failure time model.}
   \item{"\link[=node_ahreg]{ahreg}": A node based on an accelerated hazard model.}
+  \item{"\link[=node_ehreg]{ehreg}": A node based on a extended hazard model.}
   \item{"\link[=node_poreg]{poreg}": A node based on a proportional odds model.}
-  \item{"\link[=node_identity]{identity}": A node that is just some R expression of other nodes.}
+  \item{"\link[=node_ypreg]{ypreg}": A node based on a Young and Prentice model.}
 }
 
 For custom child node types, see below or \code{?node_custom}.

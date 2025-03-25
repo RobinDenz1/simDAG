@@ -2,6 +2,7 @@
 ###### Bugs & TODOS ######
 
 - when printing structural equation for rbernoulli without p, p=0.5 missing from output
+- need new structural equation functions for new node types
 
 ###### For the Review #####
 
@@ -11,9 +12,7 @@
 # Changes in the manuscript
 
 - better explanation of sim_discrete_time()
-- mention dag_from_data()
 - explain event order thing
-- write more explictly that the package is not mainly about data synthesis in discussion
 
 ####### New Features: #######
 

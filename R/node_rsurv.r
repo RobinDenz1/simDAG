@@ -59,6 +59,20 @@ node_ahreg <- function(data, parents, betas, baseline, dist=NULL,
   return(out)
 }
 
+## simulate data from a extended hazard model
+#' @export
+node_ehreg <- function(data, parents, betas, phi, baseline, dist=NULL,
+                       package=NULL, u=stats::runif(nrow(data)),
+                       cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
+                       ...) {
+
+  out <- node_rsurv(data=data, parents=parents, betas=betas, phi=phi,
+                    baseline=baseline, dist=dist, package=package, u=u,
+                    cens_dist=cens_dist, cens_args=cens_args, name=name,
+                    as_two_cols=as_two_cols, type="ehreg", ...)
+  return(out)
+}
+
 ## simulate data from proportional odds model
 #' @export
 node_poreg <- function(data, parents, betas, baseline, dist=NULL,
@@ -70,5 +84,19 @@ node_poreg <- function(data, parents, betas, baseline, dist=NULL,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
                     as_two_cols=as_two_cols, type="poreg", ...)
+  return(out)
+}
+
+## simulate data from a Yang & Prentice model
+#' @export
+node_ypreg <- function(data, parents, betas, phi, baseline, dist=NULL,
+                       package=NULL, u=stats::runif(nrow(data)),
+                       cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
+                       ...) {
+
+  out <- node_rsurv(data=data, parents=parents, betas=betas, phi=phi,
+                    baseline=baseline, dist=dist, package=package, u=u,
+                    cens_dist=cens_dist, cens_args=cens_args, name=name,
+                    as_two_cols=as_two_cols, type="ypreg", ...)
   return(out)
 }
