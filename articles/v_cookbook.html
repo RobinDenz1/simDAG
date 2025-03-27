@@ -221,8 +221,8 @@ For simplicity, the simulation is run without any further covariates for
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Treatment_event"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Treatment"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Treatment_event"</span><span class="op">)</span>,</span>
 <span>          prob_fun<span class="op">=</span><span class="va">prob_treat</span>, event_count<span class="op">=</span><span class="cn">TRUE</span>, event_duration<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">Treatment_event_count</span><span class="op">*</span><span class="op">-</span><span class="fl">0.3</span>,</span>
-<span>          error<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> </span>
+<span>            <span class="va">Treatment_event_count</span><span class="op">*</span><span class="op">-</span><span class="fl">0.3</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span>, max_t<span class="op">=</span><span class="fl">5</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
@@ -354,6 +354,42 @@ adjust the <code>var_corr</code> argument accordingly. More examples are
 given in the formula vignette.</p>
 </div>
 <div class="section level3">
+<h3 id="simulating-mixture-distributions">Simulating Mixture Distributions<a class="anchor" aria-label="anchor" href="#simulating-mixture-distributions"></a>
+</h3>
+<p>Instead of using random effects and random slopes, another
+possibility to simulate a sort of “mixed” variables is to directly model
+it using different regression models for different individuals. This can
+be done using the <code>"mixture"</code> node type. Consider the
+following example:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"strata"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"var1"</span>, <span class="st">"var2"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="st">"mixture"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"strata"</span>, <span class="st">"var1"</span>, <span class="st">"var2"</span><span class="op">)</span>,</span>
+<span>       distr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>         <span class="st">"strata==0"</span>, <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"gaussian"</span>,</span>
+<span>                           formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">var1</span><span class="op">*</span><span class="fl">2</span> <span class="op">+</span> <span class="va">var2</span><span class="op">*</span><span class="op">-</span><span class="fl">0.5</span>, error<span class="op">=</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>         <span class="st">"strata==1"</span>, <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"gaussian"</span>,</span>
+<span>                           formula<span class="op">=</span> <span class="op">~</span> <span class="fl">5</span> <span class="op">+</span> <span class="va">var1</span><span class="op">*</span><span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">var2</span><span class="op">*</span><span class="fl">2.3</span>, error<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span></span>
+<span>       <span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    strata       var1        var2         Y</span></span>
+<span><span class="co">#&gt;    &lt;lgcl&gt;      &lt;num&gt;       &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:   TRUE  0.1415550  2.23058023 11.105583</span></span>
+<span><span class="co">#&gt; 2:  FALSE  0.1894067  0.50347005 -2.128874</span></span>
+<span><span class="co">#&gt; 3:   TRUE  1.0484449  2.41284256 10.252751</span></span>
+<span><span class="co">#&gt; 4:   TRUE -0.2037629  1.58227063  9.394910</span></span>
+<span><span class="co">#&gt; 5:  FALSE  1.5106040 -0.09470455  1.673063</span></span>
+<span><span class="co">#&gt; 6:   TRUE -0.1489825  0.27506248  8.527861</span></span></code></pre></div>
+<p>Using the <code>distr</code> argument, we can easily define to which
+simulated individuals the corresponding node definitions should be
+applied to. In the example above, we defined different linear regression
+models for individuals with <code>strata==0</code> and for individuals
+with <code>strata==1</code>. It would also be possible to use entirely
+different node types etc.</p>
+</div>
+<div class="section level3">
 <h3 id="simulating-outliers">Simulating “Outliers”<a class="anchor" aria-label="anchor" href="#simulating-outliers"></a>
 </h3>
 <p>One possibility to introduce a kind of outliers to a variable, is by
@@ -362,8 +398,28 @@ distribution, made up of two parts, similar to how zero-inflated models
 work. First, values are generated from the general distribution. Then,
 if that variable exceeds some value, sample different values for it. A
 very simple example:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># TODO</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"rnorm"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="st">"mixture"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>       distr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>         <span class="st">"TRUE"</span>, <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">1</span> <span class="op">+</span> <span class="va">C</span><span class="op">*</span><span class="op">-</span><span class="fl">2</span>,</span>
+<span>                      error<span class="op">=</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>         <span class="st">"Y &gt; 3"</span>, <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">10000</span>, sd<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span>
+<span>       <span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we first simulate 3 standard normal variables <code>A</code>,
+<code>B</code> and <code>C</code>, which will be used as predictor
+variables for our desired outcome <code>Y</code>. For <code>Y</code>
+itself, we use the <code>"mixture"</code> node type, which allows us to
+define the node as a mix of multiple node types, based on some
+conditions, which are generated from one by one. Because we set the
+first condition to <code>TRUE</code>, the linear model next to it gets
+applied to all individuals in the first run, generating values from the
+specified linear model for all individuals. In the next run we condition
+on <code>Y</code> itself, instructing the function to only simulate new
+values for <code>Y &gt; 3</code>. These values are drawn from a normal
+distribution with a very high mean.</p>
 </div>
 <div class="section level3">
 <h3 id="simulating-missing-values">Simulating Missing Values<a class="anchor" aria-label="anchor" href="#simulating-missing-values"></a>
@@ -371,7 +427,7 @@ very simple example:</p>
 <p>Real data usually includes at least some missing values in key
 variables. Below is a very simple example on how users could include
 missing values in their data:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"A_real"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"A_missing"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -382,12 +438,12 @@ missing values in their data:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       A_real A_missing A_observed</span></span>
 <span><span class="co">#&gt;        &lt;num&gt;    &lt;lgcl&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 15.799844     FALSE  15.799844</span></span>
-<span><span class="co">#&gt; 2: 10.737851     FALSE  10.737851</span></span>
-<span><span class="co">#&gt; 3:  8.333655     FALSE   8.333655</span></span>
-<span><span class="co">#&gt; 4: 11.642922     FALSE  11.642922</span></span>
-<span><span class="co">#&gt; 5: 14.849085     FALSE  14.849085</span></span>
-<span><span class="co">#&gt; 6: 10.424665      TRUE         NA</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:  4.602272      TRUE         NA</span></span>
+<span><span class="co">#&gt; 2: 11.657005      TRUE         NA</span></span>
+<span><span class="co">#&gt; 3:  7.834976     FALSE   7.834976</span></span>
+<span><span class="co">#&gt; 4: 11.329279     FALSE  11.329279</span></span>
+<span><span class="co">#&gt; 5:  7.299166     FALSE   7.299166</span></span>
+<span><span class="co">#&gt; 6:  6.061558      TRUE         NA</span></span></code></pre></div>
 <p>In this DAG, the real values of node <code>A</code> are generated
 first. Afterwards, an indicator of whether the corresponding values is
 observed is drawn randomly for each individual in node
@@ -401,7 +457,7 @@ at first, it does allow quite a lot of flexibility in the specification
 of different missingness mechanisms. For example, to simulate
 <strong>missing at random</strong> (MAR) patterns, we could use the
 following code instead:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"A_real"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"B_real"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -414,14 +470,14 @@ following code instead:</p>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         A_real B_real A_missing B_missing  A_observed B_observed</span></span>
-<span><span class="co">#&gt;          &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;       &lt;num&gt;     &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:  2.23058023  FALSE     FALSE     FALSE  2.23058023      FALSE</span></span>
-<span><span class="co">#&gt; 2:  0.50347005   TRUE     FALSE     FALSE  0.50347005       TRUE</span></span>
-<span><span class="co">#&gt; 3:  2.41284256   TRUE      TRUE     FALSE          NA       TRUE</span></span>
-<span><span class="co">#&gt; 4:  1.58227063   TRUE     FALSE     FALSE  1.58227063       TRUE</span></span>
-<span><span class="co">#&gt; 5: -0.09470455  FALSE     FALSE     FALSE -0.09470455      FALSE</span></span>
-<span><span class="co">#&gt; 6:  0.27506248  FALSE     FALSE     FALSE  0.27506248      FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt;         A_real B_real A_missing B_missing A_observed B_observed</span></span>
+<span><span class="co">#&gt;          &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;lgcl&gt;      &lt;num&gt;     &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:  1.89845752   TRUE     FALSE     FALSE  1.8984575       TRUE</span></span>
+<span><span class="co">#&gt; 2: -0.47113505   TRUE     FALSE     FALSE -0.4711351       TRUE</span></span>
+<span><span class="co">#&gt; 3: -1.28432238   TRUE     FALSE     FALSE -1.2843224       TRUE</span></span>
+<span><span class="co">#&gt; 4:  0.72617363  FALSE     FALSE     FALSE  0.7261736      FALSE</span></span>
+<span><span class="co">#&gt; 5: -0.53895059  FALSE     FALSE     FALSE -0.5389506      FALSE</span></span>
+<span><span class="co">#&gt; 6: -0.09379803  FALSE      TRUE     FALSE         NA      FALSE</span></span></code></pre></div>
 <p>Here, the missingness in <code>A_observed</code> is again MCAR,
 because it is independent of everything. The missingness in
 <code>B_observed</code>, however, is MAR because the probability of
@@ -437,7 +493,7 @@ only be detected in 90% of all patients with the disease and may falsely
 be detected in 1% of all patients without the disease. The same strategy
 shown for missing values could be used to simulate such data using
 <code>simDAG</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>`TRUE`<span class="op">=</span><span class="fl">0.9</span>, `FALSE`<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -449,19 +505,19 @@ shown for missing values could be used to simulate such data using
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Disease_real Disease_observed</span></span>
 <span><span class="co">#&gt;          &lt;lgcl&gt;           &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 2:        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 3:         TRUE             TRUE</span></span>
+<span><span class="co">#&gt; 1:        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 2:         TRUE            FALSE</span></span>
+<span><span class="co">#&gt; 3:        FALSE            FALSE</span></span>
 <span><span class="co">#&gt; 4:         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 5:         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 6:        FALSE            FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 5:        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 6:         TRUE             TRUE</span></span></code></pre></div>
 <p>In this example, the disease is present in 50% of all individuals. By
 using a node with <code>type="conditional_prob"</code> we can easily
 draw new values for the observed disease status by specifying the
 <code>probs</code> argument correctly. We could similarly extend this
 example to make the probability of misclassification dependent on
 another variable:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># first TRUE / FALSE refers to Sex = TRUE / FALSE</span></span>
 <span><span class="co"># second TRUE / FALSE refers to Disease = TRUE / FALSE</span></span>
 <span><span class="va">probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>TRUE.TRUE<span class="op">=</span><span class="fl">0.9</span>, TRUE.FALSE<span class="op">=</span><span class="fl">0.01</span>,</span>
@@ -477,12 +533,12 @@ another variable:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       Sex Disease_real Disease_observed</span></span>
 <span><span class="co">#&gt;    &lt;lgcl&gt;       &lt;lgcl&gt;           &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:  FALSE        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 2:  FALSE        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 1:   TRUE        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 2:   TRUE        FALSE            FALSE</span></span>
 <span><span class="co">#&gt; 3:   TRUE        FALSE            FALSE</span></span>
-<span><span class="co">#&gt; 4:  FALSE         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 5:   TRUE         TRUE             TRUE</span></span>
-<span><span class="co">#&gt; 6:   TRUE        FALSE            FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 4:  FALSE        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 5:  FALSE        FALSE            FALSE</span></span>
+<span><span class="co">#&gt; 6:  FALSE         TRUE             TRUE</span></span></code></pre></div>
 <p>In this extended example, <code>Sex</code> is equally distributed
 among the population (with <code>TRUE</code> = “female” and
 <code>FALSE</code> = “male”). In this example, the probability of being
