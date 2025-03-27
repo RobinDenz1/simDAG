@@ -121,8 +121,7 @@
 <h2 class="pkg-version" data-toc-text="0.2.3" id="simdag-023">simDAG 0.2.3<a class="anchor" aria-label="anchor" href="#simdag-023"></a></h2>
 <p>New Features</p>
 <ul><li>Support for random effects and random slopes (mixed model syntax) has been added to the <code>formula</code> interface of <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> when using nodes of type <code>"gaussian"</code>, <code>"binomial"</code> or <code>"poisson"</code>.</li>
-<li>Added three new node types: <code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ahreg()</a></code> and <code><a href="../reference/node_rsurv.html">node_poreg()</a></code>
-</li>
+<li>Added seven new node types: <code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ahreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_poreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ypreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ehreg()</a></code>, <code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code> and <code><a href="../reference/node_mixture.html">node_mixture()</a></code>.</li>
 </ul><p>Enhancements</p>
 <ul><li>Added the <code>reference</code> argument to <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> and <code><a href="../reference/rcategorical.html">rcategorical()</a></code> to make it easier to specify the reference category when coding the output as a factor variable.</li>
 <li>
@@ -132,6 +131,8 @@
 </li>
 <li>Function input to the <code>cens_dist</code> argument in the <code><a href="../reference/node_cox.html">node_cox()</a></code> function is now allowed.</li>
 <li>The argument <code>as_two_cols</code> was added to the <code><a href="../reference/node_cox.html">node_cox()</a></code> function to allow users to return only the time-to-event as a single column if no censoring is applied.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>Fixed a bug that occurred when a user-specified root node function returned a <code>data.frame</code>-like object with more than one column.</li>
 </ul><p>Documentation</p>
 <ul><li>Added new “cookbook” vignette to showcase more possible use cases of the package.</li>
 </ul></div>
