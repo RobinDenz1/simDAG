@@ -1,15 +1,22 @@
 
 ## node that allows different node() specifications given some arbitrary
 ## conditions based on previously generated data
+#' @importFrom data.table is.data.table
+#' @importFrom data.table as.data.table
+#' @importFrom data.table :=
 #' @export
-node_mixture <- function(data, parents, distr, default=NA) {
+node_mixture <- function(data, parents, name, distr, default=NA) {
+
+  if (!is.data.table(data)) {
+    data <- as.data.table(data)
+  }
 
   out <- rep(default, nrow(data))
   for (i in seq(2, length(distr), 2)) {
 
     # filter relevant rows for this level
     cond <- with(data, eval(str2lang(distr[[i-1]])))
-    data_i <- data[cond]
+    data_i <- copy(data[cond])
 
     # setup dag object for this specific part of data
     dag <- empty_dag() +
@@ -17,10 +24,10 @@ node_mixture <- function(data, parents, distr, default=NA) {
       distr[[i]]
 
     # simulate the data
-    out_i <- sim_from_dag(dag=dag, n_sim=nrow(data_i))[[distr[[i]]$name]]
-    out[cond] <- out_i
+    out[cond] <- sim_from_dag(dag=dag, n_sim=nrow(data_i))[[distr[[i]]$name]]
+    data[[name]] <- out
   }
-  return(out)
+  return(data[[name]])
 }
 
 ## trick root node definition into just passing data as input

@@ -1,6 +1,9 @@
 ---
 title: "Specifying Formulas in a DAG"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
 author: "Robin Denz"
 vignette: >
   %\VignetteIndexEntry{Specifying Formulas in a DAG}

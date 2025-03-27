@@ -1,6 +1,9 @@
 ---
 title: "Simulating Data using a Discrete-Time Approach"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
 author: "Robin Denz"
 vignette: >
   %\VignetteIndexEntry{Simulating Data using a Discrete-Time Approach}

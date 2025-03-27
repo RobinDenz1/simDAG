@@ -85,3 +85,32 @@ test_that("allows functions of numbers", {
   out <- parse_formula(formula, node_type="binomial")
   expect_equal(out$betas, c(log(2), exp(-1), 1.5))
 })
+
+test_that("custom function intercept parsing", {
+
+  test_fun1 <- function(data, parents, betas, intercept) {
+    return(rep(0, nrow(data)))
+  }
+
+  test_fun2 <- function(data, parents, betas) {
+    return(rep(0, nrow(data)))
+  }
+
+  # includes it if there and function needs it
+  formula <- "~ 3 + A*log(2) + B*exp(-1) + C*1.5"
+  out <- parse_formula(formula, node_type=test_fun1)
+  expect_equal(out$intercept, 3)
+
+  # excludes it if there and function does not need it
+  out <- parse_formula(formula, node_type=test_fun2)
+  expect_equal(out$intercept, NULL)
+
+  # works if intercept is not there and function does not need it
+  formula <- "~ A*log(2) + B*exp(-1) + C*1.5"
+  out <- parse_formula(formula, node_type=test_fun2)
+  expect_equal(out$intercept, NULL)
+
+  # error if it is needed but not there
+  expect_error(parse_formula(formula, node_type=test_fun1),
+               "No intercept found in supplied 'formula'.")
+})

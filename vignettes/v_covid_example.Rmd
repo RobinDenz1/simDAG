@@ -1,6 +1,9 @@
 ---
 title: "Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
 author: "Robin Denz"
 vignette: >
   %\VignetteIndexEntry{Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation}
