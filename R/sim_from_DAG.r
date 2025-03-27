@@ -1,7 +1,7 @@
 
 ## generate data from a DAG with defined nodes
 #' @importFrom data.table data.table
-#' @importFrom data.table setDT
+#' @importFrom data.table as.data.table
 #' @export
 sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
 
@@ -26,7 +26,10 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
              dag$root_nodes[[i]]$name, "'. The message was:\n", e, call.=FALSE)
       }
     )
-    colnames(out) <- dag$root_nodes[[i]]$name
+
+    if (ncol(out)==1) {
+      colnames(out) <- dag$root_nodes[[i]]$name
+    }
 
     data[[i]] <- out
   }

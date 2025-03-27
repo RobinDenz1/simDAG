@@ -27,7 +27,7 @@ library(simDAG)
 library(data.table)
 ```
 
-# Randomized Controlled Trials
+# Simulating Randomized Controlled Trials
 
 First, we will give some examples on how data for randomized controlled trials (RCT) could be generated. In a classic RCT, the treatment of interest (below named `Treatment`) is randomly assigned to the individuals of the study, making it a "root node" in the terminology of DAGs.
 
@@ -136,7 +136,7 @@ head(data)
 In this DGP, each individual is randomly assigned to one of 50 Clinics with equal probability. All patients in clinics numbered 0-24 are assigned to the control group, while the other patients are assigned to the treatment group. The outcome is then generated using a Poisson regression with a random intercept based on the clinic.
 
 
-# Observational Studies
+# Simulating Observational Studies
 
 In all previous examples, the variable of interest was a treatment that was randomly assigned and did not depend on other variables (excluding the `Clinic` for the cluster randomization example). In observational studies, the variable of interest is usually not randomly assigned. Below are some examples for generating such observational study data.
 
@@ -145,13 +145,36 @@ In all previous examples, the variable of interest was a treatment that was rand
 ## Panel Data
 
 
-# Miscellaneous
+# Miscellaneous Simulations
 
-## Including Multi-Level Data
+## Simulating Multi-Level Data
 
-## Including "Outliers"
+The `simDAG` package directly supports the inclusion of arbitrary mixed model syntax in the `formula` interface of nodes of type `"gaussian"`, `"binomial"` and `"poisson"`, which makes it relatively straightforward to simulate multi-level data as well. In the following example, we consider students that are nested in different schools. The outcome is a continuous score of some kind.
 
-## Including Missing Values
+```{r}
+dag <- empty_dag() +
+  node("school", type="rcategorical", probs=rep(0.1, 10),
+       labels=LETTERS[1:10]) +
+  node("female", type="rbernoulli", p=0.5) +
+  node("age", type="rnorm", mean=12, sd=3) +
+  node("score", type="gaussian",
+       formula= ~ -2 + female*3 + age*0.1 + (1|school),
+       var_corr=0.5, error=1)
+data <- sim_from_dag(dag, n_sim=10)
+head(data)
+```
+
+In this example, there is a single random effect for school, with a standard deviation of 0.5. This example could be expanded to include a random slope for age per school, by exchanging `(1|school)` with `(age|school)`, although we would then also need to adjust the `var_corr` argument accordingly. More examples are given in the formula vignette.
+
+## Simulating "Outliers"
+
+One possibility to introduce a kind of outliers to a variable, is by defining the variable that should contain it as a kind of mixture distribution, made up of two parts, similar to how zero-inflated models work. First, values are generated from the general distribution. Then, if that variable exceeds some value, sample different values for it. A very simple example:
+
+```{r}
+# TODO
+```
+
+## Simulating Missing Values
 
 Real data usually includes at least some missing values in key variables. Below is a very simple example on how users could include missing values in their data:
 
@@ -185,7 +208,7 @@ head(data)
 
 Here, the missingness in `A_observed` is again MCAR, because it is independent of everything. The missingness in `B_observed`, however, is MAR because the probability of missingness is dependent on the actually observed value of `A_real`.
 
-## Including Measurement Error
+## Simulating Measurement Error
 
 Measurement error refers to situations in which variables of interest are not measured perfectly. For example, the disease of interest may only be detected in 90% of all patients with the disease and may falsely be detected in 1% of all patients without the disease. The same strategy shown for missing values could be used to simulate such data using `simDAG`:
 
@@ -221,9 +244,9 @@ head(data)
 
 In this extended example, `Sex` is equally distributed among the population (with `TRUE` = "female" and `FALSE` = "male"). In this example, the probability of being diagnosed with the disease (`Disease_observed`) if the disease is actually present is 0.9 for females and only 0.8 for males. Similarly, the probability of being diagnosed if the disease is not present is 0.01 for females and 0.05 for males.
 
-## Very Heterogeneous Data
+## Simulating Very Heterogeneous Data
 
 ## Ensuring Event-Order in Discrete-Time Simulations
 
-## Correlated Error Terms
+## Simulating Correlated Error Terms
 

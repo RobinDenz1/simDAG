@@ -20,7 +20,7 @@ Any function that generates some vector of size \eqn{n} with \code{n==nrow(data)
   \item \strong{1.)} The function should have an argument called \code{n} which controls how many samples to generate.
 }
 
-Some examples that are already implemented in R outside of this package are \code{rnorm()}, \code{rgamma()} and \code{rbeta()}. The function may take any amount of further arguments, which will be passed through the three-dot syntax.
+Some examples that are already implemented in R outside of this package are \code{rnorm()}, \code{rgamma()} and \code{rbeta()}. The function may take any amount of further arguments, which will be passed through the three-dot syntax. Note that whenever the supplied function produces a \code{data.frame} (or similar object), the user has to ensure that the included columns are named properly.
 
 \strong{\emph{Child Nodes}}:
 
