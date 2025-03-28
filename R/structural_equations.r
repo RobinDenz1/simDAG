@@ -112,8 +112,8 @@ str_eq_gaussian <- function(node) {
 str_eq_poisson <- function(node) {
 
   if (!is.null(node$formula) && !is_formula(node$formula)) {
-    out <- paste0(node$name, " ~ Poisson(",
-                  prep_formula_str_eq(node$formula), ")")
+    out <- paste0(node$name, " ~ Poisson(exp(",
+                  prep_formula_str_eq(node$formula), "))")
   } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ Poisson()")
   } else {
@@ -139,6 +139,48 @@ str_eq_negative_binomial <- function(node) {
                   " + log(", node$theta, "))")
   }
   return(out)
+}
+
+## structural equation for zero-inflated nodes
+str_eq_zeroinfl <- function(node) {
+
+  # count part
+  if (!is.null(node$formula_count)) {
+    form <- copy(sanitize_formula(node$formula_count))
+    args <- list(name=node$name, type=node$family_count,
+                 formula=form)
+    node_count <- do.call("node", args=args)
+  } else {
+    args <- list(name=node$name, type=node$family_count,
+                 parents=node$parents_count,
+                 betas=node$betas_count,
+                 intercept=node$intercept_count,
+                 var_corr=node$var_corr_count)
+    node_count <- do.call("node", args=args)
+  }
+  out_count <- structural_equation(node_count)
+  out_count <- gsub(node$name, paste0(node$name, "[count]"),
+                    out_count, fixed=TRUE)
+
+  # zero part
+  if (!is.null(node$formula_zero)) {
+    form <- copy(sanitize_formula(node$formula_zero))
+    args <- list(name=node$name, type="binomial",
+                 formula=form)
+    node_zero <- do.call("node", args=args)
+  } else {
+    args <- list(name=node$name, type="binomial",
+                 parents=node$parents_zero,
+                 betas=node$betas_zero,
+                 intercept=node$intercept_zero,
+                 var_corr=node$var_corr_zero)
+    node_zero <- do.call("node", args=args)
+  }
+  out_zero <- structural_equation(node_zero)
+  out_zero <- gsub(node$name, paste0(node$name, "[zero]"),
+                   out_zero, fixed=TRUE)
+
+  return(c(out_count, out_zero))
 }
 
 ## structural equation for conditional probability nodes
@@ -225,6 +267,22 @@ str_eq_identity <- function(node) {
   return(out)
 }
 
+## structural equation for mixture nodes
+str_eq_mixture <- function(node) {
+
+  out <- vector(mode="list", length=length(node$distr)/2)
+  for (i in seq(1, length(node$distr), 2)) {
+
+    # get structural equations for the regular nodes
+    node_str_eq <- structural_equation(node$distr[[i+1]])
+    out[[i]] <- gsub(node$distr[[i+1]]$name,
+                     paste0(node$name, "[", node$distr[[i]], "]"),
+                     node_str_eq, fixed=TRUE)
+  }
+
+  return(unlist(out))
+}
+
 ## structural equation for time-to-event / competing events node
 str_eq_time_to_event <- function(node) {
 
@@ -292,6 +350,56 @@ str_eq_cox <- function(node) {
   }
 
   return(c(out_time, out_cens))
+}
+
+## structural equation for nodes based on rsurv package
+str_eq_rsurv <- function(node, type) {
+
+  # event time part
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    beta_eq <- prep_formula_str_eq(node$formula)
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
+  }
+
+  if (!is.null(node$dist)) {
+    base_dist <- node$dist
+  } else {
+    base_dist <- node$baseline
+  }
+
+  time_eq <- paste0(node$name, "[T] ~ ", type, "(", beta_eq, ", dist='",
+                    base_dist, "')")
+
+  # censoring part
+  if (!is.null(node$cens_dist)) {
+    out_cens <- paste0(node$name, "[C] ~ ", get_distr_default(node$cens_dist),
+                       "(", get_param_str(node$cens_args, use_names=TRUE), ")")
+  } else {
+    out_cens <- paste0(get_distr_default(node$name), "[C] ~ Inf")
+  }
+
+  return(c(time_eq, out_cens))
+}
+
+str_eq_aftreg <- function(node) {
+  str_eq_rsurv(node=node, type="aftreg")
+}
+
+str_eq_ahreg <- function(node) {
+  str_eq_rsurv(node=node, type="ahreg")
+}
+
+str_eq_ehreg <- function(node) {
+  str_eq_rsurv(node=node, type="ehreg")
+}
+
+str_eq_poreg <- function(node) {
+  str_eq_rsurv(node=node, type="poreg")
+}
+
+str_eq_ypreg <- function(node) {
+  str_eq_rsurv(node=node, type="ypreg")
 }
 
 ## structural equation for custom time-varying nodes
@@ -387,7 +495,9 @@ structural_equation <- function(node) {
   } else if (!is.null(node$parents)) {
     if (node$type_str %in% c("gaussian", "binomial", "conditional_prob",
                              "conditional_distr", "multinomial", "poisson",
-                             "negative_binomial", "cox", "identity")) {
+                             "negative_binomial", "cox", "identity",
+                             "mixture", "aftreg", "ahreg", "ehreg",
+                             "poreg", "ypreg")) {
       str_eq_fun <- get(paste0("str_eq_", node$type_str))
       out <- str_eq_fun(node)
     } else {

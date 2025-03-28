@@ -145,7 +145,26 @@ In all previous examples, the variable of interest was a treatment that was rand
 
 ## Crossectional Data
 
+In the following example, the treatment probability is dependent on both a categorical and a continuous variable, which both also cause the outcome:
+
+```{r}
+dag <- empty_dag() +
+  node("cat", type="rcategorical", probs=c(0.4, 0.2, 0.2),
+       labels=LETTERS[1:3]) +
+  node("cont", type="rbeta", shape1=0.2, shape2=1.2) +
+  node("treatment", type="binomial",
+       formula= ~ -0.2 + catB*0.3 + catC*1 + cont*0.2) +
+  node("outcome", type="gaussian",
+       formula= ~ 3 + catB*1.1 + catC*0.2 + cont*-0.1,
+       error=1)
+data <- sim_from_dag(dag, n_sim=100)
+head(data)
+```
+
+If the goal was to estimate the causal effect of the treatment on the outcome, we would need to adjust for both `cat` and `cont` here, using for example a linear regression model (same as in the DGP) or something like inverse probability of treatment weighting.
+
 ## Panel Data
+
 
 
 # Miscellaneous Simulations
@@ -280,7 +299,7 @@ In this extended example, `Sex` is equally distributed among the population (wit
 
 ## Simulating Very Heterogeneous Data
 
-## Ensuring Event-Order in Discrete-Time Simulations
-
 ## Simulating Correlated Error Terms
+
+## Ensuring Event-Order in Discrete-Time Simulations
 

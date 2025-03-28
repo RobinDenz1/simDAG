@@ -1,8 +1,6 @@
 
 ###### Bugs & TODOS ######
 
-- when printing structural equation for rbernoulli without p, p=0.5 missing from output
-- need new structural equation functions for new node types
 
 ###### For the Review #####
 

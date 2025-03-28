@@ -121,6 +121,7 @@ Enhancements
 Bug Fixes
 
 * Fixed a bug that occurred when a user-specified root node function returned a `data.frame`-like object with more than one column.
+* Fixed a bug when printing the structural equation of a poisson node, in which the `exp()` call did not show up when the node was defined using the `formula` argument.
 
 Documentation
 
