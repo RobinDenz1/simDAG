@@ -2,16 +2,6 @@
 ###### Bugs & TODOS ######
 
 
-###### For the Review #####
-
-- allow function to generate DAG in sim_n_datasets()
-- finish cookbook vignette
-
-# Changes in the manuscript
-
-- better explanation of sim_discrete_time()
-- explain event order thing
-
 ####### New Features: #######
 
 sim_discrete_time:
@@ -26,6 +16,7 @@ sim_from_dag:
 
 dag_from_data:
 	- should allow multinomial
+	- should allow formula input with interactions / non-linear terms etc.
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment

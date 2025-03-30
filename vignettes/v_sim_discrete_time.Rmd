@@ -53,11 +53,11 @@ The `t0_root_nodes` and `t0_child_nodes` arguments are specified using a `DAG` o
 
 Let us consider a very simple example first. Suppose we want to generate data according to the following causal DAG:
 
-```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with time-varying age"), echo=FALSE, out.width=700}
+```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with time-varying age"), echo=FALSE, out.width=600}
 knitr::include_graphics("./images_v_sim_discrete_time/simple_dag.png")
 ```
 
-Here, `sex` is a time-invariant variable, whereas `age` and `death` are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
+Here, $A$, which stands for `sex`, is a time-invariant variable, whereas $B$ (`age`) and $D$ (`death`) are not. Suppose that each tick of the simulation corresponds to a duration of one year. Then, naturally, people will age one year on every simulation tick. We assume that `sex` and `age` have a direct causal effect on the probability of death, regardless of the time. Once people are dead, they stay dead (no reincarnation allowed).
 
 If we want to use this structure in the `sim_discrete_time()` function, we first have to generate an initial dataset for the state of the population at $t = 0$ as described above. We do this by first specifying the `t0_root_nodes` as follows:
 

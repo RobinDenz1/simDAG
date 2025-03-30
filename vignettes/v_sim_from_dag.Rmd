@@ -29,7 +29,7 @@ A causal DAG is a DAG in which all nodes correspond to variables and the directe
 
 It is very simple to generate data from a defined causal DAG. To see why we first need to introduce the concept of **root nodes** and **child nodes**. A root node is a node in a DAG that does not have any edges pointing to it (no incoming arrows). A child node on the other hand is a node that has at least one incoming edge. In other words, root nodes have no direct causes but child nodes do. Every node pointing into another node is considered a **parent** of that child node. For example, consider the DAG in figure 1.
 
-```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with four nodes"), echo=FALSE, out.width=400}
+```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with four nodes"), echo=FALSE, out.width=600}
 knitr::include_graphics("./images_v_sim_from_dag/simple_dag.png")
 ```
 
@@ -62,15 +62,22 @@ The values for the `root_nodes` are simply sampled from some defined distributio
 
 The `simDAG` package implements the following types of `child_nodes` directly:
 
-* `node_gaussian`: A node based on linear regression (continuous data).
-* `node_binomial`: A node based on logistic regression (binary data).
-* `node_multinomial`: A node based on multinomial logistic regression (categorical data).
-* `node_poisson`: A node based on poisson regression (count data).
-* `node_negative_binomial`: A node based on negative binomial regression (count data).
-* `node_cox`: A node based on cox regression (time-to-event data).
-* `node_conditional_prob`: A node based on conditional probabilities (binary / categorical data).
-* `node_conditional_distr`: A node based on conditional distributions (any data type).
-* `node_identity`: A node that is just some `R` expression of other nodes (any data type).
+* `node_gaussian()`: A node based on (mixed) linear regression (continuous data).
+* `node_binomial()`: A node based on (mixed) logistic regression (binary data).
+* `node_multinomial()`: A node based on multinomial logistic regression (categorical data).
+* `node_poisson()`: A node based on (mixed) poisson regression (count data).
+* `node_negative_binomial()`: A node based on negative binomial regression (count data).
+* `node_zeroinfl()`: A node based on a zero-inflated poisson / negative binomial regression (count data)
+* `node_cox()`: A node based on cox regression (time-to-event data).
+* `node_aftreg()`: A node based on accelerated failure time regression (time-to-event data)
+* `node_ahreg()`: A node based on accelerated hazards regression (time-to-event data)
+* `node_ehreg()`: A node based on an extended hazards model (time-to-event data)
+* `node_poreg()`: A node based on an proportional odds model (time-to-event data)
+* `node_ypreg()`: A node based on a Yang and Prentice model (time-to-event data)
+* `node_conditional_prob()`: A node based on conditional probabilities (binary / categorical data).
+* `node_conditional_distr()`: A node based on conditional distributions (any data type).
+* `node_mixture()`: A node that can be defined as a mixture of any other node type (any data type)
+* `node_identity()`: A node that is just some `R` expression of other nodes (any data type).
 
 All of these nodes have their own documentation page containing a detailed description on how data is generated from them. Although this collection of nodes covers a lot of data types, it is still a somewhat limited collection. If, for example, we wanted to add a child node that is normally distributed but also truncated at specific values, we could not do this using just the offered node functions. For this reason, the `sim_from_dag()` function also allows the user to use custom functions as nodes, which makes it possible to model any kind of data and any kind of relationship.
 
@@ -84,7 +91,7 @@ dag <- dag +
   node("sex", type="rbernoulli", p=0.5)
 ```
 
-All nodes are defined by calling the `node()` function and adding the output to the `dag` object using a simple `+`. This syntax is heavily inspired by the `simCausal` R-package (Sofrygin et al. 2017). Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `"rnorm"`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a Bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
+All nodes are defined by calling the `node()` function and adding the output to the `dag` object using a simple `+`. This syntax is heavily inspired by the `simcausal` R-package (Sofrygin et al. 2017). Here, we assume that `age` is a continuous normally distributed variable with a mean of 50 and a standard deviation of 4 (If this was a real simulation study we would probably use a truncated normal distribution to ensure that age is not negative). This can be done by setting the `dist` parameter to `"rnorm"`, which is the standard R function for generating random values from a normal distribution. All arguments listed in the `params` parameter will be passed to this function. Similarly, we define `sex` to be a Bernoulli distributed variable (taking only the values 0/1). We assume that there is an even gender distribution by setting `p = 0.5`.
 
 Next, we have to define what the relationship between the child nodes and their parents should look like. We may use the following code:
 
@@ -112,7 +119,7 @@ $$
 
 To check whether we got the causal relationships right, we can call the `plot()` function on the DAG object. The output should look very similar to the hand-drawn DAG above.
 
-```{r fig.width=7, fig.height=6}
+```{r fig.width=6, fig.height=5}
 plot(dag)
 ```
 
@@ -192,31 +199,27 @@ The `dag_from_data()` function essentially just fits the corresponding models on
 
 Most real data sets include time-varying covariates, e.g. variables that are measured at multiple points in time that are subject to changes. It is possible to generate this type of data using the `sim_from_dag()` function as well. All we need to do is to define an appropriate `DAG` that directly specifies how the variables change over time. For example, we can extend the simple `DAG` from above to include a dimension of time:
 
-```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with four nodes"), echo=FALSE, out.width=700}
+```{r, include=TRUE, fig.align="center", fig.cap=c("A small DAG with four nodes"), echo=FALSE, out.width=600}
 knitr::include_graphics("./images_v_sim_from_dag/time_dep_dag.png")
 ```
 
-Here, nodes $A$ and $B$ are time-constant variables that only have a causal effect on the initial state of $C$ and $D$, while nodes $C$ and $D$ change over time interdependently. If we want to simulate data from a DAG that looks like this using the `sim_from_dag()` function, we have to add a node to the for every point in time that we want to consider.
+Here, nodes $A$ and $B$ are time-constant variables that only have a causal effect on the initial state of $C$ and $D$, while nodes $C$ and $D$ change over time interdependently, where the subscript identifies the discrete point in time. If we want to simulate data from a DAG that looks like this using the `sim_from_dag()` function, we have to add a node to the for every point in time that we want to consider.
 
-We will quickly go through a somewhat simpler example, considering only 2 points in time. We define our nodes in the following way:
+We will quickly go through a this example, considering only 2 points in time. We define our nodes in the following way:
 
 ```{r}
 dag <- empty_dag() +
-  node("age", type="rnorm", mean=50, sd=4) +
-  node("sex", type="rbernoulli", p=0.5) +
-  node("bmi_t1", type="gaussian", betas=c(1.1, 0.4), parents=c("sex", "age"),
-       intercept=12, error=2) +
-  node("death_t1", type="binomial", parents=c("age", "sex", "bmi_t1"),
-       betas=c(0.1, 0.3, 0.1), intercept=-15) +
-  node("bmi_t2", type="gaussian", parents="bmi_t1", betas=c(1.1), intercept=0,
-       error=2) +
-  node("death_t2", type="binomial", betas=c(0.1, 0.3),
-       parents=c("age", "bmi_t2"), intercept=-15)
+  node("A", type="rnorm", mean=50, sd=4) +
+  node("B", type="rbernoulli", p=0.5) +
+  node("C_1", type="gaussian", formula= ~ 12 + B*1.1 + A*0.4, error=2) +
+  node("D_1", type="binomial", formula= ~ -15 + A*0.1 + B*0.3 + C_1*0.1) +
+  node("C_2", type="gaussian", formula= ~ 0 + C_1*1.1 + D_1*1, error=2) +
+  node("D_2", type="binomial", formula= ~ -15 + D_1*10 + C_2*0.1)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=10000)
 ```
 
-In this example, the `bmi` at $t = 1$ is a function of both `sex` and `age`, but the `bmi` at $t = 2$ is only a function of the previous `bmi`. The `death` node is determined by the initial `age` and by the time-varying `bmi`. This surely is not the most realistic example. It is only meant to show how the `sim_from_dag()` function may be used to incorporate time-dependent covariates. If many points in time should be considered or there are very complex time-dependent structures that may not be easily described using a DAG like the one above, the `sim_discrete_time()` function also included in this package may be used instead.
+In this example, `C_1` is a function of both `A` and `B`, but `C_2` is only a function of the previous value of `C`, e.g. `C_1`. The `D` node is determined by the initial `A` and by the time-varying `C`. Note that instead of specifying the `parents`, `betas` and `intercept` arguments directly, we used the `formula` argument, which allows us to specify these values in a more elegant fashion. In general, this surely is not the most comprehensive example. It is only meant to show how the `sim_from_dag()` function may be used to incorporate time-dependent covariates. If many points in time should be considered or there are very complex time-dependent structures that may not be easily described using a DAG like the one above, the `sim_discrete_time()` function also included in this package may be used instead.
 
 
 # References

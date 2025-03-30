@@ -56,6 +56,7 @@ where:
 
 and \eqn{Bernoulli(p)} is the Bernoulli distribution with success probability \eqn{p}. If the outcome has more than two categories, the Bernoulli distribution would be replaced by \eqn{Multinomial(p)} with \eqn{p} being replaced by a matrix of class probabilities. If there are more than two variables, the conditional distribution would be stratified by the intersection of all subgroups defined by the variables.
 
+An even more flexible node type, allowing arbitrary \code{\link{node}} definitions for different subsets of the previously generated data is included in \code{\link{node_mixture}}.
 }
 \author{
 Robin Denz
