@@ -89,7 +89,7 @@ Demarqui Fabio N. Simulation of Survival Data with the Package rsurv. (2024) arX
 Robin Denz
 }
 \value{
-Returns a \code{data.table} of length \code{nrow(data)} containing two columns if \code{as_two_cols=TRUE} and always when \code{cens_dist} is specified. In this case, both colums start with the nodes \code{name} and end with \code{_event} and \code{_time}. The first is a logical vector, the second a numeric one. If \code{as_two_cols=FALSE} and \code{cens_dist} is \code{NULL}, a numeric vector is returned instead.
+Returns a \code{data.table} of length \code{nrow(data)} containing two columns if \code{as_two_cols=TRUE} and always when \code{cens_dist} is specified. In this case, both columns start with the nodes \code{name} and end with \code{_event} and \code{_time}. The first is a logical vector, the second a numeric one. If \code{as_two_cols=FALSE} and \code{cens_dist} is \code{NULL}, a numeric vector is returned instead.
 }
 \examples{
 library(simDAG)

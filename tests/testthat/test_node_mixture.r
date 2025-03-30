@@ -105,6 +105,24 @@ test_that("conditions not covering all scenarios, using default", {
   expect_equal(round(mean(data$Y[data$A==0]), 3), -2.711)
 })
 
+test_that("calling the function directly", {
+
+  set.seed(1535434)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node("B", type="rnorm")
+  data <- as.data.frame(sim_from_dag(dag, n_sim=100))
+
+  out <- node_mixture("Y", data=data, parents="A",
+       distr=list(
+         "A==0", node(".", type="gaussian", formula= ~ -2 + B*2, error=1)
+       ), default=10)
+
+  expect_true(all(out[data$A==1]==10))
+  expect_equal(round(mean(out[data$A==0]), 3), -2.711)
+})
+
 test_that("nothing in distr defined", {
   expect_error({
     dag <- empty_dag() +

@@ -114,7 +114,7 @@ Enhancements
 * Added the `reference` argument to `rbernoulli()` and `rcategorical()` to make it easier to specify the reference category when coding the output as a factor variable.
 * `+.DAG` now checks whether the `DAG` would become cyclic when adding a `node()` and returns an error if it does.
 * Added the `include_td_nodes` and `include_root_nodes` arguments to `as.igraph.DAG()`.
-* Changed the default of `n_cores` in the `sim_n_datasets()` function to 1 from `parallel::detectCores()-1`
+* Changed the default of `n_cores` in the `sim_n_datasets()` function to 1 from `parallel::detectCores()`
 * Function input to the `cens_dist` argument in the `node_cox()` function is now allowed.
 * The argument `as_two_cols` was added to the `node_cox()` function to allow users to return only the time-to-event as a single column if no censoring is applied.
 

@@ -1,6 +1,6 @@
 Package: simDAG
 Title: Simulate Data from a DAG and Associated Node Information
-Version: 0.2.2.9000
+Version: 0.3.0
 Authors@R: c(
     person("Robin", "Denz", , "robin.denz@rub.de", role = c("aut", "cre")),
     person("Katharina", "Meiszl", , "meiszl@amib.rub-uni-bochum.de", role = c("aut"))

@@ -16,3 +16,15 @@ test_that("multiple columns in custom root", {
   expect_true(nrow(data)==100)
   expect_equal(colnames(data), c("A", "B", "C"))
 })
+
+test_that("node needs intercept", {
+
+  test_fun <- function(data, intercept) {
+    return(data)
+  }
+
+  assign("test_fun", test_fun, envir=.GlobalEnv)
+
+  expect_true(node_needs_intercept(test_fun))
+  expect_true(node_needs_intercept("test_fun"))
+})
