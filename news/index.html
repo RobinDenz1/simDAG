@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,7 +127,7 @@
 <li>
 <code>+.DAG</code> now checks whether the <code>DAG</code> would become cyclic when adding a <code><a href="../reference/node.html">node()</a></code> and returns an error if it does.</li>
 <li>Added the <code>include_td_nodes</code> and <code>include_root_nodes</code> arguments to <code><a href="../reference/as.igraph.DAG.html">as.igraph.DAG()</a></code>.</li>
-<li>Changed the default of <code>n_cores</code> in the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to 1 from <code>parallel::detectCores()-1</code>
+<li>Changed the default of <code>n_cores</code> in the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to 1 from <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code>
 </li>
 <li>Function input to the <code>cens_dist</code> argument in the <code><a href="../reference/node_cox.html">node_cox()</a></code> function is now allowed.</li>
 <li>The argument <code>as_two_cols</code> was added to the <code><a href="../reference/node_cox.html">node_cox()</a></code> function to allow users to return only the time-to-event as a single column if no censoring is applied.</li>
