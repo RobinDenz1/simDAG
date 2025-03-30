@@ -116,7 +116,7 @@ child nodes do. Every node pointing into another node is considered a
 <strong>parent</strong> of that child node. For example, consider the
 DAG in figure 1.</p>
 <div class="figure" style="text-align: center">
-<img src="images_v_sim_from_dag%2Fsimple_dag.png" alt="A small DAG with four nodes" width="400"><p class="caption">
+<img src="images_v_sim_from_dag%2Fsimple_dag.png" alt="A small DAG with four nodes" width="600"><p class="caption">
 A small DAG with four nodes
 </p>
 </div>
@@ -202,32 +202,53 @@ instead.</p>
 <code>child_nodes</code> directly:</p>
 <ul>
 <li>
-<code>node_gaussian</code>: A node based on linear regression
-(continuous data).</li>
+<code><a href="../reference/node_gaussian.html">node_gaussian()</a></code>: A node based on (mixed) linear
+regression (continuous data).</li>
 <li>
-<code>node_binomial</code>: A node based on logistic regression
-(binary data).</li>
+<code><a href="../reference/node_binomial.html">node_binomial()</a></code>: A node based on (mixed) logistic
+regression (binary data).</li>
 <li>
-<code>node_multinomial</code>: A node based on multinomial logistic
-regression (categorical data).</li>
+<code><a href="../reference/node_multinomial.html">node_multinomial()</a></code>: A node based on multinomial
+logistic regression (categorical data).</li>
 <li>
-<code>node_poisson</code>: A node based on poisson regression (count
-data).</li>
+<code><a href="../reference/node_poisson.html">node_poisson()</a></code>: A node based on (mixed) poisson
+regression (count data).</li>
 <li>
-<code>node_negative_binomial</code>: A node based on negative
+<code><a href="../reference/node_negative_binomial.html">node_negative_binomial()</a></code>: A node based on negative
 binomial regression (count data).</li>
 <li>
-<code>node_cox</code>: A node based on cox regression (time-to-event
-data).</li>
+<code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code>: A node based on a zero-inflated
+poisson / negative binomial regression (count data)</li>
 <li>
-<code>node_conditional_prob</code>: A node based on conditional
+<code><a href="../reference/node_cox.html">node_cox()</a></code>: A node based on cox regression
+(time-to-event data).</li>
+<li>
+<code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>: A node based on accelerated failure time
+regression (time-to-event data)</li>
+<li>
+<code><a href="../reference/node_rsurv.html">node_ahreg()</a></code>: A node based on accelerated hazards
+regression (time-to-event data)</li>
+<li>
+<code><a href="../reference/node_rsurv.html">node_ehreg()</a></code>: A node based on an extended hazards model
+(time-to-event data)</li>
+<li>
+<code><a href="../reference/node_rsurv.html">node_poreg()</a></code>: A node based on an proportional odds
+model (time-to-event data)</li>
+<li>
+<code><a href="../reference/node_rsurv.html">node_ypreg()</a></code>: A node based on a Yang and Prentice model
+(time-to-event data)</li>
+<li>
+<code><a href="../reference/node_conditional_prob.html">node_conditional_prob()</a></code>: A node based on conditional
 probabilities (binary / categorical data).</li>
 <li>
-<code>node_conditional_distr</code>: A node based on conditional
+<code><a href="../reference/node_conditional_distr.html">node_conditional_distr()</a></code>: A node based on conditional
 distributions (any data type).</li>
 <li>
-<code>node_identity</code>: A node that is just some <code>R</code>
-expression of other nodes (any data type).</li>
+<code><a href="../reference/node_mixture.html">node_mixture()</a></code>: A node that can be defined as a mixture
+of any other node type (any data type)</li>
+<li>
+<code><a href="../reference/node_identity.html">node_identity()</a></code>: A node that is just some
+<code>R</code> expression of other nodes (any data type).</li>
 </ul>
 <p>All of these nodes have their own documentation page containing a
 detailed description on how data is generated from them. Although this
@@ -260,7 +281,7 @@ root nodes should look like. We use the following code to define
 <p>All nodes are defined by calling the <code><a href="../reference/node.html">node()</a></code> function and
 adding the output to the <code>dag</code> object using a simple
 <code>+</code>. This syntax is heavily inspired by the
-<code>simCausal</code> R-package (Sofrygin et al. 2017). Here, we assume
+<code>simcausal</code> R-package (Sofrygin et al. 2017). Here, we assume
 that <code>age</code> is a continuous normally distributed variable with
 a mean of 50 and a standard deviation of 4 (If this was a real
 simulation study we would probably use a truncated normal distribution
@@ -309,7 +330,7 @@ look very similar to the hand-drawn DAG above.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required namespace: ggforce</span></span></code></pre></div>
-<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_from_dag_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>We can also directly print the underlying structural equations using
 the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -458,7 +479,7 @@ define an appropriate <code>DAG</code> that directly specifies how the
 variables change over time. For example, we can extend the simple
 <code>DAG</code> from above to include a dimension of time:</p>
 <div class="figure" style="text-align: center">
-<img src="images_v_sim_from_dag%2Ftime_dep_dag.png" alt="A small DAG with four nodes"><p class="caption">
+<img src="images_v_sim_from_dag%2Ftime_dep_dag.png" alt="A small DAG with four nodes" width="600"><p class="caption">
 A small DAG with four nodes
 </p>
 </div>
@@ -475,39 +496,36 @@ while nodes
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
-change over time interdependently. If we want to simulate data from a
-DAG that looks like this using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function,
-we have to add a node to the for every point in time that we want to
+change over time interdependently, where the subscript identifies the
+discrete point in time. If we want to simulate data from a DAG that
+looks like this using the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function, we have
+to add a node to the for every point in time that we want to
 consider.</p>
-<p>We will quickly go through a somewhat simpler example, considering
-only 2 points in time. We define our nodes in the following way:</p>
+<p>We will quickly go through a this example, considering only 2 points
+in time. We define our nodes in the following way:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"bmi_t1"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">0.4</span><span class="op">)</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"age"</span><span class="op">)</span>,</span>
-<span>       intercept<span class="op">=</span><span class="fl">12</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"death_t1"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"bmi_t1"</span><span class="op">)</span>,</span>
-<span>       betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span><span class="op">)</span>, intercept<span class="op">=</span><span class="op">-</span><span class="fl">15</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"bmi_t2"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, parents<span class="op">=</span><span class="st">"bmi_t1"</span>, betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span><span class="op">)</span>, intercept<span class="op">=</span><span class="fl">0</span>,</span>
-<span>       error<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"death_t2"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
-<span>       parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"bmi_t2"</span><span class="op">)</span>, intercept<span class="op">=</span><span class="op">-</span><span class="fl">15</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"B"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"C_1"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">12</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">1.1</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.4</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D_1"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">15</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">B</span><span class="op">*</span><span class="fl">0.3</span> <span class="op">+</span> <span class="va">C_1</span><span class="op">*</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"C_2"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">C_1</span><span class="op">*</span><span class="fl">1.1</span> <span class="op">+</span> <span class="va">D_1</span><span class="op">*</span><span class="fl">1</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"D_2"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">15</span> <span class="op">+</span> <span class="va">D_1</span><span class="op">*</span><span class="fl">10</span> <span class="op">+</span> <span class="va">C_2</span><span class="op">*</span><span class="fl">0.1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span>dag<span class="op">=</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
-<p>In this example, the <code>bmi</code> at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
-is a function of both <code>sex</code> and <code>age</code>, but the
-<code>bmi</code> at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">t = 2</annotation></semantics></math>
-is only a function of the previous <code>bmi</code>. The
-<code>death</code> node is determined by the initial <code>age</code>
-and by the time-varying <code>bmi</code>. This surely is not the most
-realistic example. It is only meant to show how the
-<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function may be used to incorporate
-time-dependent covariates. If many points in time should be considered
-or there are very complex time-dependent structures that may not be
-easily described using a DAG like the one above, the
+<p>In this example, <code>C_1</code> is a function of both
+<code>A</code> and <code>B</code>, but <code>C_2</code> is only a
+function of the previous value of <code>C</code>, e.g. <code>C_1</code>.
+The <code>D</code> node is determined by the initial <code>A</code> and
+by the time-varying <code>C</code>. Note that instead of specifying the
+<code>parents</code>, <code>betas</code> and <code>intercept</code>
+arguments directly, we used the <code>formula</code> argument, which
+allows us to specify these values in a more elegant fashion. In general,
+this surely is not the most comprehensive example. It is only meant to
+show how the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function may be used to
+incorporate time-dependent covariates. If many points in time should be
+considered or there are very complex time-dependent structures that may
+not be easily described using a DAG like the one above, the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function also included in this package
 may be used instead.</p>
 </div>

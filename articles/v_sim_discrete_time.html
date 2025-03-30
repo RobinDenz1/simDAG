@@ -182,17 +182,22 @@ associated vignette.</p>
 <p>Let us consider a very simple example first. Suppose we want to
 generate data according to the following causal DAG:</p>
 <div class="figure" style="text-align: center">
-<img src="images_v_sim_discrete_time%2Fsimple_dag.png" alt="A small DAG with time-varying age"><p class="caption">
+<img src="images_v_sim_discrete_time%2Fsimple_dag.png" alt="A small DAG with time-varying age" width="600"><p class="caption">
 A small DAG with time-varying age
 </p>
 </div>
-<p>Here, <code>sex</code> is a time-invariant variable, whereas
-<code>age</code> and <code>death</code> are not. Suppose that each tick
-of the simulation corresponds to a duration of one year. Then,
-naturally, people will age one year on every simulation tick. We assume
-that <code>sex</code> and <code>age</code> have a direct causal effect
-on the probability of death, regardless of the time. Once people are
-dead, they stay dead (no reincarnation allowed).</p>
+<p>Here,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>,
+which stands for <code>sex</code>, is a time-invariant variable, whereas
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+(<code>age</code>) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+(<code>death</code>) are not. Suppose that each tick of the simulation
+corresponds to a duration of one year. Then, naturally, people will age
+one year on every simulation tick. We assume that <code>sex</code> and
+<code>age</code> have a direct causal effect on the probability of
+death, regardless of the time. Once people are dead, they stay dead (no
+reincarnation allowed).</p>
 <p>If we want to use this structure in the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function, we first have to generate an
 initial dataset for the state of the population at
