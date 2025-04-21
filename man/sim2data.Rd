@@ -13,17 +13,20 @@ This function transforms the output of the \code{\link{sim_discrete_time}} funct
 sim2data(sim, to, use_saved_states=sim$save_states=="all",
          overlap=FALSE, target_event=NULL,
          keep_only_first=FALSE, remove_not_at_risk=FALSE,
-         as_data_frame=FALSE, check_inputs=TRUE, ...)
+         remove_vars=NULL, as_data_frame=FALSE,
+         check_inputs=TRUE, ...)
 
 \method{as.data.table}{simDT}(x, keep.rownames=FALSE, to, overlap=FALSE,
               target_event=NULL, keep_only_first=FALSE,
               remove_not_at_risk=FALSE,
+              remove_vars=NULL,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 
 \method{as.data.frame}{simDT}(x, row.names=NULL, optional=FALSE, to,
               overlap=FALSE, target_event=NULL,
               keep_only_first=FALSE, remove_not_at_risk=FALSE,
+              remove_vars=NULL,
               use_saved_states=x$save_states=="all",
               check_inputs=TRUE, ...)
 }
@@ -48,6 +51,9 @@ Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}
   }
   \item{remove_not_at_risk}{
 Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the \code{event_duration} and \code{immunity_duration} of the \code{target_event} are taken into account when constructing the start-stop data. More precisely, the time in which individuals are not at-risk because they are either still currently experiencing the event or because they are immune to the event is removed from the start-stop data. This may be necessary when fitting some survival regression models, because these time-periods should not be counted as time at-risk.
+  }
+  \item{remove_vars}{
+An optional character vector specifying which variables should \emph{not} be included in the ouput. Set to \code{NULL} to include all variables included in the \code{sim} object (default).
   }
   \item{as_data_frame}{
 Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \code{data.table}.

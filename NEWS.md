@@ -127,3 +127,9 @@ Documentation
 
 * Added new "cookbook" vignette to showcase more possible use cases of the package.
 * Visual update of the DAGs shown in the vignette figures.
+
+# simDAG 0.3.1
+
+Enhancements
+
+* Added the `remove_vars` argument to the `sim2data()` function, to allow users to exclude certain variables from the output if desired.

@@ -252,7 +252,7 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
 ## check user inputs to sim2data function
 check_inputs_sim2data <- function(sim, use_saved_states, to, target_event,
                                   keep_only_first, overlap,
-                                  remove_not_at_risk) {
+                                  remove_not_at_risk, remove_vars) {
 
   # errors
   if (!inherits(sim, "simDT")) {
@@ -274,6 +274,10 @@ check_inputs_sim2data <- function(sim, use_saved_states, to, target_event,
   } else if (!(is.logical(remove_not_at_risk) &
                length(remove_not_at_risk)==1)) {
     stop("'remove_not_at_risk' must be either TRUE or FALSE.")
+  } else if (!(is.null(remove_vars) ||
+               (length(remove_vars) > 0 && is.character(remove_vars)))) {
+    stop("'remove_vars' must be either NULL or a character vector, ",
+         "specifying which variables should not be included in the output.")
   }
 
   # extract node_time_to_event objects
