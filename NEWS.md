@@ -133,3 +133,7 @@ Documentation
 Enhancements
 
 * Added the `remove_vars` argument to the `sim2data()` function, to allow users to exclude certain variables from the output if desired.
+
+Bug Fixes
+
+* Fixed a bug where `sim_n_datasets()` would fail with `n_cores > 1` whenever nested custom functions were used in nodes.

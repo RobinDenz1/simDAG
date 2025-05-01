@@ -48,6 +48,10 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
     glob_funs <- ls(envir=.GlobalEnv)[vapply(ls(envir=.GlobalEnv), function(obj)
       "function"==class(eval(parse(text=obj)))[1], FUN.VALUE=logical(1))]
 
+    # NOTE: this (for some reason) prevents errors when using custom functions
+    #       in nodes that also call custom functions
+    parallel::clusterExport(cl=cl, varlist=glob_funs)
+
     # add progress bar
     if (progressbar) {
       pb <- utils::txtProgressBar(max=n_repeats, style=3)
