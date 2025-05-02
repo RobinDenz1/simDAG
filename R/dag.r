@@ -18,9 +18,10 @@ add_node <- function(dag, node) {
   # check if correct object types
   if (!inherits(node, "DAG.node")) {
     stop("'node' must be a DAG.node object created using either the node() or",
-         " node_td() function.")
+         " node_td() function.", call.=FALSE)
   } else if (!inherits(dag, "DAG")) {
-    stop("'dag' must be a DAG object created using the empty_dag() function.")
+    stop("'dag' must be a DAG object created using the empty_dag() function.",
+         call.=FALSE)
   }
 
   dag_names <- names_DAG(dag)
@@ -29,7 +30,7 @@ add_node <- function(dag, node) {
       (node$time_varying &
        node$type_str %in% c("time_to_event", "competing_events")))) {
     stop("A node with the name ", node$name, " is already present in the",
-         " DAG object and will not be overwritten.")
+         " DAG object and will not be overwritten.", call.=FALSE)
   }
 
   # add to child, root or tx node lists inside DAG
@@ -76,7 +77,7 @@ add_node <- function(dag, node) {
     }
   } else {
     stop("Only output created using the node() or node_td() functions can",
-         " be added to a DAG object.")
+         " be added to a DAG object.", call.=FALSE)
   }
   return(out)
 }

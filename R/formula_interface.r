@@ -4,12 +4,13 @@ check_intercept <- function(intercept) {
   if (length(intercept) > 1) {
     stop("Multiple intercepts or missing * found in 'formula'",
          ": ", paste0(intercept, collapse=", "), ".",
-         " Please re-define the formula and re-run the function.")
+         " Please re-define the formula and re-run the function.",
+         call.=FALSE)
   } else if (length(intercept) == 0) {
-    stop("No intercept found in supplied 'formula'.")
+    stop("No intercept found in supplied 'formula'.", call.=FALSE)
   } else if (is.na(as.numeric(intercept))) {
     stop("Intercept supplied in 'formula' is not a number. ",
-         "Supplied intercept: ", intercept)
+         "Supplied intercept: ", intercept, call.=FALSE)
   }
 }
 
@@ -19,7 +20,7 @@ check_formlist <- function(formlist) {
   if (!all(n_inlist==2)) {
     stop("Missing variable name or coefficient in supplied 'formula'.",
          " The problem starts somewhere at: '", formlist[n_inlist!=2][[1]][1],
-         "...'")
+         "...'", call.=FALSE)
   }
 }
 
@@ -27,7 +28,7 @@ check_formlist <- function(formlist) {
 check_betas <- function(betas) {
   if (anyNA(betas)) {
     stop("One or more of the supplied beta coefficients in 'formula'",
-         " are not numbers.")
+         " are not numbers.", call.=FALSE)
   }
 }
 
@@ -64,7 +65,7 @@ str2numeric <- function(string) {
            USE.NAMES=FALSE)},
     error=function(e){
       stop("One or more of the supplied beta coefficients ",
-           "in 'formula' are not numbers.")}
+           "in 'formula' are not numbers.", call.=FALSE)}
   )
   return(out)
 }
@@ -91,7 +92,7 @@ parse_formula <- function(formula, node_type) {
   if (!supports_mixed_terms(node_type) && has_mixed_terms(formula)) {
     stop("Random effects and random slopes are currently only supported in",
          " 'formula' for nodes of type 'gaussian', 'binomial', or",
-         " 'poisson', not ", node_type, ".")
+         " 'poisson', not ", node_type, ".", call.=FALSE)
   }
 
   # clean up formula
@@ -112,7 +113,8 @@ parse_formula <- function(formula, node_type) {
 
   if (length(formvec) <= 1) {
     stop("A 'formula' cannot consist soley of random effects and/or random",
-         " slopes. At least one fixed effect must also be supplied.")
+         " slopes. At least one fixed effect must also be supplied.",
+         call.=FALSE)
   }
 
   # extract and check intercept

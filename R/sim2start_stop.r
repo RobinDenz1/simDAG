@@ -105,7 +105,7 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
   if (length(sim$ce_past_events) > 0) {
     stop("This function currently does not work if competing_events",
          " nodes were used in the original sim_discrete_time() call",
-         " in conjunction with setting save_states!='all'.")
+         " in conjunction with setting save_states!='all'.", call.=FALSE)
   }
 
   start <- .id <- NULL

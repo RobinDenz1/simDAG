@@ -170,7 +170,7 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
       stop("The function '", fun_name, "' neccessary to create the node",
            " object for node '", dag$root_nodes[[i]]$name, "' is not",
            " defined. Users need to write their own functions for ",
-           " unsupported node types. See details.")
+           " unsupported node types. See details.", call.=FALSE)
     }
 
     # call associated root function
@@ -192,7 +192,7 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
       stop("The function '", fun_name, "' neccessary to create the node",
            " object for node '", dag$child_nodes[[i]]$name, "' is not",
            " defined. Users need to write their own functions for ",
-           " unsupported node types. See details.")
+           " unsupported node types. See details.", call.=FALSE)
     }
 
     # get new node using model_node_ function

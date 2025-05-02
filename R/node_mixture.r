@@ -41,27 +41,27 @@ check_inputs_node_mixture <- function(parents, args) {
   distr <- args$distr
 
   if (length(distr)==0) {
-    stop("'distr' must contain at least two entries.")
+    stop("'distr' must contain at least two entries.", call.=FALSE)
   } else if ((length(distr) %% 2) != 0) {
     stop("'distr' must contain an even number of entries, with",
-         " the condition first and the node second.")
+         " the condition first and the node second.", call.=FALSE)
   } else if (!is.null(args$default) && length(args$default)!=1) {
-    stop("'default' should be a single value of some kind.")
+    stop("'default' should be a single value of some kind.", call.=FALSE)
   }
 
   for (i in seq(1, length(distr), 2)) {
     if (!(length(distr[[i]])==1 && is.character(distr[[i]]))) {
       stop("'distr' must contain single character strings containing the",
            " condition for the corresponding node() definition first,",
-           " then the node() objects.")
+           " then the node() objects.", call.=FALSE)
     }
     if (!inherits(distr[[i+1]], "DAG.node")) {
       stop("'distr' must contain DAG.node objects created using the",
            " node() function for the corresponding conditions only after",
-           " the conditions.")
+           " the conditions.", call.=FALSE)
     } else if (distr[[i+1]]$time_varying==TRUE) {
       stop("Time-dependent nodes defined with the node_td() function",
-           " are currently not supported in 'distr'.")
+           " are currently not supported in 'distr'.", call.=FALSE)
     }
   }
 }

@@ -1,7 +1,4 @@
 
-# TODO:
-# - add code for structural equation printing
-
 ## simulate from a zero-inflated regression model, where the count
 ## part is simulated using either a poisson or a negative-binomial regression
 ## and the zero inflated part is simulated using a logistic regression
@@ -90,7 +87,7 @@ parents_from_zeroinfl <- function(...) {
                                           node_type=args$family_count)
   } else {
     stop("Either 'parents_count' or 'formula_count' must be specified",
-         " when using type='zeroinfl'.")
+         " when using type='zeroinfl'.", call.=FALSE)
   }
 
   # parents of zero-inflation model
@@ -102,7 +99,7 @@ parents_from_zeroinfl <- function(...) {
                                          node_type="binomial")
   } else {
     stop("Either 'parents_zero' or 'formula_zero' must be specified",
-         " when using type='zeroinfl'.")
+         " when using type='zeroinfl'.", call.=FALSE)
   }
 
   return(unique(c(parents_count, parents_zero)))

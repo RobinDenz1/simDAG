@@ -5,10 +5,10 @@ dag2matrix <- function(dag, include_root_nodes=TRUE, include_td_nodes=FALSE) {
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() function",
-         " and + syntax.")
+         " and + syntax.", call.=FALSE)
   } else if (!(is.logical(include_root_nodes) &
                length(include_root_nodes)==1)) {
-    stop("'include_root_nodes' must be either TRUE or FALSE.")
+    stop("'include_root_nodes' must be either TRUE or FALSE.", call.=FALSE)
   }
 
   # extract node names

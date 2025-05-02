@@ -45,6 +45,20 @@ test_that("wrong to", {
   expect_error(sim2data(sim, to="long2", use_saved_states=FALSE))
 })
 
+test_that("error when using protected internal names", {
+
+  dag <- empty_dag() +
+    node(c("A", "B", "C"), type="rnorm") +
+    node_td("D", type="time_to_event", prob_fun=0.01) +
+    node_td("stop", type="time_to_event", prob_fun=0.01)
+
+  sim <- sim_discrete_time(dag, n_sim=10, max_t=20)
+  expect_error(sim2data(sim, to="start_stop"),
+               paste0("Cannot transform the data because one of the protected",
+               " column names '.id', 'start' or 'stop' was used as a node",
+               " name. \nPlease rename these nodes and re-run the simulation."))
+})
+
 test_that("warning save_past_events", {
   dag <- empty_dag() +
     node_td("death", type="time_to_event", prob_fun=0.0001,

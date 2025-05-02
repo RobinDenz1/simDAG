@@ -8,7 +8,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   call <- sys.call()
 
   if (length(call) < 3) {
-    stop("Arguments 'name' and 'type' must be specified.")
+    stop("Arguments 'name' and 'type' must be specified.", call.=FALSE)
   }
 
   parents <- get_arg_from_call(call=call, envir=environment(),
@@ -73,7 +73,7 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
   call <- sys.call()
 
   if (length(call) < 3) {
-    stop("Arguments 'name' and 'type' must be specified.")
+    stop("Arguments 'name' and 'type' must be specified.", call.=FALSE)
   }
 
   parents <- get_arg_from_call(call=call, envir=environment(),

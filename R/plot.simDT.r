@@ -30,7 +30,7 @@ plot.simDT <- function(x, right_boxes=TRUE,
 
   if (!inherits(x, "simDT")) {
     stop("'x' must be a simDT object created using the sim_discrete_time()",
-         " function.")
+         " function.", call.=FALSE)
   }
 
   tx_names <- unlist(lapply(x$tx_nodes, FUN=function(x){x$name}))
