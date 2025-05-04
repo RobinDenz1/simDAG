@@ -79,7 +79,7 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_ypreg]{ypreg}": A node based on a Young and Prentice model.}
 }
 
-For custom child node types, see below or \code{?node_custom}.
+For custom child node types, see below or consult the vignette on custom node definitions.
 
 \strong{\emph{Implemented Time-Dependent Node Types}}:
 
@@ -90,11 +90,11 @@ Currently, the following node types are implemented directly for convenience to 
   \item{"\link[=node_competing_events]{competing_events}": A node based on repeatedly checking whether one of multiple mutually exclusive events occurs at each point in time.}
 }
 
-However, the user may also use any of the child node types in a \code{node_td} call directly. For custom time-dependent node types, see below.
+However, the user may also use any of the child node types in a \code{node_td} call directly. For custom time-dependent node types, please consult the associated vignette.
 
 \strong{\emph{Custom Node Types}}
 
-It is very simple to write a new custom \code{node_function} to be used instead, allowing the user to use any \code{type} of data-generation mechanism for any type of node (root / child / time-dependent). All that is required of this function is, that it has the named arguments \code{data} (the sample as generated so far) and, if it's a child node, \code{parents} (a character vector specifying the parents) and outputs either a vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found on the \code{node_custom} documentation page.
+It is very simple to write a new custom \code{node_function} to be used instead, allowing the user to use any \code{type} of data-generation mechanism for any type of node (root / child / time-dependent). All that is required of this function is, that it has the named arguments \code{data} (the sample as generated so far) and, if it's a child node, \code{parents} (a character vector specifying the parents) and outputs either a vector containing \code{n_sim} entries, or a \code{data.frame} with \code{n_sim} rows and an arbitrary amount of columns. More information about this can be found in the associated vignette: \code{vignette(topic="v_custom_nodes", package="simDAG")}.
 
 \strong{\emph{Using child nodes as parents for other nodes}}:
 
