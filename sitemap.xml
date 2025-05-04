@@ -4,6 +4,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/articles/index.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_cookbook.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_covid_example.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/articles/v_custom_nodes.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_sim_discrete_time.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_sim_from_dag.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_using_formulas.html</loc></url>
@@ -25,7 +26,6 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_conditional_distr.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_conditional_prob.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_cox.html</loc></url>
-<url><loc>https://robindenz1.github.io/simDAG/reference/node_custom.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_gaussian.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_identity.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_mixture.html</loc></url>
