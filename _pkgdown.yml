@@ -1,4 +1,59 @@
 url: https://robindenz1.github.io/simDAG/
 template:
   bootstrap: 5
-
+reference:
+    - title: DAGs
+      desc: Create, manipulate and inspect DAGs
+    - contents:
+      - empty_dag
+      - node
+      - add_node
+      - do
+      - dag2matrix
+      - matrix2dag
+      - as.igraph.DAG
+      - plot.DAG
+      - dag_from_data
+      
+    - title: Simulation
+      desc: Simulate data from a DAG and manipulate or visualize the output
+    - contents:
+      - sim_from_dag
+      - sim_discrete_time
+      - sim2data
+      - plot.simDT
+      - sim_n_datasets
+      
+    - title: Root nodes
+      desc: Functions that can be used as root nodes
+    - contents:
+      - rbernoulli
+      - rcategorical
+      - rconstant
+      
+    - title: Child nodes
+      desc: Functions that can be used as child nodes
+    - contents:
+      - node_gaussian
+      - node_binomial
+      - node_conditional_prob
+      - node_conditional_distr
+      - node_multinomial
+      - node_poisson
+      - node_negative_binomial
+      - node_zeroinfl
+      - node_identity
+      - node_mixture
+      - node_cox
+      - node_rsurv
+    
+    - title: Time-dependent nodes
+      desc: Functions that can only be used as time-dependent nodes
+    - contents:
+      - node_time_to_event
+      - node_competing_events
+    
+    - title: Misc
+    - contents:
+      - long2start_stop
+      - simDAG

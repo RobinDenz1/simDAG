@@ -3,12 +3,12 @@
 #' @export
 empty_dag <- function() {
 
-  dag_obj <- list(root_nodes=list(),
-                  child_nodes=list(),
-                  tx_nodes=list())
-  class(dag_obj) <- "DAG"
+  dag <- list(root_nodes=list(),
+              child_nodes=list(),
+              tx_nodes=list())
+  class(dag) <- "DAG"
 
-  return(dag_obj)
+  return(dag)
 }
 
 ## add one DAG.node object to a DAG object
