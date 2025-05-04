@@ -56,4 +56,4 @@ reference:
     - title: Misc
     - contents:
       - long2start_stop
-      - simDAG
+      - simDAG-package
