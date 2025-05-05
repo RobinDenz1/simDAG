@@ -1,6 +1,16 @@
 url: https://robindenz1.github.io/simDAG/
 template:
   bootstrap: 5
+articles:
+    - title: Articles
+      navbar: ~
+    - contents:
+      - v_sim_from_dag
+      - v_using_formulas
+      - v_custom_nodes
+      - v_sim_discrete_time
+      - v_covid_examples
+      - v_cookbook
 reference:
     - title: DAGs
       desc: Create, manipulate and inspect DAGs
