@@ -9,7 +9,7 @@ articles:
       - v_using_formulas
       - v_custom_nodes
       - v_sim_discrete_time
-      - v_covid_examples
+      - v_covid_example
       - v_cookbook
 reference:
     - title: DAGs
