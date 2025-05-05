@@ -4,7 +4,7 @@ template:
 articles:
     - title: Articles
       navbar: ~
-    - contents:
+      contents:
       - v_sim_from_dag
       - v_using_formulas
       - v_custom_nodes
@@ -18,11 +18,11 @@ reference:
       - empty_dag
       - node
       - add_node
+      - plot.DAG
+      - as.igraph.DAG
       - do
       - dag2matrix
       - matrix2dag
-      - as.igraph.DAG
-      - plot.DAG
       - dag_from_data
       
     - title: Simulation
@@ -30,9 +30,9 @@ reference:
     - contents:
       - sim_from_dag
       - sim_discrete_time
+      - sim_n_datasets
       - sim2data
       - plot.simDT
-      - sim_n_datasets
       
     - title: Root nodes
       desc: Functions that can be used as root nodes
