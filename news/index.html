@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,12 +18,12 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
-    <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a></li>
+    <li><a class="dropdown-item" href="../articles/v_using_formulas.html">Specifying Formulas in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_custom_nodes.html">Specifying Custom Node Types in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
-    <li><a class="dropdown-item" href="../articles/v_sim_from_dag.html">Simulating Data from a known DAG</a></li>
-    <li><a class="dropdown-item" href="../articles/v_using_formulas.html">Specifying Formulas in a DAG</a></li>
+    <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -41,22 +41,71 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="simdag-010">simDAG 0.1.0<a class="anchor" aria-label="anchor" href="#simdag-010"></a></h2><p class="text-muted">CRAN release: 2023-08-28</p>
-<ul><li>This is the first release of this package</li>
+<h2 class="pkg-version" data-toc-text="0.3.1" id="simdag-031-developmental-version">simDAG 0.3.1 (developmental version)<a class="anchor" aria-label="anchor" href="#simdag-031-developmental-version"></a></h2>
+<p>Enhancements</p>
+<ul><li>Added the <code>remove_vars</code> argument to the <code><a href="../reference/sim2data.html">sim2data()</a></code> function, to allow users to exclude certain variables from the output if desired.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>Fixed a bug where <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> would fail with <code>n_cores &gt; 1</code> whenever nested custom functions were used in nodes.</li>
+</ul><p>Documentation</p>
+<ul><li>The previous <code>node_custom</code> documentation page has been turned into a vignette (which it should have been from the start).</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="simdag-011">simDAG 0.1.1<a class="anchor" aria-label="anchor" href="#simdag-011"></a></h2><p class="text-muted">CRAN release: 2024-03-07</p>
-<p>Enhancements</p>
-<ul><li>
-<code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> now support character vectors in the ‘name’ argument, allowing easy creation of multiple nodes with the same definition</li>
+<h2 class="pkg-version" data-toc-text="0.3.0" id="simdag-030">simDAG 0.3.0<a class="anchor" aria-label="anchor" href="#simdag-030"></a></h2><p class="text-muted">CRAN release: 2025-03-30</p>
+<p>New Features</p>
+<ul><li>Support for random effects and random slopes (mixed model syntax) has been added to the <code>formula</code> interface of <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> when using nodes of type <code>"gaussian"</code>, <code>"binomial"</code> or <code>"poisson"</code>.</li>
+<li>Added seven new node types: <code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ahreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_poreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ypreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ehreg()</a></code>, <code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code> and <code><a href="../reference/node_mixture.html">node_mixture()</a></code>.</li>
+</ul><p>Enhancements</p>
+<ul><li>Added the <code>reference</code> argument to <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> and <code><a href="../reference/rcategorical.html">rcategorical()</a></code> to make it easier to specify the reference category when coding the output as a factor variable.</li>
+<li>
+<code>+.DAG</code> now checks whether the <code>DAG</code> would become cyclic when adding a <code><a href="../reference/node.html">node()</a></code> and returns an error if it does.</li>
+<li>Added the <code>include_td_nodes</code> and <code>include_root_nodes</code> arguments to <code><a href="../reference/as.igraph.DAG.html">as.igraph.DAG()</a></code>.</li>
+<li>Changed the default of <code>n_cores</code> in the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to 1 from <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code>
+</li>
+<li>Function input to the <code>cens_dist</code> argument in the <code><a href="../reference/node_cox.html">node_cox()</a></code> function is now allowed.</li>
+<li>The argument <code>as_two_cols</code> was added to the <code><a href="../reference/node_cox.html">node_cox()</a></code> function to allow users to return only the time-to-event as a single column if no censoring is applied.</li>
 </ul><p>Bug Fixes</p>
-<ul><li>There was a bug in the <code><a href="../reference/node_time_to_event.html">node_time_to_event()</a></code> function that lead to the <code>immunity_duration</code> parameter being used incorrectly. Since events were still recorded correctly, this was only apparent when using <code>save_states="all"</code>. Works correctly now.</li>
-<li>There was a small bug in <code><a href="../reference/dag2matrix.html">dag2matrix()</a></code> if the dag object contained only root nodes. In this case, a logical matrix was returned. Now it returns the correct numeric matrix.</li>
-</ul><p>New Features</p>
-<ul><li>Added the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to generate multiple datasets from a single dag object, possibly using multicore processing</li>
+<ul><li>Fixed a bug that occurred when a user-specified root node function returned a <code>data.frame</code>-like object with more than one column.</li>
+<li>Fixed a bug when printing the structural equation of a poisson node, in which the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> call did not show up when the node was defined using the <code>formula</code> argument.</li>
 </ul><p>Documentation</p>
-<ul><li>Minor changes to documentation pages</li>
-<li>Minor changes to vignettes</li>
+<ul><li>Added new “cookbook” vignette to showcase more possible use cases of the package.</li>
+<li>Visual update of the DAGs shown in the vignette figures.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.2" id="simdag-022">simDAG 0.2.2<a class="anchor" aria-label="anchor" href="#simdag-022"></a></h2><p class="text-muted">CRAN release: 2025-02-23</p>
+<p>Bug Fixes</p>
+<ul><li>When specifying a node as both a root or child node and as a time-dependent node, it is no longer counted twice in <code>print.DAG()</code>
+</li>
+<li>Fix small error in tests due to changes in <code>data.table</code>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="simdag-021">simDAG 0.2.1<a class="anchor" aria-label="anchor" href="#simdag-021"></a></h2><p class="text-muted">CRAN release: 2025-01-07</p>
+<p>Enhancements</p>
+<ul><li>External variables may now be used in the formula interface using <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> calls.</li>
+<li>Added the <code>remove_not_at_risk</code> argument to the <code><a href="../reference/sim2data.html">sim2data()</a></code> function.</li>
+<li>Change default of <code>t0_sort_dag</code> in <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> from <code>TRUE</code> to <code>FALSE</code> for more consistency with <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code>.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>Using <code><a href="../reference/sim2data.html">sim2data()</a></code> with time-dependent nodes of type <code><a href="../reference/node_competing_events.html">node_competing_events()</a></code> no longer results in an unwarranted error message.</li>
+<li>Using the column name <code>"time"</code> in the <code>time</code> argument of <code><a href="../reference/long2start_stop.html">long2start_stop()</a></code> now works properly.</li>
+</ul><p>New Features</p>
+<ul><li>Added the <code><a href="../reference/node_identity.html">node_identity()</a></code> function to allow users to directly calculate nodes as an R expression of other nodes without the need to define a new function.</li>
+</ul><p>Documentation</p>
+<ul><li>Added more examples in the formula vignette.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="simdag-020">simDAG 0.2.0<a class="anchor" aria-label="anchor" href="#simdag-020"></a></h2><p class="text-muted">CRAN release: 2024-09-03</p>
+<p>Enhancements</p>
+<ul><li>Added the <code>output</code> argument to the <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> function to allow different output formats.</li>
+<li>Change default of <code>sort_dag</code> in <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> from <code>TRUE</code> to <code>FALSE</code>.</li>
+<li>Moved the functionality of the <code>coerce2factor</code> and <code>coerce2numeric</code> arguments in <code><a href="../reference/rcategorical.html">rcategorical()</a></code>, <code><a href="../reference/node_multinomial.html">node_multinomial()</a></code> and <code><a href="../reference/node_binomial.html">node_binomial()</a></code> to the <code>output</code> argument for a more consistent syntax and easier usage.</li>
+<li>It is now allowed to directly supply functions to the <code>type</code> argument in <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code>.</li>
+<li>Passing optional arguments to the <code>layout</code> function in <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> is now supported.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>The <code>node_fill</code> argument of the <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> function is no longer being ignored if <code>mark_td_nodes</code> was set to <code>TRUE</code>.</li>
+</ul><p>New Features</p>
+<ul><li>Added a new enhanced formula interface, which allows users to directly type out the underlying structural equations for many node types. This replaces the old <code>formula</code> argument. Standard formulas (without betas and intercepts) are still supported, but no longer mentioned in the documentation and will be deprecated in future versions.</li>
+</ul><p>Documentation</p>
+<ul><li>Added a new vignette explaining in detail how the new enhanced formula interface for the <code><a href="../reference/node.html">node()</a></code> function works.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="simdag-012">simDAG 0.1.2<a class="anchor" aria-label="anchor" href="#simdag-012"></a></h2><p class="text-muted">CRAN release: 2024-06-13</p>
@@ -82,69 +131,22 @@
 <li>Re-wrote the documentation page for custom node definition</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="simdag-020">simDAG 0.2.0<a class="anchor" aria-label="anchor" href="#simdag-020"></a></h2><p class="text-muted">CRAN release: 2024-09-03</p>
+<h2 class="pkg-version" data-toc-text="0.1.1" id="simdag-011">simDAG 0.1.1<a class="anchor" aria-label="anchor" href="#simdag-011"></a></h2><p class="text-muted">CRAN release: 2024-03-07</p>
 <p>Enhancements</p>
-<ul><li>Added the <code>output</code> argument to the <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> function to allow different output formats.</li>
-<li>Change default of <code>sort_dag</code> in <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> from <code>TRUE</code> to <code>FALSE</code>.</li>
-<li>Moved the functionality of the <code>coerce2factor</code> and <code>coerce2numeric</code> arguments in <code><a href="../reference/rcategorical.html">rcategorical()</a></code>, <code><a href="../reference/node_multinomial.html">node_multinomial()</a></code> and <code><a href="../reference/node_binomial.html">node_binomial()</a></code> to the <code>output</code> argument for a more consistent syntax and easier usage.</li>
-<li>It is now allowed to directly supply functions to the <code>type</code> argument in <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code>.</li>
-<li>Passing optional arguments to the <code>layout</code> function in <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> is now supported.</li>
+<ul><li>
+<code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> now support character vectors in the ‘name’ argument, allowing easy creation of multiple nodes with the same definition</li>
 </ul><p>Bug Fixes</p>
-<ul><li>The <code>node_fill</code> argument of the <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> function is no longer being ignored if <code>mark_td_nodes</code> was set to <code>TRUE</code>.</li>
+<ul><li>There was a bug in the <code><a href="../reference/node_time_to_event.html">node_time_to_event()</a></code> function that lead to the <code>immunity_duration</code> parameter being used incorrectly. Since events were still recorded correctly, this was only apparent when using <code>save_states="all"</code>. Works correctly now.</li>
+<li>There was a small bug in <code><a href="../reference/dag2matrix.html">dag2matrix()</a></code> if the dag object contained only root nodes. In this case, a logical matrix was returned. Now it returns the correct numeric matrix.</li>
 </ul><p>New Features</p>
-<ul><li>Added a new enhanced formula interface, which allows users to directly type out the underlying structural equations for many node types. This replaces the old <code>formula</code> argument. Standard formulas (without betas and intercepts) are still supported, but no longer mentioned in the documentation and will be deprecated in future versions.</li>
+<ul><li>Added the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to generate multiple datasets from a single dag object, possibly using multicore processing</li>
 </ul><p>Documentation</p>
-<ul><li>Added a new vignette explaining in detail how the new enhanced formula interface for the <code><a href="../reference/node.html">node()</a></code> function works.</li>
+<ul><li>Minor changes to documentation pages</li>
+<li>Minor changes to vignettes</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.1" id="simdag-021">simDAG 0.2.1<a class="anchor" aria-label="anchor" href="#simdag-021"></a></h2><p class="text-muted">CRAN release: 2025-01-07</p>
-<p>Enhancements</p>
-<ul><li>External variables may now be used in the formula interface using <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code> calls.</li>
-<li>Added the <code>remove_not_at_risk</code> argument to the <code><a href="../reference/sim2data.html">sim2data()</a></code> function.</li>
-<li>Change default of <code>t0_sort_dag</code> in <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> from <code>TRUE</code> to <code>FALSE</code> for more consistency with <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code>.</li>
-</ul><p>Bug Fixes</p>
-<ul><li>Using <code><a href="../reference/sim2data.html">sim2data()</a></code> with time-dependent nodes of type <code><a href="../reference/node_competing_events.html">node_competing_events()</a></code> no longer results in an unwarranted error message.</li>
-<li>Using the column name <code>"time"</code> in the <code>time</code> argument of <code><a href="../reference/long2start_stop.html">long2start_stop()</a></code> now works properly.</li>
-</ul><p>New Features</p>
-<ul><li>Added the <code><a href="../reference/node_identity.html">node_identity()</a></code> function to allow users to directly calculate nodes as an R expression of other nodes without the need to define a new function.</li>
-</ul><p>Documentation</p>
-<ul><li>Added more examples in the formula vignette.</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.2" id="simdag-022">simDAG 0.2.2<a class="anchor" aria-label="anchor" href="#simdag-022"></a></h2><p class="text-muted">CRAN release: 2025-02-23</p>
-<p>Bug Fixes</p>
-<ul><li>When specifying a node as both a root or child node and as a time-dependent node, it is no longer counted twice in <code>print.DAG()</code>
-</li>
-<li>Fix small error in tests due to changes in <code>data.table</code>
-</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.0" id="simdag-030">simDAG 0.3.0<a class="anchor" aria-label="anchor" href="#simdag-030"></a></h2><p class="text-muted">CRAN release: 2025-03-30</p>
-<p>New Features</p>
-<ul><li>Support for random effects and random slopes (mixed model syntax) has been added to the <code>formula</code> interface of <code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> when using nodes of type <code>"gaussian"</code>, <code>"binomial"</code> or <code>"poisson"</code>.</li>
-<li>Added seven new node types: <code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ahreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_poreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ypreg()</a></code>, <code><a href="../reference/node_rsurv.html">node_ehreg()</a></code>, <code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code> and <code><a href="../reference/node_mixture.html">node_mixture()</a></code>.</li>
-</ul><p>Enhancements</p>
-<ul><li>Added the <code>reference</code> argument to <code><a href="../reference/rbernoulli.html">rbernoulli()</a></code> and <code><a href="../reference/rcategorical.html">rcategorical()</a></code> to make it easier to specify the reference category when coding the output as a factor variable.</li>
-<li>
-<code>+.DAG</code> now checks whether the <code>DAG</code> would become cyclic when adding a <code><a href="../reference/node.html">node()</a></code> and returns an error if it does.</li>
-<li>Added the <code>include_td_nodes</code> and <code>include_root_nodes</code> arguments to <code><a href="../reference/as.igraph.DAG.html">as.igraph.DAG()</a></code>.</li>
-<li>Changed the default of <code>n_cores</code> in the <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> function to 1 from <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code>
-</li>
-<li>Function input to the <code>cens_dist</code> argument in the <code><a href="../reference/node_cox.html">node_cox()</a></code> function is now allowed.</li>
-<li>The argument <code>as_two_cols</code> was added to the <code><a href="../reference/node_cox.html">node_cox()</a></code> function to allow users to return only the time-to-event as a single column if no censoring is applied.</li>
-</ul><p>Bug Fixes</p>
-<ul><li>Fixed a bug that occurred when a user-specified root node function returned a <code>data.frame</code>-like object with more than one column.</li>
-<li>Fixed a bug when printing the structural equation of a poisson node, in which the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> call did not show up when the node was defined using the <code>formula</code> argument.</li>
-</ul><p>Documentation</p>
-<ul><li>Added new “cookbook” vignette to showcase more possible use cases of the package.</li>
-<li>Visual update of the DAGs shown in the vignette figures.</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.1" id="simdag-031">simDAG 0.3.1<a class="anchor" aria-label="anchor" href="#simdag-031"></a></h2>
-<p>Enhancements</p>
-<ul><li>Added the <code>remove_vars</code> argument to the <code><a href="../reference/sim2data.html">sim2data()</a></code> function, to allow users to exclude certain variables from the output if desired.</li>
-</ul><p>Bug Fixes</p>
-<ul><li>Fixed a bug where <code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> would fail with <code>n_cores &gt; 1</code> whenever nested custom functions were used in nodes.</li>
+<h2 class="pkg-version" data-toc-text="0.1.0" id="simdag-010">simDAG 0.1.0<a class="anchor" aria-label="anchor" href="#simdag-010"></a></h2><p class="text-muted">CRAN release: 2023-08-28</p>
+<ul><li>This is the first release of this package</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
