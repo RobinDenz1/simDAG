@@ -398,8 +398,7 @@ is 0. Let’s update our DAG one more time to include these changes:</p>
 the correct <code>parents</code> to the appropriate node. Our final
 “DAG” looks like this:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, mark_td_nodes<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required namespace: ggforce</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, mark_td_nodes<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="v_covid_example_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>Note that in this plot it doesn’t look like a classic DAG anymore,
 because it has a bi-directional arrow between <code>covid</code> and

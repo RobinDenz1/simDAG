@@ -289,7 +289,6 @@ using the following syntax:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"poisson"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Treatment</span><span class="op">*</span><span class="fl">4</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Clinic</span><span class="op">)</span>,</span>
 <span>       var_corr<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required namespace: simr</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Clinic Treatment Outcome</span></span>
 <span><span class="co">#&gt;     &lt;int&gt;    &lt;lgcl&gt;   &lt;int&gt;</span></span>
