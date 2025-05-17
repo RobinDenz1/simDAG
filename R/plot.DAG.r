@@ -78,9 +78,9 @@ plot.DAG <- function(x, layout="nicely", node_size=0.2, node_names=NULL,
                      arrow_node_dist=0.03, gg_theme=ggplot2::theme_void(),
                      include_td_nodes=TRUE, mark_td_nodes=TRUE, ...) {
 
-  requireNamespace("ggplot2")
-  requireNamespace("ggforce")
-  requireNamespace("igraph")
+  requireNamespace("ggplot2", quietly=TRUE)
+  requireNamespace("ggforce", quietly=TRUE)
+  requireNamespace("igraph", quietly=TRUE)
 
   check_inputs_plot.DAG(dag=x, node_size=node_size, node_names=node_names,
                         arrow_node_dist=arrow_node_dist, gg_theme=gg_theme,

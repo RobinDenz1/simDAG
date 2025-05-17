@@ -16,7 +16,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   }
   tx_nodes <- dag$tx_nodes
 
-  requireNamespace("data.table")
+  requireNamespace("data.table", quietly=TRUE)
 
   if (check_inputs) {
     check_inputs_sim_discrete_time(n_sim=n_sim, dag=dag,

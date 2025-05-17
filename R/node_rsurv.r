@@ -3,7 +3,7 @@
 node_rsurv <- function(data, parents, betas, baseline, dist, package, u, type,
                        cens_dist, cens_args, name, as_two_cols=TRUE, ...) {
 
-  requireNamespace("rsurv")
+  requireNamespace("rsurv", quietly=TRUE)
 
   # prepare inputs
   formula <- formula_from_parents(parents)

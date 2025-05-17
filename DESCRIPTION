@@ -19,7 +19,7 @@ Imports:
 	data.table (>= 1.15.0),
 	Rfast,
 	rlang,
-	igraph
+	igraph (>= 2.0.0)
 Suggests:
     knitr,
     rmarkdown,

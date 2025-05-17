@@ -7,7 +7,7 @@
 node_lmer <- function(data, formula, betas, intercept, family,
                       var_corr, error) {
 
-  requireNamespace("simr")
+  requireNamespace("simr", quietly=TRUE)
 
   # create fake lmerMod object
   if (family=="gaussian") {

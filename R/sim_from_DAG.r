@@ -5,7 +5,7 @@
 #' @export
 sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
 
-  requireNamespace("data.table")
+  requireNamespace("data.table", quietly=TRUE)
 
   if (check_inputs) {
     check_inputs_sim_from_dag(dag=dag, n_sim=n_sim, sort_dag=sort_dag)
@@ -42,7 +42,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
   # if not already ordered properly, use topological
   # sorting to get the right data generation sequence
   if (sort_dag) {
-    requireNamespace("Rfast")
+    requireNamespace("Rfast", quietly=TRUE)
     adjacency_mat <- dag2matrix(dag=dag, include_root_nodes=FALSE)
     index_children <- Rfast::topological_sort(adjacency_mat)
   } else {

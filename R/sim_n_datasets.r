@@ -27,10 +27,10 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
   # with parallel processing
   } else {
 
-    requireNamespace("parallel")
-    requireNamespace("doSNOW")
-    requireNamespace("doRNG")
-    requireNamespace("foreach")
+    requireNamespace("parallel", quietly=TRUE)
+    requireNamespace("doSNOW", quietly=TRUE)
+    requireNamespace("doRNG", quietly=TRUE)
+    requireNamespace("foreach", quietly=TRUE)
 
     `%dorng%` <- doRNG::`%dorng%`
 

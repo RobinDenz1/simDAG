@@ -57,7 +57,7 @@ gen_node_poisson <- function(name, parents, data, return_model, na.rm) {
 ## get information for negative binomial node from data
 gen_node_negative_binomial <- function(name, parents, data, return_model,
                                        na.rm) {
-  requireNamespace("MASS")
+  requireNamespace("MASS", quietly=TRUE)
 
   # fit negative binomial regression
   form <- paste0(name, " ~ ", paste0(parents, collapse=" + "))
