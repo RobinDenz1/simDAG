@@ -87,8 +87,8 @@ test_that("custom function for prob_fun, parallel", {
     node("B", "rbernoulli", p=0.3) +
     node_td("C", "time_to_event", prob_fun=prob_fun)
 
-  out <- sim_n_datasets(dag=dag, n_sim=100, n_repeats=2, max_t=10,
-                        n_cores=2)
+  expect_no_error(out <- sim_n_datasets(dag=dag, n_sim=100, n_repeats=2,
+                                        max_t=10, n_cores=2))
 })
 
 }

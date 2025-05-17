@@ -28,6 +28,8 @@ This vignette assumes that the reader is already somewhat familiar with the `sim
 ```{r, message=FALSE, warning=FALSE}
 library(simDAG)
 library(data.table)
+
+set.seed(23414)
 ```
 
 # Simulating Randomized Controlled Trials
