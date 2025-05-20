@@ -2,7 +2,7 @@
 \alias{node_cox}
 
 \title{
-Simulate a Node Using Cox-Regression
+Generate Data from a Cox-Regression Model
 }
 \description{
 Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (2005).

@@ -2,7 +2,7 @@
 \alias{node_identity}
 
 \title{
-Simulate a Node based on an expression
+Generate Data based on an expression
 }
 \description{
 This node type may be used to generate a new node given a regular R expression that may include function calls or any other valid R syntax. This may be useful to combine components of a node which need to be simulated with separate \code{\link{node}} calls, or just as a convenient shorthand for some variable transformations.

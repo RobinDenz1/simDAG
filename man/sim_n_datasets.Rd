@@ -2,7 +2,7 @@
 \alias{sim_n_datasets}
 
 \title{
-Generate multiple datasets from a single \code{DAG} object
+Simulate multiple datasets from a single \code{DAG} object
 }
 \description{
 This function takes a single \code{DAG} object and generates a list of multiple datasets, possible using parallel processing

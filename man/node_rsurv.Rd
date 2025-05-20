@@ -7,7 +7,7 @@
 \alias{node_poreg}
 
 \title{
-Simulate a Node Using Parametric Survival Models
+Generate Data from Parametric Survival Models
 }
 \description{
 Data from the parents is used to generate the node using either an accelerated failure time model, an accelerated hazard model, an extended hazard model, a proportional odds model or a Young and Prentice model, as implemented in the \pkg{rsurv} package (Demarqui 2024).

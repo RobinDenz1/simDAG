@@ -2,7 +2,7 @@
 \alias{node_conditional_prob}
 
 \title{
-Simulate a Node Using Conditional Probabilities
+Generate Data Using Conditional Probabilities
 }
 \description{
 This function can be used to generate dichotomous or categorical variables dependent on one or more categorical variables where the probabilities of occurrence in each strata defined by those variables is known.

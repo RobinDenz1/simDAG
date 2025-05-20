@@ -2,7 +2,7 @@
 \alias{node_poisson}
 
 \title{
-Simulate a Node Using (Mixed) Poisson Regression
+Generate Data from a (Mixed) Poisson Regression Model
 }
 \description{
 Data from the parents is used to generate the node using poisson regression by predicting the covariate specific lambda and sampling from a poisson distribution accordingly. Allows inclusion of arbitrary random effects and slopes.

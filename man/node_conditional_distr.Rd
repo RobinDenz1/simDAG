@@ -2,7 +2,7 @@
 \alias{node_conditional_distr}
 
 \title{
-Simulate a Node by Sampling from Different Distributions based on Strata
+Generate Data by Sampling from Different Distributions based on Strata
 }
 \description{
 This function can be used to generate any kind of dichotomous, categorical or numeric variables dependent on one or more categorical variables by randomly sampling from user-defined distributions in each strata defined by the nodes parents. An even more flexible node type, allowing arbitrary \code{\link{node}} definitions for different subsets of the previously generated data is included in \code{\link{node_mixture}}.

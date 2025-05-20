@@ -2,7 +2,7 @@
 \alias{node_multinomial}
 
 \title{
-Simulate a Node Using Multinomial Regression
+Generate Data from a Multinomial Regression Model
 }
 \description{
 Data from the parents is used to generate the node using multinomial regression by predicting the covariate specific probability of each class and sampling from a multinomial distribution accordingly.

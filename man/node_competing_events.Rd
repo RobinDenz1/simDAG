@@ -2,7 +2,7 @@
 \alias{node_competing_events}
 
 \title{
-Simulate a Time-to-Event Node with Multiple Mutually Exclusive Events in Discrete-Time Simulation
+Generate Data with Multiple Mutually Exclusive Events in Discrete-Time Simulation
 }
 \description{
 This node essentially models a categorical time-dependent variable for which the time and the type of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (which type of event the person is currently experiencing) and \code{name_time} (the time at which the current event started). Can only be used inside of the \code{\link{sim_discrete_time}} function, not outside of it. Past events and their kind are stored in two lists. See details.

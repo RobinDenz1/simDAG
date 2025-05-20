@@ -2,7 +2,7 @@
 \alias{node_gaussian}
 
 \title{
-Simulate a Node Using (Mixed) Linear Regression
+Generate Data from a (Mixed) Linear Regression Model
 }
 \description{
 Data from the parents is used to generate the node using linear regression by predicting the covariate specific mean and sampling from a normal distribution with that mean and a specified standard deviation. Allows inclusion of arbitrary random effects and slopes.

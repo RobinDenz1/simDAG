@@ -2,7 +2,7 @@
 \alias{node_time_to_event}
 
 \title{
-Simulate a Time-to-Event Node in Discrete-Time Simulation
+Generate Data from repeated Bernoulli Trials in Discrete-Time Simulation
 }
 \description{
 This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. It adds two columns to \code{data}: \code{name_event} (whether the person currently has an event) and \code{name_time} (the time at which the current event started). Past events are stored in a list. Can only be used inside of the \code{\link{sim_discrete_time}} function, not outside of it. See details.

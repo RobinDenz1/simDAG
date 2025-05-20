@@ -2,7 +2,7 @@
 \alias{node_binomial}
 
 \title{
-Simulate a Node Using (Mixed) Logistic Regression
+Generate Data from a (Mixed) Logistic Regression Model
 }
 \description{
 Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a Bernoulli distribution accordingly. Allows inclusion of arbitrary random effects and slopes.

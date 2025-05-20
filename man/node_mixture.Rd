@@ -2,7 +2,7 @@
 \alias{node_mixture}
 
 \title{
-Simulate a Node Using a Mixture of Node Definitions
+Generate Data from a Mixture of Node Definitions
 }
 \description{
 This node type allows users to apply different nodes to different subsets of the already generated data, making it possible to generate data for arbitrary mixture distributions. It is similar to \code{\link{node_conditional_distr}} and \code{\link{node_conditional_prob}}, with the main difference being that the former only allow univariate distributions conditional on categorical variables, while this function allows any kind of node definition and condition. This makes it, for example, possible to generate data for a variable from different regression models for different subsets of simulated individuals.

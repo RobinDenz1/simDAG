@@ -2,7 +2,7 @@
 \alias{plot.simDT}
 
 \title{
-Create a Simple Flowchart for a Discrete-Time Simulation
+Plot a Flowchart for a Discrete-Time Simulation
 }
 \description{
 Given a \code{simDT} object obtained with the \code{\link{sim_discrete_time}} function, plots a relatively simple flowchart of how the simulation was performed. Shows only some general information extracted from the \code{dag}.

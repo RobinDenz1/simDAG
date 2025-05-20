@@ -2,7 +2,7 @@
 \alias{node_negative_binomial}
 
 \title{
-Simulate a Node Using Negative Binomial Regression
+Generate Data from a Negative Binomial Regression Model
 }
 \description{
 Data from the parents is used to generate the node using negative binomial regression by applying the betas to the design matrix and sampling from the \code{rnbinom} function.

@@ -2,7 +2,7 @@
 \alias{sim_discrete_time}
 
 \title{
-Using Discrete-Time Simulation to Generate Complex Data from a Given DAG and Node Information
+Simulate Data from a \code{DAG} with Time-Dependent Variables
 }
 \description{
 Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given DAG. In contrast to the \code{sim_from_dag} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.

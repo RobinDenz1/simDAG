@@ -2,7 +2,7 @@
 \alias{sim_from_dag}
 
 \title{
-Simulate Data from a Given DAG and Node Information
+Simulate Data from a \code{DAG}
 }
 \description{
 This function can be used to generate data from a given DAG. It additionally requires information on node distributions, beta coefficients and, depending on the node type, more parameters such as intercepts.
