@@ -3,7 +3,7 @@
 \alias{node_td}
 
 \title{
-Create a node object to grow a DAG step-by-step
+Create a node object for a \code{DAG}
 }
 \description{
 These functions should be used in conjunction with the \code{\link{empty_dag}} function to create \code{DAG} objects, which can then be used to simulate data using the \code{\link{sim_from_dag}} function or the \code{\link{sim_discrete_time}} function.

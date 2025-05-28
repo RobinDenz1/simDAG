@@ -2,7 +2,7 @@
 \alias{as.igraph.DAG}
 
 \title{
-Transform a DAG object into an \code{igraph} object
+Transform a \code{DAG} object into an \code{igraph} object
 }
 \description{
 This function extends the \code{as.igraph} function from the \code{igraph} package to allow the input of a \code{DAG} object. The result is an \code{igraph} object that includes only the structure of the DAG, not any specifications. May be useful for plotting purposes.
