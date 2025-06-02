@@ -35,6 +35,7 @@ jobs:
       - name: add TeX deps
         run: |
             tinytex::tlmgr_install(pkgs="thumbpdf")
+            tinytex::tlmgr_install(pkgs="multirow")
         shell: Rscript {0}
       
       - uses: r-lib/actions/setup-r-dependencies@v2
