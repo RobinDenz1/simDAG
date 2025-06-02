@@ -33,6 +33,7 @@ jobs:
         run: |
             tinytex::tlmgr_install(pkgs="thumbpdf")
             tinytex::tlmgr_install(pkgs="multirow")
+            tinytex::tlmgr_install(pkgs="placeins")
         shell: Rscript {0}
       
       - uses: r-lib/actions/check-r-package@v2
