@@ -162,7 +162,7 @@ DGP, which can then be used directly to generate the data without
 further user input. It does so by requiring the user to define a
 directed acyclic graph (DAG) with additional information about the
 associations between the supplied variables <span class="citation">(Pearl 2009)</span>. The package was created using the
-<code>R</code> programming language <span class="citation">( Core Team
+<code>R</code> programming language <span class="citation">(R Core Team
 2024)</span> and is available on the Comprehensive <code>R</code>
 Archive Network (CRAN) at <a href="https://cran.r-project.org/package=simDAG" class="external-link uri">https://cran.r-project.org/package=simDAG</a>.</p>
 </div>
@@ -1250,7 +1250,7 @@ vaccination on the time until the occurrence of a myocarditis, the
 vaccination may be considered a time-dependent variable and the
 myocarditis as a non-terminal, possibly recurrent, time-to-event
 outcome. This setup was of interest to <span class="citation">Denz et
-al. (2023)</span>, who performed a Monte-Carlo simulation study to
+al. (2025)</span>, who performed a Monte-Carlo simulation study to
 investigate the impact of linkage errors when estimating vaccine-safety
 from observational data. Below we will illustrate a simplified version
 of the DGP used therein.</p>
@@ -1360,7 +1360,7 @@ used in a time-dependent node.</p>
 events are set to the arbitrary values of 0.01 and 0.005 respectively.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub></mrow><annotation encoding="application/x-tex">RR_{A}</annotation></semantics></math>
 is set to 3.24, which is the value used in the actual simulation study
-by <span class="citation">Denz et al. (2023)</span>. The
+by <span class="citation">Denz et al. (2025)</span>. The
 <code>immunity_duration</code> parameter used for the vaccination node
 additionally specifies that a person will not receive another
 vaccination in the first 150 days after a vaccination was performed.
@@ -2255,8 +2255,9 @@ probability functions, as discussed earlier.</p>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Alfons2010" class="csl-entry">
 Alfons, Andreas, Matthias Templ, and Peter Filzmoser. 2010. <span>“An
-Object-Oriented Framework for Statistical Simulation: The Package
-.”</span> <em>Journal of Statistical Software</em> 37 (3): 1–36. <a href="https://doi.org/10.18637/jss.v037.i03" class="external-link">https://doi.org/10.18637/jss.v037.i03</a>.
+Object-Oriented Framework for Statistical Simulation: The r Package
+simFrame.”</span> <em>Journal of Statistical Software</em> 37 (3): 1–36.
+<a href="https://doi.org/10.18637/jss.v037.i03" class="external-link">https://doi.org/10.18637/jss.v037.i03</a>.
 </div>
 <div id="ref-Andrews2024" class="csl-entry">
 Andrews, Bryan, and Erich Kummerfeld. 2024. <span>“Better Simulations
@@ -2286,8 +2287,8 @@ Pearson Education Limited.
 </div>
 <div id="ref-Barrett2024" class="csl-entry">
 Barrett, Tyson, Matt Dowle, Arun Srinivasan, Jan Gorecki, Michael
-Chirico, and Toby Hocking. 2024. <em>: Extension of ‘Data.frame‘</em>.
-<a href="https://CRAN.R-project.org/package=data.table" class="external-link">https://CRAN.R-project.org/package=data.table</a>.
+Chirico, and Toby Hocking. 2024. <em>Data.table: Extension of
+‘Data.frame‘</em>. <a href="https://CRAN.R-project.org/package=data.table" class="external-link">https://CRAN.R-project.org/package=data.table</a>.
 </div>
 <div id="ref-Bender2005" class="csl-entry">
 Bender, Ralf, Thomas Augustin, and Maria Blettner. 2005.
@@ -2296,7 +2297,7 @@ Models.”</span> <em>Statistics in Medicine</em> 24 (11): 1713–23. <a href="h
 </div>
 <div id="ref-Brilleman2021" class="csl-entry">
 Brilleman, Samuel L., Rory Wolfe, Margarita Moreno-Betancur, and Michael
-J. Crowther. 2021. <span>“Simulating Survival Data Using the
+J. Crowther. 2021. <span>“Simulating Survival Data Using the Simsurv r
 Package.”</span> <em>Journal of Statistical Software</em> 97 (3). <a href="https://doi.org/10.18637/jss.v097.i03" class="external-link">https://doi.org/10.18637/jss.v097.i03</a>.
 </div>
 <div id="ref-Byeon2023" class="csl-entry">
@@ -2319,22 +2320,17 @@ Simulation</em> 1 (25): 1–13. <a href="https://doi.org/10.1186/s41077-016-0025
 <div id="ref-Chiou2023" class="csl-entry">
 Chiou, Sy Han, Gongjun Xu, and Jun Yan Chiung-Yu Huang. 2023.
 <span>“Regression Modeling for Recurrent Events Possibly with an
-Informative Terminal Event Using Package .”</span> <em>Journal of
+Informative Terminal Event Using r Package reReg.”</span> <em>Journal of
 Statistical Software</em> 105 (5): 1–34. <a href="https://doi.org/10.18637/jss.v105.i05" class="external-link">https://doi.org/10.18637/jss.v105.i05</a>.
-</div>
-<div id="ref-RCT2024" class="csl-entry">
-Core Team. 2024. <span>“: A Language and Environment for Statistical
-Computing.”</span> Foundation for Statistical Computing, Vienna,
-Austria. <a href="https://www.r-project.org/" class="external-link">https://www.r-project.org/</a>.
 </div>
 <div id="ref-Csardi2024" class="csl-entry">
 Csárdi, Gábor, Tamás Nepusz, Vincent Traag, Szabolcs Horvát, Fabio
-Zanini, Daniel Noom, and Kirill Müller. 2024. <em>: Network Analysis and
-Visualization in </em>. <a href="https://doi.org/10.5281/zenodo.7682609" class="external-link">https://doi.org/10.5281/zenodo.7682609</a>.
+Zanini, Daniel Noom, and Kirill Müller. 2024. <em>Igraph: Network
+Analysis and Visualization in r</em>. <a href="https://doi.org/10.5281/zenodo.7682609" class="external-link">https://doi.org/10.5281/zenodo.7682609</a>.
 </div>
 <div id="ref-Demarqui2024" class="csl-entry">
-Demarqui, Fábio N. 2024. <span>“Survival Data Simulation with the
-Package .”</span> arXiv:2406.01750v1.
+Demarqui, Fábio N. 2024. <span>“Survival Data Simulation with the r
+Package Rsurv.”</span> arXiv:2406.01750v1.
 </div>
 <div id="ref-Denz2023" class="csl-entry">
 Denz, Robin, Renate Klaaßen-Mielke, and Nina Timmesfeld. 2023. <span>“A
@@ -2344,15 +2340,16 @@ Confounders.”</span> <em>Statistics in Medicine</em> 42 (10): 1461–79.
 </div>
 <div id="ref-Denz2023a" class="csl-entry">
 Denz, Robin, Katharina Meiszl, Peter Ihle, Doris Oberle, Ursula
-Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer, and Nina Timmesfeld. 2023.
+Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer, and Nina Timmesfeld. 2025.
 <span>“Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety
 Analyses Using German Health-Care Data: A Simulation Study.”</span>
-arXiv:2310.15016v1.
+<em>Communications in Statistics: Simulation and Computation</em>
+InPrint. <a href="https://doi.org/10.1080/03610918.2025.2488942" class="external-link">https://doi.org/10.1080/03610918.2025.2488942</a>.
 </div>
 <div id="ref-Denz2025" class="csl-entry">
 Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
-Crossectional and Longitudinal Data Using the Package.”</span> <em>arXiv
-Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
+Crossectional and Longitudinal Data Using the simDAG r Package.”</span>
+<em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
 </div>
 <div id="ref-Fox2022" class="csl-entry">
 Fox, Matthew P., Roch Nianogo, Jacqueline E. Rudolph, and Chanelle J.
@@ -2361,14 +2358,15 @@ Acyclic Graphs to Understand Epidemiologic Concepts.”</span>
 <em>American Journal of Epidemiology</em> 191 (7): 1300–1306. <a href="https://doi.org/10.1093/aje/kwac041" class="external-link">https://doi.org/10.1093/aje/kwac041</a>.
 </div>
 <div id="ref-Goldfeld2020" class="csl-entry">
-Goldfeld, Keith, and Jacob Wujciak-Jens. 2020. <span>“: Illuminating
-Research Methods Through Data Generation.”</span> <em>The Journal of
-Open Source Software</em> 5 (54): 1–4. <a href="https://doi.org/10.21105/joss.02763" class="external-link">https://doi.org/10.21105/joss.02763</a>.
+Goldfeld, Keith, and Jacob Wujciak-Jens. 2020. <span>“Simstudy:
+Illuminating Research Methods Through Data Generation.”</span> <em>The
+Journal of Open Source Software</em> 5 (54): 1–4. <a href="https://doi.org/10.21105/joss.02763" class="external-link">https://doi.org/10.21105/joss.02763</a>.
 </div>
 <div id="ref-Green2016" class="csl-entry">
-Green, Peter, and Catriona J. MacLeod. 2016. <span>“: An r Package for
-Power Analysis of Generalized Linear Mixed Models by Simulation.”</span>
-<em>Methods in Ecology and Evolution</em> 7 (4): 493–98. <a href="https://doi.org/10.1111/2041-210X.12504" class="external-link">https://doi.org/10.1111/2041-210X.12504</a>.
+Green, Peter, and Catriona J. MacLeod. 2016. <span>“Simr: An r Package
+for Power Analysis of Generalized Linear Mixed Models by
+Simulation.”</span> <em>Methods in Ecology and Evolution</em> 7 (4):
+493–98. <a href="https://doi.org/10.1111/2041-210X.12504" class="external-link">https://doi.org/10.1111/2041-210X.12504</a>.
 </div>
 <div id="ref-Gruber2015" class="csl-entry">
 Gruber, Susan, Roger W. Logan, Inmaculada Jarrín, Susana Monge, and
@@ -2377,16 +2375,16 @@ Weights for Marginal Structural Modeling in Large Observational
 Datasets.”</span> <em>Statistics in Medicine</em> 34 (1): 106–17. <a href="https://doi.org/10.1002/sim.6322" class="external-link">https://doi.org/10.1002/sim.6322</a>.
 </div>
 <div id="ref-Hajj2023" class="csl-entry">
-Hajj, Ghadi S. Al, Johan Pensar, and Geir K. Sandve. 2023. <span>“:
-Combining DAG-Based Model Structure with Unconstrained Data Types and
-Relations for Flexible, Transparent, and Modularized Data
+Hajj, Ghadi S. Al, Johan Pensar, and Geir K. Sandve. 2023.
+<span>“DagSim: Combining DAG-Based Model Structure with Unconstrained
+Data Types and Relations for Flexible, Transparent, and Modularized Data
 Simulation.”</span> <em>PLoS One</em> 18 (4). <a href="https://doi.org/10.1371/journal.pone.0284443" class="external-link">https://doi.org/10.1371/journal.pone.0284443</a>.
 </div>
 <div id="ref-Haller2014" class="csl-entry">
 Haller, Bernhard, and Kurt Ulm. 2014. <span>“Flexible Simulation of
 Competing Risks Data Following Prespecified Subdistribution
 Hazards.”</span> <em>Journal of Statistical Computation and
-Simulation</em> 84 (12): 2557–76.
+Simulation</em> 84 (12): 2557–76. <a href="https://doi.org/10.1080/00949655.2013.793345" class="external-link">https://doi.org/10.1080/00949655.2013.793345</a>.
 </div>
 <div id="ref-Hendry2013" class="csl-entry">
 Hendry, David J. 2013. <span>“Data Generation for the Cox Proportional
@@ -2411,8 +2409,8 @@ Economics.”</span> <em>Journal of Economic Literature</em> 58 (4):
 </div>
 <div id="ref-Jorgensen2022" class="csl-entry">
 Jorgensen, Terrence D., Sunthud Pornprasertmanit, Alexander M.
-Schoemann, and Yves Rosseel. 2022. <em>: <span>U</span>seful Tools for
-Structural Equation Modeling</em>. <a href="https://CRAN.R-project.org/package=semTools" class="external-link">https://CRAN.R-project.org/package=semTools</a>.
+Schoemann, and Yves Rosseel. 2022. <em>semTools: <span>U</span>seful
+Tools for Structural Equation Modeling</em>. <a href="https://CRAN.R-project.org/package=semTools" class="external-link">https://CRAN.R-project.org/package=semTools</a>.
 </div>
 <div id="ref-Kahn1962" class="csl-entry">
 Kahn, A. B. 1962. <span>“Topological Sorting of Large Networks.”</span>
@@ -2428,12 +2426,13 @@ Kline, Rex B. 2023. <em>Principles and Practice of Structural Equation
 Modeling</em>. 5. New York: The Guilford Press.
 </div>
 <div id="ref-Mersmann2023" class="csl-entry">
-Mersmann, Olaf. 2023. <em>: Accurate Timing Functions</em>. <a href="https://CRAN.R-project.org/package=microbenchmark" class="external-link">https://CRAN.R-project.org/package=microbenchmark</a>.
+Mersmann, Olaf. 2023. <em>Microbenchmark: Accurate Timing
+Functions</em>. <a href="https://CRAN.R-project.org/package=microbenchmark" class="external-link">https://CRAN.R-project.org/package=microbenchmark</a>.
 </div>
 <div id="ref-Morina2017" class="csl-entry">
 Moriña, D., and A. Navarro. 2017. <span>“Competing Risks Simulation with
-the Package.”</span> <em>Communications in Statistics: Simulation and
-Computation</em> 46 (7): 5712–22. <a href="https://doi.org/10.18637/jss.v059.i02" class="external-link">https://doi.org/10.18637/jss.v059.i02</a>.
+the Survsim r Package.”</span> <em>Communications in Statistics:
+Simulation and Computation</em> 46 (7): 5712–22. <a href="https://doi.org/10.18637/jss.v059.i02" class="external-link">https://doi.org/10.18637/jss.v059.i02</a>.
 </div>
 <div id="ref-Morris2019" class="csl-entry">
 Morris, Tim P., Ian R. White, and Michael J. Crowther. 2019.
@@ -2462,7 +2461,7 @@ Research.”</span> <em>Biometrika</em> 82 (4): 669–88. <a href="https://doi.o
 Cambridge: Cambridge University Press.
 </div>
 <div id="ref-Pedersen2022" class="csl-entry">
-Pedersen, Thomas Lin. 2022. <em>: Accelerating </em>. <a href="https://CRAN.R-project.org/package=ggforce" class="external-link">https://CRAN.R-project.org/package=ggforce</a>.
+Pedersen, Thomas Lin. 2022. <em>Ggforce: Accelerating Ggplot2</em>. <a href="https://CRAN.R-project.org/package=ggforce" class="external-link">https://CRAN.R-project.org/package=ggforce</a>.
 </div>
 <div id="ref-Pitts2024" class="csl-entry">
 Pitts, Amy J., and Charlotte R. Fowler. 2024. <span>“Comparison of
@@ -2471,8 +2470,13 @@ Open-Source Software for Producing Directed Acyclic Graphs.”</span>
 </div>
 <div id="ref-Pornprasertmanit2021" class="csl-entry">
 Pornprasertmanit, Sunthud, Patrick Miller, Alexander Schoemann, and
-Terrence D. Jorgensen. 2021. <em>: SIMulated Structural Equation
+Terrence D. Jorgensen. 2021. <em>Simsem: SIMulated Structural Equation
 Modeling</em>. <a href="https://CRAN.R-project.org/package=simsem" class="external-link">https://CRAN.R-project.org/package=simsem</a>.
+</div>
+<div id="ref-RCT2024" class="csl-entry">
+R Core Team. 2024. <span>“R: A Language and Environment for Statistical
+Computing.”</span> R Foundation for Statistical Computing, Vienna,
+Austria. <a href="https://www.r-project.org/" class="external-link">https://www.r-project.org/</a>.
 </div>
 <div id="ref-Reisach2021" class="csl-entry">
 Reisach, Alexander G., Christof Seiler, and Sebastian Weichwald. 2021.
@@ -2483,7 +2487,7 @@ Beygelzimer, Yann N. Dauphin, Percy Liang, and Jennifer Wortman Vaughan.
 arXiv:2102.13647v3.
 </div>
 <div id="ref-Rosseel2012" class="csl-entry">
-Rosseel, Yves. 2012. <span>“: An Package for Structural Equation
+Rosseel, Yves. 2012. <span>“Lavaan: An r Package for Structural Equation
 Modeling.”</span> <em>Journal of Statistical Software</em> 48 (2): 1–36.
 <a href="https://doi.org/10.18637/jss.v048.i02" class="external-link">https://doi.org/10.18637/jss.v048.i02</a>.
 </div>
@@ -2493,9 +2497,9 @@ Teaching Statistics with Monte Carlo Simulation.”</span> <em>Journal of
 Statistics Education</em> 24 (3): 136–56. <a href="https://doi.org/10.1080/10691898.2016.1246953" class="external-link">https://doi.org/10.1080/10691898.2016.1246953</a>.
 </div>
 <div id="ref-Sofrygin2017" class="csl-entry">
-Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer.
-2017.<span>“ Package: Conducting Transparent and Reproducible Simulation
-Studies of Causal Effect Estimation with Complex Longitudinal
+Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer. 2017.
+<span>“Simcausal r Package: Conducting Transparent and Reproducible
+Simulation Studies of Causal Effect Estimation with Complex Longitudinal
 Data.”</span> <em>Journal of Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
 </div>
 <div id="ref-Spirtes2000" class="csl-entry">
@@ -2515,17 +2519,18 @@ Wiley &amp; Sons.
 </div>
 <div id="ref-Templ2017" class="csl-entry">
 Templ, Matthias, Bernhard Meindl, Alexander Kowarik, and Olivier
-Dupriez. 2017. <span>“Simulation of Synthetic Complex Data: The Package
-.”</span> <em>Journal of Statistical Software</em> 79 (10): 1–38. <a href="https://doi.org/10.18637/jss.v079.i10" class="external-link">https://doi.org/10.18637/jss.v079.i10</a>.
+Dupriez. 2017. <span>“Simulation of Synthetic Complex Data: The r
+Package simPop.”</span> <em>Journal of Statistical Software</em> 79
+(10): 1–38. <a href="https://doi.org/10.18637/jss.v079.i10" class="external-link">https://doi.org/10.18637/jss.v079.i10</a>.
 </div>
 <div id="ref-Textor2016" class="csl-entry">
 Textor, Johannes, Benito van der Zander, Mark S. Gilthorpe, Maciej
 Liśkiewicz, and George T. H. Ellison. 2016. <span>“Robust Causal
-Inference Using Directed Acyclic Graphs: The Package .”</span>
+Inference Using Directed Acyclic Graphs: The r Package Daggity.”</span>
 <em>International Journal of Epidemiology</em> 45 (6): 1887–94. <a href="https://doi.org/10.1093/ije/dyw341" class="external-link">https://doi.org/10.1093/ije/dyw341</a>.
 </div>
 <div id="ref-Therneau2024" class="csl-entry">
-Therneau, Terry M. 2024. <em>A Package for Survival Analysis in </em>.
+Therneau, Terry M. 2024. <em>A Package for Survival Analysis in r</em>.
 <a href="https://CRAN.R-project.org/package=survival" class="external-link">https://CRAN.R-project.org/package=survival</a>.
 </div>
 <div id="ref-Tutz2016" class="csl-entry">
@@ -2534,12 +2539,12 @@ Time-to-Event Data</em>. Cham: Springer International Publishing
 Switzerland.
 </div>
 <div id="ref-Wang2022" class="csl-entry">
-Wang, Wenjie, Haoda Fu, Sy Han, and Jun Yan. 2022. <em>: Recurrent Event
-Data Analysis</em>.
+Wang, Wenjie, Haoda Fu, Sy Han, and Jun Yan. 2022. <em>Reda: Recurrent
+Event Data Analysis</em>.
 </div>
 <div id="ref-Wickham2016" class="csl-entry">
-Wickham, Hadley. 2016. <em>: Elegant Graphics for Data Analysis</em>.
-Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org" class="external-link">https://ggplot2.tidyverse.org</a>.
+Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data
+Analysis</em>. Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org" class="external-link">https://ggplot2.tidyverse.org</a>.
 </div>
 <div id="ref-Wouk2019" class="csl-entry">
 Wouk, Kathryn, Anna E. Bauer, and Nisha C. Gottfredson. 2019. <span>“How
