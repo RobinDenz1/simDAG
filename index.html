@@ -47,6 +47,7 @@
     <li><a class="dropdown-item" href="articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
     <li><a class="dropdown-item" href="articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
     <li><a class="dropdown-item" href="articles/v_cookbook.html">simDAG Cookbook</a></li>
+    <li><a class="dropdown-item" href="articles/v_joss.html">Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -120,10 +121,6 @@
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; glm(formula = bmi ~ age + sex, family = "gaussian", data = sim_dat)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance Residuals: </span></span>
-<span><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></span>
-<span><span class="co">#&gt; -8.4802  -1.3555   0.0005   1.3423   8.6826  </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
 <span><span class="co">#&gt; (Intercept) 11.89194    0.07954  149.51   &lt;2e-16 ***</span></span>
@@ -147,10 +144,6 @@
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; glm(formula = death ~ age + bmi, family = "binomial", data = sim_dat)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance Residuals: </span></span>
-<span><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></span>
-<span><span class="co">#&gt; -4.4111   0.0035   0.0066   0.0126   0.2883  </span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
 <span><span class="co">#&gt; (Intercept) -14.6833     3.5538  -4.132  3.6e-05 ***</span></span>
@@ -171,7 +164,8 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Use <code>citation("simDAG")</code> to get the relevant citation information.</p>
+<p>If you use this package, please cite the associated article:</p>
+<p>Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

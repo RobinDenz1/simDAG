@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
+    <li><a class="dropdown-item" href="../articles/v_joss.html">Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -69,7 +70,7 @@
                         <h4 data-toc-skip class="author">Robin Denz</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/v0.3.1/vignettes/v_sim_from_dag.Rmd" class="external-link"><code>vignettes/v_sim_from_dag.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/main/vignettes/v_sim_from_dag.Rmd" class="external-link"><code>vignettes/v_sim_from_dag.Rmd</code></a></small>
       <div class="d-none name"><code>v_sim_from_dag.Rmd</code></div>
     </div>
 
@@ -81,12 +82,12 @@
 <p>In this small vignette, we introduce the <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code>
 function, which can be used to simulate complex data from arbitrary
 causal directed acyclic graphs (DAGs). The simulated data may include
-continuous, binary, categorical, count or time-to-event variables. This
-function is most useful if the DAG is static, meaning that there are no
-time-varying variables. It is theoretically possible to use this
-function to simulate data from DAGs with a time structure as well, but
-there are some difficulties associated with it that will be discussed
-later.</p>
+continuous, binary, categorical, count or time-to-event variables (Denz
+and Timmesfeld 2025). This function is most useful if the DAG is static,
+meaning that there are no time-varying variables. It is theoretically
+possible to use this function to simulate data from DAGs with a time
+structure as well, but there are some difficulties associated with it
+that will be discussed later.</p>
 </div>
 <div class="section level2">
 <h2 id="what-are-causal-dags-and-why-use-them">What are causal DAGs and why use them?<a class="anchor" aria-label="anchor" href="#what-are-causal-dags-and-why-use-them"></a>
@@ -537,6 +538,9 @@ may be used instead.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<p>Denz, Robin and Nina Timmesfeld (2025). Simulating Complex
+Crossectional and Longitudinal Data using the simDAG R Package. arXiv
+preprint, doi: 10.48550/arXiv.2506.01498.</p>
 <p>Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd
 ed. Cambridge: Cambridge University Press</p>
 <p>Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation,
