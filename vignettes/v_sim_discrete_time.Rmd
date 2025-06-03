@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this small vignette, we introduce the `sim_discrete_time()` function, which can be used to generate arbitrarily complex longitudinal data with discrete points in time. Just as the `sim_from_dag()` function contained in this package, it allows any mixture of continuous, binary, categorical, count, or time-to-event data. The main advantage of the `sim_discrete_time()` function is that it naturally generates longitudinal data without the need to define a node for each variable at each point in time. It also makes the generation of complex time-to-event data a lot easier. Features such as time-dependent effects, time-dependent covariates, any form of censoring, recurrent-events and competing events may be included in a straightforward fashion.
+In this small vignette, we introduce the `sim_discrete_time()` function, which can be used to generate arbitrarily complex longitudinal data with discrete points in time. Just as the `sim_from_dag()` function contained in this package, it allows any mixture of continuous, binary, categorical, count, or time-to-event data. The main advantage of the `sim_discrete_time()` function is that it naturally generates longitudinal data without the need to define a node for each variable at each point in time. It also makes the generation of complex time-to-event data a lot easier. Features such as time-dependent effects, time-dependent covariates, any form of censoring, recurrent-events and competing events may be included in a straightforward fashion (Denz and Timmesfeld 2025).
 
 
 # What is Discrete-Time Simulation and Why Use it?
@@ -188,6 +188,8 @@ This may also be useful to fit discrete-time survival models.
 The simulation done here assumes that the time and number of previous events has no effect on any further events of the patient. This assumption may be relaxed by explicitly formulating the `prob_cve` function in a way that it uses the `cve_time` column to change the probability of further events. A more in-depth example that includes considerations like these can be found in the third vignette of this package.
 
 # References
+
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
 

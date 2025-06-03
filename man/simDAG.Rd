@@ -47,7 +47,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_custom_nodes", package="simDAG")}}
 }
 
-We are also working on a separate article on this package that is going to be published in a peer-reviewed journal.
+A separate (already peer-reviewed) article about this package has been provisionally accepted in the Journal of Statistical Software. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025).
 
 \strong{\emph{I have a problem using the \code{sim_discrete_time} function}}
 
@@ -58,6 +58,8 @@ The \code{\link{sim_discrete_time}} function can become difficult to use dependi
 Bug reports, suggestions and feature requests are highly welcome. Please file an issue on the official github page or contact the author directly using the supplied e-mail address.
 }
 \references{
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
 }
 \author{

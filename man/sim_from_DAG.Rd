@@ -52,6 +52,9 @@ Returns a single \code{data.table} including the simulated data with (at least) 
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{plot.DAG}}, \code{\link{sim_discrete_time}}
 }
+\references{
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+}
 \examples{
 library(simDAG)
 

@@ -93,7 +93,9 @@ The estimated coefficients are also very close to the ones we specified. More ex
 
 ## Citation
 
-Use `citation("simDAG")` to get the relevant citation information.
+If you use this package, please cite the associated article:
+
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
 
 ## License
 

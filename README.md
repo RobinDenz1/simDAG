@@ -96,10 +96,6 @@ summary(mod_bmi)
 #> Call:
 #> glm(formula = bmi ~ age + sex, family = "gaussian", data = sim_dat)
 #> 
-#> Deviance Residuals: 
-#>     Min       1Q   Median       3Q      Max  
-#> -8.4802  -1.3555   0.0005   1.3423   8.6826  
-#> 
 #> Coefficients:
 #>             Estimate Std. Error t value Pr(>|t|)    
 #> (Intercept) 11.89194    0.07954  149.51   <2e-16 ***
@@ -126,10 +122,6 @@ summary(mod_death)
 #> Call:
 #> glm(formula = death ~ age + bmi, family = "binomial", data = sim_dat)
 #> 
-#> Deviance Residuals: 
-#>     Min       1Q   Median       3Q      Max  
-#> -4.4111   0.0035   0.0066   0.0126   0.2883  
-#> 
 #> Coefficients:
 #>             Estimate Std. Error z value Pr(>|z|)    
 #> (Intercept) -14.6833     3.5538  -4.132  3.6e-05 ***
@@ -152,7 +144,11 @@ More examples can be found in the documentation and the vignette.
 
 ## Citation
 
-Use `citation("simDAG")` to get the relevant citation information.
+If you use this package, please cite the associated article:
+
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
+and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
+10.48550/arXiv.2506.01498.
 
 ## License
 

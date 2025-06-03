@@ -1,9 +1,9 @@
 
 bibentry(
   bibtype    = "misc",
-  title    = "simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information",
-  author   = "Robin Denz, Katharina Meiszl",
-  year     = "2023",
-  url      = "https://github.com/RobinDenz1/simDAG",
-  textVersion = "Robin Denz and Katharina Meiszl (2023): simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information, available at https://github.com/RobinDenz1/simDAG"
+  title    = "Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package",
+  author   = "Robin Denz, Nina Timmesfeld",
+  year     = "2025",
+  doi      = "https://doi.org/10.48550/arXiv.2506.01498",
+  textVersion = "Robin Denz and Nina Timmesfeld (2025): Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package, arXiv preprint, doi: 10.48550/arXiv.2506.01498"
 )

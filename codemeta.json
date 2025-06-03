@@ -211,6 +211,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=rsurv"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "survival",
+      "name": "survival",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=survival"
     }
   ],
   "softwareRequirements": {
@@ -266,11 +278,11 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1415.701KB",
+  "fileSize": "1685.757KB",
   "citation": [
     {
       "@type": "CreativeWork",
-      "datePublished": "2023",
+      "datePublished": "2025",
       "author": [
         {
           "@type": "Person",
@@ -279,12 +291,14 @@
         },
         {
           "@type": "Person",
-          "givenName": "Katharina",
-          "familyName": "Meiszl"
+          "givenName": "Nina",
+          "familyName": "Timmesfeld"
         }
       ],
-      "name": "simDAG: An R Package to Simulate Simple and Complex (Longitudinal) Data from a DAG and Associated Node Information",
-      "url": "https://github.com/RobinDenz1/simDAG"
+      "name": "Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package",
+      "identifier": "https://doi.org/10.48550/arXiv.2506.01498",
+      "@id": "https://doi.org/10.48550/arXiv.2506.01498",
+      "sameAs": "https://doi.org/10.48550/arXiv.2506.01498"
     }
   ],
   "releaseNotes": "https://github.com/RobinDenz1/simDAG/blob/master/NEWS.md",

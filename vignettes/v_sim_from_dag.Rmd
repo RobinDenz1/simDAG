@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this small vignette, we introduce the `sim_from_dag()` function, which can be used to simulate complex data from arbitrary causal directed acyclic graphs (DAGs). The simulated data may include continuous, binary, categorical, count or time-to-event variables. This function is most useful if the DAG is static, meaning that there are no time-varying variables. It is theoretically possible to use this function to simulate data from DAGs with a time structure as well, but there are some difficulties associated with it that will be discussed later.
+In this small vignette, we introduce the `sim_from_dag()` function, which can be used to simulate complex data from arbitrary causal directed acyclic graphs (DAGs). The simulated data may include continuous, binary, categorical, count or time-to-event variables (Denz and Timmesfeld 2025). This function is most useful if the DAG is static, meaning that there are no time-varying variables. It is theoretically possible to use this function to simulate data from DAGs with a time structure as well, but there are some difficulties associated with it that will be discussed later.
 
 # What are causal DAGs and why use them?
 
@@ -224,6 +224,8 @@ In this example, `C_1` is a function of both `A` and `B`, but `C_2` is only a fu
 
 # References
 
+Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+
 Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd ed. Cambridge: Cambridge University Press
 
 Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation, Prediction, and Search. 2nd ed. The MIT Press, Cambridge 
@@ -231,5 +233,3 @@ Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation, Prediction,
 Chickering, D.M. (1995). A transformational characterization of equivalent Bayesian network structures. Proceedings of the 11th Conference on Uncertainty in Artificial Intelligence, Montreal, Canada, 87-98.
 
 Oleg Sofrygin, Mark J. van der Laan, and Romain Neugebauer (2017). simcausal R Package: Conducting Transparent and Reproducible Simulation Studies of Causal Effect Estimation with Complex Longitudinal Data. In: Journal of Statistical Software. 81.2, pp. 1-47
-
-
