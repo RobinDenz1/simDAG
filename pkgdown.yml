@@ -5,11 +5,11 @@ articles:
   v_cookbook: v_cookbook.html
   v_covid_example: v_covid_example.html
   v_custom_nodes: v_custom_nodes.html
-  v_joss: v_joss.html
   v_sim_discrete_time: v_sim_discrete_time.html
   v_sim_from_dag: v_sim_from_dag.html
+  v_simDAG: v_simDAG.html
   v_using_formulas: v_using_formulas.html
-last_built: 2025-06-03T15:44Z
+last_built: 2025-06-04T18:35Z
 urls:
   reference: https://robindenz1.github.io/simDAG/reference
   article: https://robindenz1.github.io/simDAG/articles
