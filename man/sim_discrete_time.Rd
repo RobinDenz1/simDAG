@@ -5,7 +5,7 @@
 Simulate Data from a \code{DAG} with Time-Dependent Variables
 }
 \description{
-Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given DAG. In contrast to the \code{sim_from_dag} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
+Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given \code{DAG} created using the \code{\link{empty_dag}} and \code{\link{node}} or \code{\link{node_td}} functions. In contrast to the \code{\link{sim_from_dag}} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
 }
 \usage{
 sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
@@ -18,7 +18,7 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
 }
 \arguments{
   \item{dag}{
-A \code{DAG} object created using the \code{empty_dag} function with \code{node_td} calls added to it (see details and examples). If the \code{dag} contains root nodes and child nodes which are time-fixed (those who were added using \code{node} calls), data according to this DAG will be generated for time = 0. That data will then be used as starting data for the following simulation. Alternatively, the user can specify the \code{t0_data} argument directly. In either case, the supplied \code{dag} needs to contain at least one time-dependent node added using the \code{node_td} function.
+A \code{DAG} object created using the \code{\link{empty_dag}} function with \code{\link{node_td}} calls added to it (see details and examples). If the \code{dag} contains root nodes and child nodes which are time-fixed (those who were added using \code{\link{node}} calls), data according to this DAG will be generated for time = 0. That data will then be used as starting data for the following simulation. Alternatively, the user can specify the \code{t0_data} argument directly. In either case, the supplied \code{dag} needs to contain at least one time-dependent node added using the \code{\link{node_td}} function.
   }
   \item{n_sim}{
 A single number specifying how many observations should be generated. If a \code{data.table} is supplied to the \code{t0_data} argument, this argument is ignored. The sample size will then correspond to the number of rows in \code{t0_data}.

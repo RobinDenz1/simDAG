@@ -11,7 +11,7 @@ articles:
       - v_sim_discrete_time
       - v_covid_example
       - v_cookbook
-      - v_simDAG
+      - simDAG
 reference:
     - title: DAGs
       desc: Create, manipulate and inspect DAGs

@@ -5,14 +5,14 @@
 Simulate Data from a \code{DAG}
 }
 \description{
-This function can be used to generate data from a given DAG. It additionally requires information on node distributions, beta coefficients and, depending on the node type, more parameters such as intercepts.
+This function can be used to generate data from a given \code{DAG}. The \code{DAG} should be created using the \code{\link{empty_dag}} and \code{\link{node}} functions, which required additional information about distributions, beta coefficients and, depending on the node type, more parameters such as intercepts.
 }
 \usage{
 sim_from_dag(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE)
 }
 \arguments{
   \item{dag}{
-A \code{DAG} object created using the \code{\link{empty_dag}} function with nodes added to it using the \code{+} syntax. See details.
+A \code{DAG} object created using the \code{\link{empty_dag}} function with \code{\link{node}} calls added to it using the \code{+} syntax. See details.
   }
   \item{n_sim}{
 A single number specifying how many observations should be generated.
