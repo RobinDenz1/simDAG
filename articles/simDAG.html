@@ -478,59 +478,82 @@ is discussed.</p>
 </h3>
 <p>The following functions are used in a typical workflow using the
 <code>simDAG</code> <code>R</code> package.</p>
-<ul>
-<li>
-<code><a href="../reference/empty_dag.html">empty_dag()</a></code> initializes an empty <code>DAG</code>
-object, which should be later filled with information on relevant nodes.
-<code>DAG</code> objects are the most important data structure of this
-package. How to define and use them is illustrated in more detail
-below.</li>
-<li>
-<code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code> can be used to define
-one or multiple nodes each. These functions are typically used to fill
-the <code>DAG</code> objects with information about how the respective
-node should be generated, e.g., which other nodes it depends on (if
-any), whether it is time-dependent or not, what kind of data type it
-should be and the exact structural equation that it should follow.
-<code><a href="../reference/node.html">node()</a></code> can only be used to define nodes at one specific
-point in time, while the <code><a href="../reference/node.html">node_td()</a></code> function should only be
-used to define time-varying nodes for discrete-time simulations.</li>
-<li>
-<code><a href="../reference/add_node.html">add_node()</a></code> or <code>DAG + node</code> allows the
-definition made by <code><a href="../reference/node.html">node()</a></code> or <code><a href="../reference/node.html">node_td()</a></code> to be
-added to the <code>DAG</code> object.</li>
-<li>
-<code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> directly plots a <code>DAG</code> object
-using the <code>ggplot2</code> library <span class="citation">(Wickham
-2016)</span>.</li>
-<li>
-<code>summary.DAG()</code> may be used to print the underlying
-structural equations of all nodes in a <code>DAG</code> object.</li>
-<li>
-<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> is one of the two core simulation
-functions. Given a fully specified <code>DAG</code> object that only
-includes nodes defined using <code><a href="../reference/node.html">node()</a></code>, it randomly generates
-a <code>data.table</code> <span class="citation">(Barrett et al.
-2024)</span> according to the DGP specified by the
-<code>DAG</code>.</li>
-<li>
-<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> is the second core simulation
-function. Given a fully specified <code>DAG</code> object that includes
-one or multiple nodes added using the <code><a href="../reference/node.html">node_td()</a></code> function,
-and possibly one or multiple nodes added using the <code><a href="../reference/node.html">node()</a></code>
-function, it randomly generates data according to the specified DGP
-using a discrete-time simulation approach. This is described in detail
-in a later Section.</li>
-<li>
-<code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code> allows users to directly generate
-multiple datasets from a single <code>DAG</code>, possibly using
-parallel processing.</li>
-<li>
-<code><a href="../reference/sim2data.html">sim2data()</a></code> may be used to transform the output produced
-by the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function into either the
-<em>wide</em>, <em>long</em> or <em>start-stop</em> format to make
-further usage of the generated data easier.</li>
-</ul>
+<table class="table">
+<colgroup>
+<col width="45%">
+<col width="55%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/empty_dag.html">empty_dag()</a></code></td>
+<td>Initializes an empty <code>DAG</code> object, which should be later
+filled with information on relevant nodes. <code>DAG</code> objects are
+the most important data structure of this package. How to define and use
+them is illustrated in more detail below.</td>
+</tr>
+<tr class="even">
+<td>
+<code><a href="../reference/node.html">node()</a></code> and <code><a href="../reference/node.html">node_td()</a></code>
+</td>
+<td>Can be used to define one or multiple nodes each. These functions
+are typically used to fill the <code>DAG</code> objects with information
+about how the respective node should be generated, e.g., which other
+nodes it depends on (if any), whether it is time-dependent or not, what
+kind of data type it should be and the exact structural equation that it
+should follow. <code><a href="../reference/node.html">node()</a></code> can only be used to define nodes at
+one specific point in time, while the <code><a href="../reference/node.html">node_td()</a></code> function
+should only be used to define time-varying nodes for discrete-time
+simulations.</td>
+</tr>
+<tr class="odd">
+<td>
+<code><a href="../reference/add_node.html">add_node()</a></code> or <code>DAG + node</code>
+</td>
+<td>Allows the definition made by <code><a href="../reference/node.html">node()</a></code> or
+<code><a href="../reference/node.html">node_td()</a></code> to be added to the <code>DAG</code> object.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/plot.DAG.html">plot.DAG()</a></code></td>
+<td>Directly plots a <code>DAG</code> object using the
+<code>ggplot2</code> library <span class="citation">(Wickham
+2016)</span>.</td>
+</tr>
+<tr class="odd">
+<td><code>summary.DAG()</code></td>
+<td>May be used to print the underlying structural equations of all
+nodes in a <code>DAG</code> object.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code></td>
+<td>Is one of the two core simulation functions. Given a fully specified
+<code>DAG</code> object that only includes nodes defined using
+<code><a href="../reference/node.html">node()</a></code>, it randomly generates a <code>data.table</code>
+<span class="citation">(Barrett et al. 2024)</span> according to the DGP
+specified by the <code>DAG</code>.</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code></td>
+<td>Is the second core simulation function. Given a fully specified
+<code>DAG</code> object that includes one or multiple nodes added using
+the <code><a href="../reference/node.html">node_td()</a></code> function, and possibly one or multiple nodes
+added using the <code><a href="../reference/node.html">node()</a></code> function, it randomly generates data
+according to the specified DGP using a discrete-time simulation
+approach. This is described in detail in a later Section.</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/sim_n_datasets.html">sim_n_datasets()</a></code></td>
+<td>Allows users to directly generate multiple datasets from a single
+<code>DAG</code>, possibly using parallel processing.</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/sim2data.html">sim2data()</a></code></td>
+<td>May be used to transform the output produced by the
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function into either the <em>wide</em>,
+<em>long</em> or <em>start-stop</em> format to make further usage of the
+generated data easier.</td>
+</tr>
+</tbody>
+</table>
 <p>The package additionally includes multiple functions starting with
 <code>node_</code>. These functions are used to generate data of
 different types and using different specifications. Usually they do not
