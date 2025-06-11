@@ -114,15 +114,17 @@ First, we will introduce the most important functionality of the proposed packag
 
 The following functions are used in a typical workflow using the `simDAG` `R` package.
 
-* `empty_dag()` initializes an empty `DAG` object, which should be later filled with information on relevant nodes. `DAG` objects are the most important data structure of this package. How to define and use them is illustrated in more detail below.
-* `node()` and `node_td()` can be used to define one or multiple nodes each. These functions are typically used to fill the `DAG` objects with information about how the respective node should be generated, e.g., which other nodes it depends on (if any), whether it is time-dependent or not, what kind of data type it should be and the exact structural equation that it should follow. `node()` can only be used to define nodes at one specific point in time, while the `node_td()` function should only be used to define time-varying nodes for discrete-time simulations.
-* `add_node()` or `DAG + node` allows the definition made by `node()` or `node_td()` to be added to the `DAG` object.
-* `plot.DAG()` directly plots a `DAG` object using the `ggplot2` library [@Wickham2016].
-* `summary.DAG()` may be used to print the underlying structural equations of all nodes in a `DAG` object.
-* `sim_from_dag()` is one of the two core simulation functions. Given a fully specified `DAG` object that only includes nodes defined using `node()`, it randomly generates a `data.table` [@Barrett2024] according to the DGP specified by the `DAG`.
-* `sim_discrete_time()` is the second core simulation function. Given a fully specified `DAG` object that includes one or multiple nodes added using the `node_td()` function, and possibly one or multiple nodes added using the `node()` function, it randomly generates data according to the specified DGP using a discrete-time simulation approach. This is described in detail in a later Section.
-* `sim_n_datasets()` allows users to directly generate multiple datasets from a single `DAG`, possibly using parallel processing.
-* `sim2data()` may be used to transform the output produced by the `sim_discrete_time()` function into either the *wide*, *long* or *start-stop* format to make further usage of the generated data easier.
+|  |  |
+| --------- | ----------- |
+| `empty_dag()` | Initializes an empty `DAG` object, which should be later filled with information on relevant nodes. `DAG` objects are the most important data structure of this package. How to define and use them is illustrated in more detail below. |
+| `node()` and `node_td()` | Can be used to define one or multiple nodes each. These functions are typically used to fill the `DAG` objects with information about how the respective node should be generated, e.g., which other nodes it depends on (if any), whether it is time-dependent or not, what kind of data type it should be and the exact structural equation that it should follow. `node()` can only be used to define nodes at one specific point in time, while the `node_td()` function should only be used to define time-varying nodes for discrete-time simulations. |
+| `add_node()` or `DAG + node` | Allows the definition made by `node()` or `node_td()` to be added to the `DAG` object. |
+| `plot.DAG()` | Directly plots a `DAG` object using the `ggplot2` library [@Wickham2016]. |
+| `summary.DAG()` | May be used to print the underlying structural equations of all nodes in a `DAG` object. |
+| `sim_from_dag()` | Is one of the two core simulation functions. Given a fully specified `DAG` object that only includes nodes defined using `node()`, it randomly generates a `data.table` [@Barrett2024] according to the DGP specified by the `DAG`. |
+| `sim_discrete_time()` | Is the second core simulation function. Given a fully specified `DAG` object that includes one or multiple nodes added using the `node_td()` function, and possibly one or multiple nodes added using the `node()` function, it randomly generates data according to the specified DGP using a discrete-time simulation approach. This is described in detail in a later Section. |
+| `sim_n_datasets()` | Allows users to directly generate multiple datasets from a single `DAG`, possibly using parallel processing. |
+| `sim2data()` | May be used to transform the output produced by the `sim_discrete_time()` function into either the *wide*, *long* or *start-stop* format to make further usage of the generated data easier. |
 
 The package additionally includes multiple functions starting with `node_`. These functions are used to generate data of different types and using different specifications. Usually they do not have to be called directly by the user. Instead they are specified as `type`s in the `node()` or `node_td()` functions and only called internally. Some additional convenience functions are also included, but are not further discussed in this article. Instead we choose to focus on describing the core functionality in detail and refer the interested user to the official documentation for more information.
 
