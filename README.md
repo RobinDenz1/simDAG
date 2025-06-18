@@ -10,6 +10,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![R-CMD-check](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RobinDenz1/simDAG/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/RobinDenz1/simDAG/graph/badge.svg)](https://app.codecov.io/gh/RobinDenz1/simDAG)
+[![](https://img.shields.io/badge/doi-10.48550/arXiv.2506.01498-green.svg)](https://doi.org/10.48550/arXiv.2506.01498)
 <!-- badges: end -->
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />
@@ -140,7 +141,8 @@ summary(mod_death)
 ```
 
 The estimated coefficients are also very close to the ones we specified.
-More examples can be found in the documentation and the vignette.
+More examples can be found in the documentation and the multiple
+vignettes.
 
 ## Citation
 
