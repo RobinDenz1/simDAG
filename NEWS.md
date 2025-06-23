@@ -1,4 +1,11 @@
 
+# simDAG 0.3.2
+
+Documentation
+
+* Added a vignette of the Journal of Statistical Software paper (provisionally accepted)
+* Changed all citation information accordingly
+
 # simDAG 0.3.1
 
 Enhancements
