@@ -122,7 +122,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
         # augment data for formula input
         args$data <- tryCatch({
-          data_for_formula(data=data, args=args)},
+          data_for_formula(data=data, args=args, networks=dag$networks)},
           error=function(e){
             stop("An error occured when interpreting the formula of node '",
                  tx_nodes[[i]]$name, "'. The message was:\n", e,

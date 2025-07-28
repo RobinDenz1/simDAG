@@ -74,7 +74,7 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
       args <- args_from_formula(args=args, formula=form,
                                 node_type=dag$child_nodes[[i]]$type_str)
       args$data <- tryCatch({
-        data_for_formula(data=data, args=args)},
+        data_for_formula(data=data, args=args, networks=dag$networks)},
         error=function(e){
           stop("An error occured when interpreting the formula of node '",
                dag$child_nodes[[i]]$name, "'. The message was:\n", e,

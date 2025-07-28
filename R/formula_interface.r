@@ -201,7 +201,10 @@ args_from_formula <- function(args, formula, node_type) {
 
 ## create a fitting dataset for special formula based nodes
 #' @importFrom data.table as.data.table
-data_for_formula <- function(data, args) {
+#' @importFrom data.table setnames
+data_for_formula <- function(data, args, networks=list()) {
+
+  name <- NULL
 
   # extract variables mentioned in mixed effects parts, if included
   if (!is.null(args$mixed_terms)) {
@@ -253,11 +256,41 @@ data_for_formula <- function(data, args) {
     form_dat <- paste0(form_dat, " + ", paste0(form_cubic, collapse=" + "))
   }
 
+  # check for network terms
+  form_net <- get_net_terms(args$parents)
+
+  if (length(form_net) > 0) {
+    # add network terms to data
+    d_net <- data.table(term=form_net,
+                        expr=get_expr_from_net(form_net),
+                        name=get_netname_from_net(form_net))
+
+    # if there is just one network in the DAG, use it by default
+    if (anyNA(d_net$name)) {
+      if (length(networks)==1) {
+        d_net[is.na(name), name := names(networks)]
+      } else {
+        stop("If more than one network() was added to the DAG object",
+             " every net() call needs to specify which network should",
+             " be used with the 'net' argument.", call.=FALSE)
+      }
+    }
+    data <- add_network_info(data=data, d_net_terms=d_net, networks=networks)
+
+    # add network terms to formula
+    form_dat <- paste0(form_dat, " + `",
+                       paste0(form_net, collapse="` + `"), "`")
+  }
+
   # get full model matrix
   # (and print helpful error if column not found)
   mod_mat <- as.data.table(stats::model.matrix.lm(stats::as.formula(form_dat),
                                                   data=data,
                                                   na.action="na.pass"))
+
+  if (length(form_net) > 0) {
+    setnames(mod_mat, old=paste0("`", form_net, "`"), new=form_net)
+  }
 
   mod_mat <- tryCatch({
     mod_mat[, args$parents, with=FALSE]},
