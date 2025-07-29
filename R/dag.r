@@ -119,7 +119,7 @@ print.DAG <- function(x, ...) {
     cat("  - ", n_root_nodes, " of which are root nodes\n")
     cat("  - ", n_child_nodes, " of which are child nodes\n")
     cat("  - ", n_tx_nodes, " of which are time-varying nodes\n")
-    cat("  - ", n_networks, " imposed network structures\n")
+    cat("  - ", n_networks, " imposed network structure(s)\n")
   }
 }
 

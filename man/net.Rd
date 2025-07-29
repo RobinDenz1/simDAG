@@ -5,33 +5,53 @@
 Specify Network Dependencies in a \code{DAG}
 }
 \description{
-This function should be used in the \code{formula} of nodes in which the value of the observation of one individual
+This function may be used in the \code{formula} of nodes in which the value of the observation of one individual are dependent on its' neighbors in a defined static \code{\link{network}} or dynamic \code{\link{network_td}}. Given the network and a previously generated variable, \code{net()} aggregates data of the neighbors according to an arbitrary function under the hood. The resulting variable can then be used directly in a \code{formula}.
 }
 \usage{
 net(expression, net)
 }
 \arguments{
-  \item{name}{
-A single character string, specifying the name of the network. Contrary to the \code{\link{node}} function, multiple values are not allowed, because defining the same network multiple times does not make sense.
+  \item{expression}{
+Any R expression containing one or more previously generated variables that returns one numeric value given a vector, such as \code{sum(variable)} or \code{mean(variable)}.
   }
   \item{net}{
-For \code{network()}, two kinds of inputs are allowed. The first is an \code{igraph} object containing one vertex per observation (e.g. \code{n_sim} vertices) that should be generated when later calling \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}}. The second is a function that generates such an object, given a named argument called \code{n_sim} and any number of further named arguments. For \code{network_td()}, only the latter kind of input is allowed. Further information is given in the details section.
-  }
-  \item{...}{
-Optional further named arguments passed to \code{net} if it is a function.
+A single character string specifying the name of the network that should be used to define the neighbors of an observation. If only one network is present in the \code{DAG}, this argument can be omitted. The single added network is then used by default. If multiple networks are present and this argument is not defined, an error will be produced.
   }
 }
 \details{
+Internally the following procedure is used whenever a \code{net()} function call is included in a \code{formula} of a \code{\link{node}} (regardless of time-fixed or time-dependent). First, the associated network (defined using the \code{net} argument) is used to identify the neighbors of each observation. Every vertex that is directly connected to an observation is considered its' neighbor. The parent variable(s) specified in the \code{net()} call are then aggregated over these neighbors using the given \code{expression}. A simple example: consider observation \code{1} with four neighbors named \code{2, 5, 8} and \code{10}. The \code{formula} contains the following \code{net()} call: \code{net(sum(infected))}. The value of the \code{infected} variable is 0, 0, 1, 1 for persons \code{2, 5, 8} and \code{10} respectively. These values are then summed up to result in a value of 2 for person \code{1}. The same is done for every person in the simulated data. The resulting variable is then used as-is in the simulation.
 
-
-
+Note that it never makes sense to use this function outside of a \code{formula} argumen: if you look at its source code you will realize that it does not actually do anything. It is only a piece of syntax for the \code{formula} interface. Please consult the \code{\link{network}} documentation page or the associated vignette for more information.
 }
 \value{
-Returns a \code{DAG.network} object which can be added to a \code{DAG} object directly.
+"Returns" a numeric vector of length \code{n_sim} when used properly in a \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} call. Always returns \code{NULL}, regardless of input when used outside \code{formula}.
 }
 \author{
 Robin Denz
 }
 \examples{
+library(igraph)
+library(data.table)
+library(simDAG)
+
+# define a random network for illustration, with 10 vertices
+set.seed(234)
+g <- igraph::sample_smallworld(1, 10, 2, 0.5)
+
+# a simple dag containing only two time-constant variables and the network
+dag <- empty_dag() +
+  node("A", type="rnorm", mean=0, sd=1) +
+  node("B", type="rbernoulli", p=0.5) +
+  network("Net1", net=g)
+
+# using the mean of A of each observations neighbor in a linear model
+dag2 <- dag +
+  node("Y", type="gaussian", formula= ~ -2 + net(mean(A))*4, error=1)
+
+# using an indicator of whether any of an observations neighbors has
+# a 1 in B in a linear model
+dag3 <- dag +
+  node("Y", type="gaussian", formula= ~ 1.5 + net(as.numeric(any(B==1)))*3,
+       error=1.2)
 
 }

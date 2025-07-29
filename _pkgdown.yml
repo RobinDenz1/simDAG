@@ -18,6 +18,8 @@ reference:
     - contents:
       - empty_dag
       - node
+      - network
+      - net
       - add_node
       - plot.DAG
       - as.igraph.DAG

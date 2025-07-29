@@ -9,7 +9,7 @@
       -  2  of which are root nodes
       -  2  of which are child nodes
       -  0  of which are time-varying nodes
-      -  0  imposed network structures
+      -  0  imposed network structure(s)
 
 # S3 print method with node that is both time-dependent and not
 
@@ -21,7 +21,7 @@
         -  0  of which are root nodes
         -  0  of which are child nodes
         -  1  of which are time-varying nodes
-        -  0  imposed network structures
+        -  0  imposed network structure(s)
 
 # S3 summary method with empty dag
 

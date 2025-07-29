@@ -3,10 +3,10 @@
 \alias{+.DAG}
 
 \title{
-Add a \code{DAG.node} object to a \code{DAG} object
+Add a \code{DAG.node} or a \code{DAG.network} object to a \code{DAG} object
 }
 \description{
-This function allows users to add \code{DAG.node} objects created using the \code{\link{node}} or \code{\link{node_td}} function to \code{DAG} objects created using the \code{\link{empty_dag}} function, which makes it easy to fully specify a DAG to use in the \code{\link{sim_from_dag}} function and \code{\link{sim_discrete_time}}.
+This function allows users to add \code{DAG.node} objects created using the \code{\link{node}} or \code{\link{node_td}} function and \code{DAG.network} objects created using the \code{\link{network}} or \code{\link{network_td}} function to \code{DAG} objects created using the \code{\link{empty_dag}} function, which makes it easy to fully specify a DAG to use in the \code{\link{sim_from_dag}} function and \code{\link{sim_discrete_time}}.
 }
 \usage{
 add_node(dag, node)
@@ -18,20 +18,20 @@ add_node(dag, node)
 A \code{DAG} object created using the \code{\link{empty_dag}} function.
   }
   \item{node}{
-A \code{DAG.node} object created using the \code{\link{node}} function or \code{\link{node_td}} function.
+Either a \code{DAG.node} object created using the \code{\link{node}} function or \code{\link{node_td}} function, or a \code{DAG.network} object created using the \code{\link{network}} function or \code{\link{network_td}} function.
   }
   \item{object_1}{
-Either a \code{DAG} object or a \code{DAG.node} object. The order of the objects does not change the result.
+Either a \code{DAG} object, a \code{DAG.node} object or a \code{DAG.network} object. The order of the objects does not change the result.
   }
   \item{object_2}{
 See argument \code{object_1}.
   }
 }
 \details{
-The two ways of adding a node to a \code{DAG} object are: \code{dag <- add_node(dag, node(...))} and \code{dag <- dag + node(...)}, which give identical results (note that the \code{...} should be replaced with actual arguments and that the initial \code{dag} should be created with a call to \code{empty_dag}). See \code{\link{node}} for more information on how to specify a \code{DAG} for use in the \code{\link{sim_from_dag}} and \code{\link{node_td}} functions.
+The two ways of adding a node or a network to a \code{DAG} object are: \code{dag <- add_node(dag, node(...))} and \code{dag <- dag + node(...)}, which give identical results (note that the \code{...} should be replaced with actual arguments and that the initial \code{dag} should be created with a call to \code{empty_dag}). See \code{\link{node}} for more information on how to specify a \code{DAG} for use in the \code{\link{sim_from_dag}} and \code{\link{node_td}} functions.
 }
 \value{
-Returns an \code{DAG} object with the \code{DAG.node} object added to it.
+Returns an \code{DAG} object with the \code{DAG.node} object or \code{DAG.network} object added to it.
 }
 \author{
 Robin Denz

@@ -5,7 +5,7 @@
 Simulate Data from a \code{DAG} with Time-Dependent Variables
 }
 \description{
-Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given \code{DAG} created using the \code{\link{empty_dag}} and \code{\link{node}} or \code{\link{node_td}} functions. In contrast to the \code{\link{sim_from_dag}} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
+Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given \code{DAG} created using the \code{\link{empty_dag}} and \code{\link{node}} or \code{\link{node_td}} functions (and possibly \code{\link{network}} or \code{\link{network_td}} functions). In contrast to the \code{\link{sim_from_dag}} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
 }
 \usage{
 sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
@@ -14,6 +14,7 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
                   tx_nodes_order=NULL, tx_transform_fun=NULL,
                   tx_transform_args=list(),
                   save_states="last", save_states_at=NULL,
+                  save_networks=FALSE,
                   verbose=FALSE, check_inputs=TRUE)
 }
 \arguments{
@@ -53,6 +54,9 @@ Specifies the amount of simulation states that should be saved in the output obj
   \item{save_states_at}{
 The specific points in time at which the simulated \code{data.table} should be saved. Ignored if \code{save_states!="at_t"}.
   }
+  \item{save_networks}{
+Either \code{TRUE} or \code{FALSE}, specifying whether networks should be saved over time. Only relevant if \code{dag} contains one or more \code{\link{network}} or \code{\link{network_td}} calls. If set to \code{TRUE} all networks (including time-independent ones) are saved according to the specification of the \code{save_states} argument.
+  }
   \item{verbose}{
 If \code{TRUE} prints one line at every point in time before a node function is executed. This can be useful when debugging custom node functions. Defaults to \code{FALSE}.
   }
@@ -78,6 +82,10 @@ Internally, this function works by first simulating data using the \code{\link{s
 
 The \code{dag} argument should be specified as described in the \code{\link{node}} documentation page. More examples specific to discrete-time simulations can be found in the vignettes and the examples. The only difference to specifying a \code{dag} for the \code{\link{sim_from_dag}} function is that the \code{dag} here should contain at least one time-dependent node added using the \code{\link{node_td}} function. Usage of the \code{formula} argument with non-linear or interaction terms is discouraged for performance reasons.
 
+\strong{\emph{Networks-Based Simulation}}:
+
+As in the \code{\link{sim_from_dag}} function, networks-based simulations are also directly supported. Users may define static networks (using the \code{\link{network}} function) and / or dynamic networks that may evolve over time(using the \code{\link{network_td}} function). By using the \code{\link{net}} function inside the \code{formula} argument of \code{\link{node}} or \code{\link{node_td}} calls, complex dependencies among observations depending on the neighbors of each observation may then be simulated. More information is given in the associated vignette and the documentation pages of \code{\link{network}} and \code{\link{network_td}}.
+
 \strong{\emph{Speed Considerations}}:
 
 All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow. Note also that using the \code{formula} argument is a lot more computationally expensive than using the \code{parents}, \code{betas} approach to specify certain nodes.
@@ -99,6 +107,7 @@ Returns a \code{simDT} object, containing some general information about the sim
 
 \itemize{
   \item{\code{past_states}: A list containing the generated data at the specified points in time.}
+  \item{\code{past_networks}: A list containing the generated / updated networks at the specified points in time.}
   \item{\code{save_states}: The value of the \code{save_states} argument supplied by the user.}
   \item{\code{data}: The data at time \code{max_t}.}
   \item{\code{tte_past_events}: A list storing the times at which events happened in variables of type \code{"time_to_event"}, if specified.}

@@ -11,6 +11,10 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     check_inputs_sim_from_dag(dag=dag, n_sim=n_sim, sort_dag=sort_dag)
   }
 
+  # initialize networks
+  dag$networks <- create_networks(networks=dag$networks, n_sim=n_sim,
+                                  sim_time=0)
+
   # sample from root nodes
   data <- vector(mode="list", length=length(dag$root_nodes))
   for (i in seq_len(length(dag$root_nodes))) {

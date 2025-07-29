@@ -9,7 +9,7 @@ add_node_to_data <- function(data, new, name) {
   } else {
     data[, name] <- new
   }
-  return(data)
+  return(copy(data))
 }
 
 ## add some parent nodes that should be passed automatically

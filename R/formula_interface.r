@@ -269,10 +269,14 @@ data_for_formula <- function(data, args, networks=list()) {
     if (anyNA(d_net$name)) {
       if (length(networks)==1) {
         d_net[is.na(name), name := names(networks)]
-      } else {
+      } else if (length(networks) > 1) {
         stop("If more than one network() was added to the DAG object",
              " every net() call needs to specify which network should",
              " be used with the 'net' argument.", call.=FALSE)
+      } else if (length(networks)==0) {
+        stop("One or more net() terms were found in 'formula',",
+             " but no network() was found in the supplied 'dag'.",
+             call.=FALSE)
       }
     }
     data <- add_network_info(data=data, d_net_terms=d_net, networks=networks)

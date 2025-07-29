@@ -8,6 +8,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                               tx_nodes_order=NULL,
                               tx_transform_fun=NULL, tx_transform_args=list(),
                               save_states="last", save_states_at=NULL,
+                              save_networks=FALSE,
                               verbose=FALSE, check_inputs=TRUE) {
 
   if (!inherits(dag, "DAG")) {
@@ -58,11 +59,12 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   # initialize list for saving past states of the simulation
   if (save_states=="last") {
-    past_states <- NULL
+    past_states <- past_networks <- NULL
   } else if (save_states=="all") {
-    past_states <- vector(mode="list", length=max_t)
+    past_states <- past_networks <- vector(mode="list", length=max_t)
   } else if (save_states=="at_t" & !is.null(save_states_at)) {
-    past_states <- vector(mode="list", length=length(save_states_at))
+    past_states <- past_networks <- vector(mode="list",
+                                           length=length(save_states_at))
     state_count <- 1
   }
 
@@ -88,6 +90,11 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   arg_list <- lapply(tx_nodes, clean_node_args)
   fun_list <- lapply(tx_nodes, FUN=function(x){x$type_fun})
 
+  # indicator if time-dependent networks are present
+  has_td_networks <- length(vapply(dag$networks,
+                                   FUN=function(x){x$time_varying},
+                                   FUN.VALUE=logical(1))) > 0
+
   # get current environment
   envir <- environment()
 
@@ -112,6 +119,15 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
       if (verbose) {
         cat("t = ", t, " node = ", tx_nodes[[i]]$name, "\n", sep="")
+      }
+
+      # update networks, if needed
+      if (has_td_networks) {
+        dag$networks <- create_networks(networks=dag$networks,
+                                        n_sim=n_sim,
+                                        data=data,
+                                        sim_time=t,
+                                        past_states=past_states)
       }
 
       # get relevant arguments
@@ -201,13 +217,22 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     # save intermediate simulation states, if specified
     if (save_states=="all") {
       past_states[[t]] <- data
+
+      if (save_networks) {
+        past_networks[[t]] <- dag$networks
+      }
     } else if (save_states=="at_t" & t %in% save_states_at) {
       past_states[[state_count]] <- data
+
+      if (save_networks) {
+        past_networks[[state_count]] <- dag$networks
+      }
       state_count <- state_count + 1
     }
   }
 
   out <- list(past_states=past_states,
+              past_networks=past_networks,
               save_states=save_states,
               data=data,
               tte_past_events=past_events_list,

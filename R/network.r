@@ -1,35 +1,44 @@
 
 # TODO:
-# - add updating of network to sim_discrete_time()
-# - add instantiating of network function in simulation
 # - write new documentation pages
 # - write new unit tests
-# - adjust documentation of add_node(), sim_from_dag(), sim_discrete_time()
 # - add new vignette on network simulation
+# - handling of missing values unclear
+# - network() in sim_from_dag() currently not allowed to be data dependent
 
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
 #' @export
 network <- function(name, net, ...) {
-  create_DAG.network(name=name, net=net, time_varying=FALSE, ...)
+  create_DAG.network(name=name, net=net, time_varying=FALSE,
+                     create_at_t0=TRUE, ...)
 }
 
 ## same as network(), but with a time-varying network
 #' @export
-network_td <- function(name, net, ...) {
-  create_DAG.network(name=name, net=net, time_varying=TRUE, ...)
+network_td <- function(name, net, create_at_t0=TRUE, ...) {
+  create_DAG.network(name=name, net=net, time_varying=TRUE,
+                     create_at_t0=create_at_t0, ...)
 }
 
 ## creates a DAG.network object to add to a DAG object
-create_DAG.network <- function(name, net, time_varying, ...) {
+create_DAG.network <- function(name, net, time_varying, create_at_t0, ...) {
 
   check_inputs_network(name=name, net=net, time_varying=time_varying)
 
   out <- list(name=name,
-              net=net,
+              net=NULL,
+              net_fun=NULL,
               args=list(...),
-              time_varying=time_varying)
+              time_varying=time_varying,
+              create_at_t0=create_at_t0)
   class(out) <- "DAG.network"
+
+  if (is.function(net)) {
+    out$net_fun <- net
+  } else {
+    out$net <- net
+  }
 
   return(out)
 }
@@ -40,7 +49,7 @@ print.DAG.network <- function(x, ...) {
   cat("A DAG.network object specifying a network structure with:\n")
   cat("  - name: '", x$name, "'\n", sep="")
 
-  if (igraph::is.igraph(x$net)) {
+  if (igraph::is_igraph(x$net)) {
     cat("  -", length(igraph::V(x$net)), "vertices\n")
     cat("  -", length(igraph::E(x$net)), "edges\n")
   } else {
@@ -59,8 +68,8 @@ check_inputs_network <- function(name, net, time_varying) {
 
   if (!(length(name)==1 & is.character(name))) {
     stop("'name' must be a single character string.", call.=FALSE)
-  } else if (!time_varying & !((igraph::is.igraph(net) &&
-                                !igraph::is.directed(net)) |
+  } else if (!time_varying & !((igraph::is_igraph(net) &&
+                                !igraph::is_directed(net)) |
                                is.function(net))) {
     stop("'net' must be an igraph object containing only undirected edges",
          " or a function that creates such an object.", call.=FALSE)
@@ -74,7 +83,7 @@ check_inputs_network <- function(name, net, time_varying) {
 ## interface to specify that the content of a variable is supposed to be
 ## the aggregated information of neighbors in a network
 #' @export
-net <- function(expression, network=NULL) {
+net <- function(expression, net=NULL) {
   return(NULL)
 }
 
@@ -126,15 +135,37 @@ get_first_arg <- function(s) {
 ## returns the second argument of a net() call, which is the name of the
 ## network that should be used for the aggregation, or NA if not listed
 #' @importFrom data.table fifelse
-# TODO: breaks if , in argument?
 get_netname_from_net <- function(net_terms) {
-  net_names <- sub(
-    '^[^(]*\\([^,]+,\\s*(?:net\\s*=\\s*)?[\'"]?([^\'")]+)[\'"]?\\)$',
-    '\\1',
-    net_terms
-  )
-  net_names <- fifelse(grepl(",", net_terms), net_names, NA_character_)
-  return(net_names)
+  extract_net <- function(x) {
+
+    if (!grepl("net\\(", x)) {
+      return(NA_character_)
+    }
+
+    args <- sub("^.*net\\((.*)\\)\\s*$", "\\1", x)
+    parts <- strsplit(args, ",(?![^()]*\\))", perl = TRUE)[[1]]
+
+    if (length(parts) < 2) {
+      return(NA_character_)
+    }
+
+    second_arg <- trimws(parts[2])
+
+    val <- sub(".*=\\s*", "", second_arg)
+    m <- regmatches(val, regexec("^[\"']?([^\"')]+)[\"']?", val))[[1]]
+
+    if (length(m) >= 2) {
+      out <- m[2]
+    } else {
+      out <- NA_character_
+    }
+
+    return(out)
+  }
+
+  net_name <- vapply(net_terms, FUN=extract_net, FUN.VALUE=character(1),
+                     USE.NAMES=FALSE)
+  return(net_name)
 }
 
 ## get a data.table of all undirected edges of an igraph object
@@ -171,11 +202,10 @@ get_net_info <- function(g, data, net_name) {
                 nrow(data), " vertices in the network to represent each ",
                 "observation."), call.=FALSE)
   } else if (n_vertices > nrow(data)) {
-    warning(paste0("The network name '", net_name, "' contains ",
-                   n_vertices, " vertices, but the simulated data only",
-                   " has ", nrow(data), " observations. This might lead",
-                   " to unwanted behavior. In almost every case, there should",
-                   " be one vertex per observation."), call.=FALSE)
+    stop(paste0("The network name '", net_name, "' contains ",
+                n_vertices, " vertices, but the simulated data only",
+                " has ", nrow(data), " observations. There should",
+                " be one vertex per observation."), call.=FALSE)
   }
 
   d_con <- get_all_edges(g)
@@ -246,4 +276,40 @@ add_network_info <- function(data, d_net_terms, networks) {
   data <- add_node_to_data(data=data, new=out, name=colnames(out))
 
   return(data)
+}
+
+## initiates / updates networks if needed
+create_networks <- function(networks, n_sim, data=NULL, sim_time,
+                            past_states=NULL) {
+
+  for (i in seq_len(length(networks))) {
+
+    # only initiate / update network if:
+    # 1. first time and it should be initiated
+    # 2. > first time and it should be updated
+    if (!(!is.function(networks[[i]]$net_fun) ||
+          (sim_time > 0 & !networks[[i]]$time_varying) ||
+          (sim_time==0 & !networks[[i]]$create_at_t0))) {
+
+      fun_args <- names(formals(networks[[i]]$net_fun))
+      args <- list(n_sim=n_sim)
+
+      if ("data" %in% fun_args) {
+        args$data <- data
+      }
+      if ("sim_time" %in% fun_args) {
+        args$sim_time <- sim_time
+      }
+      if ("past_states" %in% fun_args) {
+        args$past_states <- past_states
+      }
+      if ("network" %in% fun_args) {
+        args$network <- networks[[i]]$net
+      }
+
+      networks[[i]]$net <- do.call(networks[[i]]$net_fun, args=args)
+    }
+  }
+
+  return(networks)
 }
