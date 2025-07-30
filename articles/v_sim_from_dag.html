@@ -208,56 +208,85 @@ instead.</p>
 </h3>
 <p>The <code>simDAG</code> package implements the following types of
 <code>child_nodes</code> directly:</p>
-<ul>
-<li>
-<code><a href="../reference/node_gaussian.html">node_gaussian()</a></code>: A node based on (mixed) linear
-regression (continuous data).</li>
-<li>
-<code><a href="../reference/node_binomial.html">node_binomial()</a></code>: A node based on (mixed) logistic
-regression (binary data).</li>
-<li>
-<code><a href="../reference/node_multinomial.html">node_multinomial()</a></code>: A node based on multinomial
-logistic regression (categorical data).</li>
-<li>
-<code><a href="../reference/node_poisson.html">node_poisson()</a></code>: A node based on (mixed) poisson
-regression (count data).</li>
-<li>
-<code><a href="../reference/node_negative_binomial.html">node_negative_binomial()</a></code>: A node based on negative
-binomial regression (count data).</li>
-<li>
-<code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code>: A node based on a zero-inflated
-poisson / negative binomial regression (count data)</li>
-<li>
-<code><a href="../reference/node_cox.html">node_cox()</a></code>: A node based on cox regression
-(time-to-event data).</li>
-<li>
-<code><a href="../reference/node_rsurv.html">node_aftreg()</a></code>: A node based on accelerated failure time
-regression (time-to-event data)</li>
-<li>
-<code><a href="../reference/node_rsurv.html">node_ahreg()</a></code>: A node based on accelerated hazards
-regression (time-to-event data)</li>
-<li>
-<code><a href="../reference/node_rsurv.html">node_ehreg()</a></code>: A node based on an extended hazards model
-(time-to-event data)</li>
-<li>
-<code><a href="../reference/node_rsurv.html">node_poreg()</a></code>: A node based on an proportional odds
-model (time-to-event data)</li>
-<li>
-<code><a href="../reference/node_rsurv.html">node_ypreg()</a></code>: A node based on a Yang and Prentice model
-(time-to-event data)</li>
-<li>
-<code><a href="../reference/node_conditional_prob.html">node_conditional_prob()</a></code>: A node based on conditional
-probabilities (binary / categorical data).</li>
-<li>
-<code><a href="../reference/node_conditional_distr.html">node_conditional_distr()</a></code>: A node based on conditional
-distributions (any data type).</li>
-<li>
-<code><a href="../reference/node_mixture.html">node_mixture()</a></code>: A node that can be defined as a mixture
-of any other node type (any data type)</li>
-<li>
-<code><a href="../reference/node_identity.html">node_identity()</a></code>: A node that is just some
-<code>R</code> expression of other nodes (any data type).</li>
-</ul>
+<table class="table">
+<colgroup>
+<col width="45%">
+<col width="55%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/node_gaussian.html">node_gaussian()</a></code></td>
+<td>A node based on (mixed) linear regression (continuous data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_binomial.html">node_binomial()</a></code></td>
+<td>A node based on (mixed) logistic regression (binary data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_multinomial.html">node_multinomial()</a></code></td>
+<td>A node based on multinomial logistic regression (categorical
+data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_poisson.html">node_poisson()</a></code></td>
+<td>A node based on (mixed) poisson regression (count data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_negative_binomial.html">node_negative_binomial()</a></code></td>
+<td>A node based on negative binomial regression (count data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_zeroinfl.html">node_zeroinfl()</a></code></td>
+<td>A node based on a zero-inflated poisson / negative binomial
+regression (count data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_cox.html">node_cox()</a></code></td>
+<td>A node based on cox regression (time-to-event data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_rsurv.html">node_aftreg()</a></code></td>
+<td>A node based on accelerated failure time regression (time-to-event
+data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_rsurv.html">node_ahreg()</a></code></td>
+<td>A node based on accelerated hazards regression (time-to-event
+data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_rsurv.html">node_ehreg()</a></code></td>
+<td>A node based on an extended hazards model (time-to-event data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_rsurv.html">node_poreg()</a></code></td>
+<td>A node based on an proportional odds model (time-to-event data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_rsurv.html">node_ypreg()</a></code></td>
+<td>A node based on a Yang and Prentice model (time-to-event data)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_conditional_prob.html">node_conditional_prob()</a></code></td>
+<td>A node based on conditional probabilities (binary / categorical
+data)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_conditional_distr.html">node_conditional_distr()</a></code></td>
+<td>A node based on conditional distributions (any data type)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/node_mixture.html">node_mixture()</a></code></td>
+<td>A node that can be defined as a mixture of any other node type (any
+data type)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/node_identity.html">node_identity()</a></code></td>
+<td>A node that is just some <code>R</code> expression of other nodes
+(any data type)</td>
+</tr>
+</tbody>
+</table>
 <p>All of these nodes have their own documentation page containing a
 detailed description on how data is generated from them. Although this
 collection of nodes covers a lot of data types, it is still a somewhat
