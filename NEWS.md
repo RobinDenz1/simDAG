@@ -1,4 +1,19 @@
 
+# simDAG 0.4.0 (developmental version)
+
+New Features
+
+* Added the `network()`, `network_td()` and `net()` functions to allow simulations with network based dependencies among individuals. This includes static and dynamic networks in regular `DAG`s and discrete-time simulations.
+
+Bug Fixes
+
+* Fixed a small bug that occurred when using `node + DAG` (in this order)
+
+Documentation
+
+* Added a new vignette to describe the new networks-based simulation features
+* Updated existing documentation pages to include networks-based simulation features
+
 # simDAG 0.3.2
 
 Documentation

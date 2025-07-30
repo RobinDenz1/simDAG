@@ -62,22 +62,24 @@ The values for the `root_nodes` are simply sampled from some defined distributio
 
 The `simDAG` package implements the following types of `child_nodes` directly:
 
-* `node_gaussian()`: A node based on (mixed) linear regression (continuous data).
-* `node_binomial()`: A node based on (mixed) logistic regression (binary data).
-* `node_multinomial()`: A node based on multinomial logistic regression (categorical data).
-* `node_poisson()`: A node based on (mixed) poisson regression (count data).
-* `node_negative_binomial()`: A node based on negative binomial regression (count data).
-* `node_zeroinfl()`: A node based on a zero-inflated poisson / negative binomial regression (count data)
-* `node_cox()`: A node based on cox regression (time-to-event data).
-* `node_aftreg()`: A node based on accelerated failure time regression (time-to-event data)
-* `node_ahreg()`: A node based on accelerated hazards regression (time-to-event data)
-* `node_ehreg()`: A node based on an extended hazards model (time-to-event data)
-* `node_poreg()`: A node based on an proportional odds model (time-to-event data)
-* `node_ypreg()`: A node based on a Yang and Prentice model (time-to-event data)
-* `node_conditional_prob()`: A node based on conditional probabilities (binary / categorical data).
-* `node_conditional_distr()`: A node based on conditional distributions (any data type).
-* `node_mixture()`: A node that can be defined as a mixture of any other node type (any data type)
-* `node_identity()`: A node that is just some `R` expression of other nodes (any data type).
+|  |  |
+| --------- | ----------- |
+| `node_gaussian()` | A node based on (mixed) linear regression (continuous data) |
+| `node_binomial()` | A node based on (mixed) logistic regression (binary data) |
+| `node_multinomial()` | A node based on multinomial logistic regression (categorical data) |
+| `node_poisson()` | A node based on (mixed) poisson regression (count data) |
+| `node_negative_binomial()` | A node based on negative binomial regression (count data) |
+| `node_zeroinfl()` | A node based on a zero-inflated poisson / negative binomial regression (count data) |
+| `node_cox()` | A node based on cox regression (time-to-event data) |
+| `node_aftreg()` | A node based on accelerated failure time regression (time-to-event data) |
+| `node_ahreg()` | A node based on accelerated hazards regression (time-to-event data) |
+| `node_ehreg()` | A node based on an extended hazards model (time-to-event data) |
+| `node_poreg()` | A node based on an proportional odds model (time-to-event data) |
+| `node_ypreg()` | A node based on a Yang and Prentice model (time-to-event data) |
+| `node_conditional_prob()` | A node based on conditional probabilities (binary / categorical data) |
+| `node_conditional_distr()` | A node based on conditional distributions (any data type) |
+| `node_mixture()` | A node that can be defined as a mixture of any other node type (any data type) |
+| `node_identity()` | A node that is just some `R` expression of other nodes (any data type) |
 
 All of these nodes have their own documentation page containing a detailed description on how data is generated from them. Although this collection of nodes covers a lot of data types, it is still a somewhat limited collection. If, for example, we wanted to add a child node that is normally distributed but also truncated at specific values, we could not do this using just the offered node functions. For this reason, the `sim_from_dag()` function also allows the user to use custom functions as nodes, which makes it possible to model any kind of data and any kind of relationship.
 
