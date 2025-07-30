@@ -114,20 +114,21 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   # start the main loop
   for (t in seq_len(max_t)) {
+
+    # update networks, if needed
+    if (has_td_networks) {
+      dag$networks <- create_networks(networks=dag$networks,
+                                      n_sim=n_sim,
+                                      data=data,
+                                      sim_time=t,
+                                      past_states=past_states)
+    }
+
     # execute each node function one by one
     for (i in tx_nodes_order) {
 
       if (verbose) {
         cat("t = ", t, " node = ", tx_nodes[[i]]$name, "\n", sep="")
-      }
-
-      # update networks, if needed
-      if (has_td_networks) {
-        dag$networks <- create_networks(networks=dag$networks,
-                                        n_sim=n_sim,
-                                        data=data,
-                                        sim_time=t,
-                                        past_states=past_states)
       }
 
       # get relevant arguments

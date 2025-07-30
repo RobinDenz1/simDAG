@@ -42,6 +42,37 @@ test_that("general test cases, one network", {
   expect_equal(data2, data)
 })
 
+test_that("using data.table syntax in net()", {
+
+  set.seed(2368)
+  g <- igraph::sample_gnm(n=20, m=30)
+
+  dag <- empty_dag() +
+    network("Net1", net=g) +
+    node("variable_A", type="rnorm") +
+    node("Y3", type="gaussian", formula= ~ 0 + net(.N)*1, error=0)
+  data <- sim_from_dag(dag, n_sim=20)
+
+  expect_equal(round(mean(data$Y3), 3), 3)
+  expect_equal(round(data$Y3), data$Y3)
+})
+
+test_that("indexing singular individuals in net()", {
+
+  set.seed(2368)
+  g <- igraph::sample_gnm(n=20, m=30)
+
+  dag <- empty_dag() +
+    network("Net1", net=g) +
+    node("variable_A", type="rnorm") +
+    node("Y1", type="gaussian", formula= ~ 0 + net(..neighbor..[2])*1,
+         error=0) +
+    node("Y2", type="gaussian", formula= ~ 0 + net(variable_A[2])*1, error=0)
+  data <- sim_from_dag(dag, n_sim=20)
+
+  expect_equal(round(mean(data$Y2, na.rm=TRUE), 3), -0.411)
+})
+
 test_that("static network with discrete-time simulation", {
 
   set.seed(234)
@@ -62,7 +93,7 @@ test_that("static network with discrete-time simulation", {
 # TODO: currently fails!
 test_that("mixing net() and mixed terms in formula syntax", {
 
-  skip_on_cran()
+  skip()
 
   set.seed(234)
   g <- igraph::sample_smallworld(1, 100, 2, 0.5)

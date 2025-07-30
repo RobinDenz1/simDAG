@@ -1,10 +1,11 @@
 
 # TODO:
-# - write new documentation pages
 # - write new unit tests
 # - add new vignette on network simulation
 # - handling of missing values unclear
 # - network() in sim_from_dag() currently not allowed to be data dependent
+# - currently, networks are always initiated at the same time, irrespective
+#   of position in DAG creation, might need to change this
 
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
@@ -174,6 +175,8 @@ get_netname_from_net <- function(net_terms) {
 #' @importFrom data.table copy
 get_all_edges <- function(g) {
 
+  ..id.. <- ..neighbor.. <- NULL
+
   d_con <- as.data.table(igraph::as_data_frame(g, what="edges"))
   setnames(d_con, old=c("from", "to"), new=c("..id..", "..neighbor.."))
 
@@ -182,6 +185,10 @@ get_all_edges <- function(g) {
            new=c("..neighbor..", "..id.."))
 
   d_con <- rbind(d_con, d_con2)
+
+  # vertex names should be numbers
+  d_con[, ..id.. := as.numeric(..id..)]
+  d_con[, ..neighbor.. := as.numeric(..neighbor..)]
 
   return(d_con)
 }

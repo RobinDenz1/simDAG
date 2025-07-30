@@ -10,6 +10,7 @@ articles:
       - v_custom_nodes
       - v_sim_discrete_time
       - v_covid_example
+      - v_sim_networks
       - v_cookbook
       - simDAG
 reference:
