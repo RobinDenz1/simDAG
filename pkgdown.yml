@@ -8,8 +8,9 @@ articles:
   v_custom_nodes: v_custom_nodes.html
   v_sim_discrete_time: v_sim_discrete_time.html
   v_sim_from_dag: v_sim_from_dag.html
+  v_sim_networks: v_sim_networks.html
   v_using_formulas: v_using_formulas.html
-last_built: 2025-07-29T19:29Z
+last_built: 2025-07-30T16:27Z
 urls:
   reference: https://robindenz1.github.io/simDAG/reference
   article: https://robindenz1.github.io/simDAG/articles

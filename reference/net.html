@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/v_custom_nodes.html">Specifying Custom Node Types in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -63,8 +64,16 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Internally the following procedure is used whenever a <code>net()</code> function call is included in a <code>formula</code> of a <code><a href="node.html">node</a></code> (regardless of time-fixed or time-dependent). First, the associated network (defined using the <code>net</code> argument) is used to identify the neighbors of each observation. Every vertex that is directly connected to an observation is considered its' neighbor. The parent variable(s) specified in the <code>net()</code> call are then aggregated over these neighbors using the given <code>expression</code>. A simple example: consider observation <code>1</code> with four neighbors named <code>2, 5, 8</code> and <code>10</code>. The <code>formula</code> contains the following <code>net()</code> call: <code>net(sum(infected))</code>. The value of the <code>infected</code> variable is 0, 0, 1, 1 for persons <code>2, 5, 8</code> and <code>10</code> respectively. These values are then summed up to result in a value of 2 for person <code>1</code>. The same is done for every person in the simulated data. The resulting variable is then used as-is in the simulation.</p>
-<p>Note that it never makes sense to use this function outside of a <code>formula</code> argumen: if you look at its source code you will realize that it does not actually do anything. It is only a piece of syntax for the <code>formula</code> interface. Please consult the <code><a href="network.html">network</a></code> documentation page or the associated vignette for more information.</p>
+
+
+<p><strong><em>How it works</em></strong>:</p>
+<p>Internally the following procedure is used whenever a <code>net()</code> function call is included in a <code>formula</code> of a <code><a href="node.html">node</a></code> (regardless of whether time-fixed or time-dependent). First, the associated network (defined using the <code>net</code> argument) is used to identify the neighbors of each observation. Every vertex that is directly connected to an observation is considered its' neighbor. The parent variable(s) specified in the <code>net()</code> call are then aggregated over these neighbors using the given <code>expression</code>. A simple example: consider observation <code>1</code> with four neighbors named <code>2, 5, 8</code> and <code>10</code>. The <code>formula</code> contains the following <code>net()</code> call: <code>net(sum(infected))</code>. The value of the <code>infected</code> variable is 0, 0, 1, 1 for persons <code>2, 5, 8</code> and <code>10</code> respectively. These values are then summed up to result in a value of 2 for person <code>1</code>. The same is done for every person in the simulated data. The resulting variable is then used as-is in the simulation.</p>
+<p><strong><em>Supported inputs</em></strong>:</p>
+<p>Any function that returns a single numeric value, given the neighbors' values can be used. It is therefore also possible to make the simulation dependent on specific neighbors only. For example, using <code>infected[1]</code> instead of <code>sum(infected)</code> would return a value of 0 for observation 1 in the above example, because person <code>2</code> is the first neighbor and has a value of 0. Note that the internally used variable named <code>..neighbor..</code> includes the ids of the neighbors. The entire <code>expression</code> is evaluated in a <span class="pkg">data.table</span> call of the form: <code>data[, .(variable = eval(expression)), by=id]</code>, making it also possible to use any <span class="pkg">data.table</span> syntax such as <code><a href="https://rdatatable.gitlab.io/data.table/reference/special-symbols.html" class="external-link">.N</a></code> (which would return the number of neighbors a person has).</p>
+<p><strong><em>What about missing values?</em></strong></p>
+<p>????</p>
+<p><strong><em>A small warning</em></strong>:</p>
+<p>Note that it never makes sense to use this function outside of a <code>formula</code> argument: if you look at its source code you will realize that it does not actually do anything. It is only a piece of syntax for the <code>formula</code> interface. Please consult the <code><a href="network.html">network</a></code> documentation page or the associated vignette for more information.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -108,7 +117,6 @@
 <span class="r-in"><span><span class="va">dag3</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">1.5</span> <span class="op">+</span> <span class="fu">net</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">B</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">3</span>,</span></span>
 <span class="r-in"><span>       error<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

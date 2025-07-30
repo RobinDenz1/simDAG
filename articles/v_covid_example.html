@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/v_custom_nodes.html">Specifying Custom Node Types in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
   </ul>
 </li>
@@ -475,11 +476,14 @@ effect on any of the other variables</li>
 <li>Changing the constant raising of the probabilities in the form of a
 relative risk to a more realistic non-linear time-dependent relative
 risk</li>
+<li>Modelling the spread of <code>covid</code> by imposing a
+<code><a href="../reference/network.html">network()</a></code> structure on the individuals to relax the
+assumption that individuals are independent of each other</li>
 </ul>
 <p>There are of course many more possible extensions, all of which can
 be implemented by augmenting the respective <code>prob_fun</code>
 arguments and updating the <code>dag</code> accordingly. In fact, in the
-real monte-carlo simulation we conducted, that is exactly what we did.
+real Monte-Carlo simulation we conducted, that is exactly what we did.
 We used empirical data to model time-dependent base-probabilities and
 more. How much complexity you really need is completely up to you. We
 hope that the <code>simDAG</code> package can help you with whatever you
