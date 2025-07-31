@@ -39,15 +39,19 @@ The \code{network()} function allows users to relax this assumption, by making i
 
 Users may add any number of networks to a \code{DAG} object, making it possible to embed individuals in multiple distinct networks at the same time. These networks can then be used simultaneously to define a single or multiple (possibly time-varying) nodes, using multiple \code{\link{net}} function calls in the respective \code{formula} arguments. It is also possible to define time-varying or dynamic networks that change over time, possibly as a function of the generated data, simulation time or previous states of the network. Examples are given below and in the associated vignette.
 
-Currently, only undirected and unweighted networks that include exactly one vertex per observation are supported in this package. Future versions might add support for more network types. Additionally, the current syntax only allows aggregation of the values of direct neighbors of an observation, it does not allow using extended neighborhoods.
+Currently, only undirected networks that include exactly one vertex per observation are supported in this package. Future versions might add support for more network types. Additionally, the current syntax only allows aggregation of the values of direct neighbors of an observation, it does not allow using extended neighborhoods.
 
-\strong{\emph{Further information}}:
+\strong{\emph{Weighted Networks}}:
 
-For a theoretical treatment, please consult the paper by Sofrygin et al. (2017), who also describe their slightly different implementation of this method in the \pkg{simcausal} package. More information on how to specify network-based dependencies in a \code{DAG} (using \pkg{simDAG}) after adding a network, please consult the \code{\link{net}} documentation page or the associated vignette.
+It is possible to supply weighted networks to \code{network()}. The weights are then also stored and available to the user when using the \code{\link{net}} function through the internal \code{..weight..} variable. For example, if a weighted network was supplied, the following would be valid syntax: \code{net(weighted.mean(A, ..weight..))} (assuming that \code{A} is a previously defined variable). Note that the \code{..weight..} must be used explicitly, otherwise the weights are ignored.
 
 \strong{\emph{Computational considerations}}:
 
 Including \code{net()} terms in a node might significantly increase the amount of RAM used and the required computation time, especially with very large networks and / or large values of \code{n_sim} and / or \code{max_t} (the latter is only relevant in discrete-time simulations using \code{\link{sim_discrete_time}}). The reason for this is that each time a node is generated or updated over time, the mapping of individuals to their neighbors' values plus the subsequent aggregation has to be performed, which required \code{merge()} calls etc. Usually this should not be a problem, but it might be for some large discrete-time simulations. If the same \code{\link{net}} call is used in multiple nodes it can be beneficial to put it into an extra \code{\link{node}} call and safe it to avoid re-calculating the same thing over and over again (see examples).
+
+\strong{\emph{Further information}}:
+
+For a theoretical treatment, please consult the paper by Sofrygin et al. (2017), who also describe their slightly different implementation of this method in the \pkg{simcausal} package. More information on how to specify network-based dependencies in a \code{DAG} (using \pkg{simDAG}) after adding a network, please consult the \code{\link{net}} documentation page or the associated vignette.
 
 }
 \value{

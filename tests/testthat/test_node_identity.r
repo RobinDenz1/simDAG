@@ -18,6 +18,48 @@ test_that("general test", {
   expect_true(is.numeric(sim_dat$test1))
 })
 
+test_that("using it to get the linear predictor", {
+
+  set.seed(345345)
+
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=50, sd=4) +
+    node("sex", type="rbernoulli", p=0.5, output="numeric") +
+    node("C", type="rcategorical", probs=c(0.1, 0.3, 0.6),
+         labels=c("high", "medium", "low")) +
+    node("something", type="gaussian", formula= ~ -2 + age*3 + sex*0.3 +
+           Cmedium*0.4 + Clow*9, error=0.1) +
+    node("test1", type="identity",
+         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3, kind="linpred") +
+    node("test2", type="gaussian",
+         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3, error=0)
+  sim_dat <- sim_from_dag(dag, n_sim=1000)
+
+  expect_equal(sim_dat$test1, sim_dat$test2)
+})
+
+test_that("using it to get the linear predictor in discrete-time simulation", {
+
+  set.seed(345345)
+
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=50, sd=4) +
+    node("sex", type="rbernoulli", p=0.5, output="numeric") +
+    node("C", type="rcategorical", probs=c(0.1, 0.3, 0.6),
+         labels=c("high", "medium", "low")) +
+    node("something", type="gaussian", formula= ~ -2 + age*3 + sex*0.3 +
+           Cmedium*0.4 + Clow*9, error=0.1) +
+    node_td("test1", type="identity",
+         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3, kind="linpred") +
+    node_td("test2", type="gaussian",
+         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3, error=0)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=5, save_states="all")
+  data <- sim2data(sim, to="long")
+
+  expect_equal(data$test1, data$test2)
+})
+
 test_that("using custom function in formula", {
 
   # simple return 1 n times

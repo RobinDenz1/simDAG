@@ -117,10 +117,10 @@ V(g2)$color <- "lightblue"
 Suppose that the first network is a "friendship network", showing who is friends with who and the second is a "professional network", showing who works with who. They look like this:
 
 ```{r, fig.width=7, fig.height=5}
-par(mfrow=c(1, 2), mar=c(0,0,0,0) + 0.6)
+par(mfrow=c(1, 2), mar=c(0, 0, 0, 0) + 1)
 
-plot(g1, main="Friends", margin=0)
-plot(g2, main="Work", margin=0)
+plot(g1, main="Friends", margin=0, vertex.label.cex=0.8)
+plot(g2, main="Work", margin=0, vertex.label.cex=0.8)
 ```
 
 We colored the vertices differently to highlight that they are two distinct networks. We now first repeat large parts of the `DAG` from earlier, but add both networks to it this time:
@@ -220,7 +220,7 @@ Using a simple `for` loop and the `plot.igraph()` function (with some cosmetic c
 ```{r, fig.width=7, fig.height=9}
 E(g2)$color <- "lightgray"
 
-par(mfrow=c(3, 2), mar=c(0,0,0,0) + 2)
+par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
 
 for (i in seq_len(6)) {
   
@@ -277,7 +277,7 @@ head(data)
 The only difference to the previous code is that we used `network_td()` instead of `network()`, passing the function to the `net` argument, and that we only use 5 points in time. Everything else is the same. The code to visualize the spread of the disease is also very similar, with the one change being that we now have one network per slide (saved in the `sim` object because we set `save_networks=TRUE`):
 
 ```{r, fig.width=7, fig.height=9}
-par(mfrow=c(3, 2), mar=c(0,0,0,0) + 2)
+par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
 
 for (i in seq_len(6)) {
   
@@ -353,7 +353,7 @@ head(data)
 In the first few rows of the data we can already see that the number of infected individuals does not And finally lets plot the resulting infection spread again:
 
 ```{r, fig.width=7, fig.height=9}
-par(mfrow=c(3, 2), mar=c(0,0,0,0) + 2)
+par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
 
 layout_g <- layout_nicely(sim$past_networks[[1]]$net1$net)
 

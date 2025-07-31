@@ -74,7 +74,10 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     form <- dag$child_nodes[[i]]$formula
 
     if (!is.null(form) && !is_formula(form) &&
-        dag$child_nodes[[i]]$type_str != "identity") {
+        (dag$child_nodes[[i]]$type_str != "identity" ||
+        (dag$child_nodes[[i]]$type_str == "identity" &&
+        (!is.null(dag$child_nodes[[i]]$kind) &&
+         dag$child_nodes[[i]]$kind!="expr")))) {
       args <- args_from_formula(args=args, formula=form,
                                 node_type=dag$child_nodes[[i]]$type_str)
       args$data <- tryCatch({

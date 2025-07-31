@@ -9,7 +9,6 @@
 # - further features:
 #   - allow directed networks
 #   - allow other neighborhoods
-#   - allow weighted networks
 #   - allow combinations of these
 
 ## similar to node() and node_td(), but instead of creating an actual node
@@ -122,12 +121,21 @@ get_all_edges <- function(g) {
   ..id.. <- ..neighbor.. <- NULL
 
   d_con <- as.data.table(igraph::as_data_frame(g, what="edges"))
-  setnames(d_con, old=c("from", "to"), new=c("..id..", "..neighbor.."))
 
+  old <- c("from", "to")
+  new <- c("..id..", "..neighbor..")
+
+  # change names
+  if (!is.null(igraph::E(g)$weight)) {
+    old <- c(old, "weight")
+    new <- c(new, "..weight..")
+  }
+  setnames(d_con, old=old, new=new)
+
+  # add reverse of connections as well
   d_con2 <- copy(d_con)
   setnames(d_con2, old=c("..id..", "..neighbor.."),
            new=c("..neighbor..", "..id.."))
-
   d_con <- rbind(d_con, d_con2)
 
   # vertex names should be numbers

@@ -16,11 +16,18 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
 
-  if (!is_identity_node(type)) {
+  # get additional arguments
+  call_names <- names(call)
+  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
+                                             "formula", "time_varying") &
+                            call_names!=""]
+  args <- lapply(call[rel_names], eval, envir=parent.frame())
+
+  if (!(is_identity_node(type) && (args$kind=="expr" || is.null(args$kind)))) {
     formula <- sanitize_formula(formula)
   }
 
-  if (is_identity_node(type)) {
+  if (is_identity_node(type) && (args$kind=="expr" || is.null(args$kind))) {
     if (is.null(parents)) {
       parents <- all.vars(formula)
     }
@@ -34,13 +41,6 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
   } else if (is.null(parents) && is_zeroinfl_node(type)) {
     parents <- parents_from_zeroinfl(...)
   }
-
-  # get additional arguments
-  call_names <- names(call)
-  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
-                                             "formula", "time_varying") &
-                          call_names!=""]
-  args <- lapply(call[rel_names], eval, envir=parent.frame())
 
   # create node list
   if (length(parents) == 0 || all(parents=="")) {
@@ -81,11 +81,18 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
   formula <- get_arg_from_call(call=call, envir=environment(),
                                name="formula", position=4)
 
-  if (!is_identity_node(type)) {
+  # get additional arguments
+  call_names <- names(call)
+  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
+                                             "formula") &
+                            call_names!=""]
+  args <- lapply(call[rel_names], eval, envir=parent.frame())
+
+  if (!(is_identity_node(type) && (args$kind=="expr" || is.null(args$kind)))) {
     formula <- sanitize_formula(formula)
   }
 
-  if (is_identity_node(type)) {
+  if (is_identity_node(type) && (args$kind=="expr" || is.null(args$kind))) {
     if (is.null(parents)) {
       parents <- all.vars(formula)
     }
@@ -99,13 +106,6 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
   } else if (is.null(parents) && is_zeroinfl_node(type)) {
     parents <- parents_from_zeroinfl(...)
   }
-
-  # get additional arguments
-  call_names <- names(call)
-  rel_names <- call_names[!call_names %in% c("name", "type", "parents",
-                                             "formula") &
-                            call_names!=""]
-  args <- lapply(call[rel_names], eval, envir=parent.frame())
 
   # create node list
   if (length(parents) == 0 || all(parents=="")) {
