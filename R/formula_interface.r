@@ -204,7 +204,7 @@ args_from_formula <- function(args, formula, node_type) {
 #' @importFrom data.table setnames
 data_for_formula <- function(data, args, networks=list()) {
 
-  name <- NULL
+  name <- term <- NULL
 
   # extract variables mentioned in mixed effects parts, if included
   if (!is.null(args$mixed_terms)) {
@@ -260,10 +260,11 @@ data_for_formula <- function(data, args, networks=list()) {
   form_net <- get_net_terms(args$parents)
 
   if (length(form_net) > 0) {
+
     # add network terms to data
-    d_net <- data.table(term=form_net,
-                        expr=get_expr_from_net(form_net),
-                        name=get_netname_from_net(form_net))
+    d_net <- rbindlist(lapply(form_net, FUN=function(x) {eval(str2lang(x))}),
+                       fill=TRUE)
+    d_net[, term := form_net]
 
     # if there is just one network in the DAG, use it by default
     if (anyNA(d_net$name)) {

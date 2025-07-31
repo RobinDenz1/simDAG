@@ -37,7 +37,9 @@ library(simDAG)
 
 # What are networks-based simulations?
 
-In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of un-directed connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that has a direct connection to $i$ in a given network. A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by Sofrygin et al. (2017). 
+In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that has a direct connection to $i$ in a given network. A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by Sofrygin et al. (2017).
+
+There are multiple types of networks (directed vs. undirected, weighted vs. un-weighted, etc.). In this vignette we will focus mostly on un-directed and un-weighted networks, to make the presentation easier. In network science, the points in a networks are often called *nodes* or *vertices*, while the connections between them are usually called *edges* or, in directed networks, *arrows*. When talking about networks I will stick to the terms *vertices* and *edges* here, to avoid confusion with the terms *nodes* and *arrows* that are also used when talking about DAGs. Note that a DAG is of course also a special type of network, but it serves a different purpose here. In the simulations described here, the DAG defines the causal relationships between variables, while the network describes connections between individuals.
 
 # Networks in regular simulations
 
@@ -115,7 +117,7 @@ V(g2)$color <- "lightblue"
 Suppose that the first network is a "friendship network", showing who is friends with who and the second is a "professional network", showing who works with who. They look like this:
 
 ```{r, fig.width=7, fig.height=5}
-par(mfrow=c(1, 2), mar=c(0,0,0,0) + 2)
+par(mfrow=c(1, 2), mar=c(0,0,0,0) + 0.6)
 
 plot(g1, main="Friends", margin=0)
 plot(g2, main="Work", margin=0)
@@ -147,7 +149,7 @@ data <- sim_from_dag(dag, n_sim=20)
 head(data, row.names=TRUE)
 ```
 
-Interestingly, individual 4 has a value of `NA` in the `infected` node. The reason for this is that individual 4 does not have any friends (don't worry, she is not real so she can't be sad about this) and thus the `mean(age)` call is not defined for this person.
+Interestingly, individual 4 has a value of `NA` in the `infected` node. The reason for this is that individual 4 does not have any friends (don't worry, she is not real so she can't be sad about this) and thus the `mean(age)` call is not defined for this person. To replace such `NA` values with some other values, the `na` argument of `net()` may be used. 
 
 ## Networks as a function of other variables
 
@@ -197,7 +199,7 @@ prob_infection <- function(data, sim_time) {
 dag <- empty_dag() +
   network("net1", net=g2) +
   node_td("n_infected_neighbors", type="gaussian",
-          formula= ~ 0 + net(sum(infected_event))*1, error=0) +
+          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
           prob_fun=prob_infection)
@@ -259,7 +261,7 @@ The only requirement for the function is that it has a single named argument cal
 dag <- empty_dag() +
   network_td("net1", net=gen_network) +
   node_td("n_infected_neighbors", type="gaussian",
-          formula= ~ 0 + net(sum(infected_event))*1, error=0) +
+          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
           prob_fun=prob_infection)
@@ -299,7 +301,89 @@ Here, the simulation starts out with individuals 12, 16 and 17 being infected. G
 
 ### Adjusting a network over time
 
+Lets move to a more useful example, in which the network is initiated once at the beginning and changed slightly over time instead of re-drawing it every time. As an example, we will again extend the earlier infectious disease example. In this new example, the government is trying to contain the epidemic by isolating infected individuals. The act of isolation in this context means, that an infected individual is put under quarantine and is not allowed to have any contact to other individuals, which translates to removing all connections the infected individual has in the network. We will assume that the government is able to perfectly enforce the isolation, but that it is a little slow in doing so. Only after one full day of being sick does the government realize that an individual is infected.
+
+First, we have to adjust the `gen_network()` function. We will use the following code:
+
+```{r}
+gen_network <- function(n_sim, sim_time, network, data) {
+  
+  if (sim_time==0) {
+    return(igraph::sample_gnm(n=n_sim, m=23))
+  }
+  
+  rm_edges <- data$.id[data$infected_event==TRUE &
+                       data$infected_time_since_last > 0]
+  
+  if (length(rm_edges) > 0) {
+    rm_edges <- do.call(c, incident_edges(network, rm_edges))
+    g_new <- delete_edges(network, rm_edges)
+  } else {
+    g_new <- network
+  }
+  return(g_new)
+}
+```
+
+There is a few lines of obscure code here, but generally what the function does is really simple. At $t = 0$ it simply generates a random graph using `sample_gnm()`. From $t = 1$ on it simply checks whether any person is infected and isolates them, by deleting their connections and returning the adjusted network. Time-dependent networks are always updated after all nodes of a day have been generated and the `time_since_last` counter of the `infected` node starts at 0, so using `data$infected_time_since_last > 0` ensures that each individual has one full day to spread the infection. Note that the arguments `sim_time`, `network` and `data` are automatically passed internally. `sim_time` is the current simulation time, `network` is the current state of the network and `data` is the current state of the data.
+
+We can now re-use almost the same `DAG` definition from earlier:
+
+```{r}
+dag <- empty_dag() +
+  network_td("net1", net=gen_network, create_at_t0=TRUE) +
+  node_td("n_infected_neighbors", type="gaussian",
+          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
+  node_td("infected", type="time_to_event", event_duration=Inf,
+          immunity_duration=Inf, parents=("n_infected_neighbors"),
+          prob_fun=prob_infection, time_since_last=TRUE)
+```
+
+The only difference to before is that we actively set `create_at_t0=TRUE` so that the network gets created before time-dependent processing starts (so we have a network to adjust at $t = 1$) and that we set `time_since_last=TRUE` in the `infected` node to track the time since the original infection, because we need that information in the network generating function. Lets run the simulation again:
+
+```{r}
+set.seed(13354)
+
+sim <- sim_discrete_time(dag, n_sim=18, max_t=6, save_states="all",
+                         save_networks=TRUE)
+data <- sim2data(sim, to="long")
+head(data)
+```
+
+In the first few rows of the data we can already see that the number of infected individuals does not And finally lets plot the resulting infection spread again:
+
+```{r, fig.width=7, fig.height=9}
+par(mfrow=c(3, 2), mar=c(0,0,0,0) + 2)
+
+layout_g <- layout_nicely(sim$past_networks[[1]]$net1$net)
+
+for (i in seq_len(6)) {
+  
+  data_i <- subset(data, .time==i)
+  g_i <- sim$past_networks[[i]]$net1$net
+  
+  E(g_i)$color <- "lightgray"
+  V(g_i)$color <- ifelse(data_i$infected, "salmon", "lightblue")
+  
+  set.seed(124)
+  plot(g_i, vertex.label.cex=0.8,
+       vertex.label.color="black",
+       size=1,
+       main=paste0("t = ", i),
+       layout=layout_g,
+       margin=0)
+}
+```
+
+As can be seen, due to the timely delay of the isolation, the infection is still able to spread, but it cannot reach all individuals. Near the end of the simulation, practically all connections are removed, making it impossible for the infection to spread further. This is by no means a realistic example, but it showcases how changing networks might be utilized in this package.
+
+This simulation could easily be extended to make the isolation non-permanent, by re-adding the removed connections after a pre-defined duration, or could be even further extended by adding vaccinations or other variables.
+
 # Discussion
+
+Networks-based simulations offer an additional amount of flexibility in specifying data generation processes (DGP) that is usually not included in general-purpose simulation software. By making cross-individual dependencies possible through one or multiple networks and allowing those to also be influenced by individual-level variables, almost any kind of data can be generated. The `simDAG` package offers a simple and consistent syntax to perform such simulations. Network dependencies are fully integrated into the enhanced `formula` syntax through the `net()` function, which hopefully makes the barrier to use this methodology a lot less daunting for potential users.
+
+Despite the great flexibility offered by this approach, it is used quite infrequently in practice. The preprint published by Sofrygin et al. (2017) did not gather a lot of attention, even though they also offered a clean and powerful implementation of the method through the `simcausal` package (which heavily inspired the presented `simDAG` implementation). I suspect that the main reason for this is that there are only few statistical models designed to actually analyze data with such complex DGPs. The combination of network science and causal inference is still in its infancy, as has been pointed out by others (ZITATE). I hope that this implementation will make future investigations into this subject easier or at least more convenient.
 
 # References
 

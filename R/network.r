@@ -1,11 +1,16 @@
 
 # TODO:
 # - write new unit tests
-# - add new vignette on network simulation
-# - handling of missing values unclear
+# - finish new vignette on network simulation
+# - add some examples of this to cookbook vignette
 # - network() in sim_from_dag() currently not allowed to be data dependent
 # - currently, networks are always initiated at the same time, irrespective
-#   of position in DAG creation, might need to change this
+#   of position in DAG creation, need to change this
+# - further features:
+#   - allow directed networks
+#   - allow other neighborhoods
+#   - allow weighted networks
+#   - allow combinations of these
 
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
@@ -80,96 +85,35 @@ check_inputs_network <- function(name, net, time_varying) {
   }
 }
 
-## this function doesn't actually do anything, it is only used in the formula
-## interface to specify that the content of a variable is supposed to be
+## this function is used in the formula interface to specify that
+## the content of a variable is supposed to be
 ## the aggregated information of neighbors in a network
+#' @importFrom data.table data.table
 #' @export
-net <- function(expression, net=NULL) {
-  return(NULL)
+net <- function(expr, net=NULL, na=NA) {
+
+  if (is.null(net)) {
+    name <- NA_character_
+  } else {
+    name <- net
+  }
+
+  out <- data.table(
+    expr=deparse(substitute(expr)),
+    name=name,
+    na=na
+  )
+  return(out)
 }
 
-## extract net() terms from parse formula parts
+## extract net() terms from parsed formula parts
 get_net_terms <- function(formula_parts) {
   net_terms <- formula_parts[startsWith(formula_parts, "net(")]
   return(net_terms)
 }
 
-## returns the first argument of a net() call in a formula
-get_expr_from_net <- function(net_terms) {
-  out <- vapply(net_terms, get_first_arg, character(1), USE.NAMES=FALSE)
-  ind <- startsWith(out, "expression=")
-  out[ind] <- substr(out[ind], start=12, stop=nchar(out[ind]))
-  return(out)
-}
-
-## extracts the content of the first argument in a function call from a string
-get_first_arg <- function(s) {
-
-  start <- regexpr("net\\(", s)
-
-  if (start == -1) {
-    return(NA_character_)
-  }
-
-  pos <- start + attr(start, "match.length")
-  open <- 1
-  arg <- character()
-
-  while (pos <= nchar(s) && open > 0) {
-    ch <- substr(s, pos, pos)
-    if (ch == "(") {
-      open <- open + 1
-    }
-    if (ch == ")") {
-      open <- open - 1
-    }
-    if ((ch == "," && open == 1) | open == 0) {
-      break
-    }
-    arg <- c(arg, ch)
-    pos <- pos + 1
-  }
-
-  return(paste(arg, collapse=""))
-}
-
-## returns the second argument of a net() call, which is the name of the
-## network that should be used for the aggregation, or NA if not listed
-#' @importFrom data.table fifelse
-get_netname_from_net <- function(net_terms) {
-  extract_net <- function(x) {
-
-    if (!grepl("net\\(", x)) {
-      return(NA_character_)
-    }
-
-    args <- sub("^.*net\\((.*)\\)\\s*$", "\\1", x)
-    parts <- strsplit(args, ",(?![^()]*\\))", perl = TRUE)[[1]]
-
-    if (length(parts) < 2) {
-      return(NA_character_)
-    }
-
-    second_arg <- trimws(parts[2])
-
-    val <- sub(".*=\\s*", "", second_arg)
-    m <- regmatches(val, regexec("^[\"']?([^\"')]+)[\"']?", val))[[1]]
-
-    if (length(m) >= 2) {
-      out <- m[2]
-    } else {
-      out <- NA_character_
-    }
-
-    return(out)
-  }
-
-  net_name <- vapply(net_terms, FUN=extract_net, FUN.VALUE=character(1),
-                     USE.NAMES=FALSE)
-  return(net_name)
-}
-
 ## get a data.table of all undirected edges of an igraph object
+#' @importFrom data.table :=
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
 #' @importFrom data.table copy
@@ -226,20 +170,35 @@ get_net_info <- function(g, data, net_name) {
 ## create a new data.table containing aggregated information about the
 ## neighbors of an observation
 #' @importFrom data.table :=
-aggregate_neighbors <- function(d_net, net_vars, net_expr) {
+#' @importFrom data.table set
+aggregate_neighbors <- function(d_net, d_net_terms) {
 
   ..id.. <- ..neighbor.. <- NULL
 
   # aggregate all with connections
-  agg_funs <- paste0(paste0("`", net_vars, "` = ", net_expr), collapse=", ")
+  agg_funs <- paste0(paste0("`", d_net_terms$term, "` = ",
+                            d_net_terms$expr), collapse=", ")
   d_aggregate <- paste0("d_net[!is.na(..id..), .(", agg_funs, "), by='..id..']")
   out <- eval(str2lang(d_aggregate))
 
-  # add those without connections
+  # identify those without connections
   d_unconnected <- subset(d_net, is.na(..id..))
   d_unconnected[, ..id.. := ..neighbor..]
+
+  # add them to aggregated data
   d_unconnected <- d_unconnected[, c("..id.."), with=FALSE]
   out <- rbind(out, d_unconnected, fill=TRUE)
+
+  # set NA values to specified "na" value
+  if (anyNA(out)) {
+    for (i in seq_len(nrow(d_net_terms))) {
+      col <- d_net_terms$term[i]
+      val <- d_net_terms$na[i]
+      if (!is.na(val)) {
+        set(out, which(is.na(out[[col]])), col, val)
+      }
+    }
+  }
 
   return(out)
 }
@@ -267,8 +226,7 @@ add_network_info <- function(data, d_net_terms, networks) {
     # in the formula call
     d_net_terms_i <- subset(d_net_terms, name==net_names[i])
     out_i <- aggregate_neighbors(d_net=d_net_i,
-                                 net_vars=d_net_terms_i$term,
-                                 net_expr=d_net_terms_i$expr)
+                                 d_net_terms=d_net_terms_i)
     setkey(out_i, ..id..)
     out_i[, ..id.. := NULL]
 
@@ -287,7 +245,7 @@ add_network_info <- function(data, d_net_terms, networks) {
 
 ## initiates / updates networks if needed
 create_networks <- function(networks, n_sim, data=NULL, sim_time,
-                            past_states=NULL) {
+                            past_states=NULL, past_networks=NULL) {
 
   for (i in seq_len(length(networks))) {
 
@@ -307,11 +265,14 @@ create_networks <- function(networks, n_sim, data=NULL, sim_time,
       if ("sim_time" %in% fun_args) {
         args$sim_time <- sim_time
       }
-      if ("past_states" %in% fun_args) {
+      if ("past_states" %in% fun_args & sim_time > 0) {
         args$past_states <- past_states
       }
-      if ("network" %in% fun_args) {
+      if ("network" %in% fun_args & sim_time > 0) {
         args$network <- networks[[i]]$net
+      }
+      if ("past_networks" %in% fun_args & sim_time > 0) {
+        args$past_networks <- past_networks
       }
 
       networks[[i]]$net <- do.call(networks[[i]]$net_fun, args=args)

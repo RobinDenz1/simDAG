@@ -44,6 +44,11 @@ Currently, only undirected and unweighted networks that include exactly one vert
 \strong{\emph{Further information}}:
 
 For a theoretical treatment, please consult the paper by Sofrygin et al. (2017), who also describe their slightly different implementation of this method in the \pkg{simcausal} package. More information on how to specify network-based dependencies in a \code{DAG} (using \pkg{simDAG}) after adding a network, please consult the \code{\link{net}} documentation page or the associated vignette.
+
+\strong{\emph{Computational considerations}}:
+
+Including \code{net()} terms in a node might significantly increase the amount of RAM used and the required computation time, especially with very large networks and / or large values of \code{n_sim} and / or \code{max_t} (the latter is only relevant in discrete-time simulations using \code{\link{sim_discrete_time}}). The reason for this is that each time a node is generated or updated over time, the mapping of individuals to their neighbors' values plus the subsequent aggregation has to be performed, which required \code{merge()} calls etc. Usually this should not be a problem, but it might be for some large discrete-time simulations. If the same \code{\link{net}} call is used in multiple nodes it can be beneficial to put it into an extra \code{\link{node}} call and safe it to avoid re-calculating the same thing over and over again (see examples).
+
 }
 \value{
 Returns a \code{DAG.network} object which can be added to a \code{DAG} object directly.

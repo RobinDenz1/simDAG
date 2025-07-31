@@ -57,7 +57,7 @@ test_that("using data.table syntax in net()", {
   expect_equal(round(data$Y3), data$Y3)
 })
 
-test_that("indexing singular individuals in net()", {
+test_that("indexing singular individuals in net(), possibly with NAs", {
 
   set.seed(2368)
   g <- igraph::sample_gnm(n=20, m=30)
@@ -67,10 +67,11 @@ test_that("indexing singular individuals in net()", {
     node("variable_A", type="rnorm") +
     node("Y1", type="gaussian", formula= ~ 0 + net(..neighbor..[2])*1,
          error=0) +
-    node("Y2", type="gaussian", formula= ~ 0 + net(variable_A[2])*1, error=0)
+    node("Y2", type="gaussian", formula= ~ 0 + net(variable_A[2], na=10)*1,
+         error=0)
   data <- sim_from_dag(dag, n_sim=20)
 
-  expect_equal(round(mean(data$Y2, na.rm=TRUE), 3), -0.411)
+  expect_equal(round(mean(data$Y2, na.rm=TRUE), 3), 1.15)
 })
 
 test_that("static network with discrete-time simulation", {

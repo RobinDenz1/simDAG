@@ -8,14 +8,17 @@ Specify Network Dependencies in a \code{DAG}
 This function may be used in the \code{formula} of nodes in which the value of the observation of one individual are dependent on its' neighbors in a defined static \code{\link{network}} or dynamic \code{\link{network_td}}. Given the network and a previously generated variable, \code{net()} aggregates data of the neighbors according to an arbitrary function under the hood. The resulting variable can then be used directly in a \code{formula}.
 }
 \usage{
-net(expression, net)
+net(expr, net=NULL, na=NA)
 }
 \arguments{
-  \item{expression}{
-Any R expression containing one or more previously generated variables that returns one numeric value given a vector, such as \code{sum(variable)} or \code{mean(variable)}.
+  \item{expr}{
+Any R expression, usually containing one or more previously generated variables, that returns one numeric value given a vector, such as \code{sum(variable)} or \code{mean(variable)}.
   }
   \item{net}{
 A single character string specifying the name of the network that should be used to define the neighbors of an observation. If only one network is present in the \code{DAG}, this argument can be omitted. The single added network is then used by default. If multiple networks are present and this argument is not defined, an error will be produced.
+  }
+  \item{na}{
+A single value assigned to the variable if \code{expr} could not be computed. This can happen due to the nature of the expression (e.g. \code{NA} being returned directly after evaluating the expression for some reason), or when an observation does not have any neighbors in a network.
   }
 }
 \details{
@@ -28,16 +31,12 @@ Internally the following procedure is used whenever a \code{net()} function call
 
 Any function that returns a single numeric value, given the neighbors' values can be used. It is therefore also possible to make the simulation dependent on specific neighbors only. For example, using \code{infected[1]} instead of \code{sum(infected)} would return a value of 0 for observation 1 in the above example, because person \code{2} is the first neighbor and has a value of 0. Note that the internally used variable named \code{..neighbor..} includes the ids of the neighbors. The entire \code{expression} is evaluated in a \pkg{data.table} call of the form: \code{data[, .(variable = eval(expression)), by=id]}, making it also possible to use any \pkg{data.table} syntax such as \code{\link[data.table]{.N}} (which would return the number of neighbors a person has).
 
-\strong{\emph{What about missing values?}}
-
-????
-
 \strong{\emph{A small warning}}:
 
-Note that it never makes sense to use this function outside of a \code{formula} argument: if you look at its source code you will realize that it does not actually do anything. It is only a piece of syntax for the \code{formula} interface. Please consult the \code{\link{network}} documentation page or the associated vignette for more information.
+Note that it never really makes sense to use this function outside of a \code{formula} argument: if you look at its source code you will realize that it does not actually do anything, except returning its input. It is only a piece of syntax for the \code{formula} interface. Please consult the \code{\link{network}} documentation page or the associated vignette for more information.
 }
 \value{
-"Returns" a numeric vector of length \code{n_sim} when used properly in a \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} call. Always returns \code{NULL}, regardless of input when used outside \code{formula}.
+"Returns" a numeric vector of length \code{n_sim} when used properly in a \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} call. Returns a list of its input when used outside \code{formula}.
 }
 \author{
 Robin Denz

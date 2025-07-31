@@ -51,6 +51,14 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   }
   t0_var_names <- colnames(data)
 
+  # initiate networks, if needed
+  if ((length(dag$root_nodes) + length(dag$child_nodes)) == 0 &
+      length(dag$networks) > 0) {
+    dag$networks <- create_networks(networks=dag$networks,
+                                    n_sim=n_sim,
+                                    sim_time=0)
+  }
+
   # perform an arbitrary data transformation right at the start
   if (!is.null(t0_transform_fun)) {
     t0_transform_args$data <- data
@@ -114,15 +122,6 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   # start the main loop
   for (t in seq_len(max_t)) {
-
-    # update networks, if needed
-    if (has_td_networks) {
-      dag$networks <- create_networks(networks=dag$networks,
-                                      n_sim=n_sim,
-                                      data=data,
-                                      sim_time=t,
-                                      past_states=past_states)
-    }
 
     # execute each node function one by one
     for (i in tx_nodes_order) {
@@ -201,6 +200,16 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                " data. The message was:\n", e, call.=FALSE)
         }
       )
+    }
+
+    # update networks, if needed
+    if (has_td_networks) {
+      dag$networks <- create_networks(networks=dag$networks,
+                                      n_sim=n_sim,
+                                      data=data,
+                                      sim_time=t,
+                                      past_states=past_states,
+                                      past_networks=past_networks)
     }
 
     # perform an arbitrary data transformation after each time point
