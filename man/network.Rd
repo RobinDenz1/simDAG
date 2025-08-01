@@ -39,11 +39,15 @@ The \code{network()} function allows users to relax this assumption, by making i
 
 Users may add any number of networks to a \code{DAG} object, making it possible to embed individuals in multiple distinct networks at the same time. These networks can then be used simultaneously to define a single or multiple (possibly time-varying) nodes, using multiple \code{\link{net}} function calls in the respective \code{formula} arguments. It is also possible to define time-varying or dynamic networks that change over time, possibly as a function of the generated data, simulation time or previous states of the network. Examples are given below and in the associated vignette.
 
-Currently, only undirected networks that include exactly one vertex per observation are supported in this package. Future versions might add support for more network types. Additionally, the current syntax only allows aggregation of the values of direct neighbors of an observation, it does not allow using extended neighborhoods.
+Currently, only networks that include exactly one vertex per observation are supported in this package. Additionally, the current syntax only allows aggregation of the values of direct neighbors of an observation, it does not allow using extended neighborhoods.
 
 \strong{\emph{Weighted Networks}}:
 
 It is possible to supply weighted networks to \code{network()}. The weights are then also stored and available to the user when using the \code{\link{net}} function through the internal \code{..weight..} variable. For example, if a weighted network was supplied, the following would be valid syntax: \code{net(weighted.mean(A, ..weight..))} (assuming that \code{A} is a previously defined variable). Note that the \code{..weight..} must be used explicitly, otherwise the weights are ignored.
+
+\strong{\emph{Directed Networks}}:
+
+Supplying directed networks is also possible. If this is done, users usually need to specify the \code{mode} argument of the \code{\link{net}} function when defining the \code{formula} arguments. This argument allows users to define different kinds of neighborhoods for each observation, based on the direction of the edges.
 
 \strong{\emph{Computational considerations}}:
 

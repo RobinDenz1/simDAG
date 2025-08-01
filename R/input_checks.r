@@ -447,6 +447,13 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
 
   size_dag <- length(names_DAG(dag, include_tx_nodes=include_td_nodes))
 
+  # get rid of temporary warnings due to deprecation
+  if (packageVersion("ggplot2") < "3.5.2") {
+    is_theme <- ggplot2::is.theme
+  } else {
+    is_theme <- ggplot2::is_theme
+  }
+
   if (size_dag < 2) {
     stop("The supplied DAG must have at least two nodes.", call.=FALSE)
   } else if (!((length(node_names) == size_dag && is.character(node_names)) |
@@ -460,7 +467,7 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
   } else if (!(length(arrow_node_dist)==1 && is.numeric(arrow_node_dist) &&
                arrow_node_dist >= 0)) {
     stop("'arrow_node_dist' must a single number >= 0.", call.=FALSE)
-  } else if (!ggplot2::is.theme(gg_theme)) {
+  } else if (!is_theme(gg_theme)) {
     stop("'gg_theme' must be a ggplot2 theme object.", call.=FALSE)
   }
 }

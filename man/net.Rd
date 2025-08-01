@@ -8,7 +8,7 @@ Specify Network Dependencies in a \code{DAG}
 This function may be used in the \code{formula} of nodes in which the value of the observation of one individual are dependent on its' neighbors in a defined static \code{\link{network}} or dynamic \code{\link{network_td}}. Given the network and a previously generated variable, \code{net()} aggregates data of the neighbors according to an arbitrary function under the hood. The resulting variable can then be used directly in a \code{formula}.
 }
 \usage{
-net(expr, net=NULL, mode="all", na=NA)
+net(expr, net=NULL, mode="all", order=1, na=NA)
 }
 \arguments{
   \item{expr}{
@@ -19,6 +19,9 @@ A single character string specifying the name of the network that should be used
   }
   \item{mode}{
 A single character, specifying how to use the direction of the edges if a directed network is supplied (ignored otherwise). If \code{"all"}, the direction of the edges is ignored and both incoming and outgoing edges are used to define the neighbors of each individual. If \code{"out"}, only the individuals who \eqn{i} (the observation row) is pointing to are used as neighbors and if \code{"in"} only the individuals who point to \eqn{i} are being used as neighbors.
+  }
+  \item{order}{
+A single integer giving the order of the neighborhood. If \code{order=1} (default), only the vertices that are directly connected to vertex \eqn{i} are considered its neighbors. If \code{order=2}, all vertices connected to those neighbors are also considered the neighbors of vertex \eqn{i} and so on.
   }
   \item{na}{
 A single value assigned to the variable if \code{expr} could not be computed. This can happen due to the nature of the expression (e.g. \code{NA} being returned directly after evaluating the expression for some reason), or when an observation does not have any neighbors in a network.

@@ -4,7 +4,7 @@
 # - network() in sim_from_dag() currently not allowed to be data dependent
 # - currently, networks are always initiated at the same time, irrespective
 #   of position in DAG creation, need to change this
-# - allow larger order neighborhoods
+# - error when net() call is a root node with no previously generated variables
 
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
@@ -96,7 +96,7 @@ check_inputs_network <- function(name, net, time_varying) {
 ## the aggregated information of neighbors in a network
 #' @importFrom data.table data.table
 #' @export
-net <- function(expr, net=NULL, mode="all", na=NA) {
+net <- function(expr, net=NULL, mode="all", order=1, na=NA) {
 
   if (is.null(net)) {
     name <- NA_character_
@@ -108,6 +108,7 @@ net <- function(expr, net=NULL, mode="all", na=NA) {
     expr=deparse(substitute(expr)),
     name=name,
     mode=mode,
+    order=order,
     na=na
   )
   return(out)
@@ -119,14 +120,42 @@ get_net_terms <- function(formula_parts) {
   return(net_terms)
 }
 
+## get all neighbors of every vertex in a graph in data.table format
+#' @importFrom data.table data.table
+#' @importFrom data.table rbindlist
+get_neighbors_with_order <- function(g, order, mode) {
+
+  if (order > 1 & igraph::is_weighted(g)) {
+    warning("When using order > 1 for weighted graphs, the weights",
+            " are ignored.", call.=FALSE)
+  }
+
+  lneighbors <- igraph::neighborhood(graph=g, order=order, mode=mode)
+
+  out <- vector(mode="list", length=length(lneighbors))
+  for (i in seq_len(length(lneighbors))) {
+    out[[i]] <- data.table(..id..=i,
+                           ..neighbor..=as.numeric(lneighbors[[i]]))
+  }
+  out <- subset(rbindlist(out), ..id.. != ..neighbor..)
+
+  return(out)
+}
+
 ## get a data.table of all undirected edges of an igraph object
 #' @importFrom data.table :=
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
 #' @importFrom data.table copy
-get_all_edges <- function(g, mode) {
+get_all_edges <- function(g, mode, order) {
 
   ..id.. <- ..neighbor.. <- NULL
+
+  # take computationally more expensive approach if order is specified
+  if (order != 1) {
+    d_con <- get_neighbors_with_order(g=g, mode=mode, order=order)
+    return(d_con)
+  }
 
   d_con <- as.data.table(igraph::as_data_frame(g, what="edges"))
 
@@ -165,7 +194,7 @@ get_all_edges <- function(g, mode) {
 ## neighbor is mapped to the observation
 #' @importFrom data.table :=
 #' @importFrom data.table merge.data.table
-get_net_info <- function(g, data, net_name, mode) {
+get_net_info <- function(g, data, net_name, mode, order) {
 
   n_vertices <- length(igraph::V(g))
 
@@ -182,7 +211,7 @@ get_net_info <- function(g, data, net_name, mode) {
                 " be one vertex per observation."), call.=FALSE)
   }
 
-  d_con <- get_all_edges(g, mode=mode)
+  d_con <- get_all_edges(g=g, mode=mode, order=order)
   d_net <- merge.data.table(d_con, data, by.x="..neighbor..", by.y="..id..",
                             all.x=TRUE, all.y=TRUE, allow.cartesian=TRUE)
   return(d_net)
@@ -217,19 +246,21 @@ add_network_info <- function(data, d_net_terms, networks) {
   data <- copy(data)
   data[, ..id.. := seq_len(nrow(data))]
 
-  d_combs <- unique(d_net_terms, by=c("name", "mode"))
+  d_combs <- unique(d_net_terms, by=c("name", "mode", "order"))
   for (i in seq_len(nrow(d_combs))) {
 
     # impose network structure on generated data
     d_net_i <- get_net_info(g=networks[[d_combs$name[i]]]$net,
                             data=data,
                             net_name=d_combs$name[i],
-                            mode=d_combs$mode[i])
+                            mode=d_combs$mode[i],
+                            order=d_combs$order[i])
 
     # aggregate it according to the defined aggregation functions mentioned
     # in the formula call
     d_net_terms_i <- subset(d_net_terms, name==d_combs$name[i] &
-                              mode==d_combs$mode[i])
+                              mode==d_combs$mode[i] &
+                              order==d_combs$order[i])
     out_i <- aggregate_neighbors(d_net=d_net_i,
                                  d_net_terms=d_net_terms_i)
     data <- merge.data.table(data, out_i, by="..id..", all.x=TRUE)

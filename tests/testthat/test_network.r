@@ -57,6 +57,35 @@ test_that("using data.table syntax in net()", {
   expect_equal(round(data$Y3), data$Y3)
 })
 
+test_that("using a different order of neighbors", {
+
+  set.seed(2368)
+  g <- igraph::sample_gnm(n=20, m=30)
+
+  dag <- empty_dag() +
+    network("Net1", net=g) +
+    node("variable_A", type="rnorm") +
+    node("Y1", type="gaussian", formula= ~ 0 + net(.N, order=1)*1, error=0) +
+    node("Y2", type="gaussian", formula= ~ 0 + net(.N, order=2)*1, error=0) +
+    node("Y3", type="gaussian", formula= ~ 0 + net(.N, order=3)*1, error=0)
+
+  data <- sim_from_dag(dag, n_sim=20)
+
+  expect_true(all(data$Y1 <= data$Y2))
+  expect_true(all(data$Y2 <= data$Y3))
+
+  # warning with weighted graphs
+  igraph::E(g)$weight <- stats::runif(n=length(igraph::E(g)), min=0, max=5)
+
+  expect_warning({
+    dag <- empty_dag() +
+      network("Net1", net=g) +
+      node("variable_A", type="rnorm") +
+      node("Y1", type="gaussian", formula= ~ 0 + net(.N, order=2)*1, error=0)
+    data <- sim_from_dag(dag, n_sim=20)
+  })
+})
+
 test_that("using a weighted network", {
 
   set.seed(2368)
