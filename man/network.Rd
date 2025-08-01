@@ -64,5 +64,47 @@ Sofrygin, Oleg, Romain Neugebauer and Mark J. van der Laan (2017). Conducting Si
 Robin Denz
 }
 \examples{
+library(igraph)
+library(data.table)
+library(simDAG)
 
+set.seed(2368)
+
+# generate random undirected / unweighted networks as examples
+g1 <- igraph::sample_gnm(n=20, m=30)
+g2 <- igraph::sample_gnm(n=20, m=30)
+
+# adding a single network to a DAG, with Y being dependent on
+# the mean value of A of its neighbors
+dag <- empty_dag() +
+  network("Net1", net=g1) +
+  node("A", type="rnorm") +
+  node("Y", type="gaussian", formula= ~ -2 + net(mean(A))*1.3, error=1.5)
+
+# NOTE: because we supplied the network of size 20 directly, we can only
+#       use n_sim=20 here
+data <- sim_from_dag(dag, n_sim=20)
+
+# using multiple networks, with Y being differently dependent on
+# the mean value of A of its neighbors in both networks
+dag <- empty_dag() +
+  network("Net1", net=g1) +
+  network("Net2", net=g2) +
+  node("A", type="rnorm") +
+  node("Y", type="gaussian", formula= ~ -2 + net(mean(A), net="Net1")*1.3 +
+        net(mean(A), net="Net2")*-2, error=1.5)
+
+# using a function to add networks, to allow any value of 'n_sim' later
+
+# exemplary function that returns a random network of size 'n_sim'
+gen_network <- function(n_sim) {
+  igraph::sample_gnm(n=n_sim, m=30)
+}
+
+# same as first example, but using the function as input
+dag <- empty_dag() +
+  network("Net1", net=gen_network) +
+  node("A", type="rnorm") +
+  node("Y", type="gaussian", formula= ~ -2 + net(mean(A))*1.3, error=1.5)
+data <- sim_from_dag(dag, n_sim=25)
 }

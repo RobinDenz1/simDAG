@@ -95,3 +95,7 @@ test_that("as wide data, with multiple time-varying variables", {
 
   expect_true("death_1" %in% colnames(dat))
 })
+
+test_that("wrong input to 'remove_vars'", {
+  expect_error({sim2data(sim, to="start_stop", remove_vars=2)})
+})

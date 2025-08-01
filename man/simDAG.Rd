@@ -18,6 +18,8 @@ Through a collection of implemented node types, this package allows the user to 
 
 The package also includes a few functions to transform resulting data into multiple formats, to augment existing DAGs, to plot DAGs and to plot a flow-chart of the data generation process.
 
+All of the above mentioned features may also be combined with networks-based simulation, in which user-specified network dependencies among individuals may be used directly when specifying nodes. One or multiple networks (directed or undirected, weighted or unweighted) that may or may not change over time (possibly as a function of other variables) are supported.
+
 \strong{\emph{What does a typical workflow using this package look like?}}
 
 Users should start by defining a \code{DAG} object using the \code{\link{empty_dag}} and \code{\link{node}} functions. This \code{DAG} can then be passed to one of the two simulation functions included in this package. More information on how to do this can be found in the respective documentation pages and the three vignettes of this package.
@@ -48,7 +50,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_sim_networks", package="simDAG")}}
 }
 
-A separate (already peer-reviewed) article about this package has been provisionally accepted in the Journal of Statistical Software. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025).
+A separate (already peer-reviewed) article about this package has been provisionally accepted in the \emph{Journal of Statistical Software}. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025).
 
 \strong{\emph{I have a problem using the \code{sim_discrete_time} function}}
 

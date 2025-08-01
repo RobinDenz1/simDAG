@@ -1,15 +1,10 @@
 
 # TODO:
-# - write new unit tests
 # - finish new vignette on network simulation
-# - add some examples of this to cookbook vignette
 # - network() in sim_from_dag() currently not allowed to be data dependent
 # - currently, networks are always initiated at the same time, irrespective
 #   of position in DAG creation, need to change this
-# - further features:
-#   - allow directed networks
-#   - allow other neighborhoods
-#   - allow combinations of these
+# - allow larger order neighborhoods
 
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
@@ -55,8 +50,21 @@ print.DAG.network <- function(x, ...) {
   cat("  - name: '", x$name, "'\n", sep="")
 
   if (igraph::is_igraph(x$net)) {
+
+    if (igraph::is_weighted(x$net)) {
+      weighted <- "weighted"
+    } else {
+      weighted <- "un-weighted"
+    }
+
+    if (igraph::is_directed(x$net)) {
+      directed <- "directed"
+    } else {
+      directed <- "un-directed"
+    }
+
     cat("  -", length(igraph::V(x$net)), "vertices\n")
-    cat("  -", length(igraph::E(x$net)), "edges\n")
+    cat("  -", length(igraph::E(x$net)), directed, weighted, "edges\n")
   } else {
     cat("  - net: A function to generate a custom network\n")
   }
@@ -73,11 +81,10 @@ check_inputs_network <- function(name, net, time_varying) {
 
   if (!(length(name)==1 & is.character(name))) {
     stop("'name' must be a single character string.", call.=FALSE)
-  } else if (!time_varying & !((igraph::is_igraph(net) &&
-                                !igraph::is_directed(net)) |
+  } else if (!time_varying & !(igraph::is_igraph(net) |
                                is.function(net))) {
-    stop("'net' must be an igraph object containing only undirected edges",
-         " or a function that creates such an object.", call.=FALSE)
+    stop("'net' must be an igraph object or a function that",
+         " creates such an object.", call.=FALSE)
   } else if (time_varying & !is.function(net)) {
     stop("'net' must be a function creating an igraph object when using",
          " network_td(). See documentation.", call.=FALSE)
@@ -89,7 +96,7 @@ check_inputs_network <- function(name, net, time_varying) {
 ## the aggregated information of neighbors in a network
 #' @importFrom data.table data.table
 #' @export
-net <- function(expr, net=NULL, na=NA) {
+net <- function(expr, net=NULL, mode="all", na=NA) {
 
   if (is.null(net)) {
     name <- NA_character_
@@ -100,6 +107,7 @@ net <- function(expr, net=NULL, na=NA) {
   out <- data.table(
     expr=deparse(substitute(expr)),
     name=name,
+    mode=mode,
     na=na
   )
   return(out)
@@ -116,7 +124,7 @@ get_net_terms <- function(formula_parts) {
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
 #' @importFrom data.table copy
-get_all_edges <- function(g) {
+get_all_edges <- function(g, mode) {
 
   ..id.. <- ..neighbor.. <- NULL
 
@@ -132,11 +140,18 @@ get_all_edges <- function(g) {
   }
   setnames(d_con, old=old, new=new)
 
-  # add reverse of connections as well
-  d_con2 <- copy(d_con)
-  setnames(d_con2, old=c("..id..", "..neighbor.."),
-           new=c("..neighbor..", "..id.."))
-  d_con <- rbind(d_con, d_con2)
+  # get reverse of connections
+  if (mode=="all" | mode=="in" | !igraph::is_directed(g)) {
+    d_con2 <- copy(d_con)
+    setnames(d_con2, old=c("..id..", "..neighbor.."),
+             new=c("..neighbor..", "..id.."))
+  }
+
+  if (mode=="all" | !igraph::is_directed(g)) {
+    d_con <- rbind(d_con, d_con2)
+  } else if (mode=="in") {
+    d_con <- d_con2
+  }
 
   # vertex names should be numbers
   d_con[, ..id.. := as.numeric(..id..)]
@@ -150,7 +165,7 @@ get_all_edges <- function(g) {
 ## neighbor is mapped to the observation
 #' @importFrom data.table :=
 #' @importFrom data.table merge.data.table
-get_net_info <- function(g, data, net_name) {
+get_net_info <- function(g, data, net_name, mode) {
 
   n_vertices <- length(igraph::V(g))
 
@@ -167,10 +182,9 @@ get_net_info <- function(g, data, net_name) {
                 " be one vertex per observation."), call.=FALSE)
   }
 
-  d_con <- get_all_edges(g)
+  d_con <- get_all_edges(g, mode=mode)
   d_net <- merge.data.table(d_con, data, by.x="..neighbor..", by.y="..id..",
                             all.x=TRUE, all.y=TRUE, allow.cartesian=TRUE)
-
   return(d_net)
 }
 
@@ -189,25 +203,6 @@ aggregate_neighbors <- function(d_net, d_net_terms) {
   d_aggregate <- paste0("d_net[!is.na(..id..), .(", agg_funs, "), by='..id..']")
   out <- eval(str2lang(d_aggregate))
 
-  # identify those without connections
-  d_unconnected <- subset(d_net, is.na(..id..))
-  d_unconnected[, ..id.. := ..neighbor..]
-
-  # add them to aggregated data
-  d_unconnected <- d_unconnected[, c("..id.."), with=FALSE]
-  out <- rbind(out, d_unconnected, fill=TRUE)
-
-  # set NA values to specified "na" value
-  if (anyNA(out)) {
-    for (i in seq_len(nrow(d_net_terms))) {
-      col <- d_net_terms$term[i]
-      val <- d_net_terms$na[i]
-      if (!is.na(val)) {
-        set(out, which(is.na(out[[col]])), col, val)
-      }
-    }
-  }
-
   return(out)
 }
 
@@ -219,34 +214,40 @@ add_network_info <- function(data, d_net_terms, networks) {
   ..id.. <- name <- NULL
 
   # add temporary id
+  data <- copy(data)
   data[, ..id.. := seq_len(nrow(data))]
 
-  net_names <- unique(d_net_terms$name)
-  out <- vector(mode="list", length=length(net_names))
-  for (i in seq_len(length(net_names))) {
+  d_combs <- unique(d_net_terms, by=c("name", "mode"))
+  for (i in seq_len(nrow(d_combs))) {
 
     # impose network structure on generated data
-    d_net_i <- get_net_info(g=networks[[net_names[i]]]$net,
+    d_net_i <- get_net_info(g=networks[[d_combs$name[i]]]$net,
                             data=data,
-                            net_name=net_names[i])
+                            net_name=d_combs$name[i],
+                            mode=d_combs$mode[i])
 
     # aggregate it according to the defined aggregation functions mentioned
     # in the formula call
-    d_net_terms_i <- subset(d_net_terms, name==net_names[i])
+    d_net_terms_i <- subset(d_net_terms, name==d_combs$name[i] &
+                              mode==d_combs$mode[i])
     out_i <- aggregate_neighbors(d_net=d_net_i,
                                  d_net_terms=d_net_terms_i)
-    setkey(out_i, ..id..)
-    out_i[, ..id.. := NULL]
-
-    out[[i]] <- out_i
+    data <- merge.data.table(data, out_i, by="..id..", all.x=TRUE)
   }
 
-  # put together in one dataset
-  out <- do.call(cbind, out)
+  # set NA values to specified "na" value
+  if (anyNA(data)) {
+    for (i in seq_len(nrow(d_net_terms))) {
+      col <- d_net_terms$term[i]
+      val <- d_net_terms$na[i]
+      if (!is.na(val)) {
+        set(data, which(is.na(data[[col]])), col, val)
+      }
+    }
+  }
 
-  # add it to the existing data, remove temporary id
+  # remove temporary id
   data[, ..id.. := NULL]
-  data <- add_node_to_data(data=data, new=out, name=colnames(out))
 
   return(data)
 }

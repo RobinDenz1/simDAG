@@ -5,6 +5,7 @@ output:
     toc: true
     toc_depth: 4
 author: "Robin Denz"
+bibliography: ./images_v_joss/disc_time_sim.bib
 vignette: >
   %\VignetteIndexEntry{Simulating Data from a DAG with Network Dependencies}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,9 +26,9 @@ knitr::opts_chunk$set(
 
 Most algorithms used to generate artificial data based on DAGs do so using the classic assumption that all individual observations are independently and identically distributed (the classic i.i.d. assumption). This is done for multiple reasons. First, it makes the specification of the data generation process (DGP) a lot easier: distributions and structural equations can be defined once for the entire DGP and used to generate arbitrarily large amounts of data. Secondly, artificial DAG based data is most often used in simulation studies or other contexts in which statistical models are applied to them. Since most of these models require the i.i.d. assumption, it makes sense to generate data this way.
 
-This is, however, not the case for all applications. For example, the spread of an infectious disease is dependent on how "connected" the population at risk is. An individual with many contacts will usually have a higher probability of coming into contact with an infected person and thus will have a higher chance of getting infected as well. This fact is in direct opposition to the i.i.d. assumption, because the infection status of one individual influences the infection status of other individuals. The individuals are said to "interfere" with each other (ZITAT). Networks-based simulations are one way to model such dependencies.
+This is, however, not the case for all applications. For example, the spread of an infectious disease is dependent on how "connected" the population at risk is. An individual with many contacts will usually have a higher probability of coming into contact with an infected person and thus will have a higher chance of getting infected as well. This fact is in direct opposition to the i.i.d. assumption, because the infection status of one individual influences the infection status of other individuals. The individuals are said to "interfere" with each other [@VanderWeele2013]. Networks-based simulations are one way to model such dependencies.
 
-The following vignette introduces this methodology and how it is implemented in the `simDAG` R package. This is an advanced topic. We assume that the reader is already familiar with the general `simDAG` syntax. Please consult the associated paper or the numerous other vignettes first, if this is not the case.
+The following vignette introduces this methodology and how it is implemented in the `simDAG` R package [@Denz2025]. This is an advanced topic. We assume that the reader is already familiar with the general `simDAG` syntax and DAG based simulations. Please consult the associated paper or the numerous other vignettes first, if this is not the case.
 
 ```{r, message=FALSE, warning=FALSE}
 library(data.table)
@@ -37,7 +38,7 @@ library(simDAG)
 
 # What are networks-based simulations?
 
-In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that has a direct connection to $i$ in a given network. A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by Sofrygin et al. (2017).
+In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that has a direct connection to $i$ in a given network. A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by @Sofrygin2017a.
 
 There are multiple types of networks (directed vs. undirected, weighted vs. un-weighted, etc.). In this vignette we will focus mostly on un-directed and un-weighted networks, to make the presentation easier. In network science, the points in a networks are often called *nodes* or *vertices*, while the connections between them are usually called *edges* or, in directed networks, *arrows*. When talking about networks I will stick to the terms *vertices* and *edges* here, to avoid confusion with the terms *nodes* and *arrows* that are also used when talking about DAGs. Note that a DAG is of course also a special type of network, but it serves a different purpose here. In the simulations described here, the DAG defines the causal relationships between variables, while the network describes connections between individuals.
 
@@ -151,6 +152,62 @@ head(data, row.names=TRUE)
 
 Interestingly, individual 4 has a value of `NA` in the `infected` node. The reason for this is that individual 4 does not have any friends (don't worry, she is not real so she can't be sad about this) and thus the `mean(age)` call is not defined for this person. To replace such `NA` values with some other values, the `na` argument of `net()` may be used. 
 
+## Weighted networks
+
+In many applications in network science, the edges of networks are said to have *weights*, to specify that some connections are stronger than others. In the friendship network from earlier, the weights could for example indicate that one friendship is closer than another one. Using such weights is also directly supported for simulation purposes in this package. Let us first add some random weights to the friendships from the network shown above. Re-plotting this network one can see that the edges now have different weights:
+
+```{r, fig.width=6, fig.height=6}
+E(g1)$weight <- runif(n=length(E(g1)), min=1, max=5)
+plot(g1, edge.width=E(g1)$weight)
+```
+
+Regular `net()` calls will ignore these weights, if not specifically told not to. Users should use the internal `..weight..` variable to use the weights. For example, if we want to re-use the DAG definition from earlier, we could do something like this:
+
+```{r}
+dag <- empty_dag() +
+  network("friends", net=g1) +
+  node("age", type="rnorm", mean=50, sd=10) +
+  node("sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("infected", type="binomial",
+       formula= ~ 3 + age*0.1 + sex*-0.5 +
+                  net(weighted.mean(x=age, w=..weight..))*-0.2 + 
+                  net(weighted.mean(x=sex, w=..weight..))*-0.4)
+data <- sim_from_dag(dag, n_sim=20)
+head(data)
+```
+
+It is essentially the same code as before, with the only difference being that we use `weighted.mean()` instead of `mean()` to summarize the neighbors' values and use the edge weights within this function call, giving stronger connections more weight. Users are of course free to use the `..weight..` variable in any other way as well.
+
+## Directed Networks
+
+So far we have always assumed that all connections in a graph are *un-directed*, e.g. that once there is an edge between vertices $1$ and $2$, that they have a reciprocal relationship with each other. In real networks it is often the case that relationships between vertices are not reciprocal, but directed. For example, in the professional network we might be interested in showing who is giving who orders. This could be done by using a *directed* network. These kinds of networks are also directly supported for simulation purposes in this package.
+
+Let us create a random directed network first:
+
+```{r, fig.width=6, fig.height=6}
+set.seed(123)
+
+g <- sample_gnm(n=20, m=18, directed=TRUE, loops=FALSE)
+plot(g, edge.arrow.size=0.4)
+```
+
+In this example, individual 3 can give orders to individual 11, 13 and 14, but cannot be given orders by these individuals. Now lets suppose we want to only use the values of subordinates (e.g. vertices connected by outgoing edges) to define neighborhoods. This can be achieved using the `mode` argument of the `net()` function. We again replicate the `DAG` from earlier, changing it only slightly:
+
+```{r}
+dag <- empty_dag() +
+  network("work", net=g) +
+  node("age", type="rnorm", mean=50, sd=10) +
+  node("sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("infected", type="binomial",
+       formula= ~ 3 + age*0.1 + sex*-0.5 +
+                  net(mean(age), mode="out", na=0)*-0.2 + 
+                  net(mean(sex), mode="out", na=0)*-0.4)
+data <- sim_from_dag(dag, n_sim=20)
+head(data)
+```
+
+Conversely, if we want to only model the `infected` probability as a function of the "bosses" of a node (e.g. the incoming edges), all we would have to do is set `mode="in"` in the `net()` calls. If we want to disregard the edge directions, we could simply keep the `mode` argument at its default value of `"all"`. Since the way the edges are treated is defined using `net()` calls, it is of course also possible to use mixtures of these strategies in the same node definition, by using multiple `net()` calls with different `mode`s. This could also be combined with weights (as described in the previous section).
+
 ## Networks as a function of other variables
 
 
@@ -192,7 +249,6 @@ prob_infection <- function(data, sim_time) {
     p <- fifelse(data$n_infected_neighbors==0, 0,
                  fifelse(data$n_infected_neighbors > 3, 0.9, 0.4))
   }
-  p[is.na(p)] <- 0
   return(p)
 }
 
@@ -383,7 +439,7 @@ This simulation could easily be extended to make the isolation non-permanent, by
 
 Networks-based simulations offer an additional amount of flexibility in specifying data generation processes (DGP) that is usually not included in general-purpose simulation software. By making cross-individual dependencies possible through one or multiple networks and allowing those to also be influenced by individual-level variables, almost any kind of data can be generated. The `simDAG` package offers a simple and consistent syntax to perform such simulations. Network dependencies are fully integrated into the enhanced `formula` syntax through the `net()` function, which hopefully makes the barrier to use this methodology a lot less daunting for potential users.
 
-Despite the great flexibility offered by this approach, it is used quite infrequently in practice. The preprint published by Sofrygin et al. (2017) did not gather a lot of attention, even though they also offered a clean and powerful implementation of the method through the `simcausal` package (which heavily inspired the presented `simDAG` implementation). I suspect that the main reason for this is that there are only few statistical models designed to actually analyze data with such complex DGPs. The combination of network science and causal inference is still in its infancy, as has been pointed out by others (ZITATE). I hope that this implementation will make future investigations into this subject easier or at least more convenient.
+Despite the great flexibility offered by this approach, it is used quite infrequently in practice. The preprint published by @Sofrygin2017a did not gather a lot of attention, even though they also offered a clean and powerful implementation of the method through the `simcausal` [@Sofrygin2017] package (which heavily inspired the presented `simDAG` implementation). I suspect that the main reason for this is that there are only few statistical models designed to actually analyze data with such complex DGPs. Despite recent advancements, the combination of network science and causal inference is still in its infancy, as has been pointed out by others [@Ogburn2024; @VanderWeele2013; @An2022]. I hope that this implementation will make future investigations into this subject easier or at least more convenient to methodological researchers.
 
 # References
 
