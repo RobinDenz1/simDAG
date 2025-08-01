@@ -97,14 +97,14 @@ them. Since most of these models require the i.i.d. assumption, it makes
 sense to generate data this way.</p>
 <p>This is, however, not the case for all applications. For example, the
 spread of an infectious disease is dependent on how “connected” the
-population at risk is. An individual with many contacts will usually
-have a higher probability of coming into contact with an infected person
-and thus will have a higher chance of getting infected as well. This
-fact is in direct opposition to the i.i.d. assumption, because the
-infection status of one individual influences the infection status of
-other individuals. The individuals are said to “interfere” with each
-other <span class="citation">(VanderWeele and An 2013)</span>.
-Networks-based simulations are one way to model such dependencies.</p>
+population at risk is <span class="citation">(Danon et al. 2011)</span>.
+An individual with many contacts will usually have a higher probability
+of coming into contact with an infected person and thus will have a
+higher chance of getting infected as well. This fact is in direct
+opposition to the i.i.d. assumption, because the infection status of one
+individual influences the infection status of other individuals. The
+individuals are said to “interfere” with each other <span class="citation">(VanderWeele and An 2013)</span>. Networks-based
+simulations are one way to model such dependencies.</p>
 <p>The following vignette introduces this methodology and how it is
 implemented in the <code>simDAG</code> R package <span class="citation">(Denz and Timmesfeld 2025)</span>. This is an advanced
 topic. We assume that the reader is already familiar with the general
@@ -801,6 +801,12 @@ convenient to methodological researchers.</p>
 An, Weihua, Roberson Beauvile, and Benjamin Rosche. 2022. <span>“Causal
 Network Analysis.”</span> <em>Annual Reviews of Sociology</em> 48:
 23–41. <a href="https://doi.org/10.1146/annurev-soc-030320-102100" class="external-link">https://doi.org/10.1146/annurev-soc-030320-102100</a>.
+</div>
+<div id="ref-Danon2011" class="csl-entry">
+Danon, Leon, Ashley P. Ford, Thomas House, Chris P. Jewell, Matt J.
+Keeling, Gareth O. Roberts, Joshua V. Ross, and Matthew C. Vernon. 2011.
+<span>“Networks and the Epidemiology of Infectious Disease.”</span>
+<em>Interdisciplinary Perspectives on Infectious Diseases</em> 16. <a href="https://doi.org/10.1155/2011/284909" class="external-link">https://doi.org/10.1155/2011/284909</a>.
 </div>
 <div id="ref-Denz2025" class="csl-entry">
 Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
