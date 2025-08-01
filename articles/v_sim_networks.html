@@ -103,13 +103,14 @@ and thus will have a higher chance of getting infected as well. This
 fact is in direct opposition to the i.i.d. assumption, because the
 infection status of one individual influences the infection status of
 other individuals. The individuals are said to “interfere” with each
-other (ZITAT). Networks-based simulations are one way to model such
-dependencies.</p>
+other <span class="citation">(VanderWeele and An 2013)</span>.
+Networks-based simulations are one way to model such dependencies.</p>
 <p>The following vignette introduces this methodology and how it is
-implemented in the <code>simDAG</code> R package. This is an advanced
+implemented in the <code>simDAG</code> R package <span class="citation">(Denz and Timmesfeld 2025)</span>. This is an advanced
 topic. We assume that the reader is already familiar with the general
-<code>simDAG</code> syntax. Please consult the associated paper or the
-numerous other vignettes first, if this is not the case.</p>
+<code>simDAG</code> syntax and DAG based simulations. Please consult the
+associated paper or the numerous other vignettes first, if this is not
+the case.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
@@ -135,7 +136,8 @@ that has a direct connection to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 in a given network. A more rigorous explanation, along with an
 explanation of their implementation of the methodology in the
-<code>simcausal</code> package, is given by Sofrygin et al. (2017).</p>
+<code>simcausal</code> package, is given by <span class="citation">Sofrygin, Neugebauer, and van der Laan
+(2017)</span>.</p>
 <p>There are multiple types of networks (directed vs. undirected,
 weighted vs. un-weighted, etc.). In this vignette we will focus mostly
 on un-directed and un-weighted networks, to make the presentation
@@ -323,6 +325,111 @@ values, the <code>na</code> argument of <code><a href="../reference/net.html">ne
 used.</p>
 </div>
 <div class="section level3">
+<h3 id="weighted-networks">Weighted networks<a class="anchor" aria-label="anchor" href="#weighted-networks"></a>
+</h3>
+<p>In many applications in network science, the edges of networks are
+said to have <em>weights</em>, to specify that some connections are
+stronger than others. In the friendship network from earlier, the
+weights could for example indicate that one friendship is closer than
+another one. Using such weights is also directly supported for
+simulation purposes in this package. Let us first add some random
+weights to the friendships from the network shown above. Re-plotting
+this network one can see that the edges now have different weights:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">)</span>, min<span class="op">=</span><span class="fl">1</span>, max<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g1</span>, edge.width<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></code></pre></div>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-14-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>Regular <code><a href="../reference/net.html">net()</a></code> calls will ignore these weights, if not
+specifically told not to. Users should use the internal
+<code>..weight..</code> variable to use the weights. For example, if we
+want to re-use the DAG definition from earlier, we could do something
+like this:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/network.html">network</a></span><span class="op">(</span><span class="st">"friends"</span>, net<span class="op">=</span><span class="va">g1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span>, output<span class="op">=</span><span class="st">"numeric"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"infected"</span>, type<span class="op">=</span><span class="st">"binomial"</span>,</span>
+<span>       formula<span class="op">=</span> <span class="op">~</span> <span class="fl">3</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">sex</span><span class="op">*</span><span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span></span>
+<span>                  <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">age</span>, w<span class="op">=</span><span class="va">..weight..</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">+</span> </span>
+<span>                  <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">sex</span>, w<span class="op">=</span><span class="va">..weight..</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         age   sex infected</span></span>
+<span><span class="co">#&gt;       &lt;num&gt; &lt;num&gt;   &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1: 45.69134     1    FALSE</span></span>
+<span><span class="co">#&gt; 2: 37.05165     0    FALSE</span></span>
+<span><span class="co">#&gt; 3: 66.75057     1    FALSE</span></span>
+<span><span class="co">#&gt; 4: 36.75051     1       NA</span></span>
+<span><span class="co">#&gt; 5: 61.50802     0     TRUE</span></span>
+<span><span class="co">#&gt; 6: 63.68616     0     TRUE</span></span></code></pre></div>
+<p>It is essentially the same code as before, with the only difference
+being that we use <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean()</a></code> instead of
+<code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code> to summarize the neighbors’ values and use the edge
+weights within this function call, giving stronger connections more
+weight. Users are of course free to use the <code>..weight..</code>
+variable in any other way as well.</p>
+</div>
+<div class="section level3">
+<h3 id="directed-networks">Directed Networks<a class="anchor" aria-label="anchor" href="#directed-networks"></a>
+</h3>
+<p>So far we have always assumed that all connections in a graph are
+<em>un-directed</em>, e.g. that once there is an edge between vertices
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math>,
+that they have a reciprocal relationship with each other. In real
+networks it is often the case that relationships between vertices are
+not reciprocal, but directed. For example, in the professional network
+we might be interested in showing who is giving who orders. This could
+be done by using a <em>directed</em> network. These kinds of networks
+are also directly supported for simulation purposes in this package.</p>
+<p>Let us create a random directed network first:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span>, m<span class="op">=</span><span class="fl">18</span>, directed<span class="op">=</span><span class="cn">TRUE</span>, loops<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g</span>, edge.arrow.size<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>In this example, individual 3 can give orders to individual 11, 13
+and 14, but cannot be given orders by these individuals. Now lets
+suppose we want to only use the values of subordinates (e.g. vertices
+connected by outgoing edges) to define neighborhoods. This can be
+achieved using the <code>mode</code> argument of the <code><a href="../reference/net.html">net()</a></code>
+function. We again replicate the <code>DAG</code> from earlier, changing
+it only slightly:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/network.html">network</a></span><span class="op">(</span><span class="st">"work"</span>, net<span class="op">=</span><span class="va">g</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span>, output<span class="op">=</span><span class="st">"numeric"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"infected"</span>, type<span class="op">=</span><span class="st">"binomial"</span>,</span>
+<span>       formula<span class="op">=</span> <span class="op">~</span> <span class="fl">3</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">sex</span><span class="op">*</span><span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span></span>
+<span>                  <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>, mode<span class="op">=</span><span class="st">"out"</span>, na<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">+</span> </span>
+<span>                  <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span>, mode<span class="op">=</span><span class="st">"out"</span>, na<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">*</span><span class="op">-</span><span class="fl">0.4</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         age   sex infected</span></span>
+<span><span class="co">#&gt;       &lt;num&gt; &lt;num&gt;   &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1: 53.22599     1     TRUE</span></span>
+<span><span class="co">#&gt; 2: 52.17259     1    FALSE</span></span>
+<span><span class="co">#&gt; 3: 54.58468     0    FALSE</span></span>
+<span><span class="co">#&gt; 4: 46.99742     0     TRUE</span></span>
+<span><span class="co">#&gt; 5: 33.19981     0     TRUE</span></span>
+<span><span class="co">#&gt; 6: 33.78001     1     TRUE</span></span></code></pre></div>
+<p>Conversely, if we want to only model the <code>infected</code>
+probability as a function of the “bosses” of a node (e.g. the incoming
+edges), all we would have to do is set <code>mode="in"</code> in the
+<code><a href="../reference/net.html">net()</a></code> calls. If we want to disregard the edge directions,
+we could simply keep the <code>mode</code> argument at its default value
+of <code>"all"</code>. Since the way the edges are treated is defined
+using <code><a href="../reference/net.html">net()</a></code> calls, it is of course also possible to use
+mixtures of these strategies in the same node definition, by using
+multiple <code><a href="../reference/net.html">net()</a></code> calls with different <code>mode</code>s.
+This could also be combined with weights (as described in the previous
+section).</p>
+</div>
+<div class="section level3">
 <h3 id="networks-as-a-function-of-other-variables">Networks as a function of other variables<a class="anchor" aria-label="anchor" href="#networks-as-a-function-of-other-variables"></a>
 </h3>
 </div>
@@ -343,12 +450,12 @@ infection status of a person, denoted by <code>infected</code> (0 = not
 infected, 1 = infected). First, we will generate a random graph of 18
 individuals with 30 connections between them using the
 <code>igraph</code> package:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">244368</span><span class="op">)</span></span>
 <span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">18</span>, m<span class="op">=</span><span class="fl">30</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-14-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-18-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>We will assume that the probability of infection rises in a very
 simple fashion with the number of infected neighbors in the network. At
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
@@ -372,7 +479,7 @@ is defined as:</p>
 being the number of infected neighbors of the individual. Additionally,
 once infected, a person stays infected. We can simulate this kind of
 date using the following code:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_infection</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
@@ -380,7 +487,6 @@ date using the following code:</p>
 <span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">n_infected_neighbors</span><span class="op">==</span><span class="fl">0</span>, <span class="fl">0</span>,</span>
 <span>                 <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">n_infected_neighbors</span> <span class="op">&gt;</span> <span class="fl">3</span>, <span class="fl">0.9</span>, <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
-<span>  <span class="va">p</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -403,7 +509,7 @@ the <code>infected</code>, using the <code>prob_infected()</code>
 function defined earlier.</p>
 <p>Now we can run the simulation and transform the output into the
 long-format for easier processing:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">18</span>, max_t<span class="op">=</span><span class="fl">6</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
@@ -422,7 +528,7 @@ also visualize the spread of the infection on the network. Below are the
 resulting 10 figures, which show the network at each point in time of
 the simulation, with the infected individuals colored in salmon and the
 not-infected individuals colored in lightblue:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="st">"lightgray"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -442,7 +548,7 @@ not-infected individuals colored in lightblue:</p>
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>The infection started with only individual 14 being infected (the
 index case). From there it spread immediately to individuals 2 and 8 and
 continued from there, as an actual infection might have. It would of
@@ -468,7 +574,7 @@ the same code that we used earlier. The main difference for any
 situation in which dynamic networks should be used is that we need to
 define a function that generates the network for us. Below is one
 possibility:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gen_network</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n_sim</span>, m<span class="op">=</span><span class="fl">30</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -479,7 +585,7 @@ is simply passed to the <code><a href="https://r.igraph.org/reference/sample_gnm
 <code>igraph</code> package that we already used earlier. We can now use
 almost the same code as we did before to generate data using this
 function:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"n_infected_neighbors"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>,</span>
@@ -510,7 +616,7 @@ in time. Everything else is the same. The code to visualize the spread
 of the disease is also very similar, with the one change being that we
 now have one network per slide (saved in the <code>sim</code> object
 because we set <code>save_networks=TRUE</code>):</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -529,7 +635,7 @@ because we set <code>save_networks=TRUE</code>):</p>
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g_i</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>Here, the simulation starts out with individuals 12, 16 and 17 being
 infected. Given this infection status at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>.</p>
@@ -551,7 +657,7 @@ doing so. Only after one full day of being sick does the government
 realize that an individual is infected.</p>
 <p>First, we have to adjust the <code>gen_network()</code> function. We
 will use the following code:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gen_network</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_sim</span>, <span class="va">sim_time</span>, <span class="va">network</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
@@ -588,7 +694,7 @@ arguments <code>sim_time</code>, <code>network</code> and
 <code>data</code> is the current state of the data.</p>
 <p>We can now re-use almost the same <code>DAG</code> definition from
 earlier:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span>, create_at_t0<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"n_infected_neighbors"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>,</span>
@@ -604,7 +710,7 @@ and that we set <code>time_since_last=TRUE</code> in the
 <code>infected</code> node to track the time since the original
 infection, because we need that information in the network generating
 function. Lets run the simulation again:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">13354</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">18</span>, max_t<span class="op">=</span><span class="fl">6</span>, save_states<span class="op">=</span><span class="st">"all"</span>,</span>
@@ -623,7 +729,7 @@ function. Lets run the simulation again:</p>
 <p>In the first few rows of the data we can already see that the number
 of infected individuals does not And finally lets plot the resulting
 infection spread again:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">layout_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">past_networks</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">net1</span><span class="op">$</span><span class="va">net</span><span class="op">)</span></span>
@@ -644,7 +750,7 @@ infection spread again:</p>
 <span>       layout<span class="op">=</span><span class="va">layout_g</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>As can be seen, due to the timely delay of the isolation, the
 infection is still able to spread, but it cannot reach all individuals.
 Near the end of the simulation, practically all connections are removed,
@@ -673,20 +779,58 @@ simulations. Network dependencies are fully integrated into the enhanced
 which hopefully makes the barrier to use this methodology a lot less
 daunting for potential users.</p>
 <p>Despite the great flexibility offered by this approach, it is used
-quite infrequently in practice. The preprint published by Sofrygin et
-al. (2017) did not gather a lot of attention, even though they also
-offered a clean and powerful implementation of the method through the
-<code>simcausal</code> package (which heavily inspired the presented
-<code>simDAG</code> implementation). I suspect that the main reason for
-this is that there are only few statistical models designed to actually
-analyze data with such complex DGPs. The combination of network science
-and causal inference is still in its infancy, as has been pointed out by
-others (ZITATE). I hope that this implementation will make future
-investigations into this subject easier or at least more convenient.</p>
+quite infrequently in practice. The preprint published by <span class="citation">Sofrygin, Neugebauer, and van der Laan (2017)</span>
+did not gather a lot of attention, even though they also offered a clean
+and powerful implementation of the method through the
+<code>simcausal</code> <span class="citation">(Sofrygin, van der Laan,
+and Neugebauer 2017)</span> package (which heavily inspired the
+presented <code>simDAG</code> implementation). I suspect that the main
+reason for this is that there are only few statistical models designed
+to actually analyze data with such complex DGPs. Despite recent
+advancements, the combination of network science and causal inference is
+still in its infancy, as has been pointed out by others <span class="citation">(Ogburn et al. 2024; VanderWeele and An 2013; An,
+Beauvile, and Rosche 2022)</span>. I hope that this implementation will
+make future investigations into this subject easier or at least more
+convenient to methodological researchers.</p>
 </div>
 <div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-An2022" class="csl-entry">
+An, Weihua, Roberson Beauvile, and Benjamin Rosche. 2022. <span>“Causal
+Network Analysis.”</span> <em>Annual Reviews of Sociology</em> 48:
+23–41. <a href="https://doi.org/10.1146/annurev-soc-030320-102100" class="external-link">https://doi.org/10.1146/annurev-soc-030320-102100</a>.
+</div>
+<div id="ref-Denz2025" class="csl-entry">
+Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
+Crossectional and Longitudinal Data Using the simDAG r Package.”</span>
+<em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
+</div>
+<div id="ref-Ogburn2024" class="csl-entry">
+Ogburn, Elizabeth L., Oleg Sofrygin, Iván Díaz, and Mark J. van der
+Laan. 2024. <span>“Causal Inference for Social Network Data.”</span>
+<em>Journal of the American Statistical Association</em> 119 (545):
+597–611. <a href="https://doi.org/10.1080/01621459.2022.2131557" class="external-link">https://doi.org/10.1080/01621459.2022.2131557</a>.
+</div>
+<div id="ref-Sofrygin2017a" class="csl-entry">
+Sofrygin, Oleg, Romain Neugebauer, and Mark J. van der Laan. 2017.
+<span>“Conducting Simulations in Causal Inference with Networks-Based
+Structural Equation Models.”</span> arXiv prepring. <a href="https://doi.org/10.48550/arXiv.1705.10376" class="external-link">https://doi.org/10.48550/arXiv.1705.10376</a>.
+</div>
+<div id="ref-Sofrygin2017" class="csl-entry">
+Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer. 2017.
+<span>“Simcausal r Package: Conducting Transparent and Reproducible
+Simulation Studies of Causal Effect Estimation with Complex Longitudinal
+Data.”</span> <em>Journal of Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
+</div>
+<div id="ref-VanderWeele2013" class="csl-entry">
+VanderWeele, Tyler J., and Weihua An. 2013. <span>“Social Networks and
+Causal Inference.”</span> In <em>Handbook of Causal Analysis for Social
+Research</em>, edited by Stephen L. Morgan. Dordrecht: Springer Science
++ Business Media. <a href="https://doi.org/10.1007/978-94-007-6094-3" class="external-link">https://doi.org/10.1007/978-94-007-6094-3</a>.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
