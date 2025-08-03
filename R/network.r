@@ -6,6 +6,12 @@
 #   of position in DAG creation, need to change this
 # - error when net() call is a root node with no previously generated variables
 
+# test coverage
+# - use igraph to do topological sorting, remove dependency on Rfast
+#   this should allow me to run the parallel tests again
+
+# bug when using nodes without intercept with only one variable in formula
+
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
 #' @export
@@ -121,9 +127,13 @@ get_net_terms <- function(formula_parts) {
 }
 
 ## get all neighbors of every vertex in a graph in data.table format
+## NOTE: this could be used for order = 1, but it is much slower, especially
+#        for large graphs
 #' @importFrom data.table data.table
 #' @importFrom data.table rbindlist
 get_neighbors_with_order <- function(g, order, mode) {
+
+  ..id.. <- ..neighbor.. <- NULL
 
   if (order > 1 & igraph::is_weighted(g)) {
     warning("When using order > 1 for weighted graphs, the weights",

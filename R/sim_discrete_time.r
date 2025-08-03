@@ -134,7 +134,8 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       args <- arg_list[[i]]
 
       if (!is.null(tx_nodes[[i]]$formula) &&
-          !is_formula(tx_nodes[[i]]$formula)) {
+          !is_formula(tx_nodes[[i]]$formula) &&
+          tx_nodes[[i]]$type_str != "identity") {
 
         # augment data for formula input
         args$data <- tryCatch({
@@ -145,6 +146,8 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                  call.=FALSE)
           }
         )
+      } else if (tx_nodes[[i]]$type_str == "identity") {
+        args$data <- data
       } else {
         args$data <- data[, args$parents, with=FALSE]
       }
@@ -164,6 +167,9 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       }
       if ("past_states" %in% fun_pos_args) {
         args$past_states <- past_states
+      }
+      if ("dag" %in% fun_pos_args) {
+        args$dag <- dag
       }
       if (!"parents" %in% fun_pos_args) {
         args$parents <- NULL

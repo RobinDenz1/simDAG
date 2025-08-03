@@ -38,15 +38,15 @@ library(simDAG)
 
 # What are networks-based simulations?
 
-In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that has a direct connection to $i$ in a given network. A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by @Sofrygin2017a.
+In a networks-based simulation, each individual is embedded in one or multiple networks. These networks may have an arbitrary amount of connections between the individuals, signifying who is connected to who. Data may then be simulated using the essentially the same approach that is used in classic DAG-based simulations, with the added possibility of using the network structures to define individual dependencies. For example, a variable could then be defined not only as a function of other variables, but also as a function of the neighbors of an individual $i$ (and their variable values), where neighbors are defined as any individual $j$ that share some connection with $i$ in a given network (although in directed networks, multiple options to define neighbors are possible). A more rigorous explanation, along with an explanation of their implementation of the methodology in the `simcausal` package, is given by @Sofrygin2017a.
 
-There are multiple types of networks (directed vs. undirected, weighted vs. un-weighted, etc.). In this vignette we will focus mostly on un-directed and un-weighted networks, to make the presentation easier. In network science, the points in a networks are often called *nodes* or *vertices*, while the connections between them are usually called *edges* or, in directed networks, *arrows*. When talking about networks I will stick to the terms *vertices* and *edges* here, to avoid confusion with the terms *nodes* and *arrows* that are also used when talking about DAGs. Note that a DAG is of course also a special type of network, but it serves a different purpose here. In the simulations described here, the DAG defines the causal relationships between variables, while the network describes connections between individuals.
+In network science, the points in a networks are often called *nodes* or *vertices*, while the connections between them are usually called *edges* or, in directed networks, *arrows*. When talking about networks I will stick to the terms *vertices* and *edges* here, to avoid confusion with the terms *nodes* and *arrows* that are also used when talking about DAGs. Note that a DAG is of course also a special type of network, but it serves a different purpose here. In the simulations described here, the DAG defines the causal relationships between variables, while the network describes connections between individuals.
 
 # Networks in regular simulations
 
 ## A single network
 
-We will start with a simple example, using only a single static network that never changes and only a few variables that are also constant over time.
+We will start with a simple example, using only a single un-directed, un-weighted, static network that never changes and only a few variables that are also constant over time.
 
 Consider the following simple network:
 
@@ -88,7 +88,7 @@ Now that the network is added, we are able to use `net()` syntax in the `formula
 
 ```{r}
 dag <- dag + node("infected", type="binomial",
-                  formula= ~ 3 + age*0.1 + sex*-0.5 +
+                  formula= ~ 5 + age*0.1 + sex*-0.5 +
                     net(mean(age))*-0.2 + net(mean(sex))*-0.4)
 ```
 
@@ -100,7 +100,18 @@ data <- sim_from_dag(dag, n_sim=5)
 print(data, row.names=TRUE)
 ```
 
-Note that the intermediate variables (mean age of neighbors, proportion of female neighbors) are not included in this output.
+Note that the intermediate variables (mean age of neighbors, proportion of female neighbors) are not included in this output. Users may use nodes of type `"identity"` to actually save and inspect the output of `net()` calls instead. For example, calculating the number of infected neighbors per person could now be done using:
+
+```{r}
+dag <- dag + node("n_inf_neighbors", type="identity",
+                  formula= ~ net(sum(infected)), kind="data")
+
+set.seed(5245)
+data <- sim_from_dag(dag, n_sim=5)
+print(data, row.names=TRUE)
+```
+
+This may be useful to inspect if the aggregation worked or to save some computation time when the same `net()` call is used in multiple subsequent nodes. In this example, individuals 4 and 5 are infected, which means that individuals 1, 2 and 4 and 5 each have one infected neighbor, while individual 3 has 2 infected neighbors because it has a connection to both individuals 4 and 5.
 
 ## Multiple networks
 
@@ -208,17 +219,62 @@ head(data)
 
 Conversely, if we want to only model the `infected` probability as a function of the "bosses" of a node (e.g. the incoming edges), all we would have to do is set `mode="in"` in the `net()` calls. If we want to disregard the edge directions, we could simply keep the `mode` argument at its default value of `"all"`. Since the way the edges are treated is defined using `net()` calls, it is of course also possible to use mixtures of these strategies in the same node definition, by using multiple `net()` calls with different `mode`s. This could also be combined with weights (as described in the previous section).
 
+## Neighborhood order
+
+In all previous examples, we only used the immediate neighbors of a node in our `net()` calls. By using the `order` argument of the `net()` function, it is also possible to use larger neighborhoods, meaning that instead of only considering the directly connected individuals as neighbors, we may also include individuals that are connected to those and so on. Below we show another random network where the neighbors of node 11 (colored in green) are colored in salmon for two different values of `order`:
+
+```{r, fig.width=7, fig.height=5, echo=FALSE}
+set.seed(32346)
+g1 <- g2 <- igraph::sample_gnm(n=20, m=25)
+
+# order = 1
+neighbors <- neighbors(g1, v=11)
+V(g1)$color <- ifelse(V(g1) %in% neighbors, "salmon", "lightblue")
+V(g1)$color[11] <- "green"
+
+# order = 2
+neighbors <- neighborhood(g2, nodes=11, order=2)
+V(g2)$color <- ifelse(V(g2) %in% as.numeric(neighbors[[1]]), "salmon", "lightblue")
+V(g2)$color[11] <- "green"
+
+par(mfrow=c(1, 2), mar=c(0, 0, 0, 0) + 1)
+set.seed(123)
+plot(g1, main="order = 1", margin=0, vertex.label.cex=0.8)
+set.seed(123)
+plot(g2, main="order = 2", margin=0, vertex.label.cex=0.8)
+```
+
+If this was a directed network, the neighborhood would of course also be dependent on the direction of the edges, as described in the previous section. Below is a simple example on how one could use this functionality:
+
+```{r}
+set.seed(2134)
+g <- sample_gnm(n=20, m=15)
+
+dag <- empty_dag() +
+  network("net1", net=g) +
+  node("age", type="rnorm", mean=50, sd=10) +
+  node("sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("infected", type="binomial",
+       formula= ~ 3 + age*0.1 + sex*-0.5 +
+                  net(mean(age), order=1, na=0)*-0.2 + 
+                  net(mean(sex), order=2, na=0)*-0.4)
+data <- sim_from_dag(dag, n_sim=20)
+head(data)
+```
+
+Here, we largely replicated the DAG from earlier, but use different order neighborhoods for the effect of `age` and `sex`. Again, because the `order` is defined by individual `net()` calls, users may use different values of `order` in the same node definition without any issues. Note that when using `order > 1` all edge weights are ignored, because it is not clear what the edge weight should be when considering indirect connections.
+
 ## Networks as a function of other variables
 
 
 
 # Networks in discrete-time simulation
 
-It is of course also possible to use the outlined networks-simulation-based approach in discrete-time simulations conducted using the `sim_discrete_time()` function.
+It is of course also possible to use the outlined networks-simulation-based approach in discrete-time simulations conducted using the `sim_discrete_time()` function. Below we illustrate how to do this using both static and dynamically changing networks.
 
 ## Static networks
 
-As a simple example, we will consider the spread of an infectious disease through a network of 18 individuals and 6 distinct points in time. In this simulation, there is only one variable of interest: the infection status of a person, denoted by `infected` (0 = not infected, 1 = infected). First, we will generate a random graph of 18 individuals with 30 connections between them using the `igraph` package:
+As a simple example, we will consider the spread of an infectious disease through a (un-directed and un-weighted) network of 18 individuals and 6 distinct points in time. In this simulation, there is only one variable of interest: the infection status of a person, denoted by `infected` (0 = not infected, 1 = infected). First, we will generate a random graph of 18 individuals with 30 connections between them using the `igraph` package:
 
 ```{r, fig.width=6, fig.height=6}
 set.seed(244368)
@@ -254,8 +310,8 @@ prob_infection <- function(data, sim_time) {
 
 dag <- empty_dag() +
   network("net1", net=g2) +
-  node_td("n_infected_neighbors", type="gaussian",
-          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
+  node_td("n_infected_neighbors", type="identity",
+          formula= ~ net(sum(infected_event), na=0), kind="data") +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
           prob_fun=prob_infection)
@@ -316,8 +372,8 @@ The only requirement for the function is that it has a single named argument cal
 ```{r}
 dag <- empty_dag() +
   network_td("net1", net=gen_network) +
-  node_td("n_infected_neighbors", type="gaussian",
-          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
+  node_td("n_infected_neighbors", type="identity",
+          formula= ~ net(sum(infected_event), na=0), kind="data") +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
           prob_fun=prob_infection)
@@ -388,8 +444,8 @@ We can now re-use almost the same `DAG` definition from earlier:
 ```{r}
 dag <- empty_dag() +
   network_td("net1", net=gen_network, create_at_t0=TRUE) +
-  node_td("n_infected_neighbors", type="gaussian",
-          formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
+  node_td("n_infected_neighbors", type="identity",
+          formula= ~ net(sum(infected_event), na=0), kind="data") +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
           prob_fun=prob_infection, time_since_last=TRUE)

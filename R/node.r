@@ -23,11 +23,11 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                             call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
 
-  if (!(is_identity_node(type) && (args$kind=="expr" || is.null(args$kind)))) {
+  if (!is_identity_node(type)) {
     formula <- sanitize_formula(formula)
   }
 
-  if (is_identity_node(type) && (args$kind=="expr" || is.null(args$kind))) {
+  if (is_identity_node(type)) {
     if (is.null(parents)) {
       parents <- all.vars(formula)
     }
@@ -88,11 +88,11 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
                             call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
 
-  if (!(is_identity_node(type) && (args$kind=="expr" || is.null(args$kind)))) {
+  if (!is_identity_node(type)) {
     formula <- sanitize_formula(formula)
   }
 
-  if (is_identity_node(type) && (args$kind=="expr" || is.null(args$kind))) {
+  if (is_identity_node(type)) {
     if (is.null(parents)) {
       parents <- all.vars(formula)
     }

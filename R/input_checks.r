@@ -448,7 +448,7 @@ check_inputs_plot.DAG <- function(dag, node_size, node_names, arrow_node_dist,
   size_dag <- length(names_DAG(dag, include_tx_nodes=include_td_nodes))
 
   # get rid of temporary warnings due to deprecation
-  if (packageVersion("ggplot2") < "3.5.2") {
+  if (utils::packageVersion("ggplot2") < "3.5.2") {
     is_theme <- ggplot2::is.theme
   } else {
     is_theme <- ggplot2::is_theme
