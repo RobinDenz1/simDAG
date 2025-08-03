@@ -411,6 +411,12 @@ many cases, it is a lot easier to just use a node of type
 <code>identity</code> instead of defining a new function.</li>
 <li>The structural equations printed for custom nodes may be
 uninformative.</li>
+<li>In some special cases, the your custom node function may require
+information from the supplied <code>dag</code> as well. If this is the
+case, just add a named argument called <code>dag</code> to your function
+and the supplied <code>dag</code> will be passed to it automatically
+whenever <code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> or <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>
+are used.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
