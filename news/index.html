@@ -48,10 +48,12 @@
 <ul><li>Added the <code><a href="../reference/network.html">network()</a></code>, <code><a href="../reference/network.html">network_td()</a></code> and <code><a href="../reference/net.html">net()</a></code> functions to allow simulations with network based dependencies among individuals. This includes static and dynamic networks in regular <code>DAG</code>s and discrete-time simulations.</li>
 <li>Added the <code>kind</code> argument to <code><a href="../reference/node_identity.html">node_identity()</a></code> to allow different kinds of input to the <code>formula</code> argument.</li>
 </ul><p>Bug Fixes</p>
-<ul><li>Fixed a small bug that occurred when using <code>node + DAG</code> (in this order)</li>
+<ul><li>Fixed a minor bug that occurred when using <code>node + DAG</code> (in this order).</li>
+<li>Fixed a faulty error message produced when using <code>formula</code> with just one predictor in nodes that do not need an intercept.</li>
+<li>Fixed a faulty error message when using a string of a <code>formula</code> with <code><a href="../reference/node_identity.html">node_identity()</a></code> in <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>.</li>
 </ul><p>Documentation</p>
-<ul><li>Added a new vignette to describe the new networks-based simulation features</li>
-<li>Updated existing documentation pages to include networks-based simulation features</li>
+<ul><li>Added a new vignette to describe the new networks-based simulation features.</li>
+<li>Updated existing documentation pages to include networks-based simulation features.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="simdag-032">simDAG 0.3.2<a class="anchor" aria-label="anchor" href="#simdag-032"></a></h2><p class="text-muted">CRAN release: 2025-06-24</p>
