@@ -1,17 +1,4 @@
 
-# TODO:
-# - finish new vignette on network simulation
-# - network() in sim_from_dag() currently not allowed to be data dependent
-# - currently, networks are always initiated at the same time, irrespective
-#   of position in DAG creation, need to change this
-# - error when net() call is a root node with no previously generated variables
-
-# test coverage
-# - use igraph to do topological sorting, remove dependency on Rfast
-#   this should allow me to run the parallel tests again
-
-# bug when using nodes without intercept with only one variable in formula
-
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
 #' @export
@@ -80,21 +67,6 @@ print.DAG.network <- function(x, ...) {
 #' @export
 summary.DAG.network <- function(object, ...) {
   print.DAG.network(x=object, ...)
-}
-
-## check inputs for the network() and network_td() functions
-check_inputs_network <- function(name, net, time_varying) {
-
-  if (!(length(name)==1 & is.character(name))) {
-    stop("'name' must be a single character string.", call.=FALSE)
-  } else if (!time_varying & !(igraph::is_igraph(net) |
-                               is.function(net))) {
-    stop("'net' must be an igraph object or a function that",
-         " creates such an object.", call.=FALSE)
-  } else if (time_varying & !is.function(net)) {
-    stop("'net' must be a function creating an igraph object when using",
-         " network_td(). See documentation.", call.=FALSE)
-  }
 }
 
 ## this function is used in the formula interface to specify that

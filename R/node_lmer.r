@@ -9,6 +9,11 @@ node_lmer <- function(data, formula, betas, intercept, family,
 
   requireNamespace("simr", quietly=TRUE)
 
+  if (anyNA(data)) {
+    stop("NA values found in 'data'. This is currently not supported",
+         " when using random effects in 'formula'.", call.=FALSE)
+  }
+
   # create fake lmerMod object
   if (family=="gaussian") {
     lmer_obj <- simr::makeLmer(formula=formula, fixef=c(intercept, betas),

@@ -54,12 +54,17 @@ test_that("using it to get the linear predictor in discrete-time simulation", {
          formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3 + D_eventTRUE*0.1,
          kind="linpred") +
     node_td("test2", type="gaussian",
-         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3 + D_eventTRUE*0.1, error=0)
+         formula= ~ 1 + age*2 + sex*0.2 + age:sex*1.3 + D_eventTRUE*0.1,
+         error=0) +
+    node_td("test3", type="identity",
+            formula="~ 1 + age*2 + sex*0.2 + age:sex*1.3 + D_eventTRUE*0.1",
+            kind="linpred", parents=c("age", "sex", "D_event"))
 
   sim <- sim_discrete_time(dag, n_sim=100, max_t=5, save_states="all")
   data <- sim2data(sim, to="long")
 
   expect_equal(data$test1, data$test2)
+  expect_equal(data$test2, data$test3)
 })
 
 test_that("returning just the data", {

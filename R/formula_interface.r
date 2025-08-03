@@ -100,7 +100,8 @@ parse_formula <- function(formula, node_type) {
   formstr <- gsub(" ", "", formstr, fixed=TRUE)
 
   # processing of random effects and slopes
-  if (has_mixed_terms(formstr)) {
+  includes_mixed <- has_mixed_terms(formstr)
+  if (includes_mixed) {
     mixed_terms <- extract_mixed_terms(formstr)
     formstr <- str_replace_all(formstr, mixed_terms)
     formstr <- remove_mistaken_plus(formstr)
@@ -111,7 +112,7 @@ parse_formula <- function(formula, node_type) {
   # split into additive parts
   formvec <- strsplit(formstr, "+", fixed=TRUE)[[1]]
 
-  if (length(formvec) <= 1) {
+  if (length(formvec) <= 1 & includes_mixed) {
     stop("A 'formula' cannot consist soley of random effects and/or random",
          " slopes. At least one fixed effect must also be supplied.",
          call.=FALSE)

@@ -39,7 +39,7 @@ The \code{network()} function allows users to relax this assumption, by making i
 
 Users may add any number of networks to a \code{DAG} object, making it possible to embed individuals in multiple distinct networks at the same time. These networks can then be used simultaneously to define a single or multiple (possibly time-varying) nodes, using multiple \code{\link{net}} function calls in the respective \code{formula} arguments. It is also possible to define time-varying or dynamic networks that change over time, possibly as a function of the generated data, simulation time or previous states of the network. Examples are given below and in the associated vignette.
 
-Currently, only networks that include exactly one vertex per observation are supported in this package. Additionally, the current syntax only allows aggregation of the values of direct neighbors of an observation, it does not allow using extended neighborhoods.
+The package directly supports un-directed and directed, un-weighted and weighted networks. It also supports different definitions of what the neighbors of an observation are. Note, however, that only networks which include exactly one vertex per observation are supported.
 
 \strong{\emph{Weighted Networks}}:
 

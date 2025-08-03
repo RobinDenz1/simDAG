@@ -242,7 +242,8 @@ test_that("changing dynamic network with discrete-time simulation", {
     return(p)
   }
 
-  gen_network <- function(n_sim, sim_time, network, data) {
+  gen_network <- function(n_sim, sim_time, network, data,
+                          past_states, past_networks) {
 
     if (sim_time==0) {
       return(igraph::sample_gnm(n=n_sim, m=23))
@@ -278,10 +279,7 @@ test_that("changing dynamic network with discrete-time simulation", {
   expect_equal(round(mean(data$infected), 3), 0.241)
 })
 
-# TODO: currently fails!
 test_that("mixing net() and mixed terms in formula syntax", {
-
-  skip()
 
   set.seed(234)
   g <- igraph::sample_smallworld(1, 100, 2, 0.5)
@@ -293,15 +291,13 @@ test_that("mixing net() and mixed terms in formula syntax", {
     node(c("A", "B"), type="rnorm") +
     node("E", type="rcategorical", probs=rep(0.1, 10), labels=LETTERS[1:10]) +
     node("C", type="rcategorical", probs=c(0.1, 0.2, 0.7), output="factor") +
-    node("Y", type="gaussian", formula= ~ -2 + net(sum(A==1))*0.2 +
-           net(mean(A))*0.5 + I(B^3)*0.2 + A:B*0.1 + (1 + A|E) + C1*0.3 +
+    node("Y", type="gaussian", formula= ~ -2 + net(sum(A==1), na=1)*0.2 +
+           net(mean(A), na=0)*0.5 + I(B^3)*0.2 + A:B*0.1 + (1 + A|E) + C1*0.3 +
            C2*-4 + A*1.5, error=1, var_corr=var_corr)
 
   data <- sim_from_dag(dag, n_sim=100)
 
-  #expect_equal(round(mean(data$X), 3), 0.2)
-  #expect_equal(round(mean(data$Y), 3), 0.1)
-  #expect_equal(round(mean(data$Z), 3), -1.237)
+  expect_equal(round(mean(data$Y), 3), -5.3)
 })
 
 test_that("general test cases, multiple networks", {

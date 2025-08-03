@@ -32,7 +32,7 @@ Only used internally when \code{kind="linpred"}.
 Only used internally when \code{kind="linpred"}. If no intercept should be present, it should still be added to the formula using a simple 0, for example \code{~ 0 + A*0.2 + B*0.3}
   }
   \item{var_names}{
-Only used when \code{kind="data"}. In this case, and only if there are multiple terms on the right-hand side of \code{formula}, the resulting columns will be re-named accoring to this argument. Should have the same length as the number of terms in \code{formula}. Names are given in the same order as the variables appear in \code{formula}. If only a single term is on the right-hand side of \code{formula}, the \code{name} supplied in the \code{\link{node}} function call will automatically be used as the nodes name and this argument is ignored. Set to \code{NULL} (default) to just use the terms as names.
+Only used when \code{kind="data"}. In this case, and only if there are multiple terms on the right-hand side of \code{formula}, the resulting columns will be re-named according to this argument. Should have the same length as the number of terms in \code{formula}. Names are given in the same order as the variables appear in \code{formula}. If only a single term is on the right-hand side of \code{formula}, the \code{name} supplied in the \code{\link{node}} function call will automatically be used as the nodes name and this argument is ignored. Set to \code{NULL} (default) to just use the terms as names.
   }
   \item{name}{
 A single character string, specifying the name of the node. Passed internally only. See \code{var_names}.

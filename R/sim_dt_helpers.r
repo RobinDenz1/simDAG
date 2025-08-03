@@ -48,7 +48,8 @@ clean_node_args <- function(node) {
   node <- add_missing_parents(node)
 
   # formula stuff
-  if (!is.null(node$formula) && !is_formula(node$formula)) {
+  if (!is.null(node$formula) && !is_formula(node$formula) &&
+      !is_identity_node(node$type_str)) {
     node <- args_from_formula(args=node, formula=node$formula,
                               node_type=node$type_str)
   }

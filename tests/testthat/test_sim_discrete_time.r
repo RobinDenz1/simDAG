@@ -108,7 +108,8 @@ test_that("save_states working", {
                                  max_t = 365,
                                  dag = dag,
                                  save_states = "at_t",
-                                 save_states_at = 100)$data
+                                 save_states_at = 100,
+                                 save_networks = TRUE)$data
 
   expect_true(ncol(sim_dat_all) == 5)
 })

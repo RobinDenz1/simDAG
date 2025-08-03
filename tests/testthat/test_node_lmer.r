@@ -340,3 +340,32 @@ test_that("missing var_corr argument", {
   }, paste0("'var_corr' must be specified when random effects or random ",
             "slopes are included in 'formula'."))
 })
+
+test_that("random effects with net() syntax", {
+
+  set.seed(234)
+  g <- igraph::sample_smallworld(1, 100, 2, 0.5)
+
+  var_corr <- matrix(c(0.5, 0.05, 0.05, 0.1), 2)
+
+  dag <- empty_dag() +
+    network("net1", net=g) +
+    node(c("A", "B"), type="rnorm") +
+    node("E", type="rcategorical", probs=rep(0.1, 10), labels=LETTERS[1:10]) +
+    node("C", type="rcategorical", probs=c(0.1, 0.2, 0.7), output="factor")
+
+  # works without missing values
+  dag2 <- dag +
+    node("Y", type="gaussian", formula= ~ -2 + net(sum(A), na=0)*0.2 +
+           net(mean(A), na=0)*0.5 + I(B^3)*0.2 + A:B*0.1 + (1 + A|E) + C1*0.3 +
+           C2*-4 + A*1.5, error=1, var_corr=var_corr)
+  data <- sim_from_dag(dag2, n_sim=100)
+  expect_equal(round(mean(data$Y), 3), -5.299)
+
+  # does not work with missing values
+  dag2 <- dag +
+    node("Y", type="gaussian", formula= ~ -2 + net(sum(A), na=0)*0.2 +
+           net(mean(A))*0.5 + I(B^3)*0.2 + A:B*0.1 + (1 + A|E) + C1*0.3 +
+           C2*-4 + A*1.5, error=1, var_corr=var_corr)
+  expect_error(data <- sim_from_dag(dag2, n_sim=100))
+})

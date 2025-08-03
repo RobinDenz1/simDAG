@@ -48,7 +48,7 @@ on_cran <- getFromNamespace("on_cran", ns="testthat")
 # https://github.com/eddelbuettel/rcppziggurat/issues/22
 # so it has nothing to do with the simDAG package or the functionality tested
 # here
-if (!(on_ci())) {
+#if (!(on_ci())) {
 
 test_that("without td, parallel", {
   out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=2, n_sim=10)
@@ -91,4 +91,4 @@ test_that("custom function for prob_fun, parallel", {
                                         max_t=10, n_cores=2))
 })
 
-}
+#}

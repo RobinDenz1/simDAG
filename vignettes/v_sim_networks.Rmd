@@ -234,7 +234,8 @@ V(g1)$color[11] <- "green"
 
 # order = 2
 neighbors <- neighborhood(g2, nodes=11, order=2)
-V(g2)$color <- ifelse(V(g2) %in% as.numeric(neighbors[[1]]), "salmon", "lightblue")
+V(g2)$color <- ifelse(V(g2) %in% as.numeric(neighbors[[1]]),
+                      "salmon", "lightblue")
 V(g2)$color[11] <- "green"
 
 par(mfrow=c(1, 2), mar=c(0, 0, 0, 0) + 1)

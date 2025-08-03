@@ -113,3 +113,17 @@ test_that("without censoring: exponential", {
   out <- sim_from_dag(dag=dag2, n_sim=100)
   expect_equal(colnames(out), c("A", "B", "C"))
 })
+
+test_that("using only one variable in formula", {
+
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("Y", type="cox", formula= ~ A*0.8, surv_dist="weibull",
+         lambda=1.1, gamma=0.7, cens_dist=NULL)
+
+  data <- sim_from_dag(dag, n_sim=100)
+
+  expect_equal(round(mean(data$Y_time), 3), 1.561)
+})

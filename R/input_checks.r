@@ -714,3 +714,18 @@ check_inputs_sim_n_datasets <- function(dag, n_repeats, n_cores,
     stop("'progressbar' must be either TRUE or FALSE.", call.=FALSE)
   }
 }
+
+## check inputs for the network() and network_td() functions
+check_inputs_network <- function(name, net, time_varying) {
+
+  if (!(length(name)==1 & is.character(name))) {
+    stop("'name' must be a single character string.", call.=FALSE)
+  } else if (!time_varying & !(igraph::is_igraph(net) |
+                               is.function(net))) {
+    stop("'net' must be an igraph object or a function that",
+         " creates such an object.", call.=FALSE)
+  } else if (time_varying & !is.function(net)) {
+    stop("'net' must be a function creating an igraph object when using",
+         " network_td(). See documentation.", call.=FALSE)
+  }
+}

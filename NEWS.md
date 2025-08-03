@@ -8,12 +8,14 @@ New Features
 
 Bug Fixes
 
-* Fixed a small bug that occurred when using `node + DAG` (in this order)
+* Fixed a minor bug that occurred when using `node + DAG` (in this order).
+* Fixed a faulty error message produced when using `formula` with just one predictor in nodes that do not need an intercept.
+* Fixed a faulty error message when using a string of a `formula` with `node_identity()` in `sim_discrete_time()`.
 
 Documentation
 
-* Added a new vignette to describe the new networks-based simulation features
-* Updated existing documentation pages to include networks-based simulation features
+* Added a new vignette to describe the new networks-based simulation features.
+* Updated existing documentation pages to include networks-based simulation features.
 
 # simDAG 0.3.2
 
