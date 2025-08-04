@@ -89,6 +89,32 @@ test_that("including td_nodes, with doubles", {
   expect_equal(out, expected)
 })
 
+test_that("including networks", {
+  dag <- empty_dag() +
+    network("net1", net=mean) +
+    network("net2", net=mean, parents=c("C", "D")) +
+    node("A", type="rbernoulli", p=0.1) +
+    node("B", type="rbernoulli", p=0.2) +
+    node("C", type="gaussian", parents=c("A", "B"), betas=c(0.1, 0.2),
+         intercept=-10, error=10) +
+    node("D", type="binomial", parents=c("B", "C"), betas=c(7, 1),
+         intercept=-5)
+
+  expected <- matrix(c(0, 0, 1, 0, 0, 0,
+                       0 ,0, 1, 1, 0, 0,
+                       0, 0, 0, 1, 0, 1,
+                       0, 0, 0, 0, 0, 1,
+                       0, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0),
+                     ncol=6, byrow=TRUE)
+  colnames(expected) <- c("A", "B", "C", "D", "net1", "net2")
+  rownames(expected) <- c("A", "B", "C", "D", "net1", "net2")
+
+  out <- dag2matrix(dag, include_networks=TRUE)
+
+  expect_equal(out, expected)
+})
+
 test_that("error: not a DAG object", {
   expect_error(dag2matrix(dag="1"))
 })

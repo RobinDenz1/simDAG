@@ -64,7 +64,8 @@ node_identity.data <- function(data, formula, dag, var_names, name) {
   }
 
   args <- list(parents=formstr, mixed_terms=NULL)
-  out <- data_for_formula(data=data, args=args, networks=dag$networks)
+  out <- data_for_formula(data=data, args=args,
+                          networks=c(dag$networks, dag$td_networks))
 
   if (!is.null(var_names)) {
     setnames(out, old=colnames(out), new=var_names)

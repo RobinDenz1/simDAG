@@ -46,7 +46,7 @@ Whenever a \code{net()} call is used in a \code{formula}, we recommend specifyin
 Note that it never really makes sense to use this function outside of a \code{formula} argument: if you look at its source code you will realize that it does not actually do anything, except returning its input. It is only a piece of syntax for the \code{formula} interface. Please consult the \code{\link{network}} documentation page or the associated vignette for more information.
 }
 \value{
-"Returns" a numeric vector of length \code{n_sim} when used properly in a \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} call. Returns a list of its input when used outside \code{formula}.
+"Returns" a vector of length \code{n_sim} when used properly in a \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} call. Returns a list of its input when used outside \code{formula}.
 }
 \author{
 Robin Denz

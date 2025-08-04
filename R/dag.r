@@ -6,7 +6,8 @@ empty_dag <- function() {
   dag <- list(root_nodes=list(),
               child_nodes=list(),
               tx_nodes=list(),
-              networks=list())
+              networks=list(),
+              td_networks=list())
   class(dag) <- "DAG"
 
   return(dag)
@@ -36,15 +37,28 @@ add_node <- function(dag, node) {
          call.=FALSE)
   }
 
-  # add to child, root, tx_node or networks lists inside DAG
+  # add network to networks or td_networks lists inside DAG
   if (inherits(node, "DAG.network")) {
-    dag$networks[[node$name]] <- node
-  } else if (node$time_varying) {
-    dag$tx_nodes[[length(dag$tx_nodes) + 1]] <- node
-  } else if (length(node$parents) == 0 || all(node$parents=="")) {
-    dag$root_nodes[[length(dag$root_nodes) + 1]] <- node
-  } else {
-    dag$child_nodes[[length(dag$child_nodes) + 1]] <- node
+    if (node$time_varying) {
+      node$..index.. <- length(dag$tx_nodes) + length(dag$td_networks) + 1
+      dag$td_networks[[node$name]] <- node
+    } else {
+      node$..index.. <- length(dag$child_nodes) + length(dag$networks) + 1
+      dag$networks[[node$name]] <- node
+    }
+  }
+
+  # add node to child, root or tx_nodeslists inside DAG
+  if (inherits(node, "DAG.node")) {
+    if (node$time_varying) {
+      node$..index.. <- length(dag$tx_nodes) + length(dag$td_networks) + 1
+      dag$tx_nodes[[length(dag$tx_nodes) + 1]] <- node
+    } else if (length(node$parents) == 0 || all(node$parents=="")) {
+      dag$root_nodes[[length(dag$root_nodes) + 1]] <- node
+    } else {
+      node$..index.. <- length(dag$child_nodes) + length(dag$networks) + 1
+      dag$child_nodes[[length(dag$child_nodes) + 1]] <- node
+    }
   }
 
   # if not acyclic after adding node, return error

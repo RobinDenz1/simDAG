@@ -211,7 +211,7 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
       models[[i]] <- new_node$model
     }
     new_node$model <- NULL
-
+    new_node$..index.. <- i
     class(new_node) <- "DAG.node"
 
     # add node to new dag

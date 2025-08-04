@@ -22,8 +22,6 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-*This vignette and the contents discussed here are currently under active development, we recommend waiting a little before actually using the features described here, at least until this warning is gone.*
-
 Most algorithms used to generate artificial data based on DAGs do so using the classic assumption that all individual observations are independently and identically distributed (the classic i.i.d. assumption). This is done for multiple reasons. First, it makes the specification of the data generation process (DGP) a lot easier: distributions and structural equations can be defined once for the entire DGP and used to generate arbitrarily large amounts of data. Secondly, artificial DAG based data is most often used in simulation studies or other contexts in which statistical models are applied to them. Since most of these models require the i.i.d. assumption, it makes sense to generate data this way.
 
 This is, however, not the case for all applications. For example, the spread of an infectious disease is dependent on how "connected" the population at risk is [@Danon2011]. An individual with many contacts will usually have a higher probability of coming into contact with an infected person and thus will have a higher chance of getting infected as well. This fact is in direct opposition to the i.i.d. assumption, because the infection status of one individual influences the infection status of other individuals. The individuals are said to "interfere" with each other [@VanderWeele2013]. Networks-based simulations are one way to model such dependencies.
@@ -267,7 +265,50 @@ Here, we largely replicated the DAG from earlier, but use different order neighb
 
 ## Networks as a function of other variables
 
+Up to this point we have always created the networks completely independently from all other variables, which in reality could be considered unrealistic. Luckily, networks may also be defined as a function of already generated variables as well. Similar to regular `node()` function calls, it is possible to use the `parents` argument to specify that a network is based on values of the `parents`. The `data` of the `parents` is then automatically passed to the `data` argument of the function that should be used to create the network, allowing all kinds of dependencies to be implemented by the user.
 
+Suppose that the goal is to generate data for both males and females. For some reason there should be essentially separate networks for males and females. This might for example arise when considering networks in sports that are separated by sex. To simulate such an example, we first define some functions:
+
+```{r}
+is_different_sex <- function(g, x) {
+  V(g)[ends(g, x)[1]]$type != V(g)[ends(g, x)[2]]$type
+}
+
+gen_network <- function(n_sim, data) {
+  g <- sample_gnm(n=n_sim, m=50)
+  V(g)$type <- data$sex
+  g <- delete_edges(g, which(sapply(E(g), is_different_sex, g=g)))
+  return(g)
+}
+```
+
+Here the `id_different_sex()` function simply takes in an edge of the graph and checks whether both vertices have the same type. The `gen_network()` function first generates a random graph and then adds the `sex` contained in the supplied `data` as a type to each node. It then deletes all edges where the type (e.g. `sex`) of the vertices is not the same. We can incorporate this into a `DAG` using:
+
+```{r}
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=25, sd=5) +
+  node("sex", type="rbernoulli", p=0.5) +
+  network("network1", net=gen_network, parents="sex") +
+  node("infected", type="binomial", formula= ~ 1 + net(mean(age))*0.5)
+```
+
+We can now simulate from this `DAG`:
+
+```{r}
+set.seed(1324)
+data <- sim_from_dag(dag, n_sim=20, return_networks=TRUE)
+head(data$data)
+```
+
+Note that we set `return_networks=TRUE`, so that we can also inspect the generated network. Whenever this is done, the `sim_from_dag()` function actually returns a list containing both the generated `data` and the `networks`. Below is the generated networks, with different vertex colors for each `sex`:
+
+```{r, fig.width=6, fig.height=6}
+g <- data$networks$network1$net
+V(g)$color <- ifelse(V(g)$type, "salmon", "lightblue")
+plot(g)
+```
+
+This is a fairly artificial example, because it is only meant to illustrate this functionality in a simple way. Users could of course use this in much more interesting ways. Because the `net` argument allows any function, there are no limits set to how the network structure should be dependent on the `data` at hand.
 
 # Networks in discrete-time simulation
 
@@ -318,7 +359,7 @@ dag <- empty_dag() +
           prob_fun=prob_infection)
 ```
 
-Here, we first define the `prob_infected()` function, which implements the conditional probability distribution defined above. This function is later used in a `"time_to_event"` node. We then define the `DAG` required for the simulation. First, we add a single call to `network()` to an empty `DAG` to allow the usage of network dependencies. We then add a time-dependent node using `node_td()`, which simply calculates the number of infected neighbors a node has. We then define the final node, which is the `infected`, using the `prob_infected()` function defined earlier.
+Here, we first define the `prob_infected()` function, which implements the conditional probability distribution defined above. This function is later used in a `"time_to_event"` node. We then define the `DAG` required for the simulation. First, we add a single call to `network()` to an empty `DAG` to allow the usage of network dependencies. We then add a time-dependent node using `node_td()`, which simply calculates the number of infected neighbors a node has. We then define the final node, which is `infected`, using the `prob_infected()` function defined earlier.
 
 Now we can run the simulation and transform the output into the long-format for easier processing:
 
@@ -328,7 +369,7 @@ data <- sim2data(sim, to="long")
 head(data)
 ```
 
-Using a simple `for` loop and the `plot.igraph()` function (with some cosmetic changes), we can also visualize the spread of the infection on the network. Below are the resulting 10 figures, which show the network at each point in time of the simulation, with the infected individuals colored in salmon and the not-infected individuals colored in lightblue:
+Using a simple `for` loop and the `plot.igraph()` function (with some cosmetic changes), we can also visualize the spread of the infection on the network. Below are the resulting 6 figures, which show the network at each point in time of the simulation, with the infected individuals colored in salmon and the not-infected individuals colored in lightblue:
 
 ```{r, fig.width=7, fig.height=9}
 E(g2)$color <- "lightgray"
@@ -372,12 +413,12 @@ The only requirement for the function is that it has a single named argument cal
 
 ```{r}
 dag <- empty_dag() +
-  network_td("net1", net=gen_network) +
   node_td("n_infected_neighbors", type="identity",
           formula= ~ net(sum(infected_event), na=0), kind="data") +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
-          prob_fun=prob_infection)
+          prob_fun=prob_infection) +
+  network_td("net1", net=gen_network)
 
 set.seed(1335)
 
@@ -387,7 +428,7 @@ data <- sim2data(sim, to="long")
 head(data)
 ```
 
-The only difference to the previous code is that we used `network_td()` instead of `network()`, passing the function to the `net` argument, and that we only use 5 points in time. Everything else is the same. The code to visualize the spread of the disease is also very similar, with the one change being that we now have one network per slide (saved in the `sim` object because we set `save_networks=TRUE`):
+The only difference to the previous code is that we used `network_td()` instead of `network()`, passing the function to the `net` argument. Everything else is the same. The code to visualize the spread of the disease is also very similar, with the one change being that we now have one network per slide (saved in the `sim` object because we set `save_networks=TRUE`):
 
 ```{r, fig.width=7, fig.height=9}
 par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
@@ -410,7 +451,7 @@ for (i in seq_len(6)) {
 }
 ```
 
-Here, the simulation starts out with individuals 12, 16 and 17 being infected. Given this infection status at $t = 1$.
+Here, the simulation starts out with individuals 8 being infected, while being connected to individuals 3, 7, 11, 15 and 16 at $t = 1$. This individual then spread the infection to individuals 3 and 15, as can be seen at $t = 2$. However, the network has changed completely at this point. Now the individuals are connected to others, spreading the infection even further to those they are connected with now. This repeats until almost everyone (except individuals 4 and 12) are infected. Note that it makes a significant difference in which order the `node_td()` and `network_td()` calls are added, as in usual simulations using `sim_discrete_time()`.
 
 ### Adjusting a network over time
 
@@ -438,18 +479,18 @@ gen_network <- function(n_sim, sim_time, network, data) {
 }
 ```
 
-There is a few lines of obscure code here, but generally what the function does is really simple. At $t = 0$ it simply generates a random graph using `sample_gnm()`. From $t = 1$ on it simply checks whether any person is infected and isolates them, by deleting their connections and returning the adjusted network. Time-dependent networks are always updated after all nodes of a day have been generated and the `time_since_last` counter of the `infected` node starts at 0, so using `data$infected_time_since_last > 0` ensures that each individual has one full day to spread the infection. Note that the arguments `sim_time`, `network` and `data` are automatically passed internally. `sim_time` is the current simulation time, `network` is the current state of the network and `data` is the current state of the data.
+There is a few lines of obscure code here, but generally what the function does is really simple. At $t = 0$ it simply generates a random graph using `sample_gnm()`. From $t = 1$ on it simply checks whether any person is infected and isolates them, by deleting their connections and returning the adjusted network. By adding the time-dependent networks after the time-dependent nodes in the `DAG`, we ensure that it is updated only after all nodes of a day have been generated. Because the `time_since_last` counter of the `infected` node starts at 0 using `data$infected_time_since_last > 0` ensures that each individual has one full day to spread the infection. Note that the arguments `sim_time`, `network` and `data` are automatically passed internally. `sim_time` is the current simulation time, `network` is the current state of the network and `data` is the current state of the data.
 
 We can now re-use almost the same `DAG` definition from earlier:
 
 ```{r}
 dag <- empty_dag() +
-  network_td("net1", net=gen_network, create_at_t0=TRUE) +
   node_td("n_infected_neighbors", type="identity",
           formula= ~ net(sum(infected_event), na=0), kind="data") +
   node_td("infected", type="time_to_event", event_duration=Inf,
           immunity_duration=Inf, parents=("n_infected_neighbors"),
-          prob_fun=prob_infection, time_since_last=TRUE)
+          prob_fun=prob_infection, time_since_last=TRUE) +
+  network_td("net1", net=gen_network, create_at_t0=TRUE)
 ```
 
 The only difference to before is that we actively set `create_at_t0=TRUE` so that the network gets created before time-dependent processing starts (so we have a network to adjust at $t = 1$) and that we set `time_since_last=TRUE` in the `infected` node to track the time since the original infection, because we need that information in the network generating function. Lets run the simulation again:

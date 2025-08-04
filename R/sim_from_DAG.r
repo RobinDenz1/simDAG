@@ -3,17 +3,14 @@
 #' @importFrom data.table data.table
 #' @importFrom data.table as.data.table
 #' @export
-sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
+sim_from_dag <- function(dag, n_sim, sort_dag=FALSE,
+                         return_networks=FALSE, check_inputs=TRUE) {
 
   requireNamespace("data.table", quietly=TRUE)
 
   if (check_inputs) {
     check_inputs_sim_from_dag(dag=dag, n_sim=n_sim, sort_dag=sort_dag)
   }
-
-  # initialize networks
-  dag$networks <- create_networks(networks=dag$networks, n_sim=n_sim,
-                                  sim_time=0)
 
   # sample from root nodes
   data <- vector(mode="list", length=length(dag$root_nodes))
@@ -39,32 +36,49 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
   }
   data <- as.data.table(unlist(data, recursive=FALSE), check.names=TRUE)
 
-  if (length(dag$child_nodes)==0) {
+  if (length(dag$child_nodes)==0 & return_networks) {
+    return(list(data=data, networks=dag$networks))
+  } else if (length(dag$child_nodes)==0) {
     return(data)
   }
+
+  # put together networks and child nodes
+  child_nodes <- c(dag$child_nodes, dag$networks)
 
   # if not already ordered properly, use topological
   # sorting to get the right data generation sequence
   if (sort_dag) {
     requireNamespace("Rfast", quietly=TRUE)
-    adjacency_mat <- dag2matrix(dag=dag, include_root_nodes=FALSE)
+    adjacency_mat <- dag2matrix(dag=dag, include_root_nodes=FALSE,
+                                include_networks=TRUE)
     index_children <- Rfast::topological_sort(adjacency_mat)
   } else {
-    index_children <- seq_len(length(dag$child_nodes))
+    index_children <- get_order_from_index(child_nodes)
   }
 
   # go through DAG step by step
   for (i in index_children) {
 
+    # initialize networks
+    if (inherits(child_nodes[[i]], "DAG.network")) {
+      network_i <- update_network(network=child_nodes[[i]],
+                                  n_sim=n_sim,
+                                  sim_time=0,
+                                  data=data)
+      dag$networks[[child_nodes[[i]]$name]] <- network_i
+      next
+    }
+
     # get the names of the nodes generating function
-    fun_pos_args <- names(formals(dag$child_nodes[[i]]$type_fun))
+    fun_pos_args <- names(formals(child_nodes[[i]]$type_fun))
 
     # get relevant arguments
-    args <- dag$child_nodes[[i]]
+    args <- child_nodes[[i]]
     args$data <- data
     args$type_str <- NULL
     args$type_fun <- NULL
     args$time_varying <- NULL
+    args$..index.. <- NULL
 
     if (!"name" %in% fun_pos_args) {
       args$name <- NULL
@@ -75,17 +89,17 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
     }
 
     # if a special formula is supplied, change arguments accordingly
-    form <- dag$child_nodes[[i]]$formula
+    form <- child_nodes[[i]]$formula
 
     if (!is.null(form) && !is_formula(form) &&
-        dag$child_nodes[[i]]$type_str != "identity") {
+        child_nodes[[i]]$type_str != "identity") {
       args <- args_from_formula(args=args, formula=form,
-                                node_type=dag$child_nodes[[i]]$type_str)
+                                node_type=child_nodes[[i]]$type_str)
       args$data <- tryCatch({
         data_for_formula(data=data, args=args, networks=dag$networks)},
         error=function(e){
           stop("An error occured when interpreting the formula of node '",
-               dag$child_nodes[[i]]$name, "'. The message was:\n", e,
+               child_nodes[[i]]$name, "'. The message was:\n", e,
                call.=FALSE)
         }
       )
@@ -102,15 +116,36 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE) {
 
     # call needed node function, add node name to possible errors
     node_out <- tryCatch({
-      do.call(dag$child_nodes[[i]]$type_fun, args)},
+      do.call(child_nodes[[i]]$type_fun, args)},
       error=function(e){
         stop("An error occured when processing node '",
-             dag$child_nodes[[i]]$name, "'. The message was:\n", e,
+             child_nodes[[i]]$name, "'. The message was:\n", e,
              call.=FALSE)
       }
     )
     data <- add_node_to_data(data=data, new=node_out,
-                             name=dag$child_nodes[[i]]$name)
+                             name=child_nodes[[i]]$name)
   }
-  return(data)
+
+  # also return networks if specified
+  if (return_networks) {
+    out <- list(data=data,
+                networks=dag$networks)
+  } else {
+    out <- data
+  }
+  return(out)
+}
+
+## given a node list, extracts the ..index.. parameter and returns
+## a numeric vector containing the order in which the nodes / networks were
+## added
+get_order_from_index <- function(node_list) {
+  index <- vapply(node_list,
+                  FUN=function(x){x$..index..},
+                  FUN.VALUE=numeric(1),
+                  USE.NAMES=FALSE)
+  names(index) <- seq_len(length(index))
+  index <- as.numeric(names(sort(index)))
+  return(index)
 }

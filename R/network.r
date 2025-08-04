@@ -2,24 +2,30 @@
 ## similar to node() and node_td(), but instead of creating an actual node
 ## for the DAG, it creates a network for the DAG
 #' @export
-network <- function(name, net, ...) {
-  create_DAG.network(name=name, net=net, time_varying=FALSE,
+network <- function(name, net, parents=NULL, ...) {
+  create_DAG.network(name=name, net=net, parents=parents, time_varying=FALSE,
                      create_at_t0=TRUE, ...)
 }
 
 ## same as network(), but with a time-varying network
 #' @export
-network_td <- function(name, net, create_at_t0=TRUE, ...) {
-  create_DAG.network(name=name, net=net, time_varying=TRUE,
+network_td <- function(name, net, parents=NULL, create_at_t0=TRUE, ...) {
+  create_DAG.network(name=name, net=net, parents=parents, time_varying=TRUE,
                      create_at_t0=create_at_t0, ...)
 }
 
 ## creates a DAG.network object to add to a DAG object
-create_DAG.network <- function(name, net, time_varying, create_at_t0, ...) {
+create_DAG.network <- function(name, net, parents, time_varying,
+                               create_at_t0, ...) {
 
   check_inputs_network(name=name, net=net, time_varying=time_varying)
 
+  if (!is.null(parents) && all(parents=="")) {
+    parents <- NULL
+  }
+
   out <- list(name=name,
+              parents=parents,
               net=NULL,
               net_fun=NULL,
               args=list(...),
@@ -180,14 +186,18 @@ get_net_info <- function(g, data, net_name, mode, order) {
 
   n_vertices <- length(igraph::V(g))
 
-  if (n_vertices < nrow(data)) {
+  if (nrow(data)==0) {
+    stop("The network contains ", n_vertices, " but the data has",
+         " 0 rows. This may happen when using .N or other data.table",
+         " syntax before actually generating any data.", call.=FALSE)
+  } else if (n_vertices < nrow(data)) {
     stop(paste0("The network named '", net_name, "' only contains ",
                 n_vertices, " vertices, but the simulated data contains ",
                 nrow(data), " observations. There should be at least ",
                 nrow(data), " vertices in the network to represent each ",
                 "observation."), call.=FALSE)
   } else if (n_vertices > nrow(data)) {
-    stop(paste0("The network name '", net_name, "' contains ",
+    stop(paste0("The network named '", net_name, "' contains ",
                 n_vertices, " vertices, but the simulated data only",
                 " has ", nrow(data), " observations. There should",
                 " be one vertex per observation."), call.=FALSE)
@@ -263,6 +273,41 @@ add_network_info <- function(data, d_net_terms, networks) {
   data[, ..id.. := NULL]
 
   return(data)
+}
+
+## initializes or updates a given network
+update_network <- function(network, n_sim, data=NULL, sim_time=NULL,
+                           past_states=NULL, past_networks=NULL) {
+
+  # only initiate / update network if:
+  # 1. first time and it should be initiated
+  # 2. > first time and it should be updated
+  if (!(!is.function(network$net_fun) ||
+        (sim_time > 0 & !network$time_varying) ||
+        (sim_time==0 & !network$create_at_t0))) {
+
+    fun_args <- names(formals(network$net_fun))
+    args <- list(n_sim=n_sim)
+
+    if ("data" %in% fun_args) {
+      args$data <- data
+    }
+    if ("sim_time" %in% fun_args) {
+      args$sim_time <- sim_time
+    }
+    if ("past_states" %in% fun_args & sim_time > 0) {
+      args$past_states <- past_states
+    }
+    if ("network" %in% fun_args & sim_time > 0) {
+      args$network <- network$net
+    }
+    if ("past_networks" %in% fun_args & sim_time > 0) {
+      args$past_networks <- past_networks
+    }
+    network$net <- do.call(network$net_fun, args=args)
+  }
+
+  return(network)
 }
 
 ## initiates / updates networks if needed

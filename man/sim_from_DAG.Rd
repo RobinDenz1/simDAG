@@ -8,7 +8,8 @@ Simulate Data from a \code{DAG}
 This function can be used to generate data from a given \code{DAG}. The \code{DAG} should be created using the \code{\link{empty_dag}} and \code{\link{node}} functions, which require the user to fully specify all variables, including information about distributions, beta coefficients and, depending on the node type, more parameters such as intercepts. Network dependencies among observations may also be included using the \code{\link{network}} function.
 }
 \usage{
-sim_from_dag(dag, n_sim, sort_dag=FALSE, check_inputs=TRUE)
+sim_from_dag(dag, n_sim, sort_dag=FALSE, return_networks=FALSE,
+             check_inputs=TRUE)
 }
 \arguments{
   \item{dag}{
@@ -19,6 +20,9 @@ A single number specifying how many observations should be generated.
   }
   \item{sort_dag}{
 Whether to topologically sort the DAG before starting the simulation or not. If the nodes in \code{dag} were already added in a topologically sorted manner, this argument can be kept at \code{FALSE}. It is recommended to not rely on this argument too heavily, because sorting may sometimes fail when only a \code{formula} is supplied to one or more \code{\link{node}} calls.
+  }
+  \item{return_networks}{
+Whether to also return networks that were included or generated due to the presence of \code{\link{network}} calls in the supplied \code{dag} or not. If set to \code{TRUE}, a named list of length 2 will be returned instead of only returning the generated data. Defaults to \code{FALSE}.
   }
   \item{check_inputs}{
 Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
@@ -51,7 +55,7 @@ In some cases the assumption that observations (rows) are independent from each 
 Robin Denz
 }
 \value{
-Returns a single \code{data.table} including the simulated data with (at least) one column per node specified in \code{dag} and \code{n_sim} rows.
+If \code{return_networks=FALSE}, returns a single \code{data.table} including the simulated data with (at least) one column per node specified in \code{dag} and \code{n_sim} rows. Otherwise it returns a named list containing the \code{data} and the \code{networks} supplied or generated through the course of the simulation.
 }
 \seealso{
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{network}}, \code{\link{plot.DAG}}, \code{\link{sim_discrete_time}}

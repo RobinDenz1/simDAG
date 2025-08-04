@@ -1,7 +1,8 @@
 
 ## obtain an adjacency matrix of the causal DAG from a DAG object
 #' @export
-dag2matrix <- function(dag, include_root_nodes=TRUE, include_td_nodes=FALSE) {
+dag2matrix <- function(dag, include_root_nodes=TRUE, include_td_nodes=FALSE,
+                       include_networks=FALSE) {
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() function",
@@ -18,20 +19,33 @@ dag2matrix <- function(dag, include_root_nodes=TRUE, include_td_nodes=FALSE) {
                         FUN.VALUE=character(1))
   names_td_nodes <- vapply(dag$tx_nodes, function(x){x$name},
                            FUN.VALUE=character(1))
+  names_networks <- vapply(dag$networks, function(x){x$name},
+                           FUN.VALUE=character(1))
 
-  # put together names & node lists
-  if (include_root_nodes & include_td_nodes) {
-    all_names <- c(names_roots, names_children, names_td_nodes)
-    all_nodes <- c(dag$root_nodes, dag$child_nodes, dag$tx_nodes)
-  } else if (include_root_nodes & !include_td_nodes) {
-    all_names <- c(names_roots, names_children)
-    all_nodes <- c(dag$root_nodes, dag$child_nodes)
-  } else if (!include_root_nodes & include_td_nodes) {
-    all_names <- c(names_children, names_td_nodes)
-    all_nodes <- c(dag$child_nodes, dag$tx_nodes)
-  } else {
-    all_names <- names_children
-    all_nodes <- dag$child_nodes
+  ## put together names & node lists
+  all_names <- c()
+  all_nodes <- list()
+
+  # roots
+  if (include_root_nodes) {
+    all_names <- c(all_names, names_roots)
+    all_nodes <- c(all_nodes, dag$root_nodes)
+  }
+
+  # children (always included)
+  all_names <- c(all_names, names_children)
+  all_nodes <- c(all_nodes, dag$child_nodes)
+
+  # time-dependent nodes
+  if (include_td_nodes) {
+    all_names <- c(all_names, names_td_nodes)
+    all_nodes <- c(all_nodes, dag$tx_nodes)
+  }
+
+  # networks
+  if (include_networks) {
+    all_names <- c(all_names, names(names_networks))
+    all_nodes <- c(all_nodes, dag$networks)
   }
 
   # keep only unique due to possibility of multiple nodes with same name

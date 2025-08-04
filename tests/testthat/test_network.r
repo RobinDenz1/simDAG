@@ -19,8 +19,10 @@ test_that("general test cases, one network", {
   expect_equal(round(mean(data$X), 3), 0.2)
   expect_equal(round(mean(data$Y), 3), 0.1)
   expect_equal(round(mean(data$Z), 3), -1.237)
+})
 
-  # passing only a function
+test_that("one network, using a generating function", {
+
   gen_network <- function(n_sim) {
     g <- igraph::sample_smallworld(1, n_sim, 2, 0.5)
     return(g)
@@ -37,9 +39,13 @@ test_that("general test cases, one network", {
     node("Z", type="gaussian", formula= ~ -1 + A*0.5 + I(B^2)*0.1 +
            A:B*0.2 + net(as.numeric(any(C==1)))*0.2, error=1)
 
-  data2 <- sim_from_dag(dag, n_sim=10)
+  data <- sim_from_dag(dag, n_sim=10)
 
-  expect_equal(data2, data)
+  # NOTE: not equal to above test, because network is generated after
+  #       the root nodes here
+  expect_equal(round(mean(data$X), 3), 0)
+  expect_equal(round(mean(data$Y), 3), 0.1)
+  expect_equal(round(mean(data$Z), 3), -1.137)
 })
 
 test_that("using data.table syntax in net()", {
@@ -179,6 +185,47 @@ test_that("indexing singular individuals in net(), possibly with NAs", {
   expect_equal(round(mean(data$Y2, na.rm=TRUE), 3), 1.15)
 })
 
+test_that("network with a single net() call not dependent on other variables", {
+  set.seed(2368)
+  g <- igraph::sample_gnm(n=20, m=30)
+
+  dag <- empty_dag() +
+    network("Net1", net=g) +
+    node("test", type="identity", formula= ~ net(.N), kind="data")
+  expect_error({data <- sim_from_dag(dag, n_sim=20)})
+})
+
+test_that("network as a function of variables", {
+
+  gen_network <- function(n_sim, data) {
+    if (mean(data$age) > 10) {
+      g <- igraph::sample_gnm(n=20, m=10)
+    } else {
+      g <- igraph::sample_gnm(n=20, m=50)
+    }
+    return(g)
+  }
+
+  set.seed(2368)
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=50, sd=1) +
+    network("Net1", net=gen_network, parents="age") +
+    node("Y3", type="gaussian", formula= ~ 0 + net(.N, na=0)*1, error=0)
+  data1 <- sim_from_dag(dag, n_sim=20)
+
+  set.seed(2368)
+  dag <- empty_dag() +
+    node("age", type="rnorm", mean=0, sd=1) +
+    network("Net1", net=gen_network, parents="age") +
+    node("Y3", type="gaussian", formula= ~ 0 + net(.N, na=0)*1, error=0)
+  data2 <- sim_from_dag(dag, n_sim=20)
+
+  # much higher number of neighbors when age is lower, because
+  # generation of network was dependent on age
+  expect_equal(round(mean(data1$Y3), 3), 1)
+  expect_equal(round(mean(data2$Y3), 3), 5)
+})
+
 test_that("static network with discrete-time simulation", {
 
   set.seed(234)
@@ -213,12 +260,12 @@ test_that("random dynamic network with discrete-time simulation", {
   }
 
   dag <- empty_dag() +
-    network_td("net1", net=gen_network) +
     node_td("n_infected_neighbors", type="gaussian",
             formula= ~ 0 + net(sum(infected_event), na=0)*1, error=0) +
     node_td("infected", type="time_to_event", event_duration=Inf,
             immunity_duration=Inf, parents=("n_infected_neighbors"),
-            prob_fun=prob_infection)
+            prob_fun=prob_infection) +
+    network_td("net1", net=gen_network)
 
   set.seed(1335)
   sim <- sim_discrete_time(dag, n_sim=18, max_t=6, save_states="all",
@@ -228,6 +275,31 @@ test_that("random dynamic network with discrete-time simulation", {
   expect_true(length(sim$past_networks)==6)
   expect_true(igraph::is_igraph(sim$past_networks[[1]]$net1$net))
   expect_equal(round(mean(data$infected), 3), 0.454)
+})
+
+test_that("mix of static and dynamic networks in DTS", {
+
+  gen_network <- function(n_sim) {
+    g <- igraph::sample_smallworld(1, n_sim, 2, 0.5)
+    return(g)
+  }
+
+  set.seed(234)
+
+  dag <- empty_dag() +
+    network("net1", net=gen_network) +
+    node(c("A", "B", "C"), type="rbernoulli", p=0.2, output="numeric") +
+    node("X", type="binomial", formula= ~ -2 + net(sum(A==1))*0.2) +
+    node("Y", type="binomial", formula= ~ -2 + net(sum(A==1))*0.2 +
+           net(mean(A))*0.5) +
+    node("Z", type="gaussian", formula= ~ -1 + A*0.5 + I(B^2)*0.1 +
+           A:B*0.2 + net(as.numeric(any(C==1)))*0.2, error=1) +
+    node_td("Y2", type="binomial", formula= ~ -2 + net(sum(A==1))*0.2 +
+              net(mean(A))*0.5)
+
+  sim <- sim_discrete_time(dag, n_sim=10, max_t=5, save_states="all")
+  data <- sim2data(sim, to="long")
+  expect_equal(round(mean(data$Y2), 3), 0.08)
 })
 
 test_that("changing dynamic network with discrete-time simulation", {

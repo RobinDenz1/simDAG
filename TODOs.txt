@@ -1,17 +1,11 @@
 
 ###### Bugs & TODOS ######
 
-tests on parallel processing:
-	- check if those work again now
-
-network() and network_td()
-	- finish new vignette on network simulation
-	- network() in sim_from_dag() currently not allowed to be data dependent
-	- currently, networks are always initiated at the same time, irrespective
-      of position in DAG creation, need to change this
-	- error when net() call is a root node with no previously generated variables
 
 ####### New Features: #######
+
+networks-simulation:
+	- allow networks to be inputs when generating networks
 
 node_time_to_event:
 	- add support for formula (interpreted as logistic model) to make some

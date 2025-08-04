@@ -16,7 +16,8 @@ child_nodes <- list(list(parents=c("sex", "age"),
                          betas=c(2.1, 1.4),
                          intercept=14,
                          error=2,
-                         time_varying=FALSE))
+                         time_varying=FALSE,
+                         ..index..=1))
 dag <- list(root_nodes=root_nodes,
             child_nodes=child_nodes,
             tx_nodes=list())
@@ -130,7 +131,8 @@ if (!(on_ci())) {
                              betas=c(2.1, 1.4, 0.1),
                              intercept=14,
                              error=2,
-                             time_varying=FALSE),
+                             time_varying=FALSE,
+                             ..index..=1),
                         list(parents=c("sex", "age"),
                              type_str="gaussian",
                              type_fun=node_gaussian,
@@ -138,7 +140,8 @@ if (!(on_ci())) {
                              betas=c(0.1, 0.7),
                              intercept=100,
                              error=10,
-                             time_varying=FALSE))
+                             time_varying=FALSE,
+                             ..index..=2))
     dag$child_nodes <- child_nodes
 
     sim_dat <- sim_from_dag(n_sim=20, dag=dag, sort_dag=TRUE)

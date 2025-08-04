@@ -9,9 +9,9 @@ Create a network object for a \code{DAG}
 These functions (in conjunction with the \code{\link{empty_dag}} and \code{\link{node}} functions) allow users to create \code{DAG} objects with one or more, possibly time-varying, network structures linking individual observations to each other. This makes it possible to simulate data with complex network-based dependencies among observations using the \code{\link{sim_from_dag}} function or the \code{\link{sim_discrete_time}} function.
 }
 \usage{
-network(name, net, ...)
+network(name, net, parents=NULL, ...)
 
-network_td(name, net, create_at_t0=TRUE, ...)
+network_td(name, net, parents=NULL, create_at_t0=TRUE, ...)
 }
 \arguments{
   \item{name}{
@@ -19,6 +19,9 @@ A single character string, specifying the name of the network. Contrary to the \
   }
   \item{net}{
 For \code{network()}, two kinds of inputs are allowed. The first is an \code{igraph} object containing one vertex per observation (e.g. \code{n_sim} vertices) that should be generated when later calling \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}}. The second is a function that generates such an object, given a named argument called \code{n_sim} and any number of further named arguments. For \code{network_td()}, only the latter kind of input is allowed. Further information is given in the details section.
+  }
+  \item{parents}{
+A character vector of names, specifying the parents of the network or \code{NULL} (default). Similar to general nodes, specifying the parents allows users to generate a network as a function of the values of the \code{parents}, whenever \code{net} is a function. If \code{NULL}, it is assumed that the network is generated independently of the data (or already passed as \code{igraph} object). For convenience, it is also allowed to set \code{parents=""} to indicate that the node has no parents.
   }
   \item{create_at_t0}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the network should be generated at time 0 in discrete-time simulations (e.g. when other time-independent nodes and networks are generated) or only after the creation of data time 0. Defaults to \code{TRUE}.
@@ -48,6 +51,10 @@ It is possible to supply weighted networks to \code{network()}. The weights are 
 \strong{\emph{Directed Networks}}:
 
 Supplying directed networks is also possible. If this is done, users usually need to specify the \code{mode} argument of the \code{\link{net}} function when defining the \code{formula} arguments. This argument allows users to define different kinds of neighborhoods for each observation, based on the direction of the edges.
+
+\strong{\emph{Order of Generation}}:
+
+Generally, all networks are created in the order in which they were added to the \code{DAG}, unless \code{sort_dag} or \code{tx_nodes_order} are changed in \code{\link{sim_from_dag}} or \code{\link{sim_discrete_time}} respectively. The only exception is that all networks created using the \code{network()} function are created \emph{after} all other root nodes have already been generated.
 
 \strong{\emph{Computational considerations}}:
 
