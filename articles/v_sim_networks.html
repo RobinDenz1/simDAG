@@ -80,10 +80,6 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><em>This vignette and the contents discussed here are currently under
-active development, we recommend waiting a little before actually using
-the features described here, at least until this warning is
-gone.</em></p>
 <p>Most algorithms used to generate artificial data based on DAGs do so
 using the classic assumption that all individual observations are
 independently and identically distributed (the classic i.i.d.
@@ -501,6 +497,75 @@ indirect connections.</p>
 <div class="section level3">
 <h3 id="networks-as-a-function-of-other-variables">Networks as a function of other variables<a class="anchor" aria-label="anchor" href="#networks-as-a-function-of-other-variables"></a>
 </h3>
+<p>Up to this point we have always created the networks completely
+independently from all other variables, which in reality could be
+considered unrealistic. Luckily, networks may also be defined as a
+function of already generated variables as well. Similar to regular
+<code><a href="../reference/node.html">node()</a></code> function calls, it is possible to use the
+<code>parents</code> argument to specify that a network is based on
+values of the <code>parents</code>. The <code>data</code> of the
+<code>parents</code> is then automatically passed to the
+<code>data</code> argument of the function that should be used to create
+the network, allowing all kinds of dependencies to be implemented by the
+user.</p>
+<p>Suppose that the goal is to generate data for both males and females.
+For some reason there should be essentially separate networks for males
+and females. This might for example arise when considering networks in
+sports that are separated by sex. To simulate such an example, we first
+define some functions:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">is_different_sex</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">g</span>, <span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://r.igraph.org/reference/ends.html" class="external-link">ends</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">type</span> <span class="op">!=</span> <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://r.igraph.org/reference/ends.html" class="external-link">ends</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">type</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">gen_network</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_sim</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n_sim</span>, m<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">type</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">sex</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/delete_edges.html" class="external-link">delete_edges</a></span><span class="op">(</span><span class="va">g</span>, <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>, <span class="va">is_different_sex</span>, g<span class="op">=</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>Here the <code>id_different_sex()</code> function simply takes in an
+edge of the graph and checks whether both vertices have the same type.
+The <code>gen_network()</code> function first generates a random graph
+and then adds the <code>sex</code> contained in the supplied
+<code>data</code> as a type to each node. It then deletes all edges
+where the type (e.g. <code>sex</code>) of the vertices is not the same.
+We can incorporate this into a <code>DAG</code> using:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">25</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/network.html">network</a></span><span class="op">(</span><span class="st">"network1"</span>, net<span class="op">=</span><span class="va">gen_network</span>, parents<span class="op">=</span><span class="st">"sex"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"infected"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<p>We can now simulate from this <code>DAG</code>:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1324</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">20</span>, return_networks<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         age    sex infected</span></span>
+<span><span class="co">#&gt;       &lt;num&gt; &lt;lgcl&gt;   &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1: 17.74261   TRUE     TRUE</span></span>
+<span><span class="co">#&gt; 2: 33.84116  FALSE     TRUE</span></span>
+<span><span class="co">#&gt; 3: 17.13370   TRUE     TRUE</span></span>
+<span><span class="co">#&gt; 4: 13.14236   TRUE     TRUE</span></span>
+<span><span class="co">#&gt; 5: 33.44052   TRUE     TRUE</span></span>
+<span><span class="co">#&gt; 6: 21.95168   TRUE       NA</span></span></code></pre></div>
+<p>Note that we set <code>return_networks=TRUE</code>, so that we can
+also inspect the generated network. Whenever this is done, the
+<code><a href="../reference/sim_from_DAG.html">sim_from_dag()</a></code> function actually returns a list containing
+both the generated <code>data</code> and the <code>networks</code>.
+Below is the generated networks, with different vertex colors for each
+<code>sex</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">networks</span><span class="op">$</span><span class="va">network1</span><span class="op">$</span><span class="va">net</span></span>
+<span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">type</span>, <span class="st">"salmon"</span>, <span class="st">"lightblue"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-24-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>This is a fairly artificial example, because it is only meant to
+illustrate this functionality in a simple way. Users could of course use
+this in much more interesting ways. Because the <code>net</code>
+argument allows any function, there are no limits set to how the network
+structure should be dependent on the <code>data</code> at hand.</p>
 </div>
 </div>
 <div class="section level2">
@@ -521,12 +586,12 @@ only one variable of interest: the infection status of a person, denoted
 by <code>infected</code> (0 = not infected, 1 = infected). First, we
 will generate a random graph of 18 individuals with 30 connections
 between them using the <code>igraph</code> package:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">244368</span><span class="op">)</span></span>
 <span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">18</span>, m<span class="op">=</span><span class="fl">30</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-21-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-25-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>We will assume that the probability of infection rises in a very
 simple fashion with the number of infected neighbors in the network. At
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
@@ -550,7 +615,7 @@ is defined as:</p>
 being the number of infected neighbors of the individual. Additionally,
 once infected, a person stays infected. We can simulate this kind of
 date using the following code:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_infection</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
@@ -576,11 +641,11 @@ add a single call to <code><a href="../reference/network.html">network()</a></co
 to allow the usage of network dependencies. We then add a time-dependent
 node using <code><a href="../reference/node.html">node_td()</a></code>, which simply calculates the number of
 infected neighbors a node has. We then define the final node, which is
-the <code>infected</code>, using the <code>prob_infected()</code>
-function defined earlier.</p>
+<code>infected</code>, using the <code>prob_infected()</code> function
+defined earlier.</p>
 <p>Now we can run the simulation and transform the output into the
 long-format for easier processing:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">18</span>, max_t<span class="op">=</span><span class="fl">6</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim2data.html">sim2data</a></span><span class="op">(</span><span class="va">sim</span>, to<span class="op">=</span><span class="st">"long"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
@@ -596,10 +661,10 @@ long-format for easier processing:</p>
 <p>Using a simple <code>for</code> loop and the
 <code><a href="https://r.igraph.org/reference/plot.igraph.html" class="external-link">plot.igraph()</a></code> function (with some cosmetic changes), we can
 also visualize the spread of the infection on the network. Below are the
-resulting 10 figures, which show the network at each point in time of
-the simulation, with the infected individuals colored in salmon and the
+resulting 6 figures, which show the network at each point in time of the
+simulation, with the infected individuals colored in salmon and the
 not-infected individuals colored in lightblue:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="st">"lightgray"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -619,7 +684,7 @@ not-infected individuals colored in lightblue:</p>
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>The infection started with only individual 14 being infected (the
 index case). From there it spread immediately to individuals 2 and 8 and
 continued from there, as an actual infection might have. It would of
@@ -645,7 +710,7 @@ the same code that we used earlier. The main difference for any
 situation in which dynamic networks should be used is that we need to
 define a function that generates the network for us. Below is one
 possibility:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gen_network</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n_sim</span>, m<span class="op">=</span><span class="fl">30</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -656,14 +721,14 @@ is simply passed to the <code><a href="https://r.igraph.org/reference/sample_gnm
 <code>igraph</code> package that we already used earlier. We can now use
 almost the same code as we did before to generate data using this
 function:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"n_infected_neighbors"</span>, type<span class="op">=</span><span class="st">"identity"</span>,</span>
 <span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">infected_event</span><span class="op">)</span>, na<span class="op">=</span><span class="fl">0</span><span class="op">)</span>, kind<span class="op">=</span><span class="st">"data"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"infected"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, event_duration<span class="op">=</span><span class="cn">Inf</span>,</span>
 <span>          immunity_duration<span class="op">=</span><span class="cn">Inf</span>, parents<span class="op">=</span><span class="op">(</span><span class="st">"n_infected_neighbors"</span><span class="op">)</span>,</span>
-<span>          prob_fun<span class="op">=</span><span class="va">prob_infection</span><span class="op">)</span></span>
+<span>          prob_fun<span class="op">=</span><span class="va">prob_infection</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1335</span><span class="op">)</span></span>
 <span></span>
@@ -682,12 +747,12 @@ function:</p>
 <span><span class="co">#&gt; 6:     1     6                    5     TRUE</span></span></code></pre></div>
 <p>The only difference to the previous code is that we used
 <code><a href="../reference/network.html">network_td()</a></code> instead of <code><a href="../reference/network.html">network()</a></code>, passing the
-function to the <code>net</code> argument, and that we only use 5 points
-in time. Everything else is the same. The code to visualize the spread
-of the disease is also very similar, with the one change being that we
-now have one network per slide (saved in the <code>sim</code> object
-because we set <code>save_networks=TRUE</code>):</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+function to the <code>net</code> argument. Everything else is the same.
+The code to visualize the spread of the disease is also very similar,
+with the one change being that we now have one network per slide (saved
+in the <code>sim</code> object because we set
+<code>save_networks=TRUE</code>):</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -706,10 +771,20 @@ because we set <code>save_networks=TRUE</code>):</p>
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g_i</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>Here, the simulation starts out with individuals 12, 16 and 17 being
-infected. Given this infection status at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>.</p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>Here, the simulation starts out with individuals 8 being infected,
+while being connected to individuals 3, 7, 11, 15 and 16 at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>.
+This individual then spread the infection to individuals 3 and 15, as
+can be seen at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">t = 2</annotation></semantics></math>.
+However, the network has changed completely at this point. Now the
+individuals are connected to others, spreading the infection even
+further to those they are connected with now. This repeats until almost
+everyone (except individuals 4 and 12) are infected. Note that it makes
+a significant difference in which order the <code><a href="../reference/node.html">node_td()</a></code> and
+<code><a href="../reference/network.html">network_td()</a></code> calls are added, as in usual simulations using
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="adjusting-a-network-over-time">Adjusting a network over time<a class="anchor" aria-label="anchor" href="#adjusting-a-network-over-time"></a>
@@ -728,7 +803,7 @@ doing so. Only after one full day of being sick does the government
 realize that an individual is infected.</p>
 <p>First, we have to adjust the <code>gen_network()</code> function. We
 will use the following code:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gen_network</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_sim</span>, <span class="va">sim_time</span>, <span class="va">network</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
@@ -752,10 +827,11 @@ function does is really simple. At
 it simply generates a random graph using <code><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm()</a></code>. From
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
 on it simply checks whether any person is infected and isolates them, by
-deleting their connections and returning the adjusted network.
-Time-dependent networks are always updated after all nodes of a day have
-been generated and the <code>time_since_last</code> counter of the
-<code>infected</code> node starts at 0, so using
+deleting their connections and returning the adjusted network. By adding
+the time-dependent networks after the time-dependent nodes in the
+<code>DAG</code>, we ensure that it is updated only after all nodes of a
+day have been generated. Because the <code>time_since_last</code>
+counter of the <code>infected</code> node starts at 0 using
 <code>data$infected_time_since_last &gt; 0</code> ensures that each
 individual has one full day to spread the infection. Note that the
 arguments <code>sim_time</code>, <code>network</code> and
@@ -765,14 +841,14 @@ arguments <code>sim_time</code>, <code>network</code> and
 <code>data</code> is the current state of the data.</p>
 <p>We can now re-use almost the same <code>DAG</code> definition from
 earlier:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span>, create_at_t0<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"n_infected_neighbors"</span>, type<span class="op">=</span><span class="st">"identity"</span>,</span>
 <span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="../reference/net.html">net</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">infected_event</span><span class="op">)</span>, na<span class="op">=</span><span class="fl">0</span><span class="op">)</span>, kind<span class="op">=</span><span class="st">"data"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"infected"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, event_duration<span class="op">=</span><span class="cn">Inf</span>,</span>
 <span>          immunity_duration<span class="op">=</span><span class="cn">Inf</span>, parents<span class="op">=</span><span class="op">(</span><span class="st">"n_infected_neighbors"</span><span class="op">)</span>,</span>
-<span>          prob_fun<span class="op">=</span><span class="va">prob_infection</span>, time_since_last<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>          prob_fun<span class="op">=</span><span class="va">prob_infection</span>, time_since_last<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/network.html">network_td</a></span><span class="op">(</span><span class="st">"net1"</span>, net<span class="op">=</span><span class="va">gen_network</span>, create_at_t0<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The only difference to before is that we actively set
 <code>create_at_t0=TRUE</code> so that the network gets created before
 time-dependent processing starts (so we have a network to adjust at
@@ -781,7 +857,7 @@ and that we set <code>time_since_last=TRUE</code> in the
 <code>infected</code> node to track the time since the original
 infection, because we need that information in the network generating
 function. Lets run the simulation again:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">13354</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">18</span>, max_t<span class="op">=</span><span class="fl">6</span>, save_states<span class="op">=</span><span class="st">"all"</span>,</span>
@@ -800,7 +876,7 @@ function. Lets run the simulation again:</p>
 <p>In the first few rows of the data we can already see that the number
 of infected individuals does not And finally lets plot the resulting
 infection spread again:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">layout_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">past_networks</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">net1</span><span class="op">$</span><span class="va">net</span><span class="op">)</span></span>
@@ -821,7 +897,7 @@ infection spread again:</p>
 <span>       layout<span class="op">=</span><span class="va">layout_g</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>As can be seen, due to the timely delay of the isolation, the
 infection is still able to spread, but it cannot reach all individuals.
 Near the end of the simulation, practically all connections are removed,

@@ -49,7 +49,8 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_from_dag</span><span class="op">(</span><span class="va">dag</span>, <span class="va">n_sim</span>, sort_dag<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_from_dag</span><span class="op">(</span><span class="va">dag</span>, <span class="va">n_sim</span>, sort_dag<span class="op">=</span><span class="cn">FALSE</span>, return_networks<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>             check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +64,9 @@
 
   <dt id="arg-sort-dag">sort_dag<a class="anchor" aria-label="anchor" href="#arg-sort-dag"></a></dt>
 <dd><p>Whether to topologically sort the DAG before starting the simulation or not. If the nodes in <code>dag</code> were already added in a topologically sorted manner, this argument can be kept at <code>FALSE</code>. It is recommended to not rely on this argument too heavily, because sorting may sometimes fail when only a <code>formula</code> is supplied to one or more <code><a href="node.html">node</a></code> calls.</p></dd>
+
+  <dt id="arg-return-networks">return_networks<a class="anchor" aria-label="anchor" href="#arg-return-networks"></a></dt>
+<dd><p>Whether to also return networks that were included or generated due to the presence of <code><a href="network.html">network</a></code> calls in the supplied <code>dag</code> or not. If set to <code>TRUE</code>, a named list of length 2 will be returned instead of only returning the generated data. Defaults to <code>FALSE</code>.</p></dd>
 
   <dt id="arg-check-inputs">check_inputs<a class="anchor" aria-label="anchor" href="#arg-check-inputs"></a></dt>
 <dd><p>Whether to perform plausibility checks for the user input or not. Is set to <code>TRUE</code> by default, but can be set to <code>FALSE</code> in order to speed things up when using this function in a simulation study or something similar.</p></dd>
@@ -89,7 +93,7 @@
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns a single <code>data.table</code> including the simulated data with (at least) one column per node specified in <code>dag</code> and <code>n_sim</code> rows.</p>
+    <p>If <code>return_networks=FALSE</code>, returns a single <code>data.table</code> including the simulated data with (at least) one column per node specified in <code>dag</code> and <code>n_sim</code> rows. Otherwise it returns a named list containing the <code>data</code> and the <code>networks</code> supplied or generated through the course of the simulation.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
