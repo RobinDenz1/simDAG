@@ -49,7 +49,8 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">net</span><span class="op">(</span><span class="va">expr</span>, net<span class="op">=</span><span class="cn">NULL</span>, mode<span class="op">=</span><span class="st">"all"</span>, order<span class="op">=</span><span class="fl">1</span>, na<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">net</span><span class="op">(</span><span class="va">expr</span>, net<span class="op">=</span><span class="cn">NULL</span>, mode<span class="op">=</span><span class="st">"all"</span>, order<span class="op">=</span><span class="fl">1</span>,</span>
+<span>    mindist<span class="op">=</span><span class="fl">0</span>, na<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,6 +67,9 @@
 
   <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
 <dd><p>A single integer giving the order of the neighborhood. If <code>order=1</code> (default), only the vertices that are directly connected to vertex \(i\) are considered its neighbors. If <code>order=2</code>, all vertices connected to those neighbors are also considered the neighbors of vertex \(i\) and so on.</p></dd>
+
+  <dt id="arg-mindist">mindist<a class="anchor" aria-label="anchor" href="#arg-mindist"></a></dt>
+<dd><p>A single integer &gt;= 0, specifying the minimum distance the neighbors needs to have to an observation to be considered neighbors. Only makes sense with <code>order &gt; 1</code>.</p></dd>
 
   <dt id="arg-na">na<a class="anchor" aria-label="anchor" href="#arg-na"></a></dt>
 <dd><p>A single value assigned to the variable if <code>expr</code> could not be computed. This can happen due to the nature of the expression (e.g. <code>NA</code> being returned directly after evaluating the expression for some reason), or when an observation does not have any neighbors in a network.</p></dd>
