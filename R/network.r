@@ -80,7 +80,7 @@ summary.DAG.network <- function(object, ...) {
 ## the aggregated information of neighbors in a network
 #' @importFrom data.table data.table
 #' @export
-net <- function(expr, net=NULL, mode="all", order=1, na=NA) {
+net <- function(expr, net=NULL, mode="all", order=1, mindist=0, na=NA) {
 
   if (is.null(net)) {
     name <- NA_character_
@@ -93,6 +93,7 @@ net <- function(expr, net=NULL, mode="all", order=1, na=NA) {
     name=name,
     mode=mode,
     order=order,
+    mindist=mindist,
     na=na
   )
   return(out)
@@ -109,7 +110,7 @@ get_net_terms <- function(formula_parts) {
 #        for large graphs
 #' @importFrom data.table data.table
 #' @importFrom data.table rbindlist
-get_neighbors_with_order <- function(g, order, mode) {
+get_neighbors_with_order <- function(g, order, mode, mindist) {
 
   ..id.. <- ..neighbor.. <- NULL
 
@@ -118,7 +119,8 @@ get_neighbors_with_order <- function(g, order, mode) {
             " are ignored.", call.=FALSE)
   }
 
-  lneighbors <- igraph::neighborhood(graph=g, order=order, mode=mode)
+  lneighbors <- igraph::neighborhood(graph=g, order=order, mode=mode,
+                                     mindist=mindist)
 
   out <- vector(mode="list", length=length(lneighbors))
   for (i in seq_len(length(lneighbors))) {
@@ -135,13 +137,14 @@ get_neighbors_with_order <- function(g, order, mode) {
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
 #' @importFrom data.table copy
-get_all_edges <- function(g, mode, order) {
+get_all_edges <- function(g, mode, order, mindist) {
 
   ..id.. <- ..neighbor.. <- NULL
 
   # take computationally more expensive approach if order is specified
-  if (order != 1) {
-    d_con <- get_neighbors_with_order(g=g, mode=mode, order=order)
+  if (order != 1 | mindist > 1) {
+    d_con <- get_neighbors_with_order(g=g, mode=mode, order=order,
+                                      mindist=mindist)
     return(d_con)
   }
 
@@ -182,7 +185,7 @@ get_all_edges <- function(g, mode, order) {
 ## neighbor is mapped to the observation
 #' @importFrom data.table :=
 #' @importFrom data.table merge.data.table
-get_net_info <- function(g, data, net_name, mode, order) {
+get_net_info <- function(g, data, net_name, mode, order, mindist) {
 
   n_vertices <- length(igraph::V(g))
 
@@ -203,7 +206,7 @@ get_net_info <- function(g, data, net_name, mode, order) {
                 " be one vertex per observation."), call.=FALSE)
   }
 
-  d_con <- get_all_edges(g=g, mode=mode, order=order)
+  d_con <- get_all_edges(g=g, mode=mode, order=order, mindist=mindist)
   d_net <- merge.data.table(d_con, data, by.x="..neighbor..", by.y="..id..",
                             all.x=TRUE, all.y=TRUE, allow.cartesian=TRUE)
   return(d_net)
@@ -232,13 +235,13 @@ aggregate_neighbors <- function(d_net, d_net_terms) {
 #' @importFrom data.table setkey
 add_network_info <- function(data, d_net_terms, networks) {
 
-  ..id.. <- name <- NULL
+  ..id.. <- name <- mindist <- NULL
 
   # add temporary id
   data <- copy(data)
   data[, ..id.. := seq_len(nrow(data))]
 
-  d_combs <- unique(d_net_terms, by=c("name", "mode", "order"))
+  d_combs <- unique(d_net_terms, by=c("name", "mode", "order", "mindist"))
   for (i in seq_len(nrow(d_combs))) {
 
     # impose network structure on generated data
@@ -246,13 +249,15 @@ add_network_info <- function(data, d_net_terms, networks) {
                             data=data,
                             net_name=d_combs$name[i],
                             mode=d_combs$mode[i],
-                            order=d_combs$order[i])
+                            order=d_combs$order[i],
+                            mindist=d_combs$mindist[i])
 
     # aggregate it according to the defined aggregation functions mentioned
     # in the formula call
     d_net_terms_i <- subset(d_net_terms, name==d_combs$name[i] &
                               mode==d_combs$mode[i] &
-                              order==d_combs$order[i])
+                              order==d_combs$order[i] &
+                              mindist==d_combs$mindist[i])
     out_i <- aggregate_neighbors(d_net=d_net_i,
                                  d_net_terms=d_net_terms_i)
     data <- merge.data.table(data, out_i, by="..id..", all.x=TRUE)
@@ -310,41 +315,17 @@ update_network <- function(network, n_sim, data=NULL, sim_time=NULL,
   return(network)
 }
 
-## initiates / updates networks if needed
+## initiates / updates a list of networks
 create_networks <- function(networks, n_sim, data=NULL, sim_time,
                             past_states=NULL, past_networks=NULL) {
 
   for (i in seq_len(length(networks))) {
-
-    # only initiate / update network if:
-    # 1. first time and it should be initiated
-    # 2. > first time and it should be updated
-    if (!(!is.function(networks[[i]]$net_fun) ||
-          (sim_time > 0 & !networks[[i]]$time_varying) ||
-          (sim_time==0 & !networks[[i]]$create_at_t0))) {
-
-      fun_args <- names(formals(networks[[i]]$net_fun))
-      args <- list(n_sim=n_sim)
-
-      if ("data" %in% fun_args) {
-        args$data <- data
-      }
-      if ("sim_time" %in% fun_args) {
-        args$sim_time <- sim_time
-      }
-      if ("past_states" %in% fun_args & sim_time > 0) {
-        args$past_states <- past_states
-      }
-      if ("network" %in% fun_args & sim_time > 0) {
-        args$network <- networks[[i]]$net
-      }
-      if ("past_networks" %in% fun_args & sim_time > 0) {
-        args$past_networks <- past_networks
-      }
-
-      networks[[i]]$net <- do.call(networks[[i]]$net_fun, args=args)
-    }
+    networks[[i]] <- update_network(network=networks[[i]],
+                                    n_sim=n_sim,
+                                    data=data,
+                                    sim_time=sim_time,
+                                    past_states=past_states,
+                                    past_networks=past_networks)
   }
-
   return(networks)
 }

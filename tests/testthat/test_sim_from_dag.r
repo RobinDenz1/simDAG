@@ -121,7 +121,7 @@ on_cran <- getFromNamespace("on_cran", ns="testthat")
 # https://github.com/eddelbuettel/rcppziggurat/issues/22
 # so it has nothing to do with the simDAG package or the functionality tested
 # here
-if (!(on_ci())) {
+#if (!(on_ci())) {
 
   test_that("sort_dag working", {
     child_nodes <- list(list(parents=c("sex", "age", "income"),
@@ -150,4 +150,4 @@ if (!(on_ci())) {
     expect_true(ncol(sim_dat)==4)
     expect_error(sim_from_dag(n_sim=20, dag=dag, sort_dag=FALSE))
   })
-}
+#}

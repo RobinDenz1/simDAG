@@ -263,6 +263,45 @@ head(data)
 
 Here, we largely replicated the DAG from earlier, but use different order neighborhoods for the effect of `age` and `sex`. Again, because the `order` is defined by individual `net()` calls, users may use different values of `order` in the same node definition without any issues. Note that when using `order > 1` all edge weights are ignored, because it is not clear what the edge weight should be when considering indirect connections.
 
+We could also go an additional step further and *only* consider the direct connections to neighbors as neighbors, without using the direct connections themselves. This can be done using the `mindist` argument of `net()`. Below is another graph illustrating the difference of using `mindist=1` and `mindist=2` with `order=2` given the earlier network:
+
+```{r, fig.width=7, fig.height=5, echo=FALSE}
+# order = 2, mindist = 1
+neighbors <- neighborhood(g1, nodes=11, order=2, mindist=1)
+V(g1)$color <- ifelse(V(g1) %in% as.numeric(neighbors[[1]]),
+                      "salmon", "lightblue")
+V(g1)$color[11] <- "green"
+
+# order = 2, mindist = 2
+neighbors <- neighborhood(g2, nodes=11, order=2, mindist=2)
+V(g2)$color <- ifelse(V(g2) %in% as.numeric(neighbors[[1]]),
+                      "salmon", "lightblue")
+V(g2)$color[11] <- "green"
+
+par(mfrow=c(1, 2), mar=c(0, 0, 0, 0) + 1)
+set.seed(123)
+plot(g1, main="order = 2, mindist = 1", margin=0, vertex.label.cex=0.8)
+set.seed(123)
+plot(g2, main="order = 2, mindist = 2", margin=0, vertex.label.cex=0.8)
+```
+
+This might be useful to model extended network effects as direct effects in a `DAG`. Repeating the `DAG` from earlier (with some slight changes) we could use something like:
+
+```{r}
+set.seed(2134)
+g <- sample_gnm(n=20, m=15)
+
+dag <- empty_dag() +
+  network("net1", net=g) +
+  node("age", type="rnorm", mean=50, sd=10) +
+  node("sex", type="rbernoulli", p=0.5, output="numeric") +
+  node("infected", type="binomial",
+       formula= ~ 3 + age*0.1 + sex*-0.5 +
+                  net(mean(age), order=2, mindist=2, na=0)*-0.4)
+data <- sim_from_dag(dag, n_sim=20)
+head(data)
+```
+
 ## Networks as a function of other variables
 
 Up to this point we have always created the networks completely independently from all other variables, which in reality could be considered unrealistic. Luckily, networks may also be defined as a function of already generated variables as well. Similar to regular `node()` function calls, it is possible to use the `parents` argument to specify that a network is based on values of the `parents`. The `data` of the `parents` is then automatically passed to the `data` argument of the function that should be used to create the network, allowing all kinds of dependencies to be implemented by the user.
@@ -277,7 +316,8 @@ is_different_sex <- function(g, x) {
 gen_network <- function(n_sim, data) {
   g <- sample_gnm(n=n_sim, m=50)
   V(g)$type <- data$sex
-  g <- delete_edges(g, which(sapply(E(g), is_different_sex, g=g)))
+  g <- delete_edges(g, which(vapply(E(g), is_different_sex,
+                                    FUN.VALUE=logical(1), g=g)))
   return(g)
 }
 ```
@@ -531,7 +571,7 @@ for (i in seq_len(6)) {
 
 As can be seen, due to the timely delay of the isolation, the infection is still able to spread, but it cannot reach all individuals. Near the end of the simulation, practically all connections are removed, making it impossible for the infection to spread further. This is by no means a realistic example, but it showcases how changing networks might be utilized in this package.
 
-This simulation could easily be extended to make the isolation non-permanent, by re-adding the removed connections after a pre-defined duration, or could be even further extended by adding vaccinations or other variables.
+This simulation could easily be extended to make the isolation non-permanent, by re-adding the removed connections after a pre-defined duration, or could be even further extended by adding vaccinations or other variables. Additionally, although not shown in this vignette, it would of course also be possible to use the other features shown for regular simulations (weighted or directed networks, multiple networks, etc.) in discrete-time simulation as well.
 
 # Discussion
 
@@ -540,5 +580,3 @@ Networks-based simulations offer an additional amount of flexibility in specifyi
 Despite the great flexibility offered by this approach, it is used quite infrequently in practice. The preprint published by @Sofrygin2017a did not gather a lot of attention, even though they also offered a clean and powerful implementation of the method through the `simcausal` [@Sofrygin2017] package (which heavily inspired the presented `simDAG` implementation). I suspect that the main reason for this is that there are only few statistical models designed to actually analyze data with such complex DGPs. Despite recent advancements, the combination of network science and causal inference is still in its infancy, as has been pointed out by others [@Ogburn2024; @VanderWeele2013; @An2022]. I hope that this implementation will make future investigations into this subject easier or at least more convenient to methodological researchers.
 
 # References
-
-

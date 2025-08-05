@@ -31,7 +31,7 @@ test_that("one network, using a generating function", {
   set.seed(234)
 
   dag <- empty_dag() +
-    network("net1", net=gen_network) +
+    network("net1", net=gen_network, parents="") +
     node(c("A", "B", "C"), type="rbernoulli", p=0.2, output="numeric") +
     node("X", type="binomial", formula= ~ -2 + net(sum(A==1))*0.2) +
     node("Y", type="binomial", formula= ~ -2 + net(sum(A==1))*0.2 +
@@ -46,6 +46,28 @@ test_that("one network, using a generating function", {
   expect_equal(round(mean(data$X), 3), 0)
   expect_equal(round(mean(data$Y), 3), 0.1)
   expect_equal(round(mean(data$Z), 3), -1.137)
+})
+
+test_that("sorting with net() terms", {
+
+  set.seed(234)
+  g <- igraph::sample_smallworld(1, 10, 2, 0.5)
+
+  dag <- empty_dag() +
+    node(c("A", "B", "C"), type="rnorm") +
+    node("F", type="binomial", formula= ~ 0.4 + net(mean(E))*0.3) +
+    node("D", type="binomial", formula= ~ -2 + A*1 + B*0.1) +
+    node("G", type="gaussian", formula= ~ -2 + net(mean(A))*0.3 +
+           net(mean(D))*2, error=2) +
+    node("E", type="binomial", formula= ~ 1.2 + D*0.2 + C*0.4) +
+    network("net1", net=g)
+
+  # does not work if not sorted first
+  expect_error({data <- sim_from_dag(dag, n_sim=10)})
+
+  # works with sort_dag=TRUE
+  data <- sim_from_dag(dag, n_sim=10, sort_dag=TRUE)
+  expect_true(ncol(data)==7)
 })
 
 test_that("using data.table syntax in net()", {
@@ -90,6 +112,31 @@ test_that("using a different order of neighbors", {
       node("Y1", type="gaussian", formula= ~ 0 + net(.N, order=2)*1, error=0)
     data <- sim_from_dag(dag, n_sim=20)
   })
+})
+
+test_that("using different mindist in order > 1", {
+
+  set.seed(2368)
+  g <- igraph::sample_gnm(n=20, m=30)
+
+  dag <- empty_dag() +
+    network("Net1", net=g) +
+    node("variable_A", type="rnorm") +
+    node("Y1", type="gaussian",
+         formula= ~ 0 + net(.N, order=2, mindist=0)*1, error=0) +
+    node("Y2", type="gaussian",
+         formula= ~ 0 + net(.N, order=2, mindist=1)*1, error=0) +
+    node("Y3", type="gaussian",
+         formula= ~ 0 + net(.N, order=2, mindist=2)*1, error=0) +
+    node("Y4", type="gaussian",
+         formula= ~ 0 + net(.N, order=3, mindist=2)*1, error=0)
+
+  data <- sim_from_dag(dag, n_sim=20)
+
+  expect_equal(data$Y1, data$Y2)
+  expect_equal(round(mean(data$Y2), 3), 9.6)
+  expect_equal(round(mean(data$Y3), 3), 6.6)
+  expect_equal(round(mean(data$Y4), 3), 13)
 })
 
 test_that("using a weighted network", {

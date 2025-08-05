@@ -43,11 +43,7 @@ node_identity.linpred <- function(data, formula, dag) {
 ## returns only the data generated using data_from_formula()
 node_identity.data <- function(data, formula, dag, var_names, name) {
 
-  if (is_formula(formula)) {
-    formstr <- paste0(str_trim(deparse(formula)), collapse="")
-  } else if (is.vector(formula)) {
-    formstr <- formula
-  }
+  formstr <- paste0(str_trim(deparse(formula)), collapse="")
 
   if (has_mixed_terms(formstr)) {
     stop("Mixed model terms are currently not supported in nodes of",

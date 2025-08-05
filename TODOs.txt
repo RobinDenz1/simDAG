@@ -6,6 +6,7 @@
 
 networks-simulation:
 	- allow networks to be inputs when generating networks
+	- for sorting, the network should be used as "parent" for all nodes with net() calls
 
 node_time_to_event:
 	- add support for formula (interpreted as logistic model) to make some

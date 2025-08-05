@@ -39,11 +39,7 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
     doSNOW::registerDoSNOW(cl)
 
     args <- list(...)
-    if ("sort_dag" %in% names(args)) {
-      pckgs <- c("data.table", "simDAG", "Rfast")
-    } else {
-      pckgs <- c("data.table", "simDAG")
-    }
+    pckgs <- c("data.table", "simDAG")
 
     glob_funs <- ls(envir=.GlobalEnv)[vapply(ls(envir=.GlobalEnv), function(obj)
       "function"==class(eval(parse(text=obj)))[1], FUN.VALUE=logical(1))]

@@ -87,6 +87,10 @@ test_that("returning just the data", {
   expect_equal(colnames(data), c("age", "sex", "C", "Y"))
   expect_equal(round(mean(data$Y), 3), 24.691)
 
+  # formula as string returns error
+  expect_error({dag + node("Y", type="identity",
+                           formula="~ age:sex", kind="data")})
+
   # multiple variables
   set.seed(3455)
   dag2 <- dag + node("Y", type="identity", formula= ~ age:sex + Cmedium +
