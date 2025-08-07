@@ -410,8 +410,9 @@ lot.</li>
 many cases, it is a lot easier to just use a node of type
 <code>identity</code> instead of defining a new function.</li>
 <li>The structural equations printed for custom nodes may be
-uninformative.</li>
-<li>In some special cases, the your custom node function may require
+uninformative. Keep this in mind when inspecting the output of
+<code>summary.DAG()</code>.</li>
+<li>In some special cases, your custom node function may require
 information from the supplied <code>dag</code> as well. If this is the
 case, just add a named argument called <code>dag</code> to your function
 and the supplied <code>dag</code> will be passed to it automatically

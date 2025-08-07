@@ -46,7 +46,9 @@
 <h2 class="pkg-version" data-toc-text="0.4.0" id="simdag-040-developmental-version">simDAG 0.4.0 (developmental version)<a class="anchor" aria-label="anchor" href="#simdag-040-developmental-version"></a></h2>
 <p>New Features</p>
 <ul><li>Added the <code><a href="../reference/network.html">network()</a></code>, <code><a href="../reference/network.html">network_td()</a></code> and <code><a href="../reference/net.html">net()</a></code> functions to allow simulations with network based dependencies among individuals. This includes static and dynamic networks in regular <code>DAG</code>s and discrete-time simulations.</li>
-<li>Added the <code>kind</code> argument to <code><a href="../reference/node_identity.html">node_identity()</a></code> to allow different kinds of input to the <code>formula</code> argument.</li>
+</ul><p>Enhancements</p>
+<ul><li>Added the <code>kind</code> argument to <code><a href="../reference/node_identity.html">node_identity()</a></code> to allow different kinds of input to the <code>formula</code> argument.</li>
+<li>Added the <code>include_networks</code> argument to <code><a href="../reference/dag2matrix.html">dag2matrix()</a></code> and <code><a href="https://r.igraph.org/reference/as.igraph.html" class="external-link">as.igraph()</a></code>, due to the new networks-based simulation features.</li>
 </ul><p>Bug Fixes</p>
 <ul><li>Fixed a minor bug that occurred when using <code>node + DAG</code> (in this order).</li>
 <li>Fixed a faulty error message produced when using <code>formula</code> with just one predictor in nodes that do not need an intercept.</li>

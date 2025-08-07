@@ -204,10 +204,11 @@ further nodes, it would look like this:</p>
 <span><span class="co">#&gt; 4: 57.29242     0</span></span>
 <span><span class="co">#&gt; 5: 43.33519     0</span></span></code></pre></div>
 <p>The rownames of this <code>data.table</code> show to which person
-each value belongs. To impose the network structure onto this
-<code>DAG</code>, we can simply add the already generated
-<code>igraph</code> object to it using the <code><a href="../reference/network.html">network()</a></code>
-function:</p>
+each value belongs. In other words, row 1 will be mapped to vertex 1 in
+the network, row 2 will be mapped to vertex 2 of the network and so on.
+To impose the network structure onto this <code>DAG</code>, we can
+simply add the already generated <code>igraph</code> object to it using
+the <code><a href="../reference/network.html">network()</a></code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span> <span class="fu"><a href="../reference/network.html">network</a></span><span class="op">(</span><span class="st">"network1"</span>, net<span class="op">=</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
 <p>In this <code><a href="../reference/network.html">network()</a></code> call, all we had to do was provide a
