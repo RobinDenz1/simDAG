@@ -74,7 +74,7 @@ data <- sim_from_dag(dag, n_sim=5)
 print(data, row.names=TRUE)
 ```
 
-The rownames of this `data.table` show to which person each value belongs. To impose the network structure onto this `DAG`, we can simply add the already generated `igraph` object to it using the `network()` function:
+The rownames of this `data.table` show to which person each value belongs. In other words, row 1 will be mapped to vertex 1 in the network, row 2 will be mapped to vertex 2 of the network and so on. To impose the network structure onto this `DAG`, we can simply add the already generated `igraph` object to it using the `network()` function:
 
 ```{r}
 dag <- dag + network("network1", net=g)

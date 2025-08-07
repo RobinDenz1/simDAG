@@ -227,5 +227,5 @@ Using custom functions as node types is an advanced technique to obtain speciali
 * When using custom nodes, pass the function to `type` directly, do not use a string. This might avoid some weird scoping issues, depending on which environment the simulation is performed in.
 * Keep it simple, if u can. Particularly in time-dependent simulations, the computational complexity of the node function matters a lot.
 * Consider if `node_identity()` might be used instead. In many cases, it is a lot easier to just use a node of type `identity` instead of defining a new function.
-* The structural equations printed for custom nodes may be uninformative.
-* In some special cases, the your custom node function may require information from the supplied `dag` as well. If this is the case, just add a named argument called `dag` to your function and the supplied `dag` will be passed to it automatically whenever `sim_from_dag()` or `sim_discrete_time()` are used.
+* The structural equations printed for custom nodes may be uninformative. Keep this in mind when inspecting the output of `summary.DAG()`.
+* In some special cases, your custom node function may require information from the supplied `dag` as well. If this is the case, just add a named argument called `dag` to your function and the supplied `dag` will be passed to it automatically whenever `sim_from_dag()` or `sim_discrete_time()` are used.
