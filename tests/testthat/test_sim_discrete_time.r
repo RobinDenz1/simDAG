@@ -286,7 +286,7 @@ test_that("helpful error message formula error", {
 
   dag <- empty_dag() +
     node("A", type="rbernoulli") +
-    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3)
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=0.2)
 
   expect_error(sim_discrete_time(dag, n_sim=100, max_t=3),
             paste0("An error occured when interpreting the formula of ",
@@ -298,5 +298,68 @@ test_that("helpful error message formula error", {
                    "in your supplied formula occur in the data generated up ",
                    "to this point.\n The variables currently available in ",
                    "data are:\n(Intercept), ATRUE, B, .id"), fixed=TRUE)
+})
 
+test_that("helpful error message static network error t = 0", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=10, m=30)
+  }
+
+  dag <- empty_dag() +
+    network("net1", net=gen_network) +
+    node(c("A", "C"), type="rbernoulli") +
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=3)
+
+  expect_error(sim_discrete_time(dag, n_sim=100, max_t=3),
+               paste0("An error occured when creating one or more static",
+                      " networks at t = 0. The message was:",
+                      "\nError: The igraph object",
+                      " created by calling the function defined by the",
+                      " 'net' argument should have exactly 100 ",
+                      "vertices, not 10."), fixed=TRUE)
+})
+
+test_that("helpful error message dynamic network error t = 0", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=10, m=30)
+  }
+
+  dag <- empty_dag() +
+    network_td("net1", net=gen_network, create_at_t0=TRUE) +
+    node(c("A", "C"), type="rbernoulli") +
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=2)
+
+  expect_error(sim_discrete_time(dag, n_sim=100, max_t=3),
+               paste0("An error occured when creating one or more dynamic",
+                      " networks at t = 0. The message was:",
+                      "\nError: The igraph object",
+                      " created by calling the function defined by the",
+                      " 'net' argument should have exactly 100 ",
+                      "vertices, not 10."), fixed=TRUE)
+})
+
+test_that("helpful error message static network error t = 0", {
+
+  gen_network <- function(n_sim, sim_time) {
+    if (sim_time==0) {
+      igraph::sample_gnm(n=n_sim, m=30)
+    } else {
+      igraph::sample_gnm(n=10, m=30)
+    }
+  }
+
+  dag <- empty_dag() +
+    network_td("net1", net=gen_network) +
+    node(c("A", "C"), type="rbernoulli") +
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=1)
+
+  expect_error(sim_discrete_time(dag, n_sim=100, max_t=3),
+               paste0("An error occured when updating the network 'net1' at",
+                      " time t = 1. The message was:",
+                      "\nError: The igraph object",
+                      " created by calling the function defined by the",
+                      " 'net' argument should have exactly 100 ",
+                      "vertices, not 10."), fixed=TRUE)
 })

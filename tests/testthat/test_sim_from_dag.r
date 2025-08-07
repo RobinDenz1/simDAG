@@ -113,6 +113,25 @@ test_that("helpful error message formula error", {
 
 })
 
+test_that("helpful error message network error", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=10, m=30)
+  }
+
+  dag <- empty_dag() +
+    network("net1", net=gen_network) +
+    node(c("A", "C"), type="rbernoulli") +
+    node("B", type="gaussian", formula= ~ -1 + A*2 + C*3)
+
+  expect_error(sim_from_dag(dag, n_sim=100),
+               paste0("An error occured when initializing the network",
+                      " 'net1'. The message was:\nError: The igraph object",
+                      " created by calling the function defined by the",
+                      " 'net' argument should have exactly 100 ",
+                      "vertices, not 10."), fixed=TRUE)
+})
+
 on_ci <- getFromNamespace("on_ci", ns="testthat")
 on_cran <- getFromNamespace("on_cran", ns="testthat")
 

@@ -728,4 +728,10 @@ check_inputs_network <- function(name, net, time_varying) {
     stop("'net' must be a function creating an igraph object when using",
          " network_td(). See documentation.", call.=FALSE)
   }
+
+  # check if net function is valid
+  if (is.function(net) && !"n_sim" %in% names(formals(net))) {
+    stop("If 'net' is a function, it needs to have a named argument called",
+         " 'n_sim', specifying the size of the network.", call.=FALSE)
+  }
 }

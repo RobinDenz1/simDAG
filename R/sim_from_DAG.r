@@ -61,10 +61,17 @@ sim_from_dag <- function(dag, n_sim, sort_dag=FALSE,
 
     # initialize networks
     if (inherits(child_nodes[[i]], "DAG.network")) {
-      network_i <- update_network(network=child_nodes[[i]],
-                                  n_sim=n_sim,
-                                  sim_time=0,
-                                  data=data)
+      network_i <- tryCatch({
+        update_network(network=child_nodes[[i]],
+                       n_sim=n_sim,
+                       sim_time=0,
+                       data=data)},
+        error=function(e){
+          stop("An error occured when initializing the network '",
+               child_nodes[[i]]$name, "'. The message was:\n", e,
+               call.=FALSE)
+        }
+      )
       dag$networks[[child_nodes[[i]]$name]] <- network_i
       next
     }

@@ -48,7 +48,7 @@ add_node <- function(dag, node) {
     }
   }
 
-  # add node to child, root or tx_nodeslists inside DAG
+  # add node to child, root or tx_nodes lists inside DAG
   if (inherits(node, "DAG.node")) {
     if (node$time_varying) {
       node$..index.. <- length(dag$tx_nodes) + length(dag$td_networks) + 1
@@ -62,15 +62,14 @@ add_node <- function(dag, node) {
   }
 
   # if not acyclic after adding node, return error
-  if (inherits(node, "DAG.node")) {
-    g <- as.igraph(x=dag, include_root_nodes=TRUE, include_td_nodes=FALSE)
+  g <- as.igraph(x=dag, include_root_nodes=TRUE, include_td_nodes=FALSE,
+                 include_networks=TRUE)
 
-    if (!igraph::is_acyclic(g)) {
-      cycle <- paste0(find_cycle(graph=g, start=node$name), collapse=" -> ")
-      stop("Adding node '", node$name, "' as specified is impossible, ",
-           "because it would make the DAG cyclic through the path:\n",
-           cycle, call.=FALSE)
-    }
+  if (!igraph::is_acyclic(g)) {
+    cycle <- paste0(find_cycle(graph=g, start=node$name), collapse=" -> ")
+    stop("Adding node '", node$name, "' as specified is impossible, ",
+         "because it would make the DAG cyclic through the path:\n",
+         cycle, call.=FALSE)
   }
 
   return(dag)
@@ -182,9 +181,10 @@ summary.DAG <- function(object, char_max=60, ...) {
 #' @importFrom igraph as.igraph
 #' @export
 as.igraph.DAG <- function(x, include_root_nodes=TRUE, include_td_nodes=TRUE,
-                          ...) {
+                          include_networks=FALSE, ...) {
   mat <- dag2matrix(dag=x, include_root_nodes=include_root_nodes,
-                    include_td_nodes=include_td_nodes)
+                    include_td_nodes=include_td_nodes,
+                    include_networks=include_networks)
   g <- igraph::graph_from_adjacency_matrix(mat, mode="directed")
   return(g)
 }

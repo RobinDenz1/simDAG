@@ -9,7 +9,7 @@ This function extends the \code{as.igraph} function from the \code{igraph} packa
 }
 \usage{
 \method{as.igraph}{DAG}(x, include_root_nodes=TRUE,
-          include_td_nodes=TRUE, ...)
+          include_td_nodes=TRUE, include_networks=FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -20,6 +20,9 @@ Whether to include root nodes in the output matrix. Should usually be kept at \c
   }
   \item{include_td_nodes}{
 Whether to include time-dependent nodes added to the \code{dag} using the \code{\link{node_td}} function or not. When including these types of nodes, it is possible for the adjacency matrix to contain cycles, e.g. that it is not a classic DAG anymore, due to the matrix not representing the passage of time.
+  }
+  \item{include_networks}{
+Whether to include time-fixed networks added to the \code{dag} using the \code{\link{network}} function or not. Usually it does not make sense to include those, because they are not classical nodes. This is mostly used internally to ensure that the generation of nodes and networks is processed in the right order.
   }
   \item{...}{
 Currently not used.

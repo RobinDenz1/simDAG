@@ -4,7 +4,11 @@
 New Features
 
 * Added the `network()`, `network_td()` and `net()` functions to allow simulations with network based dependencies among individuals. This includes static and dynamic networks in regular `DAG`s and discrete-time simulations.
+
+Enhancements
+
 * Added the `kind` argument to `node_identity()` to allow different kinds of input to the `formula` argument.
+* Added the `include_networks` argument to `dag2matrix()` and `as.igraph()`, due to the new networks-based simulation features.
 
 Bug Fixes
 

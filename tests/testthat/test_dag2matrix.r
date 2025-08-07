@@ -90,9 +90,14 @@ test_that("including td_nodes, with doubles", {
 })
 
 test_that("including networks", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=n_sim, m=20)
+  }
+
   dag <- empty_dag() +
-    network("net1", net=mean) +
-    network("net2", net=mean, parents=c("C", "D")) +
+    network("net1", net=gen_network) +
+    network("net2", net=gen_network, parents=c("C", "D")) +
     node("A", type="rbernoulli", p=0.1) +
     node("B", type="rbernoulli", p=0.2) +
     node("C", type="gaussian", parents=c("A", "B"), betas=c(0.1, 0.2),

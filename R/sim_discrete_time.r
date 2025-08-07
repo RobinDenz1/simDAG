@@ -57,17 +57,31 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   }
   t0_var_names <- colnames(data)
 
-  # initiate networks, if needed
+  # initiate static networks, if needed
   if (length(dag$child_nodes) == 0 & length(dag$networks) > 0) {
-    dag$networks <- create_networks(networks=dag$networks,
-                                    n_sim=n_sim,
-                                    sim_time=0)
+    dag$networks <- tryCatch({
+      create_networks(networks=dag$networks,
+                      n_sim=n_sim,
+                      sim_time=0)},
+      error=function(e){
+        stop("An error occured when creating one or more static networks at",
+             " t = 0. The message was:\n", e, call.=FALSE)
+      }
+    )
   } else {
     dag$networks <- t0_networks
   }
-  dag$td_networks <- create_networks(networks=dag$td_networks,
-                                     n_sim=n_sim,
-                                     sim_time=0)
+
+  # initiate dynamic networks, if needed
+  dag$td_networks <- tryCatch({
+    create_networks(networks=dag$td_networks,
+                    n_sim=n_sim,
+                    sim_time=0)},
+    error=function(e){
+      stop("An error occured when creating one or more dynamic networks at",
+           " t = 0. The message was:\n", e, call.=FALSE)
+    }
+  )
 
   # perform an arbitrary data transformation right at the start
   if (!is.null(t0_transform_fun)) {
@@ -137,13 +151,21 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
         cat("t = ", t, " node = ", tx_nodes[[i]]$name, "\n", sep="")
       }
 
+      # update time-dependent networks
       if (inherits(tx_nodes[[i]], "DAG.network")) {
-        network_i <- update_network(network=tx_nodes[[i]],
-                                    n_sim=n_sim,
-                                    sim_time=t,
-                                    data=data,
-                                    past_states=past_states,
-                                    past_networks=past_networks)
+        network_i <- tryCatch({
+          update_network(network=tx_nodes[[i]],
+                         n_sim=n_sim,
+                         sim_time=t,
+                         data=data,
+                         past_states=past_states,
+                         past_networks=past_networks)},
+          error=function(e){
+            stop("An error occured when updating the network '",
+                 tx_nodes[[i]]$name, "' at time t = ", t,
+                 ". The message was:\n", e, call.=FALSE)
+          }
+        )
         dag$td_networks[[tx_nodes[[i]]$name]] <- network_i
         next
       }

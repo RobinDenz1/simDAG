@@ -48,6 +48,22 @@ test_that("one network, using a generating function", {
   expect_equal(round(mean(data$Z), 3), -1.137)
 })
 
+test_that(".N equal to neighborhood size", {
+
+  set.seed(1234)
+  g <- igraph::sample_gnm(n=50, m=150)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    network("net1", net=g) +
+    node("n", type="identity", formula= ~ net(.N), kind="data")
+
+  data <- sim_from_dag(dag, n_sim=50)
+  data[, n_igraph := igraph::neighborhood_size(g, mindist=1)]
+
+  expect_equal(data$n, data$n_igraph)
+})
+
 test_that("sorting with net() terms", {
 
   set.seed(234)
@@ -506,4 +522,63 @@ test_that("error when multiple networks are supplied without naming them", {
     node("Y", type="binomial", formula= ~ -2 + net(sum(A))*0.2)
 
   expect_error({data <- sim_from_dag(dag, n_sim=10)})
+})
+
+test_that("error if generated network is not an igraph object", {
+
+  gen_network <- function(n_sim) {
+    return("something else")
+  }
+
+  dag <- empty_dag() +
+    network("net", net=gen_network) +
+    node("A", type="rbernoulli", p=0.2) +
+    node("Y", type="binomial", formula= ~ -2 + net(sum(A))*0.2)
+
+  expect_error({data <- sim_from_dag(dag, n_sim=10000)})
+})
+
+test_that("error if network has < or > n_sim vertices", {
+
+  gen_network <- function(n_sim) {
+    g <- igraph::sample_gnm(n=40, m=20)
+    return(g)
+  }
+
+  dag <- empty_dag() +
+    network("net", net=gen_network) +
+    node("A", type="rbernoulli", p=0.2) +
+    node("Y", type="binomial", formula= ~ -2 + net(sum(A))*0.2)
+
+  expect_error({data <- sim_from_dag(dag, n_sim=10000)})
+})
+
+test_that("error if network function does not have an 'n_sim' argument", {
+
+  gen_network <- function(n) {
+    g <- igraph::sample_gnm(n=n, m=20)
+    return(g)
+  }
+
+  expect_error({
+    dag <- empty_dag() +
+      network("net", net=gen_network) +
+      node("A", type="rbernoulli", p=0.2) +
+      node("Y", type="binomial", formula= ~ -2 + net(sum(A))*0.2)
+  })
+})
+
+test_that("error if network is generated only after being used", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=n_sim, m=n_sim*2)
+  }
+
+  dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node("C", type="binomial", formula= ~ -1 + A*0.2 + B*3 + net(mean(A))*0.3) +
+    network("D", net=gen_network, parents=c("A", "B"))
+
+  expect_error({data <- sim_from_dag(dag, n_sim=10)})
+
 })

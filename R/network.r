@@ -187,6 +187,14 @@ get_all_edges <- function(g, mode, order, mindist) {
 #' @importFrom data.table merge.data.table
 get_net_info <- function(g, data, net_name, mode, order, mindist) {
 
+  if (!igraph::is_igraph(g)) {
+    stop("The network '", net_name, "' was not generated before it",
+         " was used in a net() call. This may happen if the network() or",
+         " network_td() call was added at the wrong place when creating the",
+         " 'dag' object. Fixing the order or using sort_dag=TRUE might help.",
+         call.=FALSE)
+  }
+
   n_vertices <- length(igraph::V(g))
 
   if (nrow(data)==0) {
@@ -233,6 +241,7 @@ aggregate_neighbors <- function(d_net, d_net_terms) {
 ## process all net() terms of a node one by one and merge results to the data
 #' @importFrom data.table :=
 #' @importFrom data.table setkey
+#' @importFrom data.table copy
 add_network_info <- function(data, d_net_terms, networks) {
 
   ..id.. <- name <- mindist <- NULL
@@ -310,6 +319,17 @@ update_network <- function(network, n_sim, data=NULL, sim_time=NULL,
       args$past_networks <- past_networks
     }
     network$net <- do.call(network$net_fun, args=args)
+
+    # check if output is correct
+    if (!igraph::is_igraph(network$net)) {
+      stop("The object created by calling the function defined by the 'net'",
+           " argument should be an 'igraph' object, not an '",
+           class(network$net)[1], "' object.", call.=FALSE)
+    } else if (length(igraph::V(network$net)) != n_sim) {
+      stop("The igraph object created by calling the function defined by",
+           " the 'net' argument should have exactly ", n_sim, " vertices,",
+           " not ", length(igraph::V(network$net)), ".", call.=FALSE)
+    }
   }
 
   return(network)
