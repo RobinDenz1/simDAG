@@ -9,6 +9,7 @@ Enhancements
 
 * Added the `kind` argument to `node_identity()` to allow different kinds of input to the `formula` argument.
 * Added the `include_networks` argument to `dag2matrix()` and `as.igraph()`, due to the new networks-based simulation features.
+* Added the `unif` argument to `node_time_to_event()` to allow users to generate multiple time-to-event nodes at once that are basically using the same "seed" value for the random number generator.
 
 Bug Fixes
 

@@ -258,7 +258,7 @@ check_inputs_long2start_stop <- function(data, id, time, varying) {
   }
 
   if (length(varying)==0) {
-    warning("No time-varying variables specified.")
+    warning("No time-varying variables specified.", call.=FALSE)
   }
 }
 
@@ -318,22 +318,27 @@ check_inputs_sim2data <- function(sim, use_saved_states, to, target_event,
   if (length(tte_names) < length(sim$tx_nodes) & sim$save_states!="all") {
     warn_cols <- unlist(lapply(sim$tx_nodes[node_types!="time_to_event"],
                                FUN=function(x){x$name}))
-    warning("Resulting data may be inaccurate for the following columns: '",
-            paste0(warn_cols, collapse="', '"), "'\nbecause save_states!='all'",
-            " in sim_discrete_time() function call. See details.")
+    if (is.null(remove_vars) || (!is.null(remove_vars) &&
+                                 !all(warn_cols %in% remove_vars))) {
+      warning("Resulting data may be inaccurate for the following columns: '",
+              paste0(warn_cols, collapse="', '"),
+              "'\nbecause save_states!='all' in sim_discrete_time() ",
+              "function call. See details.", call.=FALSE)
+    }
   }
 
   # raise warning when using save_past_events = FALSE
   if (sim$save_states!="all" && any(save_past_events==FALSE) ) {
     warning("Resulting data may be inaccurate because save_past_events",
             " was set to FALSE in one or more nodes in the original",
-            " sim_discrete_time() function call. See details.")
+            " sim_discrete_time() function call. See details.",
+            call.=FALSE)
   }
 
   if (sim$save_states=="at_t") {
     warning("The output of this function may be inaccurate if",
             " save_states='at_t' was used in the original sim_discrete_time()",
-            " function call. See documentation.")
+            " function call. See documentation.", call.=FALSE)
   }
 }
 

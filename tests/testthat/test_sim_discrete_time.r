@@ -290,7 +290,8 @@ test_that("helpful error message formula error", {
 
   expect_error(sim_discrete_time(dag, n_sim=100, max_t=3),
             paste0("An error occured when interpreting the formula of ",
-                   "node 'B'. The message was:\nError: Error in `[.data.table`",
+                   "node 'B' at time t = 1. The message was:\nError:",
+                   " Error in `[.data.table`",
                    "(mod_mat, , args$parents, with = FALSE): columns not ",
                    "found: [A, C]\nThis error may occur when one of the terms ",
                    "in a supplied ", "formula does not match any variables ",

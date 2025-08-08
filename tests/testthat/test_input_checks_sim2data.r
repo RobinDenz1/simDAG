@@ -79,3 +79,18 @@ test_that("warning save_states='at_t'", {
 
   expect_warning(sim2data(sim, to="long"))
 })
+
+test_that("warning with potentially incorrect output for variables", {
+  dag <- empty_dag() +
+    node_td("death", type="time_to_event", prob_fun=0.0001,
+            event_duration=Inf) +
+    node_td("A", type=rbernoulli)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=200)
+
+  # warning if included
+  expect_warning({sim2data(sim, to="long")})
+
+  # no warning if remove_vars removes them all
+  expect_no_warning(sim2data(sim, to="long", remove_vars="A"))
+})

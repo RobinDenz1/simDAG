@@ -67,9 +67,10 @@ add_node <- function(dag, node) {
 
   if (!igraph::is_acyclic(g)) {
     cycle <- paste0(find_cycle(graph=g, start=node$name), collapse=" -> ")
-    stop("Adding node '", node$name, "' as specified is impossible, ",
-         "because it would make the DAG cyclic through the path:\n",
-         cycle, call.=FALSE)
+    node_type <- ifelse(inherits(node, "DAG.node"), "node", "network")
+    stop("Adding ", node_type, " '", node$name,
+         "' as specified is impossible, because it would make the DAG",
+         " cyclic through the path:\n", cycle, call.=FALSE)
   }
 
   return(dag)

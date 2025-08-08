@@ -19,6 +19,10 @@ add_missing_parents <- function(node) {
   if (node$type_str=="time_to_event" | node$type_str=="competing_events") {
     parents <- c(".id", node$parents,
                  paste0(node$name, c("_event", "_time")))
+    if ("unif" %in% names(node) && is.character(node$unif) &&
+        !node$unif %in% node$parents) {
+      parents <- c(parents, node$unif)
+    }
   } else {
     parents <- node$parents
   }

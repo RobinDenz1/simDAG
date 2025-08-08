@@ -130,11 +130,11 @@ head(data)
 By time-dependent nodes we mean nodes that are created using the `node_td()` function. In general, this works in essentially the same way as for simple root nodes or child nodes. The requirements are:
 
 * **1.)** Its' name should start with `node_` (if you want to use a string to define it in `type`).
-* **2.)** It should contain an argument called `data` (contains the already generated data).
+* **2.)** If it is a child node, it should contain an argument called `data` (contains the already generated data).
 * **3.)** If it is a child node, it should contain an argument called `parents` (contains a vector of the child nodes parents). This is not necessary for nodes that are independently generated.
 * **4.)** It should return either a vector of length `n_sim` or a `data.frame()` (or similar object) with any number of columns and `n_sim` rows.
 
-Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, there are two build-in arguments that users may specify in custom time-dependent nodes, which are then used internally. First, users may add an argument to this function called `sim_time`. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it. Secondly, the argument `past_states` may be added. If done so, a list containing all previous states of the simulation (as saved using the `save_states` argument of the `sim_discrete_time()` function) will be passed to it internally, giving the user access to the data generated at previous points in time.
+Again, any number of additional arguments is allowed and will be passed through the three-dot syntax. Additionally, there are multiple build-in arguments that users may specify in custom time-dependent nodes, which are then used internally. First, users may add an argument to this function called `sim_time`. If included in the function definition, the current time of the simulation will be passed to the function on every call made to it. Secondly, the argument `past_states` may be added. If done so, a list containing all previous states of the simulation (as saved using the `save_states` argument of the `sim_discrete_time()` function) will be passed to it internally, giving the user access to the data generated at previous points in time. Similarly, the arguments `n` (corresponding to `n_sim`) or `dag` (corresponding to the supplied DAG) may be used.
 
 ## Examples
 
@@ -155,6 +155,13 @@ n_sim <- 100
 
 dag <- empty_dag() +
   node_td(name="Something", type=node_custom_root_td, n=n_sim, mean=10, sd=5)
+```
+
+Equivalently, and more simply, we could use (because `n` is passed automatically):
+
+```{r}
+dag <- empty_dag() +
+  node_td(name="Something", type=rnorm, mean=10, sd=5)
 ```
 
 ### Time-Dependent Child Nodes

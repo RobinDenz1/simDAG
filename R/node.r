@@ -35,7 +35,8 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     parents <- all.vars(formula)
     warning("Using regular formulas in 'formula' was deprecated in version",
             " 0.2.0 and will no longer be supported in the next version",
-            " of this package. Please use the new custom formulas instead.")
+            " of this package. Please use the new custom formulas instead.",
+            call.=FALSE)
   } else if (is.character(formula) & is.null(parents)) {
     parents <- parents_from_formula(formula, node_type=type)
   } else if (is.null(parents) && is_zeroinfl_node(type)) {
@@ -100,7 +101,8 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
     parents <- all.vars(formula)
     warning("Using regular formulas in 'formula' was deprecated in version",
             " 0.2.0 and will no longer be supported in the next version",
-            " of this package. Please use the new custom formulas instead.")
+            " of this package. Please use the new custom formulas instead.",
+            call.=FALSE)
   } else if (is.character(formula) & is.null(parents)) {
     parents <- parents_from_formula(formula, node_type=type)
   } else if (is.null(parents) && is_zeroinfl_node(type)) {

@@ -5,7 +5,7 @@
 #' @export
 node_time_to_event <- function(data, parents, sim_time, past_states,
                                name, prob_fun, ..., event_duration=1,
-                               immunity_duration=event_duration,
+                               immunity_duration=event_duration, unif=NULL,
                                time_since_last=FALSE, event_count=FALSE,
                                save_past_events=TRUE, check_inputs=TRUE,
                                envir) {
@@ -55,7 +55,13 @@ node_time_to_event <- function(data, parents, sim_time, past_states,
                                 event_prob)))
 
   # draw new events based on this probability
-  event <- rbernoulli(n=nrow(data), p=event_prob)
+  if (is.null(unif)) {
+    event <- rbernoulli(n=nrow(data), p=event_prob)
+  } else if (is.character(unif)) {
+    event <- data[[unif]] > (1 - event_prob)
+  } else if (is.numeric(unif)) {
+    event <- unif > (1 - event_prob)
+  }
 
   # update event time
   event_time <- fifelse(is.na(data[[name_time]]) & event, sim_time,

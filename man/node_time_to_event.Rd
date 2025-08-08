@@ -10,7 +10,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 \usage{
 node_time_to_event(data, parents, sim_time, past_states, name,
                    prob_fun, ..., event_duration=1,
-                   immunity_duration=event_duration,
+                   immunity_duration=event_duration, unif=NULL,
                    time_since_last=FALSE, event_count=FALSE,
                    save_past_events=TRUE, check_inputs=TRUE,
                    envir)
@@ -42,6 +42,9 @@ A single number > 0 specifying how long the event should last. The point in time
   }
   \item{immunity_duration}{
 A single number >= \code{event_duration} specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{event_duration + 10} should be used.
+  }
+  \item{unif}{
+Specifies the (usually uniformly distributed) numeric vector that should be used to perform the Bernoulli trials. If \code{NULL} (default), the uniform numbers are generated internally at each point in time. If a single character string is supplied, a column with the same name in \code{data} will be used for these numbers (can, but does not need to be mentioned in \code{parents}). If a numeric vector is supplied directly, these values will be used instead. This argument may be useful to make two or more time-to-event nodes use the same "seed".
   }
   \item{time_since_last}{
 Either \code{TRUE} or \code{FALSE} (default), indicating whether an additional column should be generated that tracks the number of time units since the individual had its last event onset. For example, if the individual experienced a single event at \eqn{t = 10}, this column would be \code{NA} before time 10, 0 at time 10 and increased by 1 at each point in time. If another event happens, the time is set to 0 again. The column is named \code{paste0(name, "_time_since_last")}. The difference to the column ending with \code{"_time"} is that this column will not be set to \code{NA} again if the \code{immunity_duration} is over. It keeps counting until the end of the simulation, which may be useful when constructing event-time dependent probability functions.

@@ -1,6 +1,9 @@
 
 ###### Bugs & TODOS ######
 
+root nodes in sim_discrete_time()
+	- automatically silence save_states warning if all potentially inaccurate columns are removed using remove_vars arg
+	- add "unif" argument to node_competing_events()
 
 ####### New Features: #######
 

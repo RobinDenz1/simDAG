@@ -183,8 +183,8 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                            networks=c(dag$networks, dag$td_networks))},
           error=function(e){
             stop("An error occured when interpreting the formula of node '",
-                 tx_nodes[[i]]$name, "'. The message was:\n", e,
-                 call.=FALSE)
+                 tx_nodes[[i]]$name, "' at time t = ", t, ". The message ",
+                 "was:\n", e, call.=FALSE)
           }
         )
       } else if (tx_nodes[[i]]$type_str == "identity") {
@@ -213,19 +213,23 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       if ("dag" %in% fun_pos_args) {
         args$dag <- dag
       }
+      if ("n" %in% fun_pos_args) {
+        args$n <- n_sim
+      }
       if (!"parents" %in% fun_pos_args) {
         args$parents <- NULL
+      }
+      if (!"data" %in% fun_pos_args) {
+        args$data <- NULL
       }
 
       if (tx_node_types[i]=="time_to_event" |
           tx_node_types[i]=="competing_events") {
         args$envir <- envir
-      } else {
-        # only done for nodes of other types to allow this argument
-        # in prob_fun()
-        if (!"intercept" %in% fun_pos_args) {
-          args$intercept <- NULL
-        }
+      # only done for nodes of other types to allow this argument
+      # in prob_fun()
+      } else if (!"intercept" %in% fun_pos_args) {
+        args$intercept <- NULL
       }
 
       # call needed node function and make possible errors more

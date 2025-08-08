@@ -137,3 +137,60 @@ test_that("using past_states in prob_fun", {
 
   expect_equal(colnames(sim$data), c(".id", "sick_event", "sick_time"))
 })
+
+test_that("using a custom root node without data argument", {
+
+  set.seed(12544)
+
+  dag <- empty_dag() +
+    node_td("testing1", type=runif) +
+    node_td("testing2", type=rbernoulli) +
+    node_td("testing3", type=rnorm)
+  expect_no_error({sim <- sim_discrete_time(dag, n_sim=10, max_t=20)})
+})
+
+test_that("using the 'unif' argument", {
+
+  set.seed(1234)
+
+  # this should be all FALSE, because unif < (1 - prob_fun)
+  dag <- empty_dag() +
+    node_td("test", type="time_to_event", prob_fun=0.1, unif=0.01)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100)
+  data <- sim2data(sim, to="start_stop")
+
+  expect_equal(sum(data$test), 0)
+
+  # this should be all TRUE, because unif >= (1 - prob_fun)
+  dag <- empty_dag() +
+    node_td("test", type="time_to_event", prob_fun=0.1, unif=0.999)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100)
+  data <- sim2data(sim, to="start_stop")
+
+  expect_true(all(data$test))
+
+  # this should be FALSE, TRUE, FALSE, TRUE, FALSE, ...
+  dag <- empty_dag() +
+    node_td("test", type="time_to_event", prob_fun=0.1,
+            unif=rep(c(0.01, 0.999), 50))
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100)
+  data <- sim2data(sim, to="start_stop")
+  data <- data[, .(any_TRUE = any(test)), by=.id]
+
+  expect_equal(data$any_TRUE, rep(c(FALSE, TRUE), 50))
+
+  # A and B should be the same
+  dag <- empty_dag() +
+    node_td("unif_A_B", type=runif) +
+    node_td("A", type="time_to_event", prob_fun=0.1, unif="unif_A_B",
+            parents="unif_A_B") +
+    node_td("B", type="time_to_event", prob_fun=0.1, unif="unif_A_B")
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100, save_states="all")
+  data <- sim2data(sim, to="long")
+
+  expect_equal(data$A, data$B)
+})
