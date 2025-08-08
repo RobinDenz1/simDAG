@@ -51,7 +51,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_time_to_event</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">sim_time</span>, <span class="va">past_states</span>, <span class="va">name</span>,</span>
 <span>                   <span class="va">prob_fun</span>, <span class="va">...</span>, event_duration<span class="op">=</span><span class="fl">1</span>,</span>
-<span>                   immunity_duration<span class="op">=</span><span class="va">event_duration</span>,</span>
+<span>                   immunity_duration<span class="op">=</span><span class="va">event_duration</span>, unif<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   time_since_last<span class="op">=</span><span class="cn">FALSE</span>, event_count<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                   save_past_events<span class="op">=</span><span class="cn">TRUE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span>,</span>
 <span>                   <span class="va">envir</span><span class="op">)</span></span></code></pre></div>
@@ -86,6 +86,9 @@
 
   <dt id="arg-immunity-duration">immunity_duration<a class="anchor" aria-label="anchor" href="#arg-immunity-duration"></a></dt>
 <dd><p>A single number &gt;= <code>event_duration</code> specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over <code>event_duration + 10</code> should be used.</p></dd>
+
+  <dt id="arg-unif">unif<a class="anchor" aria-label="anchor" href="#arg-unif"></a></dt>
+<dd><p>Specifies the (usually uniformly distributed) numeric vector that should be used to perform the Bernoulli trials. If <code>NULL</code> (default), the uniform numbers are generated internally at each point in time. If a single character string is supplied, a column with the same name in <code>data</code> will be used for these numbers (can, but does not need to be mentioned in <code>parents</code>). If a numeric vector is supplied directly, these values will be used instead. This argument may be useful to make two or more time-to-event nodes use the same "seed".</p></dd>
 
   <dt id="arg-time-since-last">time_since_last<a class="anchor" aria-label="anchor" href="#arg-time-since-last"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code> (default), indicating whether an additional column should be generated that tracks the number of time units since the individual had its last event onset. For example, if the individual experienced a single event at \(t = 10\), this column would be <code>NA</code> before time 10, 0 at time 10 and increased by 1 at each point in time. If another event happens, the time is set to 0 again. The column is named <code>paste0(name, "_time_since_last")</code>. The difference to the column ending with <code>"_time"</code> is that this column will not be set to <code>NA</code> again if the <code>immunity_duration</code> is over. It keeps counting until the end of the simulation, which may be useful when constructing event-time dependent probability functions.</p></dd>

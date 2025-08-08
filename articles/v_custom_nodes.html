@@ -258,8 +258,9 @@ are:</p>
 <strong>1.)</strong> Its’ name should start with <code>node_</code>
 (if you want to use a string to define it in <code>type</code>).</li>
 <li>
-<strong>2.)</strong> It should contain an argument called
-<code>data</code> (contains the already generated data).</li>
+<strong>2.)</strong> If it is a child node, it should contain an
+argument called <code>data</code> (contains the already generated
+data).</li>
 <li>
 <strong>3.)</strong> If it is a child node, it should contain an
 argument called <code>parents</code> (contains a vector of the child
@@ -271,7 +272,7 @@ generated.</li>
 with any number of columns and <code>n_sim</code> rows.</li>
 </ul>
 <p>Again, any number of additional arguments is allowed and will be
-passed through the three-dot syntax. Additionally, there are two
+passed through the three-dot syntax. Additionally, there are multiple
 build-in arguments that users may specify in custom time-dependent
 nodes, which are then used internally. First, users may add an argument
 to this function called <code>sim_time</code>. If included in the
@@ -282,7 +283,9 @@ previous states of the simulation (as saved using the
 <code>save_states</code> argument of the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function) will be passed to it
 internally, giving the user access to the data generated at previous
-points in time.</p>
+points in time. Similarly, the arguments <code>n</code> (corresponding
+to <code>n_sim</code>) or <code>dag</code> (corresponding to the
+supplied DAG) may be used.</p>
 </div>
 <div class="section level3">
 <h3 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a>
@@ -303,13 +306,18 @@ look like this:</p>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Something"</span>, type<span class="op">=</span><span class="va">node_custom_root_td</span>, n<span class="op">=</span><span class="va">n_sim</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<p>Equivalently, and more simply, we could use (because <code>n</code>
+is passed automatically):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Something"</span>, type<span class="op">=</span><span class="va">rnorm</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="time-dependent-child-nodes">Time-Dependent Child Nodes<a class="anchor" aria-label="anchor" href="#time-dependent-child-nodes"></a>
 </h4>
 <p>Below is an example for a function that can be used to define a
 custom time-dependent child node:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">node_custom_child</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">out</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">other_event</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">other_event</span><span class="op">)</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
@@ -331,7 +339,7 @@ time-dependent node called <code>other</code> is currently
 <p>Below we give an example on how the <code>sim_time</code> argument
 may be used. The following function simply returns the square of the
 current simulation time as output:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">node_square_sim_time</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">sim_time</span>, <span class="va">n_sim</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">sim_time</span><span class="op">^</span><span class="fl">2</span>, n<span class="op">=</span><span class="va">n_sim</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -354,7 +362,7 @@ events of interest.</p>
 <code>past_states</code> argument, which allows users direct access to
 past states of the simulation. Below is an example of how this might be
 used:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">node_prev_state</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">past_states</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">sim_time</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -378,7 +386,7 @@ simulation is the <code>save_states</code> argument of the
 states should be saved internally. If users want to use previous states,
 these need to be saved, so the argument should in almost all cases be
 set to <code>save_states="all"</code>, as shown below:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_time.html">sim_discrete_time</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">100</span>, max_t<span class="op">=</span><span class="fl">10</span>, save_states<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

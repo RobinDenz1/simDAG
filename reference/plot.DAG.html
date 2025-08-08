@@ -150,12 +150,16 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function uses the <span class="pkg">igraph</span> package to find a suitable layout for the plot and then uses the <span class="pkg">ggplot2</span> package in conjunction with the <code>geom_circle</code> function of the <span class="pkg">ggforce</span> package to plot the directed acyclic graph defined by a <code>DAG</code> object. Since it returns a <code>ggplot</code> object, the user may use any standard <code>ggplot2</code> syntax to augment the plot or to save it using the <code>ggsave</code> function.</p>
-<p>Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the <span class="pkg">igraph</span> package. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the <code><a href="dag2matrix.html">dag2matrix</a></code> function to obtain an adjacency matrix from the <code>DAG</code> object and directly use this matrix and the <span class="pkg">igraph</span> package (or similar ones) to get much better plots.</p>
+<p>Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the <span class="pkg">igraph</span> package. See Pitts and Fowler (2024) for a review. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the <code><a href="dag2matrix.html">dag2matrix</a></code> function to obtain an adjacency matrix from the <code>DAG</code> object and directly use this matrix and the <span class="pkg">igraph</span> package (or similar ones) to get much better plots.</p>
 <p>If the <code>DAG</code> supplied to this function contains time-varying variables, the resulting plot may contain cycles or even bi-directional arrows, depending on the <code>DAG</code>. The reason for that is, that the time-dimension is not shown in the plot. Note also that even though, technically, every time-varying node has itself as a parent, no arrows showing this dependence will be added to the plot.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Robin Denz</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Pitts, Amy J. and Charlotte R. Fowler (2024). Comparison of Open-Source Software for Producing Directed Acyclic Graphs. In: <em>Journal of Causal Inference</em> 12.1</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
