@@ -529,6 +529,10 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
                 (ncol(t0_data) != 0))
     stopifnot("'t0_data' needs to include at least one row." =
                 (nrow(t0_data) != 0))
+    if (!is.null(n_sim)) {
+      warning("An object was supplied to 't0_data', so the argument 'n_sim'",
+              " will be ignored.", call.=FALSE)
+    }
   }
 
   # check content of t0_transform_fun

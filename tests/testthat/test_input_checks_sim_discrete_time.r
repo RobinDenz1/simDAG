@@ -68,3 +68,16 @@ test_that("wrong save_states", {
   expect_error(sim_discrete_time(dag, n_sim=10, max_t=3,
                                  save_states="never"))
 })
+
+test_that("n_sim and t0_data supplied", {
+  dag <- empty_dag() +
+    node_td("A", type="time_to_event", prob_fun=0.1)
+
+  data <- data.table(X=stats::rnorm(50))
+
+  # warning with n_sim specified
+  expect_warning(sim_discrete_time(dag, t0_data=data, n_sim=10, max_t=5))
+
+  # no warning with n_sim not specified
+  expect_no_warning(sim_discrete_time(dag, t0_data=data, max_t=5))
+})
