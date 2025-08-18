@@ -305,7 +305,11 @@ look like this:</p>
 <code class="sourceCode R"><span><span class="va">n_sim</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Something"</span>, type<span class="op">=</span><span class="va">node_custom_root_td</span>, n<span class="op">=</span><span class="va">n_sim</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Something"</span>, type<span class="op">=</span><span class="va">node_custom_root_td</span>, n<span class="op">=</span><span class="va">n_sim</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Values for the arguments 'sim_time', 'past_states', 'dag' and 'n' are</span></span>
+<span><span class="co">#&gt; passed internally whenever present in a node function ('type' argument of the</span></span>
+<span><span class="co">#&gt; node_td() call). Any value specified in the node_td() call will be overwritten</span></span>
+<span><span class="co">#&gt; during the simulation.</span></span></code></pre></div>
 <p>Equivalently, and more simply, we could use (because <code>n</code>
 is passed automatically):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
