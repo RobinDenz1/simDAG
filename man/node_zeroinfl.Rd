@@ -2,7 +2,7 @@
 \alias{node_zeroinfl}
 
 \title{
-Simulate Data from a Zero-Inflated Count Model
+Generate Data from a Zero-Inflated Count Model
 }
 \description{
 Data from the parents is used to first simulate data for the regular count model, which may follow either a poisson regression or a negative binomial regression, as implemented in \code{\link{node_poisson}} and \code{\link{node_negative_binomial}} respectively. Then, zeros are simulated using a logistic regression model as implemented in \code{\link{node_binomial}}. Whenever the second binomial part returned a 0, the first part is set to 0, leaving the rest untouched. Supports random effects and random slopes (if possible) in both models. See examples.

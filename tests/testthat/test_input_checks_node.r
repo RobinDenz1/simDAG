@@ -20,3 +20,15 @@ test_that("type child node", {
 test_that("parents child node", {
   expect_error(node("A", type="binomial", parents=list("A", "B"), betas=1))
 })
+
+test_that("error when using internal variable names", {
+  expect_error({
+    custom_fun <- function(data, parents, type_str) {
+      return(1)
+    }
+
+    dag <- empty_dag() +
+      node("A", type="rnorm") +
+      node("Y", type=custom_fun, parents="A", type_str=20)
+  })
+})

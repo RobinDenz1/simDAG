@@ -23,6 +23,13 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                             call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
 
+  # cannot specify dag because it is passed internally
+  if ("dag" %in% call_names) {
+    warning("Values for the 'dag' argument are passed internally.",
+            " Any value specified in a node() call will be overwritten during",
+            " the simulation.", call.=FALSE)
+  }
+
   if (!is_identity_node(type)) {
     formula <- sanitize_formula(formula)
   }
@@ -53,7 +60,7 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
                                   root=TRUE, args=args)
   } else {
     # NOTE: in an if statement because we need to allow child nodes that are
-    #       almost completely empty for the dag_from_data function
+    #       almost completely empty for the dag_from_data() function
     if (length(args) > 0) {
       check_inputs_child_node(name=name, type=type, parents=parents, args=args,
                               formula=formula, time_varying=FALSE)
@@ -88,6 +95,16 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
                                              "formula") &
                             call_names!=""]
   args <- lapply(call[rel_names], eval, envir=parent.frame())
+
+  # cannot specify internals
+  internals <- c("sim_time", "past_states", "dag", "n")
+  if (any(internals %in% call_names)) {
+    warning("Values for the arguments 'sim_time', 'past_states', 'dag'",
+            " and 'n' are passed internally whenever present in a node",
+            " function ('type' argument of the node_td() call).",
+            " Any value specified in the node_td() call will be overwritten",
+            " during the simulation.", call.=FALSE)
+  }
 
   if (!is_identity_node(type)) {
     formula <- sanitize_formula(formula)

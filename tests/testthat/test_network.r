@@ -21,6 +21,29 @@ test_that("general test cases, one network", {
   expect_equal(round(mean(data$Z), 3), -1.237)
 })
 
+test_that("arguments passed through ... work", {
+
+  set.seed(1324)
+
+  gen_network <- function(n_sim, some_arg) {
+    if (some_arg) {
+      m <- 10
+    } else {
+      m <- 60
+    }
+    g <- igraph::sample_gnm(n=n_sim, m=m)
+    return(g)
+  }
+
+  dag <- empty_dag() +
+    network("net1", net=gen_network, some_arg=FALSE) +
+    node("root", type="rnorm") +
+    node("A", type="identity", formula= ~ net(.N), kind="data")
+  data <- sim_from_dag(dag, n_sim=100, return_networks=TRUE)
+
+  expect_equal(length(igraph::E(data$networks$net1$net)), 60)
+})
+
 test_that("one network, using a generating function", {
 
   gen_network <- function(n_sim) {
@@ -581,4 +604,14 @@ test_that("error if network is generated only after being used", {
 
   expect_error({data <- sim_from_dag(dag, n_sim=10)})
 
+})
+
+test_that("warning if internal variables are used", {
+
+  gen_network <- function(n_sim, past_states) {
+    igraph::sample_gnm(n=n_sim, m=n_sim*2)
+  }
+
+  expect_warning(network("Anet", net=gen_network, past_states=2))
+  expect_warning(network_td("Anet", net=gen_network, past_states=2))
 })

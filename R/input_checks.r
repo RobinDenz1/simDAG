@@ -75,6 +75,17 @@ check_inputs_child_node <- function(name, type, parents, args, time_varying,
 
   # type specific checks
   if (is.function(type)) {
+    internals <- c("type_str", "type_fun", "time_varying", "index")
+    internals_in_formals <- names(formals(type))[names(formals(type)) %in%
+                                                   internals]
+    if (length(internals_in_formals) > 0) {
+      stop("The function supplied to 'type' includes the following",
+           " problematic named arguments:\n",
+           paste0(internals_in_formals, collapse="', '"), ".\n",
+           " These arguments are used as variables internally and",
+           " can therefore not be used by users. Please re-name those",
+           " arguments and re-run your code.", call.=FALSE)
+    }
     type <- extract_function_name(type)
     type <- correct_type_str(type)
   }
@@ -725,7 +736,7 @@ check_inputs_sim_n_datasets <- function(dag, n_repeats, n_cores,
 }
 
 ## check inputs for the network() and network_td() functions
-check_inputs_network <- function(name, net, time_varying) {
+check_inputs_network <- function(name, net, time_varying, args) {
 
   if (!(length(name)==1 & is.character(name))) {
     stop("'name' must be a single character string.", call.=FALSE)
@@ -742,5 +753,15 @@ check_inputs_network <- function(name, net, time_varying) {
   if (is.function(net) && !"n_sim" %in% names(formals(net))) {
     stop("If 'net' is a function, it needs to have a named argument called",
          " 'n_sim', specifying the size of the network.", call.=FALSE)
+  }
+
+  # warn if internals are supplied
+  internals <- c("sim_time", "past_states", "network", "past_networks")
+  if (any(internals %in% names(args))) {
+    warning("The arguments named 'sim_time', 'past_states', 'network',",
+            " and 'past_networks' are passed internally whenever",
+            " the function supplied to the 'net' argument in a network()",
+            " or network_td() call contains them. One of those was also",
+            " passed through the ... syntax and will be ignored.", call.=FALSE)
   }
 }

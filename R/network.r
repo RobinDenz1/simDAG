@@ -18,7 +18,8 @@ network_td <- function(name, net, parents=NULL, create_at_t0=TRUE, ...) {
 create_DAG.network <- function(name, net, parents, time_varying,
                                create_at_t0, ...) {
 
-  check_inputs_network(name=name, net=net, time_varying=time_varying)
+  check_inputs_network(name=name, net=net, time_varying=time_varying,
+                       args=list(...))
 
   if (!is.null(parents) && all(parents=="")) {
     parents <- NULL
@@ -301,7 +302,8 @@ update_network <- function(network, n_sim, data=NULL, sim_time=NULL,
         (sim_time==0 & !network$create_at_t0))) {
 
     fun_args <- names(formals(network$net_fun))
-    args <- list(n_sim=n_sim)
+    args <- network$args
+    args$n_sim <- list(n_sim=n_sim)
 
     if ("data" %in% fun_args) {
       args$data <- data

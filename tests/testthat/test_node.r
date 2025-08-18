@@ -518,3 +518,14 @@ test_that("node_td: error when name or type missing", {
 test_that("snapshot print node_td", {
   expect_snapshot_output(print(node_td("A", type="time_to_event")))
 })
+
+test_that("warning if internals are used in node()", {
+  expect_warning(node("A", type=mean, dag=10))
+})
+
+test_that("warning if internals are used in node_td()", {
+  expect_warning(node_td("A", type=mean, dag=10))
+  expect_warning(node_td("A", type=mean, sim_time=3214))
+  expect_warning(node_td("A", type=mean, past_states=list()))
+  expect_warning(node_td(name="A", type=mean, n=1))
+})
