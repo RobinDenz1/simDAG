@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2.9999</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -214,7 +214,7 @@ An example DAG with three nodes.
 <p>Such DAGs are the cornerstone of the <em>structural approach</em> to
 causal inference developed by <span class="citation">Pearl (2009)</span>
 and <span class="citation">Spirtes, Glymour, and Scheines (2000)</span>.
-They are used extensively in social research <span class="citation">(Wouk, Bauer, and Gottfredson 2019)</span>, econonomics
+They are used extensively in social research <span class="citation">(Wouk, Bauer, and Gottfredson 2019)</span>, economics
 <span class="citation">(Imbens 2020)</span> and epidemiology <span class="citation">(Byeon and Lee 2023)</span> to encode causal
 assumptions about the real underlying DGP of empirical data. For
 empirical research such graphs are very useful because they give a clear
@@ -401,15 +401,15 @@ data from fully specified structural equation models. The
 <code>lavaan</code> package <span class="citation">(Rosseel
 2012)</span>, the <code>semTools</code> package <span class="citation">(Jorgensen et al. 2022)</span> and the
 <code>simsem</code> package <span class="citation">(Pornprasertmanit et
-al. 2021)</span> are a few examples. However, these packages focus soley
-on structural equation models with linear relationships and as such do
-not allow the generation of data with different data types. For example,
-none of these packages allow the generation of time-to-event data, which
-is a type of data that is often needed in simulation studies.
-Specialized <code>R</code> packages such as the <code>survsim</code>
-<span class="citation">(Moriña and Navarro 2017)</span>,
-<code>simsurv</code> <span class="citation">(Brilleman et al.
-2021)</span>, <code>rsurv</code> <span class="citation">(Demarqui
+al. 2021)</span> are a few examples. However, these packages focus
+solely on structural equation models with linear relationships and as
+such do not allow the generation of data with different data types. For
+example, none of these packages allow the generation of time-to-event
+data, which is a type of data that is often needed in simulation
+studies. Specialized <code>R</code> packages such as the
+<code>survsim</code> <span class="citation">(Moriña and Navarro
+2017)</span>, <code>simsurv</code> <span class="citation">(Brilleman et
+al. 2021)</span>, <code>rsurv</code> <span class="citation">(Demarqui
 2024)</span> and <code>reda</code> <span class="citation">(Wang et al.
 2022)</span> packages may be used to simulate such data instead.
 Although some of these packages allow generation of recurrent events,
@@ -1786,7 +1786,7 @@ without the use of discrete-time simulation <span class="citation">(Moriña and 
 with the <code>data.table</code> 1.17.8 package, the
 <code>survival</code> 3.8.3 package, the <code>igraph</code> 2.1.4
 package, the <code>ggplot2</code> 3.5.2 package and the
-<code>simDAG</code> 0.3.2.9999 package. <code>R</code> itself and all
+<code>simDAG</code> 0.4.0 package. <code>R</code> itself and all
 packages used are available from the Comprehensive <code>R</code>
 Archive Network (CRAN) at <a href="https://CRAN.R-project.org/" class="external-link uri">https://CRAN.R-project.org/</a>.</p>
 </div>
@@ -2104,11 +2104,11 @@ this is left as an exercise to the interested reader.</p>
 <h3 id="using-categorical-time-dependent-variables">Using Categorical Time-Dependent Variables<a class="anchor" aria-label="anchor" href="#using-categorical-time-dependent-variables"></a>
 </h3>
 <p>The previous examples all included only binary time-dependent
-variables. For some applications it may be neccessary to used
-categorical time-dependent variables. For example, instead of generating
-the vaccination status as binary, we may want to model it as a
-categorical variable with multiple levels, indicating which kind of
-vaccine the person received (if any). This may be done using the
+variables. For some applications it may be necessary to used categorical
+time-dependent variables. For example, instead of generating the
+vaccination status as binary, we may want to model it as a categorical
+variable with multiple levels, indicating which kind of vaccine the
+person received (if any). This may be done using the
 <code>"competing_events"</code> node <code>type</code>. Below is a
 simple example:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
