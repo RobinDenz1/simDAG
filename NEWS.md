@@ -1,5 +1,5 @@
 
-# simDAG 0.4.0 (developmental version)
+# simDAG 0.4.0
 
 New Features
 

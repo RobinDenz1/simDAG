@@ -2,13 +2,13 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "simDAG",
-  "description": "Simulate complex data from a given directed acyclic graph and information about each individual node. Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to one of many implemented regressions, such as logistic regression, linear regression, poisson regression and more. Also includes a comprehensive framework for discrete-time simulation, which can generate even more complex longitudinal data. For more details, see Robin Denz, Nina Timmesfeld (2025) <doi:10.48550/arXiv.2506.01498>.",
+  "description": "Simulate complex data from a given directed acyclic graph and information about each individual node. Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to one of many implemented regressions, such as logistic regression, linear regression, poisson regression or any other function. Also includes a comprehensive framework for discrete-time simulation, and networks-based simulation which can generate even more complex longitudinal and dependent data. For more details, see Robin Denz, Nina Timmesfeld (2025) <doi:10.48550/arXiv.2506.01498>.",
   "name": "simDAG: Simulate Data from a DAG and Associated Node Information",
   "relatedLink": "https://robindenz1.github.io/simDAG/",
   "codeRepository": "https://github.com/RobinDenz1/simDAG",
   "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -278,7 +278,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1607.102KB",
+  "fileSize": "1735.571KB",
   "citation": [
     {
       "@type": "CreativeWork",

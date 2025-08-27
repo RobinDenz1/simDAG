@@ -371,8 +371,8 @@ $$
 	P(t) =
 	\begin{cases}
 	  0.05 & \text{if} \quad t = 1 \\
-		0.9 & \text{if} \quad t > 1 \text{ and } k \in (1,2) \\
-		0.4 & \text{if} \quad t > 1 \text{ and } k > 3 \\
+		0.4 & \text{if} \quad t > 1 \text{ and } k \in (1,2) \\
+		0.9 & \text{if} \quad t > 1 \text{ and } k > 3 \\
 		0 & \text{otherwise}
 	\end{cases},
 $$

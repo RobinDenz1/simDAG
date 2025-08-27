@@ -303,7 +303,7 @@ update_network <- function(network, n_sim, data=NULL, sim_time=NULL,
 
     fun_args <- names(formals(network$net_fun))
     args <- network$args
-    args$n_sim <- list(n_sim=n_sim)
+    args$n_sim <- n_sim
 
     if ("data" %in% fun_args) {
       args$data <- data
