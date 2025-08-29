@@ -50,7 +50,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_gaussian</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>, <span class="va">intercept</span>, <span class="va">error</span>,</span>
-<span>              var_corr<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span>              var_corr<span class="op">=</span><span class="cn">NULL</span>, link<span class="op">=</span><span class="st">"identity"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +77,9 @@
   <dt id="arg-var-corr">var_corr<a class="anchor" aria-label="anchor" href="#arg-var-corr"></a></dt>
 <dd><p>Variances and covariances for random effects. Only used when <code>formula</code> contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer</a></code> function of the <span class="pkg">simr</span> package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official <span class="pkg">simr</span> github page.</p></dd>
 
+  <dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
+<dd><p>The link function used to transform the linear predictor before adding the random error to it. For a standard linear regression model, this should be set to <code>link="identity"</code> (which is the default). Other allowed values are <code>"log"</code> and <code>"inverse"</code>, which are defined the same way as in the classic <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></code> function.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -87,6 +90,7 @@
 <p>where \(N(0, \texttt{error})\) denotes the normal distribution with mean 0 and a standard deviation of <code>error</code> and \(n\) is the number of parents (<code>length(parents)</code>).</p>
 <p>For example, given <code>intercept=-15</code>, <code>parents=c("A", "B")</code>, <code>betas=c(0.2, 1.3)</code> and <code>error=2</code> the data generation process is defined as:</p>
 <p>$$Y \sim -15 + A \cdot 0.2 + B \cdot 1.3 + N(0, 2).$$</p>
+<p>When using a <code>link</code> other than <code>"identity"</code>, the procedure is equivalent, except that the link function is applied to the linear predictor before adding the random error term. For example, when using <code>link="log"</code>, \(exp(-15 + A \cdot 0.2 + B \cdot 1.3) + N(0, 2)\) is used instead.</p>
 <p><strong><em>Random Effects and Random Slopes</em></strong>:</p>
 <p>This function also allows users to include arbitrary amounts of random slopes and random effects using the <code>formula</code> argument. If this is done, the <code>formula</code>, and <code>data</code> arguments are passed to the variables of the same name in the <code><a href="https://rdrr.io/pkg/simr/man/makeGlmer.html" class="external-link">makeLmer</a></code> function of the <span class="pkg">simr</span> package. The <code>fixef</code> argument of that function will be passed the numeric vector <code>c(intercept, betas)</code> and the <code>VarCorr</code> argument receives the <code>var_corr</code> argument as input. If used as a node type in a <code>DAG</code>, all of this is taken care of behind the scenes. Users can simply use the regular enhanced formula interface of the <code><a href="node.html">node</a></code> function to define these formula terms, as shown in detail in the formula vignette (<code><a href="../articles/v_using_formulas.html">vignette(topic="v_using_formulas", package="simDAG")</a></code>). Please consult that vignette for examples. Also, please note that inclusion of random effects or random slopes usually results in significantly longer computation times.</p>
     </div>
