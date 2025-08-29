@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using poisson regression by p
 }
 \usage{
 node_poisson(data, parents, formula=NULL, betas, intercept,
-             var_corr=NULL)
+             var_corr=NULL, link="log")
 }
 \arguments{
   \item{data}{
@@ -30,13 +30,16 @@ A single number specifying the intercept that should be used when generating the
   \item{var_corr}{
 Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official \pkg{simr} github page.
   }
+  \item{link}{
+The link function used to transform the linear predictor to the \code{lambda} value used in \code{\link[stats]{rpois}}. For a standard Poisson regression model, this should be set to \code{"log"} (which is the default). Other allowed values are \code{"identity"} and \code{"sqrt"}, which are defined the same way as in the classic \code{\link[stats]{glm}} function.
+  }
 }
 \details{
-Essentially, this function simply calculates the linear predictor defined by the \code{betas}-coefficients, the \code{intercept} and the values of the \code{parents}. The exponential function is then applied to this predictor and the result is passed to the \code{\link[stats]{rpois}} function. The result is a draw from a subject-specific poisson distribution, resembling the user-defined poisson regression model.
+Essentially, this function simply calculates the linear predictor defined by the \code{betas}-coefficients, the \code{intercept} and the values of the \code{parents}. The \code{link} function is then applied to this predictor and the result is passed to the \code{\link[stats]{rpois}} function. The result is a draw from a subject-specific poisson distribution, resembling the user-defined poisson regression model.
 
 \strong{\emph{Formal Description}}:
 
-Formally, the data generation can be described as:
+Formally, the data generation (using \code{link="log"}) can be described as:
 
 \deqn{Y \sim Poisson(\lambda),}
 

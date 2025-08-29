@@ -131,17 +131,47 @@ check_inputs_node_gaussian <- function(parents, args) {
 
   if (is.null(args$error)) {
     stop("'error' must be defined when using type='gaussian'.", call.=FALSE)
+  } else if ("link" %in% names(args) && !(length(args$link)==1 &&
+                                          is.character(args$link))) {
+    stop("Argument 'link' must be a single character string.",
+         call.=FALSE)
+  } else if ("link" %in% names(args) &&
+             !args$link %in% c("identity", "log", "inverse")) {
+    stop("Argument 'link' must be either 'identity', 'log' or 'inverse'",
+         " not '", args$link, "'.", call.=FALSE)
   }
 }
 
 ## input checks for binomial nodes
 check_inputs_node_binomial <- function(parents, args) {
   check_inputs_node_regression(parents=parents, args=args, type="binomial")
+
+  if ("link" %in% names(args) && !(length(args$link)==1 &&
+                                        is.character(args$link))) {
+    stop("Argument 'link' must be a single character string.",
+         call.=FALSE)
+  } else if ("link" %in% names(args) &&
+      !args$link %in% c("identity", "logit", "probit", "log", "cauchit",
+                        "cloglog")) {
+    stop("Argument 'link' must be either 'identity', 'logit', 'probit',",
+         " 'log', 'cloglog' or 'cauchit', not '", args$link, "'.",
+         call.=FALSE)
+  }
 }
 
 ## input checks for poisson nodes
 check_inputs_node_poisson <- function(parents, args) {
   check_inputs_node_regression(parents=parents, args=args, type="poisson")
+
+  if ("link" %in% names(args) && !(length(args$link)==1 &&
+                                   is.character(args$link))) {
+    stop("Argument 'link' must be a single character string.",
+         call.=FALSE)
+  } else if ("link" %in% names(args) &&
+             !args$link %in% c("identity", "log", "sqrt")) {
+    stop("Argument 'link' must be either 'identity', 'log', or 'sqrt', not '",
+         args$link, "'.", call.=FALSE)
+  }
 }
 
 ## input checks for negative_binomial nodes

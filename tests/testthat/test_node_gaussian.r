@@ -92,6 +92,46 @@ test_that("with formula + interaction term", {
   expect_equal(mean(dat$gauss), -83.31415, tolerance=0.001)
 })
 
+test_that("using different link functions", {
+
+  set.seed(43525)
+
+  ## link = "log"
+  dag <- empty_dag() +
+    node("A", "rnorm", mean=20, sd=5) +
+    node("B", "rbernoulli", p=0.1) +
+    node("gauss", type="gaussian", formula=~ -1 + A*-2 + BTRUE*11, error=1,
+         link="log")
+  dat <- sim_from_dag(dag, n_sim=1000)
+  expect_equal(round(mean(dat$gauss), 3), -0.001)
+
+  ## link = "inverse"
+  dag <- empty_dag() +
+    node("A", "rnorm", mean=20, sd=5) +
+    node("B", "rbernoulli", p=0.1) +
+    node("gauss", type="gaussian", formula=~ -1 + A*-2 + BTRUE*11, error=1,
+         link="inverse")
+  dat <- sim_from_dag(dag, n_sim=1000)
+  expect_equal(round(mean(dat$gauss), 3), -0.05)
+})
+
+test_that("input checks with link argument", {
+
+  # wrong input
+  expect_error({
+    dag <- empty_dag() +
+      node("A", type="gaussian", formula=~ -1 + A*-2 + BTRUE*11, error=1,
+           link=c("something", "22"))
+  })
+
+  # unsupported link
+  expect_error({
+    dag <- empty_dag() +
+      node("A", type="gaussian", formula=~ -1 + A*-2 + BTRUE*11, error=1,
+           link="logit")
+  })
+})
+
 ## special formula interface
 
 test_that("with special formula", {

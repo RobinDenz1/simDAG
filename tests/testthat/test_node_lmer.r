@@ -369,3 +369,34 @@ test_that("random effects with net() syntax", {
            C2*-4 + A*1.5, error=1, var_corr=var_corr)
   expect_error(data <- sim_from_dag(dag2, n_sim=100))
 })
+
+test_that("simple random effect with non-default link", {
+
+  set.seed(324)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=0, sd=1) +
+    node("E", type="rcategorical", probs=rep(0.1, 10), labels=LETTERS[1:10])
+
+  # gaussian
+  # TODO: this kind of ignores the link function
+  dag_gaus <- dag +
+    node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1|E),
+         var_corr=0.5, error=1, link="inverse")
+  data <- sim_from_dag(dag_gaus, n_sim=100)
+  expect_equal(round(mean(data$Y), 3), -1.99)
+
+  # binomial
+  dag_bin <- dag +
+    node("Y", type="binomial", formula= ~ -2 + 1.5*A + (1|E),
+         var_corr=0.5, link="probit")
+  data <- sim_from_dag(dag_bin, n_sim=100)
+  expect_equal(round(mean(data$Y), 3), 0.150)
+
+  # poisson
+  dag_pois <- dag +
+    node("Y", type="poisson", formula= ~ -2 + A*1.5 + (1|E),
+         var_corr=0.5, link="sqrt")
+  data <- sim_from_dag(dag_pois, n_sim=100)
+  expect_equal(round(mean(data$Y), 3), 5.71)
+})

@@ -2,15 +2,15 @@
 \alias{node_binomial}
 
 \title{
-Generate Data from a (Mixed) Logistic Regression Model
+Generate Data from a (Mixed) Binomial Regression Model
 }
 \description{
-Data from the parents is used to generate the node using logistic regression by predicting the covariate specific probability of 1 and sampling from a Bernoulli distribution accordingly. Allows inclusion of arbitrary random effects and slopes.
+Data from the parents is used to generate the node using binomial regression (usually logistic regression) by predicting the covariate specific probability and sampling from a Bernoulli distribution accordingly. Allows inclusion of arbitrary random effects and slopes for logistic models.
 }
 \usage{
 node_binomial(data, parents, formula=NULL, betas, intercept,
               return_prob=FALSE, output="logical", labels=NULL,
-              var_corr=NULL)
+              var_corr=NULL, link="logit")
 }
 \arguments{
   \item{data}{
@@ -40,13 +40,16 @@ A character vector of length 2 or \code{NULL} (default). If \code{NULL}, the res
   \item{var_corr}{
 Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official \pkg{simr} github page.
   }
+  \item{link}{
+The link function used to transform the linear predictor to the probability scale. For a standard logistic regression model, this should be set to \code{"logit"} (which is the default). Other allowed values are \code{"identity"}, \code{"probit"}, \code{"log"}, \code{"cloglog"} and \code{"cauchit"}, which are defined the same way as in the classic \code{\link[stats]{glm}} function.
+  }
 }
 \details{
 Using the normal form a logistic regression model, the observation specific event probability is generated for every observation in the dataset. Using the \code{rbernoulli} function, this probability is then used to take one bernoulli sample for each observation in the dataset. If only the probability should be returned \code{return_prob} should be set to \code{TRUE}.
 
 \strong{\emph{Formal Description}}:
 
-Formally, the data generation can be described as:
+Formally, the data generation (when using \code{link="logit"}) can be described as:
 
 \deqn{Y \sim Bernoulli(logit(\texttt{intercept} + \texttt{parents}_1 \cdot \texttt{betas}_1 + ... + \texttt{parents}_n \cdot \texttt{betas}_n)),}
 
@@ -57,6 +60,8 @@ where \eqn{Bernoulli(p)} denotes one Bernoulli trial with success probability \e
 For example, given \code{intercept=-15}, \code{parents=c("A", "B")} and \code{betas=c(0.2, 1.3)} the data generation process is defined as:
 
 \deqn{Y \sim Bernoulli(logit(-15 + A \cdot 0.2 + B \cdot 1.3)).}
+
+It works the same way for other \code{link} functions, with the only difference being that \eqn{logit()} would be replaced.
 
 \strong{\emph{Output Format}}:
 

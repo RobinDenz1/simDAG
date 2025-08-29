@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using linear regression by pr
 }
 \usage{
 node_gaussian(data, parents, formula=NULL, betas, intercept, error,
-              var_corr=NULL)
+              var_corr=NULL, link="identity")
 }
 \arguments{
   \item{data}{
@@ -33,6 +33,9 @@ A single number specifying the sigma error that should be used when generating t
   \item{var_corr}{
 Variances and covariances for random effects. Only used when \code{formula} contains mixed model syntax. If there are multiple random effects, their parameters should be supplied as a named list. More complex structures are also supported. This argument is directly passed to the \code{\link[simr]{makeLmer}} function of the \pkg{simr} package. Please consult the documentation of that package for more information on how mixed models should be specified. Some guidance can also be found in the "Issues" section of the official \pkg{simr} github page.
   }
+  \item{link}{
+The link function used to transform the linear predictor before adding the random error to it. For a standard linear regression model, this should be set to \code{link="identity"} (which is the default). Other allowed values are \code{"log"} and \code{"inverse"}, which are defined the same way as in the classic \code{\link[stats]{glm}} function.
+  }
 }
 \details{
 Using the general linear regression equation, the observation-specific value that would be expected given the model is generated for every observation in the dataset generated thus far. We could stop here, but this would create a perfect fit for the node, which is unrealistic. Instead, we add an error term by taking one sample of a normal distribution for each observation with mean zero and standard deviation \code{error}. This error term is then added to the predicted mean.
@@ -48,6 +51,8 @@ where \eqn{N(0, \texttt{error})} denotes the normal distribution with mean 0 and
 For example, given \code{intercept=-15}, \code{parents=c("A", "B")}, \code{betas=c(0.2, 1.3)} and \code{error=2} the data generation process is defined as:
 
 \deqn{Y \sim -15 + A \cdot 0.2 + B \cdot 1.3 + N(0, 2).}
+
+When using a \code{link} other than \code{"identity"}, the procedure is equivalent, except that the link function is applied to the linear predictor before adding the random error term. For example, when using \code{link="log"}, \eqn{exp(-15 + A \cdot 0.2 + B \cdot 1.3) + N(0, 2)} is used instead.
 
 \strong{\emph{Random Effects and Random Slopes}}:
 

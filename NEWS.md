@@ -1,4 +1,10 @@
 
+# simDAG 0.4.1 (developmental version)
+
+New Features:
+
+* Added the `link` argument to `node_gaussian()`, `node_binomial()` and `node_poisson()` to allow different link functions when generating data from these nodes.
+
 # simDAG 0.4.0
 
 New Features

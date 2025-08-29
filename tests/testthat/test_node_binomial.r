@@ -107,3 +107,75 @@ test_that("with special formula", {
 
   expect_true(sum(dat$B)==99)
 })
+
+test_that("using different link functions", {
+
+  set.seed(43565)
+
+  ## identity
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", parents="A", betas=1, intercept=-2,
+         return_prob=TRUE, link="identity") +
+    node("C", type="identity", formula=~ -2 + A*1)
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_equal(dat$B, dat$C)
+
+  ## log
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", parents="A", betas=1, intercept=-2,
+         return_prob=TRUE, link="log") +
+    node("C", type="identity", formula=~ exp(-2 + A*1))
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_equal(dat$B, dat$C)
+
+  ## probit
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", parents="A", betas=1, intercept=-2,
+         return_prob=TRUE, link="probit") +
+    node("C", type="identity", formula=~ stats::pnorm(-2 + A*1))
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_equal(dat$B, dat$C)
+
+  ## cloglog
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", parents="A", betas=1, intercept=-2,
+         return_prob=TRUE, link="cloglog") +
+    node("C", type="identity", formula=~ 1 - exp(-exp(-2 + A*1)))
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_equal(dat$B, dat$C)
+
+  ## cauchit
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=3) +
+    node("B", type="binomial", parents="A", betas=1, intercept=-2,
+         return_prob=TRUE, link="cauchit") +
+    node("C", type="identity", formula=~ stats::pcauchy(-2 + A*1))
+  dat <- sim_from_dag(dag=dag, n_sim=100)
+
+  expect_equal(dat$B, dat$C)
+})
+
+test_that("error with wrong link function", {
+
+  # wrong input
+  expect_error({
+    dag <- empty_dag() +
+      node("A", type="rnorm", mean=10, sd=3) +
+      node("B", type="binomial", formula=~ -2 + A*1, link=NA_integer_)
+  })
+
+  # unsupported link
+  expect_error({
+    dag <- empty_dag() +
+      node("A", type="rnorm", mean=10, sd=3) +
+      node("B", type="binomial", formula=~ -2 + A*1, link="inverse")
+  })
+})

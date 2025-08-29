@@ -3,13 +3,13 @@
 #' @export
 node_binomial <- function(data, parents, formula=NULL, betas, intercept,
                           return_prob=FALSE, output="logical", labels=NULL,
-                          var_corr=NULL) {
+                          var_corr=NULL, link="logit") {
 
   # if formula includes random effects, use node_lmer() instead
   if (!is.null(formula) & !is.null(var_corr)) {
     out <- node_lmer(data=data, formula=formula, betas=betas,
                      intercept=intercept, var_corr=var_corr,
-                     family="binomial")
+                     family=stats::binomial(link=link))
   } else {
 
     if (!data.table::is.data.table(data)) {
@@ -25,7 +25,20 @@ node_binomial <- function(data, parents, formula=NULL, betas, intercept,
 
     prob <- intercept +
       rowSums(mapply("*", data, betas))
-    prob <- 1/(1 + exp(-prob))
+
+    # apply link function if needed
+    if (link=="logit") {
+      prob <- 1/(1 + exp(-prob))
+    } else if (link=="log") {
+      prob <- exp(prob)
+    } else if (link=="probit") {
+      prob <- stats::pnorm(prob)
+    } else if (link=="cauchit") {
+      prob <- stats::pcauchy(prob)
+    } else if (link=="cloglog") {
+      prob <- 1 - exp(-exp(prob))
+    }
+
     out <- rbernoulli(n=nrow(data), p=prob)
   }
 

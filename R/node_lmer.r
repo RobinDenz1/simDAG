@@ -15,7 +15,8 @@ node_lmer <- function(data, formula, betas, intercept, family,
   }
 
   # create fake lmerMod object
-  if (family=="gaussian") {
+  if ((is.list(family) && family$family=="gaussian") ||
+      (!is.list(family) && family=="gaussian")) {
     lmer_obj <- simr::makeLmer(formula=formula, fixef=c(intercept, betas),
                                VarCorr=var_corr, data=data, sigma=error)
   } else {
