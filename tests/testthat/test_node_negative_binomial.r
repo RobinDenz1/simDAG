@@ -9,7 +9,6 @@ test_that("general test case", {
          intercept=-2)
 
   out <- sim_from_dag(dag=dag, n_sim=100)
-
   expect_equal(mean(out$B), 8.02)
 })
 
@@ -23,7 +22,6 @@ test_that("calling the function directly", {
 
   out <- node_negative_binomial(data=dat, parents="A", betas=0.2, theta=0.05,
                                 intercept=-2)
-
   expect_equal(mean(out), 8.02)
 })
 
@@ -37,7 +35,6 @@ test_that("using a formula", {
          betas=c(0.2, 0.01), theta=0.05, intercept=-2)
 
   out <- sim_from_dag(dag=dag, n_sim=100)
-
   expect_equal(mean(out$B), 7164.28)
 })
 
@@ -51,6 +48,28 @@ test_that("using a special formula", {
          theta=0.05)
 
   out <- sim_from_dag(dag=dag, n_sim=100)
-
   expect_equal(mean(out$B), 7164.28)
+})
+
+test_that("other link functions", {
+
+  # link = "identity"
+  set.seed(2435)
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=12, sd=10) +
+    node("B", type="negative_binomial", parents="A", betas=0.2, theta=0.05,
+         intercept=15, link="identity")
+
+  out <- sim_from_dag(dag=dag, n_sim=100)
+  expect_equal(mean(out$B), 17.73)
+
+  # link = "sqrt"
+  set.seed(2435)
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=12, sd=10) +
+    node("B", type="negative_binomial", parents="A", betas=0.2, theta=0.05,
+         intercept=15, link="sqrt")
+
+  out <- sim_from_dag(dag=dag, n_sim=100)
+  expect_equal(mean(out$B), 318.32)
 })

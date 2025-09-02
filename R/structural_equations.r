@@ -46,6 +46,55 @@ get_distr_default <- function(type) {
   return(type)
 }
 
+## get string for different link functions
+#' @importFrom data.table fcase
+get_link_str <- function(link) {
+
+  part1 <- fcase(
+    link=="identity", "",
+    link=="logit", "logit(",
+    link=="probit", "pnorm(",
+    link=="log", "exp(",
+    link=="cloglog", "1 - exp(-exp(",
+    link=="cauchit", "pcauchy(",
+    link=="inverse", "1 / (",
+    link=="sqrt", "(",
+    default=""
+  )
+
+  part2 <- fcase(
+    link=="identity", "",
+    link %in% c("logit", "probit", "log", "cauchit", "inverse"), ")",
+    link=="cloglog", "))",
+    link=="sqrt", ")^2",
+    default=""
+  )
+
+  out <- list(part1=part1, part2=part2)
+  return(out)
+}
+
+## get default link function depending on the node type
+#' @importFrom data.table fcase
+get_link <- function(node) {
+
+  # get link argument
+  if (!is.null(node$link)) {
+    link_str <- node$link
+  } else {
+    link_str <- fcase(
+      node$type_str=="gaussian", "identity",
+      node$type_str=="binomial", "logit",
+      node$type_str=="poisson", "log",
+      default="identity"
+    )
+  }
+
+  # get strings needed in structural equations
+  out <- get_link_str(link_str)
+  return(out)
+}
+
 # some cosmetic changes to supplied formula
 prep_formula_str_eq <- function(formula) {
   formula <- gsub("~", "", formula, fixed=TRUE)
@@ -74,19 +123,23 @@ str_eq_root <- function(node) {
 ## structural equation for binomial child node
 str_eq_binomial <- function(node) {
 
+  link <- get_link(node)
+
   if (!is.null(node$formula) && !is_formula(node$formula)) {
-    out <- paste0(node$name, " ~ Bernoulli(logit(",
-                  prep_formula_str_eq(node$formula), "))")
+    out <- paste0(node$name, " ~ Bernoulli(", link$part1,
+                  prep_formula_str_eq(node$formula), link$part2, ")")
   } else if (is.null(node$intercept)) {
-    out <- paste0(node$name, " ~ Bernoulli(logit())")
+    out <- paste0(node$name, " ~ Bernoulli()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
 
     if (!is.null(node$return_prob) && node$return_prob) {
-      out <- paste0(node$name, " ~ logit(", node$intercept, " + ", beta_eq, ")")
+      out <- paste0(node$name, " ~ ", link$part1, node$intercept, " + ",
+                    beta_eq, link$part2)
     } else {
-      out <- paste0(node$name, " ~ Bernoulli(logit(", node$intercept, " + ",
-                    beta_eq, "))")
+      out <- paste0(node$name, " ~ Bernoulli(", link$part1,
+                    node$intercept, " + ",
+                    beta_eq, link$part2, ")")
     }
   }
   return(out)
@@ -95,15 +148,18 @@ str_eq_binomial <- function(node) {
 ## structural equation for gaussian child node
 str_eq_gaussian <- function(node) {
 
+  link <- get_link(node)
+
   if (!is.null(node$formula) && !is_formula(node$formula)) {
-    out <- paste0(node$name, " ~ N(",
-                  prep_formula_str_eq(node$formula), ", ", node$error, ")")
+    out <- paste0(node$name, " ~ N(", link$part1,
+                  prep_formula_str_eq(node$formula), ", ", node$error,
+                  link$part2, ")")
   } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ N()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-    out <- paste0(node$name, " ~ N(", node$intercept, " + ", beta_eq, ", ",
-                  node$error, ")")
+    out <- paste0(node$name, " ~ N(", link$part1, node$intercept, " + ",
+                  beta_eq, ", ", node$error, link$part2, ")")
   }
   return(out)
 }
@@ -111,15 +167,17 @@ str_eq_gaussian <- function(node) {
 ## structural equation for poisson node
 str_eq_poisson <- function(node) {
 
+  link <- get_link(node)
+
   if (!is.null(node$formula) && !is_formula(node$formula)) {
-    out <- paste0(node$name, " ~ Poisson(exp(",
-                  prep_formula_str_eq(node$formula), "))")
+    out <- paste0(node$name, " ~ Poisson(", link$part1,
+                  prep_formula_str_eq(node$formula), link$part2, ")")
   } else if (is.null(node$intercept)) {
     out <- paste0(node$name, " ~ Poisson()")
   } else {
     beta_eq <- get_beta_plus_parents(betas=node$betas, parents=node$parents)
-    out <- paste0(node$name, " ~ Poisson(exp(", node$intercept, " + ", beta_eq,
-                  "))")
+    out <- paste0(node$name, " ~ Poisson(", link$part1, node$intercept,
+                  " + ", beta_eq, link$part2, ")")
   }
   return(out)
 }

@@ -9,7 +9,7 @@ Data from the parents is used to generate the node using negative binomial regre
 }
 \usage{
 node_negative_binomial(data, parents, formula=NULL, betas,
-                       intercept, theta)
+                       intercept, theta, link="log")
 }
 \arguments{
   \item{data}{
@@ -30,9 +30,12 @@ A single number specifying the intercept that should be used when generating the
   \item{theta}{
 A single number specifying the theta parameter (\code{size} argument in \code{rnbinom}).
   }
+  \item{link}{
+The link function used to transform the linear predictor to the \code{mu} value used in \code{\link[stats]{rnbinom}}. For a standard negative binomial regression model, this should be set to \code{"log"} (which is the default). Other allowed values are \code{"identity"} and \code{"sqrt"}.
+  }
 }
 \details{
-This function uses the linear predictor defined by the \code{betas} and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the \code{data}, \code{betas} and \code{intercept}, exponentiating it and passing it to the \code{mu} argument of the \code{rnbinom} function of the \pkg{stats} package.
+This function uses the linear predictor defined by the \code{betas} and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the \code{data}, \code{betas} and \code{intercept}, applying the inverse of the link function to it and passing it to the \code{mu} argument of the \code{rnbinom} function of the \pkg{stats} package.
 
 This node type currently does not support inclusion of random effects or random slopes in the \code{formula}.
 }

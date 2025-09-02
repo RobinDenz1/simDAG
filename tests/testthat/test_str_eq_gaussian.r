@@ -8,6 +8,10 @@ test_that("one parent", {
   test_node <- node("A", type="gaussian", parents="C", betas=1.2,
                     intercept=-12, error=3)
   expect_equal(str_eq_gaussian(test_node), "A ~ N(-12 + 1.2*C, 3)")
+
+  # link="inverse"
+  test_node$link <- "inverse"
+  expect_equal(str_eq_gaussian(test_node), "A ~ N(1 / (-12 + 1.2*C, 3))")
 })
 
 test_that("multiple parents", {
