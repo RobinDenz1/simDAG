@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_negative_binomial</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>,</span>
-<span>                       <span class="va">intercept</span>, <span class="va">theta</span><span class="op">)</span></span></code></pre></div>
+<span>                       <span class="va">intercept</span>, <span class="va">theta</span>, link<span class="op">=</span><span class="st">"log"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,10 +74,13 @@
   <dt id="arg-theta">theta<a class="anchor" aria-label="anchor" href="#arg-theta"></a></dt>
 <dd><p>A single number specifying the theta parameter (<code>size</code> argument in <code>rnbinom</code>).</p></dd>
 
+  <dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
+<dd><p>The link function used to transform the linear predictor to the <code>mu</code> value used in <code><a href="https://rdrr.io/r/stats/NegBinomial.html" class="external-link">rnbinom</a></code>. For a standard negative binomial regression model, this should be set to <code>"log"</code> (which is the default). Other allowed values are <code>"identity"</code> and <code>"sqrt"</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function uses the linear predictor defined by the <code>betas</code> and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the <code>data</code>, <code>betas</code> and <code>intercept</code>, exponentiating it and passing it to the <code>mu</code> argument of the <code>rnbinom</code> function of the <span class="pkg">stats</span> package.</p>
+    <p>This function uses the linear predictor defined by the <code>betas</code> and the input design matrix to sample from a subject-specific negative binomial distribution. It does to by calculating the linear predictor using the <code>data</code>, <code>betas</code> and <code>intercept</code>, applying the inverse of the link function to it and passing it to the <code>mu</code> argument of the <code>rnbinom</code> function of the <span class="pkg">stats</span> package.</p>
 <p>This node type currently does not support inclusion of random effects or random slopes in the <code>formula</code>.</p>
     </div>
     <div class="section level2">
