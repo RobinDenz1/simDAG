@@ -10,7 +10,7 @@ This function takes a single \code{DAG} object and generates a list of multiple 
 \usage{
 sim_n_datasets(dag, n_sim, n_repeats, n_cores=1,
                data_format="raw", data_format_args=list(),
-               seed=stats::runif(1), progressbar=TRUE, ...)
+               seed=NULL, progressbar=TRUE, ...)
 }
 \arguments{
   \item{dag}{
@@ -32,7 +32,7 @@ An optional character string specifying the output format of the generated datas
 An optional list of named arguments passed to the function specified by \code{data_format}. Set to \code{list()} to use no arguments. Ignored if \code{data_format="raw"}.
   }
   \item{seed}{
-A seed for the random number generator. By supplying a value to this argument, the results will be replicable, even if parallel processing is used to generate the datasets (using \code{n_cores > 1}), thanks to the magic performed by the \pkg{doRNG} package.
+A seed for the random number generator. By supplying a value to this argument, the results will be replicable, even if parallel processing is used to generate the datasets (using \code{n_cores > 1}), thanks to the magic performed by the \pkg{doRNG} package. See details.
   }
   \item{progressbar}{
 Either \code{TRUE} (default) or \code{FALSE}, specifying whether a progressbar should be used. Currently only works if \code{n_cores > 1}, ignored otherwise.
@@ -45,6 +45,9 @@ Further arguments passed to the \code{\link{sim_from_dag}} function (if the \cod
 Generating a number of datasets from a single defined \code{dag} object is usually the first step when conducting monte-carlo simulation studies. This is simply a convenience function which automates this process using parallel processing (if specified).
 
 Note that for more complex monte-carlo simulations this function may not be ideal, because it does not allow the user to vary aspects of the data-generation mechanism inside the main for loop, because it can only handle a single \code{dag}. For example, if the user wants to simulate \code{n_repeats} datasets with confounding and \code{n_repeats} datasets without confounding, he/she has to call this function twice. This is not optimal, because setting up the clusters for parallel processing takes some processing time. If many different \code{dag}s should be used, it would make more sense to write a single function that generates the \code{dag} itself for each of the desired settings. This can sadly not be automated by us though.
+}
+\note{
+In previous versions (< 0.4.1) the \code{seed} argument was set to \code{stats::runif(1)}, which is equivalent to using \code{seed=0}. This was a mistake, because it results in the same output being generated regardless of any \code{\link{set.seed}} call used before calling \code{sim_n_datasets()}. This default has been changed to \code{NULL}, which is equivalent to not setting a \code{seed}. To obtain the same results as in versions < 0.4.1 (when no `seed` was specified), use \code{seed=0}.
 }
 \author{
 Robin Denz

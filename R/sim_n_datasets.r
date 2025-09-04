@@ -6,7 +6,7 @@
 #' @export
 sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
                            data_format="raw", data_format_args=list(),
-                           seed=stats::runif(1), progressbar=TRUE, ...) {
+                           seed=NULL, progressbar=TRUE, ...) {
 
   check_inputs_sim_n_datasets(dag=dag, n_repeats=n_repeats,
                               n_cores=n_cores, data_format=data_format,

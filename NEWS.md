@@ -1,9 +1,13 @@
 
 # simDAG 0.4.1 (developmental version)
 
-New Features:
+New Features
 
 * Added the `link` argument to `node_gaussian()`, `node_binomial()` and `node_poisson()` to allow different link functions when generating data from these nodes.
+
+Bug Fixes
+
+* Previously, the `sim_n_datasets()` function used `stats::runif(1)` as a default for the `seed` argument. Because seeds are coerced to integers in `set.seed()`, this essentially meant the `seed` argument was always set to 0 (unless changed by the user), which was not intended. We changed the default to be `NULL`, which is equivalent to not setting a `seed`. This might change results obtained using previous versions. To get the same result as in previous versions, use `seed=0` or `seed=stats::runif(1)`.
 
 # simDAG 0.4.0
 
