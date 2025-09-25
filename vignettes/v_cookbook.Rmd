@@ -28,6 +28,7 @@ This vignette assumes that the reader is already somewhat familiar with the `sim
 ```{r, message=FALSE, warning=FALSE}
 library(simDAG)
 library(data.table)
+library(survival)
 
 set.seed(23414)
 ```
@@ -176,7 +177,7 @@ prob_treat <- function(data, base_p, rr_treat, rr_outcome) {
   base_p * rr_treat^(data$treatment_event) * rr_outcome^(data$outcome_event)
 }
 
-## function that generates the probability of treatment at t 
+## function that generates the probability of the outcome at t 
 ## for all individuals, given the current state of the simulation
 prob_outcome <- function(data, base_p, rr_treat, rr_outcome) {
   base_p * rr_treat^(data$treatment_event) * rr_outcome^(data$outcome_event)
@@ -197,6 +198,74 @@ head(data)
 ```
 
 In this simulation, all individuals start out with no `treatment` and without having experienced the `outcome`. The baseline probability to get the treatment is 0.05 (`base_p=0.05`). It is twice as likely that someone who got the `treatment` in the last period of time gets it again in the next period of time (`rr_treat=2`), and it is much less likely that someone who experienced the `outcome` at $t-1$ will start treatment (`rr_outcome=0.5`). Similarly, the baseline probability of the `outcome` is `base_p=0.01`, with a much lower probability of experiencing it when currently receiving the `treatment` (`rr_treat=0.3`) and a slightly higher chance of experiencing it again when having it at $t-1$ (`rr_outcome=1.2`).
+
+## Cox Model with Time-Varying Covariates
+
+Below we give a small example for simulating data from a Cox model with a time-dependent covariate using the discrete-time simulation approach. In this example, there is one time-dependent covariate named `A` and a single time-to-event outcome called `Y`.
+
+```{r}
+## function that generates the probability of the outcome at t 
+## for all individuals, given the current state of the simulation
+prob_Y <- function(data, base_p, rr_treat) {
+  base_p * rr_treat^(data$A_event)
+}
+
+dag <- empty_dag() +
+  node_td("A", type="time_to_event", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="time_to_event", prob_fun=prob_Y,
+          parents=c("A_event"),
+          event_duration=Inf, base_p=0.01, rr_treat=0.5)
+
+sim <- sim_discrete_time(dag, n_sim=500, max_t=500)
+data <- sim2data(sim, to="start_stop", overlap=TRUE, target_event="Y",
+                 keep_only_first=TRUE)
+head(data)
+```
+
+More specifically, the treatment `A` has no causes but only a general probability of being given (0.01). If it is given, it stays active for 20 days. During that time-frame, the probability of developing the outcome `Y` is reduced by 50%. The time until the first occurrence of `Y` can be described as a Cox proportional hazards model, where `A` is a time-dependent variable:
+
+$$\lambda(t) = \lambda_0(t) \exp(\beta_AA(t))$$.
+
+Here, $\lambda_0(t)$ is the baseline hazard, which in our example is constant over time and equal to 0.01. The relative risk used in the simulation can be recovered as the hazard ratio, e.g. it is equal to $\exp(\beta_A)$. It can be recovered as:
+
+```{r}
+mod <- coxph(Surv(start, stop, Y) ~ A, data=data)
+summary(mod)
+```
+
+Note that the estimate above will not show an exact hazard ratio of 0.5, because only 500 individuals were simulated. With increasing `n_sim`, the estimated value will be closer to the true value of 0.5.
+
+## Aalen Additive Hazards Model with Time-Dependent Covariates
+
+Similar to the Cox model shown above, the Aalen additive hazards model with a time-dependent covariate is defined as:
+
+$$\lambda(t) = \lambda_0(t) + \beta_AA(t)$$
+
+The main difference here is that the coefficients are directly on the hazard difference scale and not on the log hazard ratio scale. Data from such a model can be simulated by slightly adapting the `prob_Y()` function: 
+
+```{r}
+## function that generates the probability of the outcome at t 
+## for all individuals, given the current state of the simulation
+prob_Y <- function(data, intercept, beta_treat) {
+  h <- intercept + beta_treat*data$A_event
+  return(1 - exp(-(h)))
+}
+
+dag <- empty_dag() +
+  node_td("A", type="time_to_event", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="time_to_event", prob_fun=prob_Y,
+          parents=c("A_event"),
+          event_duration=Inf, intercept=0.001, beta_treat=0.05)
+
+sim <- sim_discrete_time(dag, n_sim=500, max_t=500)
+data <- sim2data(sim, to="start_stop", overlap=TRUE, target_event="Y",
+                 keep_only_first=TRUE)
+head(data)
+```
+
+The coefficients could be recovered using an `aalen()` model from the `timereg` R package. The code is not shown to avoid an unneeded dependency on that package.
 
 # Miscellaneous Simulations
 
