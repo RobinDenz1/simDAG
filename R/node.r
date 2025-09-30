@@ -11,9 +11,9 @@ node <- function(name, type, parents=NULL, formula=NULL, ...) {
     stop("Arguments 'name' and 'type' must be specified.", call.=FALSE)
   }
 
-  parents <- get_arg_from_call(call=call, envir=environment(),
+  parents <- get_arg_from_call(call=call, envir=parent.frame(),
                                name="parents", position=3)
-  formula <- get_arg_from_call(call=call, envir=environment(),
+  formula <- get_arg_from_call(call=call, envir=parent.frame(),
                                name="formula", position=4)
 
   # get additional arguments
@@ -84,9 +84,9 @@ node_td <- function(name, type, parents=NULL, formula=NULL, ...) {
     stop("Arguments 'name' and 'type' must be specified.", call.=FALSE)
   }
 
-  parents <- get_arg_from_call(call=call, envir=environment(),
+  parents <- get_arg_from_call(call=call, envir=parent.frame(),
                                name="parents", position=3)
-  formula <- get_arg_from_call(call=call, envir=environment(),
+  formula <- get_arg_from_call(call=call, envir=parent.frame(),
                                name="formula", position=4)
 
   # get additional arguments

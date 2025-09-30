@@ -499,6 +499,36 @@ test_that("cubic terms showing up in parents", {
   expect_equal(dag$child_nodes[[1]]$parents, c("A", "B"))
 })
 
+test_that("node, using objects works in any environment", {
+  expect_no_error({
+    test_fun <- function() {
+
+      parents_M <- c("A", "B", "C", "D")
+
+      node_E <- node("M", type="binomial", parents=parents_M,
+                     betas=c(0, 0, 0, 0), intercept=2)
+      return(node_E)
+    }
+
+    test_fun()
+  })
+})
+
+test_that("node_td, using objects works in any environment", {
+  expect_no_error({
+    test_fun <- function() {
+
+      parents_M <- c("A", "B", "C", "D")
+
+      node_E <- node_td("M", type="time_to_event", parents=parents_M,
+                        prob_fun=0.01)
+      return(node_E)
+    }
+
+    test_fun()
+  })
+})
+
 test_that("node: error when name or type missing", {
   expect_error(empty_dag() + node())
   expect_error(empty_dag() + node(name="A"))
