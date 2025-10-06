@@ -132,6 +132,37 @@ test_that("works in sim_discrete_time() as well", {
   expect_equal(round(mean(data$data$Y), 3), 0.13)
 })
 
+test_that("works with links", {
+
+  set.seed(234)
+
+  dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm", mean=0, sd=1) +
+    node("Y", type="zeroinfl",
+         formula_count= ~ -2 + A*0.2 + B*0.1 + A:B*0.4,
+         formula_zero= ~ 1 + A*1 + B*2,
+         family_count="poisson",
+         link_count="sqrt",
+         link_zero="log")
+  data1 <- sim_from_dag(dag, n_sim=100)
+
+  # with defaults
+  set.seed(234)
+
+  dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm", mean=0, sd=1) +
+    node("Y", type="zeroinfl",
+         formula_count= ~ -2 + A*0.2 + B*0.1 + A:B*0.4,
+         formula_zero= ~ 1 + A*1 + B*2,
+         family_count="poisson",
+         link_count="log",
+         link_zero="logit")
+  data2 <- sim_from_dag(dag, n_sim=100)
+
+  expect_equal(round(mean(data1$Y), 3), 2.88)
+  expect_equal(round(mean(data2$Y, 3)), 0)
+})
+
 test_that("missing info on parents in count model", {
 
   expect_error({

@@ -3,7 +3,7 @@
 
 New Features
 
-* Added the `link` argument to `node_gaussian()`, `node_binomial()`, `node_poisson()` and `node_negative_binomial()` to allow different link functions when generating data from these nodes.
+* Added the `link` argument to `node_gaussian()`, `node_binomial()`, `node_poisson()`, `node_negative_binomial()` and `node_zeroinfl()` to allow different link functions when generating data from these nodes.
 
 Bug Fixes
 

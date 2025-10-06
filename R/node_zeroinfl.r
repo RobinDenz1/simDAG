@@ -7,6 +7,7 @@ node_zeroinfl <- function(data, parents, parents_count, parents_zero,
                           formula_count, formula_zero, betas_count, betas_zero,
                           intercept_count, intercept_zero,
                           family_count="poisson", theta,
+                          link_count, link_zero="logit",
                           var_corr_count, var_corr_zero) {
 
   # simulate counting process part first
@@ -31,6 +32,11 @@ node_zeroinfl <- function(data, parents, parents_count, parents_zero,
   # add theta for negative binomial regression
   if (!missing(theta)) {
     args$theta <- theta
+  }
+
+  # add link function if specified
+  if (!missing(link_count)) {
+    args$link <- link_count
   }
 
   # call the respective node function
@@ -59,6 +65,7 @@ node_zeroinfl <- function(data, parents, parents_count, parents_zero,
                  intercept=intercept_zero)
   }
 
+  args$link <- link_zero
   out_zero <- do.call(node_binomial, args=args)
 
   # put both parts together

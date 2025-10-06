@@ -13,6 +13,7 @@ node_zeroinfl(data, parents, parents_count,
               betas_count, betas_zero,
               intercept_count, intercept_zero,
               family_count="poisson", theta,
+              link_count, link_zero="logit",
               var_corr_count, var_corr_zero)
 }
 \arguments{
@@ -51,6 +52,12 @@ Either \code{"poisson"} for a zero-inflated poisson regression or \code{"negativ
   }
   \item{theta}{
 A single number specifying the theta parameter (\code{size} argument in \code{rnbinom}). Ignore if \code{family_count="poisson"}.
+  }
+  \item{link_count}{
+A single character string, passed to the \code{link} argument of the respective node function used for the count model part. If not supplied, the default of the respective link function is used.
+  }
+  \item{link_zero}{
+A single character string specifying the link in the \code{\link{node_binomial}} function.
   }
   \item{var_corr_count}{
 If random effects or random slopes are included in \code{formula_count}, this argument should be specified to define the variance structure of these effects. It will be passed to the \code{var_corr} argument of \code{\link{node_poisson}}. Random effects or slopes are currently not supported with \code{family_count="negative_binomial"}.
