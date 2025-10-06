@@ -54,6 +54,7 @@
 <span>              <span class="va">betas_count</span>, <span class="va">betas_zero</span>,</span>
 <span>              <span class="va">intercept_count</span>, <span class="va">intercept_zero</span>,</span>
 <span>              family_count<span class="op">=</span><span class="st">"poisson"</span>, <span class="va">theta</span>,</span>
+<span>              <span class="va">link_count</span>, link_zero<span class="op">=</span><span class="st">"logit"</span>,</span>
 <span>              <span class="va">var_corr_count</span>, <span class="va">var_corr_zero</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,6 +96,12 @@
 
   <dt id="arg-theta">theta<a class="anchor" aria-label="anchor" href="#arg-theta"></a></dt>
 <dd><p>A single number specifying the theta parameter (<code>size</code> argument in <code>rnbinom</code>). Ignore if <code>family_count="poisson"</code>.</p></dd>
+
+  <dt id="arg-link-count">link_count<a class="anchor" aria-label="anchor" href="#arg-link-count"></a></dt>
+<dd><p>A single character string, passed to the <code>link</code> argument of the respective node function used for the count model part. If not supplied, the default of the respective link function is used.</p></dd>
+
+  <dt id="arg-link-zero">link_zero<a class="anchor" aria-label="anchor" href="#arg-link-zero"></a></dt>
+<dd><p>A single character string specifying the link in the <code><a href="node_binomial.html">node_binomial</a></code> function.</p></dd>
 
   <dt id="arg-var-corr-count">var_corr_count<a class="anchor" aria-label="anchor" href="#arg-var-corr-count"></a></dt>
 <dd><p>If random effects or random slopes are included in <code>formula_count</code>, this argument should be specified to define the variance structure of these effects. It will be passed to the <code>var_corr</code> argument of <code><a href="node_poisson.html">node_poisson</a></code>. Random effects or slopes are currently not supported with <code>family_count="negative_binomial"</code>.</p></dd>
