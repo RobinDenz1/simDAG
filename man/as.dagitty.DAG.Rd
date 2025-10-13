@@ -1,15 +1,16 @@
-\name{as.igraph.DAG}
-\alias{as.igraph.DAG}
+\name{as.dagitty.DAG}
+\alias{as.dagitty.DAG}
 
 \title{
-Transform a \code{DAG} object into an \code{igraph} object
+Transform a \code{DAG} object into an \code{dagitty} object
 }
 \description{
-This function extends the \code{as.igraph} function from the \code{igraph} package to allow the input of a \code{DAG} object. The result is an \code{igraph} object that includes only the structure of the DAG, without any specifications. May be useful for plotting purposes.
+This function extends the \code{as.dagitty} function from the \code{dagitty} package to allow the input of a \code{DAG} object. The result is a \code{dagitty} object that includes only the structure of the DAG, without any specifications. May be useful to perform identifiability checks etc. on the \code{DAG}.
 }
 \usage{
-\method{as.igraph}{DAG}(x, include_root_nodes=TRUE,
-          include_td_nodes=TRUE, include_networks=FALSE, ...)
+\method{as.dagitty}{DAG}(x, include_root_nodes=TRUE,
+           include_td_nodes=TRUE, include_networks=FALSE,
+           layout=FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -24,6 +25,9 @@ Whether to include time-dependent nodes added to the \code{dag} using the \code{
   \item{include_networks}{
 Whether to include time-fixed networks added to the \code{dag} using the \code{\link{network}} function or not. Usually it does not make sense to include those, because they are not classical nodes.
   }
+  \item{layout}{
+Corresponds to the argument of the same name in the \code{\link[dagitty]{dagitty}} function.
+  }
   \item{...}{
 Currently not used.
   }
@@ -32,10 +36,10 @@ Currently not used.
 Robin Denz
 }
 \value{
-Returns an \code{igraph} object.
+Returns a \code{dagitty} object.
 }
 \seealso{
-\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{as.igraph}}
 }
 \examples{
 library(simDAG)
@@ -49,8 +53,7 @@ dag <- empty_dag() +
   node("smoking", parents=c("sex", "age"), type="binomial",
        betas=c(0.6, 0.2), intercept=-2)
 
-if (requireNamespace("igraph")) {
-  g <- igraph::as.igraph(dag)
-  plot(g)
+if (requireNamespace("dagitty")) {
+  g <- dagitty::as.dagitty(dag)
 }
 }

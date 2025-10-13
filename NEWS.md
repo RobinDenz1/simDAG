@@ -4,6 +4,7 @@
 New Features
 
 * Added the `link` argument to `node_gaussian()`, `node_binomial()`, `node_poisson()`, `node_negative_binomial()` and `node_zeroinfl()` to allow different link functions when generating data from these nodes.
+* Added the `as.dagitty.DAG()` function to allow direct conversion of `DAG` objects to `dagitty` objects.
 
 Bug Fixes
 

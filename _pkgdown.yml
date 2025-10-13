@@ -24,6 +24,7 @@ reference:
       - add_node
       - plot.DAG
       - as.igraph.DAG
+      - as.dagitty.DAG
       - do
       - dag2matrix
       - matrix2dag

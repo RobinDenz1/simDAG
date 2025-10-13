@@ -190,6 +190,38 @@ as.igraph.DAG <- function(x, include_root_nodes=TRUE, include_td_nodes=TRUE,
   return(g)
 }
 
+## S3 method for DAG object to turn a DAG into a dagitty object
+#' @importFrom dagitty as.dagitty
+#' @export
+as.dagitty.DAG <- function(x, include_root_nodes=TRUE,
+                           include_td_nodes=TRUE, include_networks=FALSE,
+                           layout=FALSE, ...) {
+
+  # extract adjacency matrix from DAG
+  mat <- dag2matrix(dag=x, include_root_nodes=include_root_nodes,
+                    include_td_nodes=include_td_nodes,
+                    include_networks=include_networks)
+
+  # transform causal relationships into dagitty syntax
+  rows <- character()
+  for (i in seq_len(nrow(mat))) {
+    for (j in seq_len(ncol(mat))) {
+      if (mat[i, j] == 1) {
+        rows <- c(rows, paste0(rownames(mat)[i], " -> ", colnames(mat)[j], ";"))
+      }
+    }
+  }
+
+  # put together
+  dagitty_str <- paste0(
+    "dag{", paste0(rows, collapse=""), "}"
+  )
+
+  out <- dagitty::dagitty(x=dagitty_str, layout=layout)
+
+  return(out)
+}
+
 # get names of nodes in a DAG at a given level (root, child, tx)
 names_DAG_level <- function(dag, level) {
 
