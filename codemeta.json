@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.3.3 (2024-02-29 ucrt)",
+  "runtimePlatform": "R version 4.5.0 (2025-04-11 ucrt)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -121,7 +121,14 @@
     {
       "@type": "SoftwareApplication",
       "identifier": "MASS",
-      "name": "MASS"
+      "name": "MASS",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=MASS"
     },
     {
       "@type": "SoftwareApplication",
@@ -283,7 +290,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1770.201KB",
+  "fileSize": "1776.349KB",
   "citation": [
     {
       "@type": "CreativeWork",

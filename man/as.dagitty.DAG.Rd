@@ -39,7 +39,7 @@ Robin Denz
 Returns a \code{dagitty} object.
 }
 \seealso{
-\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{as.igraph}}
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{as.igraph.DAG}}
 }
 \examples{
 library(simDAG)
