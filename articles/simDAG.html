@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1235,11 +1235,11 @@ the information we need. This last simulation state is stored in the
 <span><span class="co">#&gt;      .id Y_event Y_time</span></span>
 <span><span class="co">#&gt;    &lt;int&gt;  &lt;lgcl&gt;  &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1:     1   FALSE     NA</span></span>
-<span><span class="co">#&gt; 2:     2    TRUE     56</span></span>
-<span><span class="co">#&gt; 3:     3    TRUE      8</span></span>
-<span><span class="co">#&gt; 4:     4    TRUE     26</span></span>
-<span><span class="co">#&gt; 5:     5   FALSE     NA</span></span>
-<span><span class="co">#&gt; 6:     6    TRUE     58</span></span></code></pre></div>
+<span><span class="co">#&gt; 2:     2   FALSE     NA</span></span>
+<span><span class="co">#&gt; 3:     3   FALSE     NA</span></span>
+<span><span class="co">#&gt; 4:     4    TRUE     62</span></span>
+<span><span class="co">#&gt; 5:     5    TRUE     11</span></span>
+<span><span class="co">#&gt; 6:     6    TRUE     24</span></span></code></pre></div>
 <p>As specified, the simulation contains only the variable
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>,
 split into two columns. The first is called <code>Y_event</code> and is
@@ -1407,12 +1407,12 @@ format:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop      A      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    57  FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 2:     2     1    21  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     2    21    38   TRUE   TRUE</span></span>
-<span><span class="co">#&gt; 4:     3     1    50  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 5:     3    50    70   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 6:     3    70   272  FALSE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1    17  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1    17    19   TRUE   TRUE</span></span>
+<span><span class="co">#&gt; 3:     2     1    56  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     2    56    75   TRUE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     3     1    83  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     3    83   103   TRUE  FALSE</span></span></code></pre></div>
 <p>In this format, there are multiple rows per person, corresponding to
 periods of time in which all variables stayed the same. These intervals
 are defined by the <code>start</code> column (time at which the period
@@ -1432,20 +1432,20 @@ following code:</p>
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; coxph(formula = Surv(start, stop, Y) ~ A, data = dat)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   n= 25020, number of events= 9871 </span></span>
+<span><span class="co">#&gt;   n= 24969, number of events= 9864 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;          coef exp(coef) se(coef)     z Pr(&gt;|z|)    </span></span>
-<span><span class="co">#&gt; ATRUE 1.15906   3.18693  0.02377 48.76   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; ATRUE 1.15063   3.16018  0.02377 48.41   &lt;2e-16 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;       exp(coef) exp(-coef) lower .95 upper .95</span></span>
-<span><span class="co">#&gt; ATRUE     3.187     0.3138     3.042     3.339</span></span>
+<span><span class="co">#&gt; ATRUE      3.16     0.3164     3.016     3.311</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Concordance= 0.58  (se = 0.002 )</span></span>
-<span><span class="co">#&gt; Likelihood ratio test= 1928  on 1 df,   p=&lt;2e-16</span></span>
-<span><span class="co">#&gt; Wald test            = 2378  on 1 df,   p=&lt;2e-16</span></span>
-<span><span class="co">#&gt; Score (logrank) test = 2648  on 1 df,   p=&lt;2e-16</span></span></code></pre></div>
+<span><span class="co">#&gt; Concordance= 0.581  (se = 0.002 )</span></span>
+<span><span class="co">#&gt; Likelihood ratio test= 1901  on 1 df,   p=&lt;2e-16</span></span>
+<span><span class="co">#&gt; Wald test            = 2343  on 1 df,   p=&lt;2e-16</span></span>
+<span><span class="co">#&gt; Score (logrank) test = 2606  on 1 df,   p=&lt;2e-16</span></span></code></pre></div>
 <p>Because the DGP fulfills all assumptions of the Cox model and the
 sample size is very large, the resulting hazard ratio is close to the
 relative risk of 3.24 that were specified in the <code>DAG</code>
@@ -1784,9 +1784,9 @@ without the use of discrete-time simulation <span class="citation">(Moriña and 
 </h2>
 <p>The results in this paper were obtained using <code>R</code> 4.5.1
 with the <code>data.table</code> 1.17.8 package, the
-<code>survival</code> 3.8.3 package, the <code>igraph</code> 2.1.4
+<code>survival</code> 3.8.3 package, the <code>igraph</code> 2.2.0
 package, the <code>ggplot2</code> 4.0.0 package and the
-<code>simDAG</code> 0.4.0.9000 package. <code>R</code> itself and all
+<code>simDAG</code> 0.4.1 package. <code>R</code> itself and all
 packages used are available from the Comprehensive <code>R</code>
 Archive Network (CRAN) at <a href="https://CRAN.R-project.org/" class="external-link uri">https://CRAN.R-project.org/</a>.</p>
 </div>
@@ -1834,12 +1834,12 @@ probabilities. The following code gives an example for this:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop      A      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    13  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    14    17   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     1    18    18   TRUE   TRUE</span></span>
-<span><span class="co">#&gt; 4:     1    19    24   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 5:     1    25    25   TRUE   TRUE</span></span>
-<span><span class="co">#&gt; 6:     1    26    33   TRUE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1    27  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1    28    28  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 3:     1    29    32  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1    33    33  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     1    34    63  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1    64    64  FALSE   TRUE</span></span></code></pre></div>
 <p>In this example, the base probability of myocarditis grows by 0.001
 with each passing day, but the relative risk of infection given a
 vaccination stays constant. More complex time-dependencies may of course
@@ -1872,11 +1872,11 @@ in the respective <code>prob_fun</code>:</p>
 <span><span class="co">#&gt;      .id start  stop      A      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
 <span><span class="co">#&gt; 1:     1     1    16  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    17    36   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     1    37   200  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 4:     2     1    21  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 5:     2    22    22  FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 6:     2    23    58  FALSE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 2:     1    17    17  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 3:     1    18    44  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1    45    45  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     1    46   139  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1   140   140  FALSE   TRUE</span></span></code></pre></div>
 <p>Here, the relative risk increases by 0.01 for each passing day,
 meaning that the risk of a myocarditis given a recent vaccination
 increases over time.</p>
@@ -1912,12 +1912,12 @@ used:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop      A      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1     6  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1     7    26   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     1    27    29  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 4:     1    30    30  FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 5:     1    31   200  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 6:     2     1    43  FALSE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1   119  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1   120   120  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 3:     1   121   147  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1   148   148  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     1   149   152  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1   153   172   TRUE  FALSE</span></span></code></pre></div>
 <p>In this code,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub></mrow><annotation encoding="application/x-tex">RR_A</annotation></semantics></math>
 decreases with each day after a person is vaccinated. In contrast to the
@@ -2029,12 +2029,12 @@ used to generate data from this DGP:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop      A      C      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    46  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    47    47  FALSE  FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 3:     1    48    50  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 4:     1    51    51  FALSE  FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 5:     1    52    58  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 6:     1    59    72  FALSE   TRUE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1    66  FALSE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1    67    67  FALSE  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 3:     1    68    75  FALSE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1    76    76  FALSE  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     1    77   114  FALSE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1   115   115   TRUE  FALSE  FALSE</span></span></code></pre></div>
 <p>In this code we first re-define the <code>prob_myoc()</code> function
 to include the effect of the Covid-19 infection. This utilizes a small
 computational trick, relying on the fact that any number to the power of
@@ -2082,12 +2082,12 @@ code:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop      A      Y    Sex</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    48  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    49    49  FALSE   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     1    50    58  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 4:     1    59    59  FALSE   TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 5:     1    60   200  FALSE  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 6:     2     1     4  FALSE  FALSE   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1   143  FALSE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1   144   163   TRUE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 3:     1   164   200  FALSE  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     2     1     1  FALSE  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:     2     2     2  FALSE   TRUE   TRUE</span></span>
+<span><span class="co">#&gt; 6:     2     3     3  FALSE   TRUE   TRUE</span></span></code></pre></div>
 <p>Here, everything is kept the same as in the original example, with
 the small change that we now add a call to <code><a href="../reference/node.html">node()</a></code> before
 adding the time-dependent variables to define the <code>Sex</code> node
@@ -2136,12 +2136,12 @@ simple example:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop     A      Y</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    23     0  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    24    24     0   TRUE</span></span>
-<span><span class="co">#&gt; 3:     1    25    53     0  FALSE</span></span>
-<span><span class="co">#&gt; 4:     1    54    73     1  FALSE</span></span>
-<span><span class="co">#&gt; 5:     1    74   159     0  FALSE</span></span>
-<span><span class="co">#&gt; 6:     1   160   160     0   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1   200     0  FALSE</span></span>
+<span><span class="co">#&gt; 2:     2     1   172     0  FALSE</span></span>
+<span><span class="co">#&gt; 3:     2   173   173     0   TRUE</span></span>
+<span><span class="co">#&gt; 4:     2   174   200     0  FALSE</span></span>
+<span><span class="co">#&gt; 5:     3     1   108     0  FALSE</span></span>
+<span><span class="co">#&gt; 6:     3   109   109     0   TRUE</span></span></code></pre></div>
 <p>The <code>"competing_events"</code> node <code>type</code> works in
 much the same way as the <code>"time_to_event"</code> node type, with
 the main difference being that instead of using Bernoulli trials it
@@ -2190,12 +2190,12 @@ simple example:</p>
 <span><span class="co">#&gt; Key: &lt;.id, .time&gt;</span></span>
 <span><span class="co">#&gt;      .id .time calories</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1 2837.652</span></span>
-<span><span class="co">#&gt; 2:     1     2 3123.649</span></span>
-<span><span class="co">#&gt; 3:     1     3 3436.496</span></span>
-<span><span class="co">#&gt; 4:     1     4 3782.254</span></span>
-<span><span class="co">#&gt; 5:     1     5 4160.574</span></span>
-<span><span class="co">#&gt; 6:     1     6 4577.265</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1 2501.065</span></span>
+<span><span class="co">#&gt; 2:     1     2 2751.109</span></span>
+<span><span class="co">#&gt; 3:     1     3 3027.282</span></span>
+<span><span class="co">#&gt; 4:     1     4 3329.963</span></span>
+<span><span class="co">#&gt; 5:     1     5 3664.729</span></span>
+<span><span class="co">#&gt; 6:     1     6 4030.849</span></span></code></pre></div>
 <p>In this example, we first generate a normally distributed root node
 called <code>calories</code> using a standard <code><a href="../reference/node.html">node()</a></code> call.
 This represents the value of the variable at
@@ -2244,12 +2244,12 @@ so that a specific order of events is always respected:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop highschool bachelors masters</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt;     &lt;lgcl&gt;    &lt;lgcl&gt;  &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    75      FALSE     FALSE   FALSE</span></span>
-<span><span class="co">#&gt; 2:     1    76   200       TRUE     FALSE   FALSE</span></span>
-<span><span class="co">#&gt; 3:     2     1     4      FALSE     FALSE   FALSE</span></span>
-<span><span class="co">#&gt; 4:     2     5   178       TRUE     FALSE   FALSE</span></span>
-<span><span class="co">#&gt; 5:     2   179   200       TRUE      TRUE   FALSE</span></span>
-<span><span class="co">#&gt; 6:     3     1   116      FALSE     FALSE   FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1   200      FALSE     FALSE   FALSE</span></span>
+<span><span class="co">#&gt; 2:     2     1     6      FALSE     FALSE   FALSE</span></span>
+<span><span class="co">#&gt; 3:     2     7   200       TRUE     FALSE   FALSE</span></span>
+<span><span class="co">#&gt; 4:     3     1    80      FALSE     FALSE   FALSE</span></span>
+<span><span class="co">#&gt; 5:     3    81   142       TRUE     FALSE   FALSE</span></span>
+<span><span class="co">#&gt; 6:     3   143   180       TRUE      TRUE   FALSE</span></span></code></pre></div>
 <p>In this specification, we try to simulate the educational status of a
 person over time. We assume that individuals can only obtain a bachelors
 degree once they have finished high school and that they can only
