@@ -2,7 +2,7 @@
 \alias{as.dagitty.DAG}
 
 \title{
-Transform a \code{DAG} object into an \code{dagitty} object
+Transform a \code{DAG} object into a \code{dagitty} object
 }
 \description{
 This function extends the \code{as.dagitty} function from the \code{dagitty} package to allow the input of a \code{DAG} object. The result is a \code{dagitty} object that includes only the structure of the DAG, without any specifications. May be useful to perform identifiability checks etc. on the \code{DAG}.

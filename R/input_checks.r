@@ -668,12 +668,13 @@ check_inputs_node_time_to_event <- function(data, parents, sim_time, name,
 
     # check content of prob_fun_args
     arg_names <- setdiff(names(formals(prob_fun)), c("data", "sim_time",
-                                                     "past_states"))
+                                                     "past_states", "dag"))
     if (length(args) != 0) {
       for (i in seq_len(length(arg_names))) {
         if(!arg_names[i] %in% names(prob_fun_args) &
            inherits(formals(prob_fun)[[arg_names[i]]], "name")) {
-          stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
+          stop("All parameters of 'prob_fun' except 'data', 'sim_time',",
+               " 'past_states' and 'dag'",
                " must be included in the node_td() call if they don't have a",
                " default value.", call.=FALSE)
         }
@@ -729,11 +730,14 @@ check_inputs_node_competing_events <- function(data, parents, sim_time, name,
     if (length(setdiff(names(formals(prob_fun)),
                        c("data", "sim_time"))) != 0) {
       for (i in seq_len(length(setdiff(names(formals(prob_fun)),
-                                 c("data", "sim_time"))))) {
+                                 c("data", "sim_time", "past_states",
+                                   "dag"))))) {
         if(!is.element(setdiff(names(formals(prob_fun)),
-                               c("data", "sim_time"))[i],
+                               c("data", "sim_time", "past_states",
+                                 "dag"))[i],
                        names(prob_fun_args))) {
-          stop("All parameters of 'prob_fun' except 'data' and 'sim_time'",
+          stop("All parameters of 'prob_fun' except 'data', 'sim_time',",
+               " 'past_states', and 'dag'",
                " must be included in the node_td() call if they don't have a",
                " default value.", call.=FALSE)
         }
