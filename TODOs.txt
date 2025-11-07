@@ -1,7 +1,6 @@
 
 ###### Bugs & TODOS ######
 
-root nodes in sim_discrete_time()
 	- add "unif" argument to node_competing_events()
 
 ####### New Features: #######

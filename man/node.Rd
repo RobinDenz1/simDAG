@@ -53,6 +53,7 @@ For convenience, this package additionally includes three custom root-node funct
 \itemize{
   \item{"\link[=rbernoulli]{rbernoulli}": Draws randomly from a bernoulli distribution.}
   \item{"\link[=rcategorical]{rcategorical}": Draws randomly from any discrete probability density function.}
+  \item{"\link[=rsample]{rsample}": Draws random samples from a given vector.}
   \item{"\link[=rconstant]{rconstant}": Used to set a variable to a constant value.}
 }
 
@@ -62,7 +63,7 @@ Currently, the following node types are implemented directly for convenience:
 
 \itemize{
   \item{"\link[=node_gaussian]{gaussian}": A node based on (mixed) linear regression.}
-  \item{"\link[=node_binomial]{binomial}": A node based on (mixed) logistic regression.}
+  \item{"\link[=node_binomial]{binomial}": A node based on (mixed) binomial regression.}
   \item{"\link[=node_conditional_prob]{conditional_prob}": A node based on conditional probabilities.}
   \item{"\link[=node_conditional_distr]{conditional_distr}": A node based on conditional draws from different distributions.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}

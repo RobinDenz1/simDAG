@@ -1,4 +1,10 @@
 
+# simDAG 0.4.2
+
+New Features
+
+* Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen.
+
 # simDAG 0.4.1
 
 New Features
