@@ -25,7 +25,9 @@ A numeric vector of probability weights for obtaining the elements of the vector
   }
 }
 \details{
-This function is very similar to the \code{\link{rcategorical}} function, with the main difference being that \code{rsample()} directly supports any kind of vector input, not just a few categorical value, but it does not support matrix input in the \code{prob} argument. Use \code{\link{rcategorical}} if the goal is to sample from a categorical distribution with few categories or different probabilities per person and use \code{rsample()} for general sampling purposes.
+This function is very similar to the \code{\link{rcategorical}} function, with the main difference being that \code{rsample()} directly supports any kind of vector input, not just a few categorical values, but it does not support matrix input in the \code{prob} argument. Use \code{\link{rcategorical}} if the goal is to sample from a categorical distribution with few categories or different probabilities per person and use \code{rsample()} for general sampling purposes.
+
+Note that this function is just a wrapper around the \code{\link{sample}} function, with no additional functionality or improvements. It is only meant to conveniently allow sampling within the packages syntax (the original function does not use the \code{n} argument, and can thus not be used directly without a wrapper).
 }
 \author{
 Robin Denz

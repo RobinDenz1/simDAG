@@ -34,7 +34,7 @@ The package currently only implements some possible child nodes. In the future w
 
 \strong{\emph{Why should I use this package instead of the \pkg{simcausal} package?}}
 
-The \pkg{simCausal} package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the \pkg{simcausal} package does not.
+The \pkg{simcausal} package was a big inspiration for this package. In contrast to it, however, it allows quite a bit more flexibility. A big difference is that this package includes a comprehensive framework for discrete-time simulations and the \pkg{simcausal} package does not.
 
 \strong{\emph{Where can I get more information?}}
 

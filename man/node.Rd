@@ -48,7 +48,7 @@ By calling \code{node} you are indicating that this node is a time-fixed variabl
 
 Any function can be used to generate root nodes. The only requirement is that the function has at least one named argument called \code{n} which controls the length of the resulting vector. For example, the user could specify a node of type \code{"rnorm"} to create a normally distributed node with no parents. The argument \code{n} will be set internally, but any additional arguments can be specified using the \code{...} syntax. In the \code{type="rnorm"} example, the user could set the mean and standard deviation using \code{node(name="example", type="rnorm", mean=10, sd=5)}.
 
-For convenience, this package additionally includes three custom root-node functions:
+For convenience, this package additionally includes four custom root-node functions:
 
 \itemize{
   \item{"\link[=rbernoulli]{rbernoulli}": Draws randomly from a bernoulli distribution.}
