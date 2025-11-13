@@ -85,7 +85,7 @@
 <p><code>node_td</code> should only be used if you are planning to perform a discrete-time simulation with the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function. <code>DAG</code> objects including time-dependent nodes may not be used in the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function.</p>
 <p><strong><em>Implemented Root Node Types</em></strong>:</p>
 <p>Any function can be used to generate root nodes. The only requirement is that the function has at least one named argument called <code>n</code> which controls the length of the resulting vector. For example, the user could specify a node of type <code>"rnorm"</code> to create a normally distributed node with no parents. The argument <code>n</code> will be set internally, but any additional arguments can be specified using the <code>...</code> syntax. In the <code>type="rnorm"</code> example, the user could set the mean and standard deviation using <code>node(name="example", type="rnorm", mean=10, sd=5)</code>.</p>
-<p>For convenience, this package additionally includes three custom root-node functions:</p>
+<p>For convenience, this package additionally includes four custom root-node functions:</p>
 <ul><li><p>"<a href="rbernoulli.html">rbernoulli</a>": Draws randomly from a bernoulli distribution.</p></li>
 <li><p>"<a href="rcategorical.html">rcategorical</a>": Draws randomly from any discrete probability density function.</p></li>
 <li><p>"<a href="rsample.html">rsample</a>": Draws random samples from a given vector.</p></li>
@@ -197,7 +197,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

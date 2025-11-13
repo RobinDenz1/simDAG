@@ -401,7 +401,7 @@ the correct <code>parents</code> to the appropriate node. Our final
 “DAG” looks like this:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, mark_td_nodes<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_covid_example_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="v_covid_example_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="672"></p>
 <p>Note that in this plot it doesn’t look like a classic DAG anymore,
 because it has a bi-directional arrow between <code>covid</code> and
 <code>vaccination</code> due to the time-dependent nature of their
@@ -431,7 +431,7 @@ and let the simulation run for 800 days. By calling the
 we simulated:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span>, box_text_size<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_covid_example_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p><img src="v_covid_example_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="672"></p>
 <p>A more useful output of the resulting data can be obtained using the
 <code><a href="../reference/sim2data.html">sim2data()</a></code> function. For example, we could transform the
 output to the start-stop format:</p>
@@ -513,7 +513,7 @@ arXiv:2310.15016</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

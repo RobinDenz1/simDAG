@@ -70,7 +70,8 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function is very similar to the <code><a href="rcategorical.html">rcategorical</a></code> function, with the main difference being that <code>rsample()</code> directly supports any kind of vector input, not just a few categorical value, but it does not support matrix input in the <code>prob</code> argument. Use <code><a href="rcategorical.html">rcategorical</a></code> if the goal is to sample from a categorical distribution with few categories or different probabilities per person and use <code>rsample()</code> for general sampling purposes.</p>
+    <p>This function is very similar to the <code><a href="rcategorical.html">rcategorical</a></code> function, with the main difference being that <code>rsample()</code> directly supports any kind of vector input, not just a few categorical values, but it does not support matrix input in the <code>prob</code> argument. Use <code><a href="rcategorical.html">rcategorical</a></code> if the goal is to sample from a categorical distribution with few categories or different probabilities per person and use <code>rsample()</code> for general sampling purposes.</p>
+<p>Note that this function is just a wrapper around the <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></code> function, with no additional functionality or improvements. It is only meant to conveniently allow sampling within the packages syntax (the original function does not use the <code>n</code> argument, and can thus not be used directly without a wrapper).</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -123,7 +124,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

@@ -164,7 +164,7 @@ that are also constant over time.</p>
 <span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/graph_from_data_frame.html" class="external-link">graph_from_data_frame</a></span><span class="op">(</span><span class="va">data</span>, directed<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="576" style="display: block; margin: auto;"></p>
 <p>In this network, individual
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
 has three neighbors:
@@ -301,7 +301,7 @@ who works with who. They look like this:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g1</span>, main<span class="op">=</span><span class="st">"Friends"</span>, margin<span class="op">=</span><span class="fl">0</span>, vertex.label.cex<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g2</span>, main<span class="op">=</span><span class="st">"Work"</span>, margin<span class="op">=</span><span class="fl">0</span>, vertex.label.cex<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>We colored the vertices differently to highlight that they are two
 distinct networks. We now first repeat large parts of the
 <code>DAG</code> from earlier, but add both networks to it this
@@ -357,7 +357,7 @@ this network one can see that the edges now have different weights:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">$</span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">)</span>, min<span class="op">=</span><span class="fl">1</span>, max<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g1</span>, edge.width<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">g1</span><span class="op">)</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" width="576" style="display: block; margin: auto;"></p>
 <p>Regular <code><a href="../reference/net.html">net()</a></code> calls will ignore these weights, if not
 specifically told not to. Users should use the internal
 <code>..weight..</code> variable to use the weights. For example, if we
@@ -409,7 +409,7 @@ are also directly supported for simulation purposes in this package.</p>
 <span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span>, m<span class="op">=</span><span class="fl">18</span>, directed<span class="op">=</span><span class="cn">TRUE</span>, loops<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g</span>, edge.arrow.size<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-17-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" width="576" style="display: block; margin: auto;"></p>
 <p>In this example, individual 3 can give orders to individual 11, 13
 and 14, but cannot be given orders by these individuals. Now lets
 suppose we want to only use the values of subordinates (e.g. vertices
@@ -459,7 +459,7 @@ directly connected individuals as neighbors, we may also include
 individuals that are connected to those and so on. Below we show another
 random network where the neighbors of node 11 (colored in green) are
 colored in salmon for two different values of <code>order</code>:</p>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>If this was a directed network, the neighborhood would of course also
 be dependent on the direction of the edges, as described in the previous
 section. Below is a simple example on how one could use this
@@ -501,7 +501,7 @@ the direct connections themselves. This can be done using the
 graph illustrating the difference of using <code>mindist=1</code> and
 <code>mindist=2</code> with <code>order=2</code> given the earlier
 network:</p>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>This might be useful to model extended network effects as direct
 effects in a <code>DAG</code>. Repeating the <code>DAG</code> from
 earlier (with some slight changes) we could use something like:</p>
@@ -594,7 +594,7 @@ Below is the generated networks, with different vertex colors for each
 <code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">networks</span><span class="op">$</span><span class="va">network1</span><span class="op">$</span><span class="va">net</span></span>
 <span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">type</span>, <span class="st">"salmon"</span>, <span class="st">"lightblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-26-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" width="576" style="display: block; margin: auto;"></p>
 <p>This is a fairly artificial example, because it is only meant to
 illustrate this functionality in a simple way. Users could of course use
 this in much more interesting ways. Because the <code>net</code>
@@ -625,7 +625,7 @@ between them using the <code>igraph</code> package:</p>
 <span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_gnm.html" class="external-link">sample_gnm</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">18</span>, m<span class="op">=</span><span class="fl">30</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-27-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" width="576" style="display: block; margin: auto;"></p>
 <p>We will assume that the probability of infection rises in a very
 simple fashion with the number of infected neighbors in the network. At
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>
@@ -718,7 +718,7 @@ not-infected individuals colored in lightblue:</p>
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-30-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>The infection started with only individual 14 being infected (the
 index case). From there it spread immediately to individuals 2 and 8 and
 continued from there, as an actual infection might have. It would of
@@ -805,7 +805,7 @@ in the <code>sim</code> object because we set
 <span>       layout<span class="op">=</span><span class="fu"><a href="https://r.igraph.org/reference/layout_nicely.html" class="external-link">layout_nicely</a></span><span class="op">(</span><span class="va">g_i</span><span class="op">)</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>Here, the simulation starts out with individuals 8 being infected,
 while being connected to individuals 3, 7, 11, 15 and 16 at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t = 1</annotation></semantics></math>.
@@ -931,7 +931,7 @@ infection spread again:</p>
 <span>       layout<span class="op">=</span><span class="va">layout_g</span>,</span>
 <span>       margin<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="v_sim_networks_files/figure-html/unnamed-chunk-37-1.png" class="r-plt" width="672" style="display: block; margin: auto;"></p>
 <p>As can be seen, due to the timely delay of the isolation, the
 infection is still able to spread, but it cannot reach all individuals.
 Near the end of the simulation, practically all connections are removed,
@@ -1033,7 +1033,7 @@ Research</em>, edited by Stephen L. Morgan. Dordrecht: Springer Science
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
