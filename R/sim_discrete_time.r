@@ -7,6 +7,7 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                               t0_transform_args=list(), max_t,
                               tx_nodes_order=NULL,
                               tx_transform_fun=NULL, tx_transform_args=list(),
+                              remove_if, break_if,
                               save_states="last", save_states_at=NULL,
                               save_networks=FALSE,
                               verbose=FALSE, check_inputs=TRUE) {
@@ -141,8 +142,39 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   # create and assign id
   data[, .id := seq(1, nrow(data))]
 
+  # handle subsetting / break conditioning
+  miss_remove_if <- missing(remove_if)
+  miss_break_if <- missing(break_if)
+
+  if (!miss_remove_if) {
+    cond_expr <- substitute(remove_if)
+    data_t0 <- copy(data)
+    l_max_t <- vector(mode="list", length=max_t)
+  } else {
+    data_t0 <- NULL
+    d_max_t <- NULL
+  }
+
+  if (!miss_break_if) {
+    break_expr <- substitute(break_if)
+  }
+
   # start the main loop
   for (t in seq_len(max_t)) {
+
+    # subset if specified
+    if (!miss_remove_if) {
+      l_max_t[[t]] <- data[eval(cond_expr)]$.id
+      data <- data[!(eval(cond_expr))]
+      if (nrow(data)==0) {
+        break
+      }
+    }
+
+    # break if condition is reached
+    if (!miss_break_if && eval(break_expr)) {
+      break
+    }
 
     # execute each node function one by one
     for (i in tx_nodes_order) {
@@ -283,15 +315,31 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     }
   }
 
+  # put together data.table containing the actual maximum follow-up time
+  # if data were subsetted
+  if (!miss_remove_if) {
+    l_max_t <- invert_event_time_list(l_max_t, n_sim=n_sim)
+    d_max_t <- data.table(
+      .id   = seq_along(l_max_t),
+      max_t = vapply(X=l_max_t,
+                     FUN=replace_NULL,
+                     FUN.VALUE=numeric(1),
+                     replacement=max_t)
+    )
+  }
+
   out <- list(past_states=past_states,
               past_networks=past_networks,
               save_states=save_states,
               data=data,
+              data_t0=data_t0,
               tte_past_events=past_events_list,
               ce_past_events=past_comp_events_list,
               ce_past_causes=past_comp_causes_list,
               tx_nodes=tx_nodes,
               max_t=max_t,
+              d_max_t=d_max_t,
+              break_t=t,
               t0_var_names=t0_var_names)
   class(out) <- "simDT"
 

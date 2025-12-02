@@ -5,6 +5,10 @@ New Features
 
 * Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen.
 
+Enhancements
+
+* Added the `remove_if` and `break_if` arguments to the `sim_discrete_time()` function, to allow users some options that potentially make the simulation much faster.
+
 # simDAG 0.4.1
 
 New Features

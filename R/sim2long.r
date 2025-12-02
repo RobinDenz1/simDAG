@@ -21,8 +21,7 @@ sim2long.all <- function(sim) {
   tte_names <- c(names(sim$tte_past_events), names(sim$ce_past_events))
 
   # simply bind together all previous states into one data.table
-  data <- data.table::rbindlist(sim$past_states)
-  data[, .time := rep(seq_len(sim$max_t), each=nrow(sim$data))]
+  data <- data.table::rbindlist(sim$past_states, idcol=".time")
   setkey(data, .id, .time)
 
   # remove leftover columns
@@ -59,8 +58,7 @@ sim2long.last <- function(sim) {
 
   data <- data[rep(data[, .I], data$n_rep)]
   data[, n_rep := NULL]
-
-  data[, .time := rep(seq_len(sim$max_t), nrow(sim$data))]
+  data[, .time := seq_len(.N), by=.id]
 
   data <- add_optional_cols_long.last(data=data, tx_nodes=sim$tx_nodes)
 

@@ -25,7 +25,7 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
                                keep_only_first=FALSE,
                                remove_not_at_risk=FALSE) {
 
-  .id <- .event_count <- .event_cumsum <- NULL
+  .id <- .event_count <- .event_cumsum <- start <- max_t <- NULL
 
   # transform to long format
   data <- sim2long(sim=sim)
@@ -64,6 +64,14 @@ sim2start_stop.all <- function(sim, overlap=FALSE, target_event=NULL,
   data <- long2start_stop(data=data, id=".id", time=".time",
                           varying=varying, overlap=overlap,
                           check_inputs=FALSE)
+
+  # correct stop if subsetting was done
+  if (!is.null(sim$d_max_t)) {
+    data <- merge(data, sim$d_max_t, by=".id", all.x=TRUE)
+    data <- data[start < max_t]
+    data[stop > max_t, stop := max_t]
+    data[, max_t := NULL]
+  }
 
   # make it outcome centric
   if (!is.null(target_event)) {
@@ -110,8 +118,14 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
 
   start <- .id <- NULL
 
-  n_sim <- nrow(sim$data)
-  max_t <- sim$max_t
+  if (is.null(sim$data_t0)) {
+    data_t0 <- copy(sim$data)
+  } else {
+    data_t0 <- copy(sim$data_t0)
+  }
+
+  n_sim <- nrow(data_t0)
+  max_t <- sim$break_t
 
   # extract past events
   tte_past_events <- sim$tte_past_events
@@ -124,16 +138,15 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
 
   # without any tte nodes, simply return the last state of data
   if (length(tte_names) == 0) {
-    data <- sim$data
-    data[, start := 1]
-    data[, stop := max_t]
+    data_t0[, start := 1]
+    data_t0[, stop := max_t]
 
     first_cols <- c(".id", "start", "stop")
-    setcolorder(data, c(first_cols,
-                        colnames(data)[!colnames(data) %in% first_cols]))
-    setkey(data, NULL)
+    setcolorder(data_t0, c(first_cols,
+                        colnames(data_t0)[!colnames(data_t0) %in% first_cols]))
+    setkey(data_t0, NULL)
 
-    return(data)
+    return(data_t0)
   }
 
   # get durations of each time-to-event node
@@ -237,7 +250,7 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
                    paste0(tte_names, "_time_since_last"),
                    paste0(tte_names, "_event_count"))
 
-  data_t0 <- suppressWarnings(sim$data[, !remove_vars, with=FALSE])
+  data_t0 <- suppressWarnings(data_t0[, !remove_vars, with=FALSE])
 
   # merge with start / stop data
   data <- data[data_t0, on=".id"]
@@ -267,6 +280,14 @@ sim2start_stop.last <- function(sim, overlap=FALSE, target_event=NULL,
   # if intervals should be overlapping, add them back
   if (overlap) {
     data[, stop := stop + 1]
+  }
+
+  # correct stop if subsetting was done
+  if (!is.null(sim$d_max_t)) {
+    data <- merge(data, sim$d_max_t, by=".id", all.x=TRUE)
+    data <- data[start < max_t]
+    data[stop > max_t, stop := max_t]
+    data[, max_t := NULL]
   }
 
   # reorder columns

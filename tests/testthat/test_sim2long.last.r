@@ -6,6 +6,7 @@ test_that("general test case", {
                         NULL, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -42,6 +43,7 @@ test_that("adding time_since_last and event_count afterwards", {
 
   # NOTE: what if node_td has no parents?
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -90,4 +92,26 @@ test_that("no time-to-event nodes in data", {
 
   expect_equal(colnames(out), c(".id", ".time", "age", "some_nonsense"))
   expect_true(is.numeric(out$age) & is.numeric(out$some_nonsense))
+})
+
+test_that("works with remove_if", {
+
+  set.seed(16456)
+
+  dag <- empty_dag() +
+    node("X", type="rnorm") +
+    node_td("sickness", type="time_to_event", prob_fun=0.01,
+            event_duration=20) +
+    node_td("death", type="time_to_event", prob_fun=0.01,
+            event_duration=Inf)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=500,
+                           remove_if=death_event==TRUE,
+                           save_states="all")
+
+  # default start-stop
+  d1 <- sim2data(sim, to="long", use_saved_states=FALSE)
+  d2 <- sim2data(sim, to="long", use_saved_states=FALSE)
+  expect_equal(d1, d2)
+  expect_equal(nrow(d1), 9629)
 })

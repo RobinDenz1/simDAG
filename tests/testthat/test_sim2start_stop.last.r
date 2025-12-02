@@ -20,6 +20,7 @@ test_that("overall test case 1 time_to_event node", {
   max_t <- 40
 
   sim <- list(max_t=max_t,
+              break_t=max_t,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -69,6 +70,7 @@ test_that("overall test case 3 time_to_event nodes", {
                         NULL, 3, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -114,6 +116,7 @@ test_that("two events stopping at the same time", {
                         NULL, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -147,6 +150,7 @@ test_that("two events starting at the same time", {
                         1, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -180,6 +184,7 @@ test_that("one event starting when other ends", {
                         1, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -212,6 +217,7 @@ test_that("one event starting one t before other ends", {
                         NULL, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -244,6 +250,7 @@ test_that("event starting right when the same event just ended", {
                         NULL, NULL, NULL, NULL, 1)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -277,6 +284,7 @@ test_that("node containing no events", {
                         NULL, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -309,6 +317,7 @@ test_that("no events in any nodes", {
                         NULL, NULL, NULL, NULL, NULL)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -338,6 +347,7 @@ test_that("event at t = max_t", {
                         NULL, NULL, NULL, NULL, 1)
 
   sim <- list(max_t=11,
+              break_t=11,
               tx_nodes=list(list(name="A",
                                  type_str="time_to_event",
                                  type_fun=node_time_to_event,
@@ -359,6 +369,60 @@ test_that("event at t = max_t", {
   out_dat <- sim2start_stop.last(sim)
 
   expect_equal(out_dat, expected)
+})
+
+test_that("works with remove_if", {
+
+  set.seed(16456)
+
+  dag <- empty_dag() +
+    node("X", type="rnorm") +
+    node_td("sickness", type="time_to_event", prob_fun=0.01,
+            event_duration=20) +
+    node_td("death", type="time_to_event", prob_fun=0.01,
+            event_duration=Inf)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=500,
+                           remove_if=death_event==TRUE,
+                           save_states="all")
+
+  # default start-stop
+  d1 <- sim2data(sim, to="start_stop", use_saved_states=FALSE)
+  d2 <- sim2data(sim, to="start_stop", use_saved_states=FALSE)
+  expect_equal(d1, d2)
+
+  # start-stop as needed for Cox model
+  d1 <- sim2data(sim, to="start_stop", use_saved_states=FALSE,
+                 keep_only_first=TRUE, overlap=TRUE, target_event="death")
+  d2 <- sim2data(sim, to="start_stop", use_saved_states=FALSE,
+                 keep_only_first=TRUE, overlap=TRUE, target_event="death")
+  expect_equal(d1, d2)
+})
+
+test_that("works with break_if", {
+
+  set.seed(16456)
+
+  dag <- empty_dag() +
+    node("X", type="rnorm") +
+    node_td("death", type="time_to_event", prob_fun=0.01,
+            event_duration=Inf)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=300,
+                           break_if=sum(data$death_event) >= 20,
+                           save_states="all")
+
+  # default start-stop
+  d1 <- sim2data(sim, to="start_stop", use_saved_states=FALSE)
+  d2 <- sim2data(sim, to="start_stop", use_saved_states=FALSE)
+  expect_equal(d1, d2)
+
+  # start-stop as needed for Cox model
+  d11 <- sim2data(sim, to="start_stop", use_saved_states=FALSE,
+                  keep_only_first=TRUE, overlap=TRUE, target_event="death")
+  d22 <- sim2data(sim, to="start_stop", use_saved_states=FALSE,
+                  keep_only_first=TRUE, overlap=TRUE, target_event="death")
+  expect_equal(d11, d22)
 })
 
 test_that("error when using competing events node", {

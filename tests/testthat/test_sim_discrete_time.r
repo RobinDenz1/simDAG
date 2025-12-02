@@ -282,6 +282,60 @@ test_that("works with formulas", {
   expect_equal(round(mean(sim$data$D), 3), -0.833)
 })
 
+test_that("remove_if subsetting", {
+
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node_td("Y", type="time_to_event", prob_fun=0.01,
+            event_duration=Inf)
+
+  ## some are left in there
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100,
+                           remove_if=Y_event==TRUE & !is.na(A))
+
+  expect_true(all(is.na(sim$data$Y_time) | sim$data$Y_time==100))
+  expect_equal(nrow(sim$data), 43)
+  expect_equal(nrow(sim$data_t0), 100)
+  expect_true(!is.null(sim$d_max_t))
+
+  d_max_t <- subset(sim$d_max_t, !.id %in% sim$data$.id)
+  expect_equal(nrow(d_max_t), 100-43)
+  expect_true(all(d_max_t$max_t < 100))
+
+  ## no one left at the end of the simulation
+  set.seed(1234)
+
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=2000,
+                           remove_if=Y_event==TRUE)
+
+  expect_equal(nrow(sim$data), 0)
+  expect_equal(nrow(sim$data_t0), 100)
+  expect_true(!is.null(sim$d_max_t))
+  expect_equal(sim$break_t, 576)
+
+  expect_equal(nrow(sim$d_max_t), 100)
+  expect_true(all(sim$d_max_t$max_t <= 576))
+})
+
+test_that("break_if usage", {
+
+  set.seed(12345)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node_td("Y", type="time_to_event", prob_fun=0.01,
+            event_duration=Inf)
+
+  # break on first event
+  sim <- sim_discrete_time(dag, n_sim=100, max_t=100,
+                           break_if=any(data$Y_event==TRUE))
+  expect_equal(sim$break_t, 2)
+  expect_equal(nrow(sim$data), 100)
+  expect_true(all(sim$data$Y_time <= 2 | is.na(sim$data$Y_time)))
+})
+
 test_that("helpful error message formula error", {
 
   dag <- empty_dag() +

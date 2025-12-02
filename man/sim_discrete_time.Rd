@@ -13,6 +13,7 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
                   t0_transform_args=list(), max_t,
                   tx_nodes_order=NULL, tx_transform_fun=NULL,
                   tx_transform_args=list(),
+                  remove_if, break_if,
                   save_states="last", save_states_at=NULL,
                   save_networks=FALSE,
                   verbose=FALSE, check_inputs=TRUE)
@@ -47,6 +48,12 @@ An optional function that takes the data created after every point in time  \eqn
   }
   \item{tx_transform_args}{
 A named list of additional arguments passed to the \code{tx_transform_fun}. Ignored if \code{tx_transform_fun=NULL}.
+  }
+  \item{remove_if}{
+A condition that will be evaluated directly on the generated \code{data.table} at the beginning of each time-period. All rows for which the condition is \code{TRUE} are removed from the \code{data} at this point in time. The condition may contain names of any variable that were generated. If all individuals are removed through this condition, the simulation stops early. This argument may be useful to save computation time, if a large number of points in time should be considered and the user only cares about the first time a condition is met for some individuals. Keep this argument unspecified (default) to not use this functionality.
+  }
+  \item{break_if}{
+A condition that will be evaluated at the beginning of each time-period (but after subsetting, if \code{remove_if} was specified). If the condition is met, the simulation stops early. Contrary to the \code{remove_if} argument, this condition should return exactly one \code{TRUE} or \code{FALSE} value and is not directly evaluated on the \code{data}. To use variables generated in the simulation in this condition, users should use the \code{$} syntax (e.g. use \code{data$X} instead of just \code{X}). Keep this argument unspecified (default) to not use this functionality.
   }
   \item{save_states}{
 Specifies the amount of simulation states that should be saved in the output object. Has to be one of \code{"all"}, \code{"at_t"} or \code{"last"} (default). If set to \code{"all"}, a list of containing the \code{data.table} after every point in time will be added to the output object. If \code{"at_t"}, only the states at specific points in time specified by the \code{save_states_at} argument will be saved (plus the final state). If \code{"last"}, only the final state of the \code{data.table} is added to the output.
@@ -90,6 +97,8 @@ As in the \code{\link{sim_from_dag}} function, networks-based simulations are al
 
 All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow. Note also that using the \code{formula} argument is a lot more computationally expensive than using the \code{parents}, \code{betas} approach to specify certain nodes.
 
+In some cases, the \code{remove_if} or \code{break_if} arguments may reduce the computation time considerably. For example, if the user is only interested in the first time that some variable \code{Y} turns \code{TRUE}, it may make sense to use \code{remove_if=Y==TRUE}. Under the hood, the function then removes any individual where \code{Y} is already \code{TRUE}, so that the \code{data} shrinks and no further computations are performed for these individuals. Unofrtunately, whether or not this actually does improve performance is dependent on multiple factors. With large \code{n_sim} and \code{max_t}, a constant or skewed probability distribution of \code{Y} and especially when expensive calculations are performed at each point in time, the performance gains may be very large. This is, however, not always the case. The added computational burden of actually doing the subsetting itself at each point in time may offset any performance gains or even deteriorate performance in other scenarios. We recommend checking the computation time on a single example with and without using either \code{remove_if} and/or \code{break_if} (if appropriate) and making the decision based on that small benchmark.
+
 \strong{\emph{What do I do with the output?}}:
 
 This function outputs a \code{simDT} object, not a \code{data.table}. To obtain an actual dataset from the output of this function, users should use the \code{\link{sim2data}} function to transform it into the desired format. Currently, the long-format, the wide-format and the start-stop format are supported. See \code{\link{sim2data}} for more information.
@@ -109,12 +118,15 @@ Returns a \code{simDT} object, containing some general information about the sim
   \item{\code{past_states}: A list containing the generated data at the specified points in time.}
   \item{\code{past_networks}: A list containing the generated / updated networks at the specified points in time.}
   \item{\code{save_states}: The value of the \code{save_states} argument supplied by the user.}
-  \item{\code{data}: The data at time \code{max_t}.}
+  \item{\code{data}: The data at time \code{max_t}. Note that if \code{remove_if} was used, this data may not include all \code{n_sim} individuals.}
+  \item{\code{data_t0}: The data at time 0. Only included if \code{remove_if} was specified.}
   \item{\code{tte_past_events}: A list storing the times at which events happened in variables of type \code{"time_to_event"}, if specified.}
   \item{\code{ce_past_events}: A list storing the times at which events happened in variables of type \code{"competing_events"}, if specified.}
   \item{\code{ce_past_causes}: A list storing the types of events which happened at in variables of type \code{"competing_events"}, if specified.}
   \item{\code{tx_nodes}: A list of all time-varying nodes, as specified in the supplied \code{dag} object.}
   \item{\code{max_t}: The value of \code{max_t}, as supplied by the user.}
+  \item{\code{d_max_t}: A \code{data.table} containing \code{n_sim} rows and the two columns \code{.id} (unique person identifier) and \code{max_t} (the maximum time that an individual was actually included in the data generation). This is only included if \code{remove_if} was specified by the user.}
+  \item{\code{break_t}: The time at which the simulation was stopped either because the break condition as defined in the \code{break_if} argument was first met, or the time at which no further individuals were included in the data because everyone was removed through the \code{remove_if} argument. If neither \code{break_if} nor \code{remove_if} were specified, this is simply equal to \code{max_t}.}
   \item{\code{t0_var_names}: A character vector containing the names of all variable names that do not vary over time.}
 }
 

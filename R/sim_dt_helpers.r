@@ -179,3 +179,13 @@ initialize_columns <- function(data, tx_nodes, tx_node_names, tx_node_types) {
 
   return(data)
 }
+
+## a simple convenience function that returns its output if not NULL and
+## the 'replacement' otherwise
+replace_NULL <- function(input, replacement) {
+  if (is.null(input)) {
+    return(replacement)
+  } else {
+    return(input)
+  }
+}
