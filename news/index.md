@@ -10,6 +10,13 @@ New Features
   [`sample()`](https://rdrr.io/r/base/sample.html), as suggested by Ed
   Hagen.
 
+Enhancements
+
+- Added the `remove_if` and `break_if` arguments to the
+  [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+  function, to allow users some options that potentially make the
+  simulation much faster.
+
 ## simDAG 0.4.1
 
 CRAN release: 2025-10-15

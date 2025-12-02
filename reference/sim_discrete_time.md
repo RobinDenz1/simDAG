@@ -26,6 +26,7 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
                   t0_transform_args=list(), max_t,
                   tx_nodes_order=NULL, tx_transform_fun=NULL,
                   tx_transform_args=list(),
+                  remove_if, break_if,
                   save_states="last", save_states_at=NULL,
                   save_networks=FALSE,
                   verbose=FALSE, check_inputs=TRUE)
@@ -119,6 +120,30 @@ sim_discrete_time(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   A named list of additional arguments passed to the `tx_transform_fun`.
   Ignored if `tx_transform_fun=NULL`.
+
+- remove_if:
+
+  A condition that will be evaluated directly on the generated
+  `data.table` at the beginning of each time-period. All rows for which
+  the condition is `TRUE` are removed from the `data` at this point in
+  time. The condition may contain names of any variable that were
+  generated. If all individuals are removed through this condition, the
+  simulation stops early. This argument may be useful to save
+  computation time, if a large number of points in time should be
+  considered and the user only cares about the first time a condition is
+  met for some individuals. Keep this argument unspecified (default) to
+  not use this functionality.
+
+- break_if:
+
+  A condition that will be evaluated at the beginning of each
+  time-period (but after subsetting, if `remove_if` was specified). If
+  the condition is met, the simulation stops early. Contrary to the
+  `remove_if` argument, this condition should return exactly one `TRUE`
+  or `FALSE` value and is not directly evaluated on the `data`. To use
+  variables generated in the simulation in this condition, users should
+  use the `$` syntax (e.g. use `data$X` instead of just `X`). Keep this
+  argument unspecified (default) to not use this functionality.
 
 - save_states:
 
@@ -262,6 +287,24 @@ usually not a concern for smaller datasets, but if `n_sim` is very large
 using the `formula` argument is a lot more computationally expensive
 than using the `parents`, `betas` approach to specify certain nodes.
 
+In some cases, the `remove_if` or `break_if` arguments may reduce the
+computation time considerably. For example, if the user is only
+interested in the first time that some variable `Y` turns `TRUE`, it may
+make sense to use `remove_if=Y==TRUE`. Under the hood, the function then
+removes any individual where `Y` is already `TRUE`, so that the `data`
+shrinks and no further computations are performed for these individuals.
+Unofrtunately, whether or not this actually does improve performance is
+dependent on multiple factors. With large `n_sim` and `max_t`, a
+constant or skewed probability distribution of `Y` and especially when
+expensive calculations are performed at each point in time, the
+performance gains may be very large. This is, however, not always the
+case. The added computational burden of actually doing the subsetting
+itself at each point in time may offset any performance gains or even
+deteriorate performance in other scenarios. We recommend checking the
+computation time on a single example with and without using either
+`remove_if` and/or `break_if` (if appropriate) and making the decision
+based on that small benchmark.
+
 ***What do I do with the output?***:
 
 This function outputs a `simDT` object, not a `data.table`. To obtain an
@@ -304,7 +347,11 @@ argument). In particular, it includes the following objects:
 - `save_states`: The value of the `save_states` argument supplied by the
   user.
 
-- `data`: The data at time `max_t`.
+- `data`: The data at time `max_t`. Note that if `remove_if` was used,
+  this data may not include all `n_sim` individuals.
+
+- `data_t0`: The data at time 0. Only included if `remove_if` was
+  specified.
 
 - `tte_past_events`: A list storing the times at which events happened
   in variables of type `"time_to_event"`, if specified.
@@ -319,6 +366,18 @@ argument). In particular, it includes the following objects:
   supplied `dag` object.
 
 - `max_t`: The value of `max_t`, as supplied by the user.
+
+- `d_max_t`: A `data.table` containing `n_sim` rows and the two columns
+  `.id` (unique person identifier) and `max_t` (the maximum time that an
+  individual was actually included in the data generation). This is only
+  included if `remove_if` was specified by the user.
+
+- `break_t`: The time at which the simulation was stopped either because
+  the break condition as defined in the `break_if` argument was first
+  met, or the time at which no further individuals were included in the
+  data because everyone was removed through the `remove_if` argument. If
+  neither `break_if` nor `remove_if` were specified, this is simply
+  equal to `max_t`.
 
 - `t0_var_names`: A character vector containing the names of all
   variable names that do not vary over time.
