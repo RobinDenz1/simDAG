@@ -108,6 +108,8 @@ Functions that can be used as root nodes
   : Sample values from a given vector
 - [`rconstant()`](https://robindenz1.github.io/simDAG/reference/rconstant.md)
   : Use a single constant value for a root node
+- [`rtexp()`](https://robindenz1.github.io/simDAG/reference/rtexp.md) :
+  Sample values from a left-truncated exponential distribution
 
 ## Child nodes
 

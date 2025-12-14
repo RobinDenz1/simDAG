@@ -242,6 +242,31 @@ plot(sim_dat)
 
 ![](v_sim_discrete_time_files/figure-html/unnamed-chunk-11-1.png)
 
+A subtlety that may arise when we are interested in such terminal event
+times is that the
+[`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+function only runs for `max_t` steps. In our example above, 50 steps (or
+years in this example) were enough to observe the death time for all 10
+individuals. One possibility would be to set `max_t` to some absurdly
+large value (lets say 1000000) and to define the `break_if` argument.
+This argument allows us to define a condition that should be met at
+which the simulation will be stopped early. For example we may use:
+
+``` r
+set.seed(44)
+sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=1000000,
+                             break_if=all(data$death_event==TRUE),
+                             check_inputs=FALSE)
+```
+
+Here, we specify that the simulation should run for a million years, but
+be stopped early once all individuals are dead. The time at which the
+simulation was stopped can be accessed using `sim_dat$break_t` and is 36
+in this case. Note that this strategy may lead to unexpectedly long
+computation times, if the event is very unlikely for some individuals.
+The `remove_if` argument may then also be helpful to speed things up
+(see documentation).
+
 This particular example could be simulated in a much easier fashion,
 without relying on a discrete-time approach, because `age` increases
 linearly and the model for `death` is exactly the same regardless of
@@ -298,12 +323,12 @@ sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50)
 head(sim_dat$data)
 #>         age    sex cve_event cve_time   .id
 #>       <num> <lgcl>    <lgcl>    <int> <int>
-#> 1: 82.67833   TRUE     FALSE       NA     1
-#> 2: 90.30020  FALSE      TRUE       50     2
-#> 3: 88.25512   TRUE     FALSE       NA     3
-#> 4: 90.28344  FALSE     FALSE       NA     4
-#> 5: 79.90450   TRUE     FALSE       NA     5
-#> 6: 81.70720   TRUE     FALSE       NA     6
+#> 1: 81.23076  FALSE     FALSE       NA     1
+#> 2: 74.05308   TRUE     FALSE       NA     2
+#> 3: 83.03159  FALSE     FALSE       NA     3
+#> 4: 75.38063   TRUE     FALSE       NA     4
+#> 5: 88.27912   TRUE     FALSE       NA     5
+#> 6: 81.15802   TRUE     FALSE       NA     6
 ```
 
 In this case, the data is a little more complex. At time $t = 50$, only
@@ -321,12 +346,12 @@ d_start_stop <- sim2data(sim_dat, to="start_stop")
 head(d_start_stop)
 #>      .id start  stop    cve      age    sex
 #>    <int> <int> <num> <lgcl>    <num> <lgcl>
-#> 1:     1     1    50  FALSE 82.67833   TRUE
-#> 2:     2     1    43  FALSE 90.30020  FALSE
-#> 3:     2    44    44   TRUE 90.30020  FALSE
-#> 4:     2    45    49  FALSE 90.30020  FALSE
-#> 5:     2    50    50   TRUE 90.30020  FALSE
-#> 6:     3     1    50  FALSE 88.25512   TRUE
+#> 1:     1     1    50  FALSE 81.23076  FALSE
+#> 2:     2     1    50  FALSE 74.05308   TRUE
+#> 3:     3     1    48  FALSE 83.03159  FALSE
+#> 4:     3    49    49   TRUE 83.03159  FALSE
+#> 5:     3    50    50  FALSE 83.03159  FALSE
+#> 6:     4     1    50  FALSE 75.38063   TRUE
 ```
 
 In this format, we can clearly see when the events occurred. This type
@@ -342,12 +367,12 @@ head(d_long)
 #> Key: <.id, .time>
 #>      .id .time    cve      age    sex
 #>    <int> <int> <lgcl>    <num> <lgcl>
-#> 1:     1     1  FALSE 82.67833   TRUE
-#> 2:     1     2  FALSE 82.67833   TRUE
-#> 3:     1     3  FALSE 82.67833   TRUE
-#> 4:     1     4  FALSE 82.67833   TRUE
-#> 5:     1     5  FALSE 82.67833   TRUE
-#> 6:     1     6  FALSE 82.67833   TRUE
+#> 1:     1     1  FALSE 81.23076  FALSE
+#> 2:     1     2  FALSE 81.23076  FALSE
+#> 3:     1     3  FALSE 81.23076  FALSE
+#> 4:     1     4  FALSE 81.23076  FALSE
+#> 5:     1     5  FALSE 81.23076  FALSE
+#> 6:     1     6  FALSE 81.23076  FALSE
 ```
 
 This may also be useful to fit discrete-time survival models.
