@@ -74,3 +74,13 @@ rsample <- function(n, x, replace=FALSE, prob=NULL) {
   out <- sample(x=x, size=n, replace=replace, prob=prob)
   return(out)
 }
+
+## generate random values from a left truncated exponential distribution
+#' @export
+rtexp <- function (n, rate, l=NULL)  {
+  if (!is.null(l)) {
+    l - log(1 - stats::runif(n))/rate
+  } else {
+    stats::rexp(n=n, rate=rate)
+  }
+}

@@ -1,0 +1,281 @@
+
+# TODO:
+# - write tests
+# - write man page
+# - write vignette
+# - add input checks
+# - put together new output object
+# - write S3 methods
+# - probably needs a new node type
+#   (also with input checks, so that it cannot be used in other sim() functions)
+# - update documentation throughout the package
+
+# missing features
+# - allow distributions other than rtexp()
+#   - weibull / gombertz
+#   - aft models?
+#   - user-specified functions?
+# - allow immunity_duration
+# - some data - wrangling functions would be nice
+# - maybe allow some automatic rounding?
+# - allow event counts to be added
+# - allow network dependencies
+
+## Framework function to perform discrete-event simulations
+#' @importFrom data.table :=
+#' @importFrom data.table copy
+#' @importFrom data.table melt.data.table
+#' @importFrom data.table merge.data.table
+#' @importFrom data.table setkey
+#' @importFrom data.table rbindlist
+#' @importFrom data.table fifelse
+#' @importFrom data.table setcolorder
+#' @importFrom data.table setnames
+#' @export
+
+#n_sim <- 1000
+#t0_sort_dag <- FALSE
+#t0_data <- NULL
+#t0_transform_fun <- NULL
+#t0_transform_args <- list()
+#max_t <- Inf
+#break_if <- FALSE
+#check_inputs <- FALSE
+
+sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
+                               t0_data=NULL, t0_transform_fun=NULL,
+                               t0_transform_args=list(), max_t,
+                               break_if, remove_if, check_inputs=TRUE) {
+
+  # silence devtools check() warnings
+  .id <- .time <- .trunc_time <- .time_of_next_event <-
+    .time_of_next_change <- .min_time_of_next_event <-
+    .min_time_of_next_change <- .event_duration <- .immunity_duration <-
+    .next_is_event <- .kind <- .event <- .change <- NULL
+
+  if (!inherits(dag, "DAG")) {
+    stop("'dag' must be a DAG object created using the empty_dag() and",
+         " node_td() functions.", call.=FALSE)
+  }
+
+  requireNamespace("data.table", quietly=TRUE)
+
+  if (check_inputs) {
+    # TODO: input checks here
+  }
+
+  # handle sub-setting / break conditioning
+  miss_remove_if <- missing(remove_if)
+  miss_break_if <- missing(break_if)
+
+  if (!miss_break_if) {
+    break_expr <- substitute(break_if)
+  }
+  if (!miss_remove_if) {
+    cond_expr <- substitute(remove_if)
+  }
+
+  tx_nodes <- dag$tx_nodes
+
+  # get initial data
+  if (is.null(t0_data) & length(dag$root_nodes)==0 &
+      length(dag$child_nodes)==0) {
+    data <- data.table(.id=seq(1, n_sim))
+  } else if (is.null(t0_data)) {
+    dag$tx_nodes <- NULL
+    data <- sim_from_dag(n_sim=n_sim,
+                         dag=dag,
+                         sort_dag=t0_sort_dag,
+                         check_inputs=check_inputs)
+    data[, .id := seq(1, n_sim)]
+  } else {
+    data <- data.table::setDT(t0_data)
+    n_sim <- nrow(data)
+    data[, .id := seq(1, n_sim)]
+  }
+
+  # perform an arbitrary data transformation right at the start
+  if (!is.null(t0_transform_fun)) {
+    t0_transform_args$data <- data
+    data <- do.call(t0_transform_fun, args=t0_transform_args)
+  }
+
+  # set time to 0 at start
+  data[, .time := 0]
+  data[, .trunc_time := 0]
+
+  # extract names and initialize relevant vars
+  var_names <- vapply(tx_nodes, function(x){x$name},
+                      FUN.VALUE=character(1))
+  data[, (var_names) := FALSE]
+  cnames <- copy(colnames(data))
+
+  # initialize output list (including data at t = 0)
+  out <- list(copy(data))
+
+  # transform data to long-format
+  data <- melt.data.table(
+    data=data,
+    id.vars=cnames,
+    measure.vars=var_names,
+    variable.name=".kind",
+    value.name=".time_of_next_event"
+  )
+  setkey(data, .id)
+
+  # initial column values
+  data[, .time_of_next_event := .time_of_next_event * 1.2] # turn into double
+  data[, .time_of_next_event := Inf]
+  data[, .time_of_next_change := Inf]
+
+  # extract event_durations and add them to the data
+  event_durations <- vapply(tx_nodes, FUN=extract_node_arg,
+                            FUN.VALUE=numeric(1), fun=node_next_time,
+                            arg="event_duration")
+  data[, .event_duration := rep(event_durations, n_sim)]
+
+  # extract immunity_durations and add them to the data
+  immunity_durations <- vapply(tx_nodes, FUN=extract_node_arg,
+                               FUN.VALUE=numeric(1), fun=node_next_time,
+                               arg="immunity_duration")
+  data[, .immunity_duration := rep(immunity_durations, n_sim)]
+
+  ## main loop, runs until condition is met or nothing is left
+  repeat {
+
+    # for each node
+    for (i in seq_len(length(var_names))) {
+
+      rel_row <- data$.kind==var_names[i] &
+        is.infinite(data$.time_of_next_change)
+
+      # function arguments
+      args_i <- remove_node_internals(tx_nodes[[i]])
+      args_i$data <- data[rel_row==TRUE]
+
+      # draw time until next event from truncated distribution
+      data[rel_row==TRUE,
+           .time_of_next_event := rtexp(n=.N,
+                                        rate=do.call(tx_nodes[[i]]$prob_fun,
+                                                     args=args_i),
+                                        l=.trunc_time)]
+    }
+
+    # identify the minimum event time and minimum time until state change
+    data[, `:=`(
+      .min_time_of_next_event = min(.time_of_next_event),
+      .min_time_of_next_change = min(.time_of_next_change)
+    ), by=.id]
+
+    # update simulation times
+    data[, .next_is_event := .min_time_of_next_event < .min_time_of_next_change]
+    data[, .time := fifelse(.next_is_event==TRUE, .min_time_of_next_event,
+                            .min_time_of_next_change)]
+    data[.time > .trunc_time, .trunc_time := .time]
+
+    # set variables to 1 if needed
+    d_event <- data[.min_time_of_next_event==.time_of_next_event &
+                      .next_is_event==TRUE,
+                    .(.event = .kind[1]), by=.id]
+
+    if (nrow(d_event) > 0) {
+      data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
+
+      for (col in var_names) {
+        data[.event==col, (col) := TRUE]
+      }
+    } else {
+      data[, .event := NA]
+    }
+
+    # set .time_of_next_change for all new events
+    data[.kind==.event, `:=`(
+      .time_of_next_change = .time + .event_duration,
+      .time_of_next_event = Inf#,
+      #.trunc_time = .time + .immunity_duration
+    )]
+
+    # set variables back to 0 if needed
+    d_change <- data[.min_time_of_next_change==.time_of_next_change &
+                       .next_is_event==FALSE,
+                     .(.change = .kind[1]), by=.id]
+
+    if (nrow(d_change) > 0) {
+      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
+
+      for (col in var_names) {
+        data[.change==col, (col) := FALSE]
+      }
+    } else {
+      data[, .change := NA]
+    }
+
+    # set .time_of_next_change back to Inf for all variables that
+    # turned back to 0
+    data[.min_time_of_next_change==.time_of_next_change & .next_is_event==FALSE,
+         .time_of_next_change := Inf]
+
+    # save state of the simulation
+    out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
+
+    # remove rows that no longer need to be updated
+    # TODO: rows with Inf immunity duration should also be removed after
+    #       an event
+    data <- data[!(is.infinite(.event_duration) & .kind==.event &
+                   !is.na(.event)) & .time < max_t]
+
+    # remove unneeded columns
+    data[, .event := NULL]
+    data[, .change := NULL]
+
+    # subset if specified
+    if (!miss_remove_if) {
+      data <- data[!(eval(cond_expr))]
+    }
+
+    # break if condition reached
+    if (nrow(data)==0 | (!miss_break_if && eval(break_expr))) {
+      break
+    }
+  }
+
+  # create a start-stop output dataset
+  d_start_stop <- rbindlist(out)
+  setkey(d_start_stop, .id, .time)
+
+  setnames(d_start_stop, old=".time", new="start")
+  d_start_stop[, stop := shift(start, n=-1, fill=NA), by=.id]
+
+  # re-order columns
+  cnames <- cnames[!cnames %in% c(".id", ".time")]
+  setcolorder(d_start_stop, neworder=c(".id", "start", "stop", cnames))
+
+  return(d_start_stop)
+}
+
+## get the value of a specific argument in a DAG.node object
+extract_node_arg <- function(node, fun, arg) {
+  if (is.null(node[[arg]])) {
+    out <- formals(fun=fun)[[arg]]
+  } else {
+    out <- node[[arg]]
+  }
+  return(out)
+}
+
+## removes internal parts of a node (so that it can be used as an
+## argument list for a do.call())
+remove_node_internals <- function(node) {
+
+  node$name <- NULL
+  node$type_str <- NULL
+  node$type_fun <- NULL
+  node$parents <- NULL
+  node$time_varying <- NULL
+  node$..index.. <- NULL
+  node$prob_fun <- NULL
+  node$event_duration <- NULL
+  node$immunity_duration <- NULL
+
+  return(node)
+}

@@ -128,6 +128,17 @@ If we want to graphically display a flow diagram of the data-generation mechanis
 plot(sim_dat)
 ```
 
+A subtlety that may arise when we are interested in such terminal event times is that the `sim_discrete_time()` function only runs for `max_t` steps. In our example above, 50 steps (or years in this example) were enough to observe the death time for all 10 individuals. One possibility would be to set `max_t` to some absurdly large value (lets say 1000000) and to define the `break_if` argument. This argument allows us to define a condition that should be met at which the simulation will be stopped early. For example we may use:
+
+```{r}
+set.seed(44)
+sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=1000000,
+                             break_if=all(data$death_event==TRUE),
+                             check_inputs=FALSE)
+```
+
+Here, we specify that the simulation should run for a million years, but be stopped early once all individuals are dead. The time at which the simulation was stopped can be accessed using `sim_dat$break_t` and is `r sim_dat$break_t` in this case. Note that this strategy may lead to unexpectedly long computation times, if the event is very unlikely for some individuals. The `remove_if` argument may then also be helpful to speed things up (see documentation).
+
 This particular example could be simulated in a much easier fashion, without relying on a discrete-time approach, because `age` increases linearly and the model for `death` is exactly the same regardless of time. DTS is more useful when truly complex data structures are required. Below we will extend this simple example a little bit, but we will still keep it relatively simple. 
 
 

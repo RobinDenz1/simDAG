@@ -46,6 +46,7 @@ reference:
       - rcategorical
       - rsample
       - rconstant
+      - rtexp
       
     - title: Child nodes
       desc: Functions that can be used as child nodes
