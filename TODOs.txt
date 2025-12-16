@@ -3,6 +3,29 @@
 
 	- add "unif" argument to node_competing_events()
 
+sim_discrete_event:
+
+    General:
+	- write Tests
+	- write Vignette
+	- add examples to man pages
+	- update documentation throughout the package
+	- maybe add some tryCatch() calls for better error messages
+	- currently fails when multiple events happen exactly at the same time
+	- add this function to sim_n_datasets()
+
+    missing features:
+	- allow single number input to prob_fun()
+	- allow arguments for custom distr_fun
+	- allow formula
+	- allow network dependencies
+	- allow re-computation of prob_fun() at specific time-points
+
+node_next_time:
+
+- add examples to man page
+- add Input checks
+
 ####### New Features: #######
 
 node_time_to_event:

@@ -35,6 +35,7 @@ reference:
     - contents:
       - sim_from_dag
       - sim_discrete_time
+      - sim_discrete_event
       - sim_n_datasets
       - sim2data
       - plot.simDT
@@ -69,6 +70,7 @@ reference:
     - contents:
       - node_time_to_event
       - node_competing_events
+      - node_next_time
     
     - title: Misc
     - contents:

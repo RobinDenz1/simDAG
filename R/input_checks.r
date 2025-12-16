@@ -799,3 +799,71 @@ check_inputs_network <- function(name, net, time_varying, args) {
             " passed through the ... syntax and will be ignored.", call.=FALSE)
   }
 }
+
+## check inputs for the sim_discrete_event() function
+check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
+                                            t0_data, t0_transform_fun,
+                                            t0_transform_args, max_t,
+                                            censor_at_max_t) {
+
+  # rudimentary type checks
+  if (!is.null(t0_data)) {
+    stopifnot("'t0_data' must be a data.frame." = is.data.frame(t0_data))
+  }
+  if (!is.null(t0_transform_fun)) {
+    stopifnot("'t0_transform_fun' must be a function." =
+                is.function(t0_transform_fun))
+  }
+  stopifnot("'t0_transform_args' must be a list." = is.list(t0_transform_args))
+  stopifnot("'max_t' must be a single number > 0." =
+              (length(max_t) == 1 && is.numeric(max_t) && max_t > 0))
+  stopifnot("'censor_at_max_t' should be either TRUE or FALSE." =
+              length(censor_at_max_t) == 1 && is.logical(censor_at_max_t))
+
+  # needs some time-varying nodes
+  if (!is_time_varying_dag(dag)) {
+    stop("'dag' must contain at least one time-varying node added using",
+         " the node_td() function. For dag objects with no time-varying",
+         " nodes, please use the sim_from_dag() function instead.",
+         call.=FALSE)
+  }
+
+  # all time-varying nodes need to be of type = "next_time"
+  tx_types <- vapply(dag$tx_nodes, FUN=function(x){x$type_str},
+                     FUN.VALUE=character(1))
+  if (!all(tx_types=="next_time")) {
+    stop("All time-varying nodes added using the node_td() function",
+         " should be of type='next_time' when using sim_discrete_event().",
+         " If other node types are needed, use the sim_discrete_time()",
+         " function instead.")
+  }
+
+  # check content of t0_data
+  if (is.data.frame(t0_data)) {
+    stopifnot("'t0_data' needs to include at least one variable." =
+                (ncol(t0_data) != 0))
+    stopifnot("'t0_data' needs to include at least one row." =
+                (nrow(t0_data) != 0))
+    if (!is.null(n_sim)) {
+      warning("An object was supplied to 't0_data', so the argument 'n_sim'",
+              " will be ignored.", call.=FALSE)
+    }
+  }
+
+  # check content of t0_transform_fun
+  if (is.function(t0_transform_fun)) {
+    stopifnot(
+      "'t0_transform_fun' needs to include at least one line." =
+        length(body(t0_transform_fun)) != 0)
+
+    # check content of t0_transform_args
+    names_fun <- names(formals(t0_transform_fun))
+    names_args <- names(t0_transform_args)
+    if (!all(names_args %in% names_fun)) {
+      stop("The following arguments are in 't0_transform_args' but are",
+           " not define in 't0_transform_fun': ",
+           paste0(names_args[!names_args %in% names_fun], collapse=","),
+           call.=FALSE)
+    }
+  }
+}

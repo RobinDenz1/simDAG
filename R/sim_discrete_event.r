@@ -1,26 +1,4 @@
 
-# TODO:
-# - write tests
-# - write man page
-# - write vignette
-# - add input checks
-# - put together new output object
-# - write S3 methods
-# - probably needs a new node type
-#   (also with input checks, so that it cannot be used in other sim() functions)
-# - update documentation throughout the package
-
-# missing features
-# - allow distributions other than rtexp()
-#   - weibull / gombertz
-#   - aft models?
-#   - user-specified functions?
-# - allow immunity_duration
-# - some data - wrangling functions would be nice
-# - maybe allow some automatic rounding?
-# - allow event counts to be added
-# - allow network dependencies
-
 ## Framework function to perform discrete-event simulations
 #' @importFrom data.table :=
 #' @importFrom data.table copy
@@ -31,27 +9,21 @@
 #' @importFrom data.table fifelse
 #' @importFrom data.table setcolorder
 #' @importFrom data.table setnames
+#' @importFrom data.table shift
 #' @export
-
-#n_sim <- 1000
-#t0_sort_dag <- FALSE
-#t0_data <- NULL
-#t0_transform_fun <- NULL
-#t0_transform_args <- list()
-#max_t <- Inf
-#break_if <- FALSE
-#check_inputs <- FALSE
-
-sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
+sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
-                               t0_transform_args=list(), max_t,
-                               break_if, remove_if, check_inputs=TRUE) {
+                               t0_transform_args=list(),
+                               max_t, remove_if, break_if,
+                               censor_at_max_t=FALSE, target_event=NULL,
+                               keep_only_first=FALSE, check_inputs=TRUE) {
 
   # silence devtools check() warnings
   .id <- .time <- .trunc_time <- .time_of_next_event <-
     .time_of_next_change <- .min_time_of_next_event <-
     .min_time_of_next_change <- .event_duration <- .immunity_duration <-
-    .next_is_event <- .kind <- .event <- .change <- NULL
+    .next_is_event <- .kind <- .event <- .change <- .event_count <- . <-
+    start <- NULL
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
@@ -61,7 +33,13 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
   requireNamespace("data.table", quietly=TRUE)
 
   if (check_inputs) {
-    # TODO: input checks here
+    check_inputs_sim_discrete_event(dag=dag, n_sim=n_sim,
+                                    t0_sort_dag=t0_sort_dag,
+                                    t0_data=t0_data,
+                                    t0_transform_fun=t0_transform_fun,
+                                    t0_transform_args=t0_transform_args,
+                                    max_t=max_t,
+                                    censor_at_max_t=censor_at_max_t)
   }
 
   # handle sub-setting / break conditioning
@@ -127,6 +105,7 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
   data[, .time_of_next_event := .time_of_next_event * 1.2] # turn into double
   data[, .time_of_next_event := Inf]
   data[, .time_of_next_change := Inf]
+  data[, .event_count := 0]
 
   # extract event_durations and add them to the data
   event_durations <- vapply(tx_nodes, FUN=extract_node_arg,
@@ -150,15 +129,15 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
         is.infinite(data$.time_of_next_change)
 
       # function arguments
-      args_i <- remove_node_internals(tx_nodes[[i]])
-      args_i$data <- data[rel_row==TRUE]
+      args_p <- remove_node_internals(tx_nodes[[i]])
+      args_p$data <- data[rel_row==TRUE]
 
       # draw time until next event from truncated distribution
       data[rel_row==TRUE,
-           .time_of_next_event := rtexp(n=.N,
-                                        rate=do.call(tx_nodes[[i]]$prob_fun,
-                                                     args=args_i),
-                                        l=.trunc_time)]
+           .time_of_next_event := tx_nodes[[i]]$distr_fun(
+             n=.N,
+             rate=do.call(tx_nodes[[i]]$prob_fun, args=args_p),
+             l=.trunc_time)]
     }
 
     # identify the minimum event time and minimum time until state change
@@ -179,11 +158,8 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
                     .(.event = .kind[1]), by=.id]
 
     if (nrow(d_event) > 0) {
-      data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
-
-      for (col in var_names) {
-        data[.event==col, (col) := TRUE]
-      }
+      data <- set_cols_to_value(data=data, d_event=d_event, value=TRUE,
+                                var_names=var_names)
     } else {
       data[, .event := NA]
     }
@@ -191,9 +167,10 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
     # set .time_of_next_change for all new events
     data[.kind==.event, `:=`(
       .time_of_next_change = .time + .event_duration,
-      .time_of_next_event = Inf#,
-      #.trunc_time = .time + .immunity_duration
+      .time_of_next_event = Inf,
+      .event_count = .event_count + 1
     )]
+    data[.kind==.event, .trunc_time := .time + .immunity_duration]
 
     # set variables back to 0 if needed
     d_change <- data[.min_time_of_next_change==.time_of_next_change &
@@ -201,11 +178,8 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
                      .(.change = .kind[1]), by=.id]
 
     if (nrow(d_change) > 0) {
-      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
-
-      for (col in var_names) {
-        data[.change==col, (col) := FALSE]
-      }
+      data <- set_cols_to_value(data=data, d_event=d_change, value=FALSE,
+                                var_names=var_names)
     } else {
       data[, .change := NA]
     }
@@ -219,10 +193,10 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
     out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
 
     # remove rows that no longer need to be updated
-    # TODO: rows with Inf immunity duration should also be removed after
-    #       an event
     data <- data[!(is.infinite(.event_duration) & .kind==.event &
-                   !is.na(.event)) & .time < max_t]
+                   !is.na(.event)) & .time < max_t &
+                   !(is.infinite(.immunity_duration) & .kind==.change &
+                     !is.na(.change))]
 
     # remove unneeded columns
     data[, .event := NULL]
@@ -250,7 +224,33 @@ sim_discrete_event <- function(dag, n_sim, t0_sort_dag=FALSE,
   cnames <- cnames[!cnames %in% c(".id", ".time")]
   setcolorder(d_start_stop, neworder=c(".id", "start", "stop", cnames))
 
+  d_start_stop[, .trunc_time := NULL]
+
+  # potentially censor at max_t
+  if (censor_at_max_t) {
+    d_start_stop <- d_start_stop[start < max_t]
+    d_start_stop[stop > max_t | is.na(stop), stop := max_t]
+  }
+
+  # transform it to be event centric, if specified
+  if (!is.null(target_event)) {
+    d_start_stop <- collapse_for_target_event(data=d_start_stop,
+                                              target_event=target_event,
+                                              keep_only_first=keep_only_first)
+  }
+
   return(d_start_stop)
+}
+
+## node type for the sim_discrete_event() function
+# NOTE: this function obviously doesn't really do anything, since the
+#       sim_discrete_event() function does it all internally, but it
+#       needs to be defined anyways so it is correctly processed in node()
+#' @export
+node_next_time <- function(data, prob_fun, ..., distr_fun=rtexp,
+                           event_duration=Inf,
+                           immunity_duration=event_duration) {
+  return(NULL)
 }
 
 ## get the value of a specific argument in a DAG.node object
@@ -278,4 +278,17 @@ remove_node_internals <- function(node) {
   node$immunity_duration <- NULL
 
   return(node)
+}
+
+## setting specific cols in data to the value included in d_event
+set_cols_to_value <- function(data, d_event, var_names, value) {
+
+  .event <- NULL
+  data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
+
+  for (col in var_names) {
+    data[.event==col, (col) := value]
+  }
+
+  return(data)
 }
