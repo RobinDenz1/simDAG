@@ -79,6 +79,12 @@ Simulate data from a DAG and manipulate or visualize the output
 
   Simulate Data from a `DAG` with Time-Dependent Variables
 
+- [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  :
+
+  Simulate Data from a `DAG` with Time-Dependent Variables using
+  Discrete-Event Simulation
+
 - [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)
   :
 
@@ -155,6 +161,8 @@ Functions that can only be used as time-dependent nodes
 - [`node_competing_events()`](https://robindenz1.github.io/simDAG/reference/node_competing_events.md)
   : Generate Data with Multiple Mutually Exclusive Events in
   Discrete-Time Simulation
+- [`node_next_time()`](https://robindenz1.github.io/simDAG/reference/node_next_time.md)
+  : Generate the Next Time of an Event in Discrete-Event Simulation
 
 ## Misc
 

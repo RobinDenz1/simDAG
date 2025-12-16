@@ -36,6 +36,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_mixture.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_multinomial.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_negative_binomial.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/reference/node_next_time.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_poisson.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_rsurv.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_time_to_event.html</loc></url>
@@ -49,6 +50,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/rtexp.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/sim2data.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/simDAG.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/reference/sim_discrete_event.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/sim_discrete_time.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/sim_from_DAG.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/sim_n_datasets.html</loc></url>
