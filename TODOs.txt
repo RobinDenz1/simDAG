@@ -20,6 +20,7 @@ sim_discrete_event:
 	- allow formula
 	- allow network dependencies
 	- allow re-computation of prob_fun() at specific time-points
+	- change how .event_count works, to allow the amount of previous events to influence other events
 
 node_next_time:
 

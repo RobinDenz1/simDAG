@@ -53,7 +53,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     cond_expr <- substitute(remove_if)
   }
 
-  tx_nodes <- dag$tx_nodes
+  tx_nodes <- prepare_next_time_nodes(dag$tx_nodes)
 
   # get initial data
   if (is.null(t0_data) & length(dag$root_nodes)==0 &
@@ -83,8 +83,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   data[, .trunc_time := 0]
 
   # extract names and initialize relevant vars
-  var_names <- vapply(tx_nodes, function(x){x$name},
-                      FUN.VALUE=character(1))
+  var_names <- vapply(tx_nodes, function(x){x$name}, FUN.VALUE=character(1))
   data[, (var_names) := FALSE]
   cnames <- copy(colnames(data))
 
@@ -152,14 +151,17 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                             .min_time_of_next_change)]
     data[.time > .trunc_time, .trunc_time := .time]
 
-    # set variables to 1 if needed
+    # set variables to TRUE if needed
     d_event <- data[.min_time_of_next_event==.time_of_next_event &
                       .next_is_event==TRUE,
                     .(.event = .kind[1]), by=.id]
 
     if (nrow(d_event) > 0) {
-      data <- set_cols_to_value(data=data, d_event=d_event, value=TRUE,
-                                var_names=var_names)
+      data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
+
+      for (col in var_names) {
+        data[.event==col, (col) := TRUE]
+      }
     } else {
       data[, .event := NA]
     }
@@ -172,20 +174,23 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     )]
     data[.kind==.event, .trunc_time := .time + .immunity_duration]
 
-    # set variables back to 0 if needed
+    # set variables back to FALSE if needed
     d_change <- data[.min_time_of_next_change==.time_of_next_change &
                        .next_is_event==FALSE,
                      .(.change = .kind[1]), by=.id]
 
     if (nrow(d_change) > 0) {
-      data <- set_cols_to_value(data=data, d_event=d_change, value=FALSE,
-                                var_names=var_names)
+      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
+
+      for (col in var_names) {
+        data[.change==col, (col) := FALSE]
+      }
     } else {
       data[, .change := NA]
     }
 
     # set .time_of_next_change back to Inf for all variables that
-    # turned back to 0
+    # turned back to FALSE
     data[.min_time_of_next_change==.time_of_next_change & .next_is_event==FALSE,
          .time_of_next_change := Inf]
 
@@ -255,8 +260,10 @@ node_next_time <- function(data, prob_fun, ..., distr_fun=rtexp,
 
 ## get the value of a specific argument in a DAG.node object
 extract_node_arg <- function(node, fun, arg) {
-  if (is.null(node[[arg]])) {
+  if (is.null(node[[arg]]) & arg!="immunity_duration") {
     out <- formals(fun=fun)[[arg]]
+  } else if (is.null(node[[arg]])) {
+    out <- extract_node_arg(node=node, fun=fun, arg="event_duration")
   } else {
     out <- node[[arg]]
   }
@@ -276,19 +283,32 @@ remove_node_internals <- function(node) {
   node$prob_fun <- NULL
   node$event_duration <- NULL
   node$immunity_duration <- NULL
+  node$distr_fun <- NULL
 
   return(node)
 }
 
-## setting specific cols in data to the value included in d_event
-set_cols_to_value <- function(data, d_event, var_names, value) {
+## set defaults and correct arguments passed using node_next_time()
+prepare_next_time_nodes <- function(nodes) {
 
-  .event <- NULL
-  data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
+  for (i in seq_len(length(nodes))) {
 
-  for (col in var_names) {
-    data[.event==col, (col) := value]
+    # set default value of distr_fun
+    if (is.null(nodes[[i]]$distr_fun)) {
+      nodes[[i]]$distr_fun <- rtexp
+    }
+
+    # function that only returns
+    if (is.numeric(nodes[[i]]$prob_fun)) {
+      nodes[[i]]$.value <- nodes[[i]]$prob_fun
+      nodes[[i]]$prob_fun <- pass_value
+    }
+
   }
+  return(nodes)
+}
 
-  return(data)
+## needed for prepare_next_time_nodes()
+pass_value <- function(data, .value) {
+  return(.value)
 }

@@ -102,9 +102,9 @@ Robin Denz
 Returns a single \code{data.table} including at least the following columns:
 
 \itemize{
-\item{\code{.id}: }{The unique individual identifier, coded as integers.}
-\item{\code{start}: }{The start of the time period, coded as a numeric value.}
-\item{\code{stop}: }{The end of the time period, coded as a numeric value.}
+\item{\code{.id}: The unique individual identifier, coded as integers.}
+\item{\code{start}: The start of the time period, coded as a numeric value.}
+\item{\code{stop}: The end of the time period, coded as a numeric value.}
 }
 
 Additionally, the returned data will include all time-constant and time-dependent variables that were generated. Some options on how this data should be formatted are given by the function itself (see \code{censor_at_max_t}, \code{target_event} and \code{keep_only_first}). The long- and wide-format are not supported, because the time is usually modelled as a continuous variable.
