@@ -31,6 +31,14 @@ test_that("general test case", {
   expect_true(nrow(sim)==5000)
   expect_true(all(d_final$sum_event==4))
   expect_true(all(sim$sum_event==sim$index))
+
+  # test with target_event="Y"
+  set.seed(1234)
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y")
+
+  expect_true(nrow(sim)==4000)
+  expect_true(all(d_final$sum_event==4))
+  expect_true(all(sim$sum_event==sim$index))
 })
 
 test_that("max_t working", {
@@ -81,24 +89,32 @@ test_that("unrelated variables are equal to rtexp()", {
   dag <- empty_dag() +
     node_td("Y", type="next_time", prob_fun=0.001)
 
-  sim <- sim_discrete_event(dag, n_sim=1000000, max_t=Inf)
+  sim <- sim_discrete_event(dag, n_sim=100000, max_t=Inf)
   d_max_t <- sim[, .(max_t = max(start)), by=.id]
 
   q_DES <- quantile(d_max_t$max_t, probs=c(0.2, 0.5, 0.8))
   q_rexp <- quantile(stats::rexp(n=1000000, rate=0.001),
                      probs=c(0.2, 0.5, 0.8))
 
-  expect_equal(round(as.vector(q_DES)), c(224, 695, 1610))
-  expect_equal(round(as.vector(q_rexp)), c(223, 691, 1606))
+  expect_equal(round(as.vector(q_DES)), c(225, 698, 1612))
+  expect_equal(round(as.vector(q_rexp)), c(223, 692, 1608))
 
   # multiple events
   dag <- empty_dag() +
-    node_td("Y", type="next_time", prob_fun=0.001)
+    node_td(c("Y1", "Y2"), type="next_time", prob_fun=0.001)
 
-  sim <- sim_discrete_event(dag, n_sim=1000000, max_t=Inf)
-  #d_max_t <- sim[, .(max_t = max(start)), by=.id]
-  #TODO: finish this
+  sim <- sim_discrete_event(dag, n_sim=100000, max_t=Inf)
 
+  d_max_t <- sim[, .(
+    Y1_first = start[which(Y1)[1]],
+    Y2_first = start[which(Y2)[1]]
+  ), by = .id]
+
+  q_Y1 <- quantile(d_max_t$Y1_first, probs=c(0.2, 0.5, 0.8))
+  q_Y2 <- quantile(d_max_t$Y2_first, probs=c(0.2, 0.5, 0.8))
+
+  expect_equal(round(as.vector(q_Y1)), c(222, 690, 1604))
+  expect_equal(round(as.vector(q_Y2)), c(223, 696, 1606))
 })
 
 test_that("using .event_count", {
@@ -143,11 +159,67 @@ test_that("custom distr_fun working", {
   expect_true(all(sim2$stop==(sim1$stop-1)))
 })
 
+test_that("event_duration working", {
+
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.001,
+            event_duration=1000) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001,
+            event_duration=700) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            event_duration=Inf) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                            remove_if=Y==TRUE, censor_at_max_t=TRUE)
+
+  # all 1000 (or Inf if stop > max_t) in X1
+  sim[, grp := rleid(.id, X1)]
+  res_X1 <- sim[X1 == TRUE,
+                 .(event_start = first(start),
+                   event_stop  = last(stop),
+                   duration    = last(stop) - first(start)),
+                 by = .(.id, grp)
+  ][, grp := NULL]
+
+  expect_true(all(round(res_X1$duration, 10)==1000 |
+                    is.infinite(res_X1$duration)))
+
+  # all 700 (or Inf if stop > max_t) in X2
+  sim[, grp := rleid(.id, X2)]
+  res_X2 <- sim[X2 == TRUE,
+                .(event_start = first(start),
+                  event_stop  = last(stop),
+                  duration    = last(stop) - first(start)),
+                by = .(.id, grp)
+  ][, grp := NULL]
+
+  expect_true(all(round(res_X2$duration, 10)==700 |
+                    is.infinite(res_X2$duration)))
+
+  # only one event for X3
+  sim[, grp := rleid(.id, X3)]
+  sim <- subset(sim, X3==TRUE)
+  res_X3 <- sim[, .(n = uniqueN(grp)), by=.id]
+
+  expect_true(all(res_X3$n==1))
+})
+
+test_that("error with internal node name", {
+
+  dag <- empty_dag() +
+    node_td(".event", type="next_time", prob_fun=0.1)
+
+  expect_error(sim_discrete_event(dag, n_sim=100, max_t=Inf))
+})
+
 # TODO: check if
-# - event_duration works
 # - immunity_duration works
 # - interrelated events work
-# - using multiple unrelated time-dependent nodes is equal to just
-#   calling rtexp() multiple times
 # - check the arguments that are also used in sim_discrete_time()
 # - what happens if censor_at_max_t and target_event are used at the same time?
+# - redraw_at_t working

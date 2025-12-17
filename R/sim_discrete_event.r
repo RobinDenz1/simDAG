@@ -15,6 +15,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
                                t0_transform_args=list(),
                                max_t, remove_if, break_if,
+                               redraw_at_t=NULL,
                                censor_at_max_t=FALSE, target_event=NULL,
                                keep_only_first=FALSE, check_inputs=TRUE) {
 
@@ -23,7 +24,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     .time_of_next_change <- .min_time_of_next_event <-
     .min_time_of_next_change <- .event_duration <- .immunity_duration <-
     .next_is_event <- .kind <- .event <- .change <- .event_count <- . <-
-    start <- NULL
+    start <- .time_cuts <- NULL
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
@@ -39,7 +40,15 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                     t0_transform_fun=t0_transform_fun,
                                     t0_transform_args=t0_transform_args,
                                     max_t=max_t,
-                                    censor_at_max_t=censor_at_max_t)
+                                    censor_at_max_t=censor_at_max_t,
+                                    redraw_at_t=redraw_at_t)
+  }
+
+  # add another node that enforces a time-break at specific points in time
+  if (!is.null(redraw_at_t)) {
+    dag <- dag + node_td(".time_cuts", type="next_time", prob_fun=1,
+                         event_duration=0, distr_fun=timecuts,
+                         distr_fun_args=list(cuts=redraw_at_t))
   }
 
   # handle sub-setting / break conditioning
@@ -127,16 +136,33 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       rel_row <- data$.kind==var_names[i] &
         is.infinite(data$.time_of_next_change)
 
-      # function arguments
+      # call prob_fun with correct arguments
       args_p <- remove_node_internals(tx_nodes[[i]])
       args_p$data <- data[rel_row==TRUE]
 
+      p_est <- tryCatch({
+        do.call(tx_nodes[[i]]$prob_fun, args=args_p)},
+        error=function(e){
+          stop("Calling 'prob_fun' failed with error message:\n", e,
+               call.=FALSE)
+        }
+      )
+
       # draw time until next event from truncated distribution
-      data[rel_row==TRUE,
-           .time_of_next_event := tx_nodes[[i]]$distr_fun(
-             n=.N,
-             rate=do.call(tx_nodes[[i]]$prob_fun, args=args_p),
-             l=.trunc_time)]
+      args_dist <- tx_nodes[[i]]$distr_fun_args
+      args_dist$n <- sum(rel_row)
+      args_dist$rate <- p_est
+      args_dist$l <- args_p$data$.trunc_time
+
+      distr_fun_out <- tryCatch({
+        do.call(tx_nodes[[i]]$distr_fun, args_dist)},
+        error=function(e){
+          stop("Calling 'distr_fun' failed with error message:\n", e,
+               call.=FALSE)
+        }
+      )
+
+      data[rel_row==TRUE, .time_of_next_event := distr_fun_out]
     }
 
     # identify the minimum event time and minimum time until state change
@@ -231,6 +257,12 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   d_start_stop[, .trunc_time := NULL]
 
+  # remove time-cuts from output
+  if (!is.null(redraw_at_t)) {
+    d_start_stop <- d_start_stop[.time_cuts==FALSE]
+    d_start_stop[, .time_cuts := NULL]
+  }
+
   # potentially censor at max_t
   if (censor_at_max_t) {
     d_start_stop <- d_start_stop[start < max_t]
@@ -253,7 +285,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 #       needs to be defined anyways so it is correctly processed in node()
 #' @export
 node_next_time <- function(data, prob_fun, ..., distr_fun=rtexp,
-                           event_duration=Inf,
+                           distr_fun_args=list(), event_duration=Inf,
                            immunity_duration=event_duration) {
   return(NULL)
 }
@@ -284,6 +316,7 @@ remove_node_internals <- function(node) {
   node$event_duration <- NULL
   node$immunity_duration <- NULL
   node$distr_fun <- NULL
+  node$distr_fun_args <- NULL
 
   return(node)
 }
@@ -311,4 +344,15 @@ prepare_next_time_nodes <- function(nodes) {
 ## needed for prepare_next_time_nodes()
 pass_value <- function(data, .value) {
   return(.value)
+}
+
+## used to trick sim_discrete_event() into recomputing hazards and times
+## at pre-specified time points
+timecuts <- function(n, rate, l, cuts) {
+
+  next_time_cut <- findInterval(x=l, vec=cuts)
+  next_time_cut <- cuts[next_time_cut + 1]
+  next_time_cut[is.na(next_time_cut)] <- Inf
+
+  return(next_time_cut)
 }

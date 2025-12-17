@@ -9,7 +9,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 }
 \usage{
 node_next_time(data, prob_fun, ..., distr_fun=rtexp,
-               event_duration=Inf,
+               distr_fun_args=list(), event_duration=Inf,
                immunity_duration=event_duration)
 }
 \arguments{
@@ -17,13 +17,16 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
 A \code{data.table} containing all columns specified by \code{parents}. Similar objects such as \code{data.frame}s are not supported.
   }
   \item{prob_fun}{
-A function that returns a numeric vector of size \code{nrow(data)}. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the \code{distr_fun} function call that follows internally. For example, when using \code{distr_fun="rtexp"} (default), the \code{prob_fun} should generate the person-specific probability of experiencing the event. Any function may be used, as long as it has a named argument called \code{data}. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time.
+A function that returns a numeric vector of size \code{nrow(data)}. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the \code{distr_fun} function call that follows internally. For example, when using \code{distr_fun="rtexp"} (default), the \code{prob_fun} should generate the person-specific probability of experiencing the event during 1 time unit. Any function may be used, as long as it has a named argument called \code{data}. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time.
   }
   \item{...}{
 An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{distr_fun}{
 A function that returns the (left-truncated) next time at which the variable turns to \code{TRUE}. Any function that has at least three named arguments \code{n} (the number of times to draw), \code{rate} (the summary score returned by \code{prob_fun}) and \code{l} (the time of left-truncation) may be used. The function additionally needs to be vectorised over both \code{rate} and \code{l}, so that a vector of different values may be supplied. The left-truncation is required, so that it only generated times that are strictly larger than \code{l}. A classic example for such a function is the \code{\link{rtexp}} function (the default). See examples and the associated vignette.
+  }
+  \item{distr_fun_args}{
+A list of named arguments that should be passed to the function specified in the \code{distr_fun} argument.
   }
   \item{event_duration}{
 A single number > 0 specifying how long the event should last. During this period, the corresponding variable is set to \code{TRUE}.
@@ -67,9 +70,51 @@ This function is never actually called. It is only used so that the node type \c
 \code{\link{empty_dag}}, \code{\link{node_td}}, \code{\link{sim_discrete_event}}, \code{\link{node_time_to_event}}
 }
 \examples{
+
 library(simDAG)
 
+## a simple terminal time-to-event node, with a constant probability of
+## occurrence, independent of any other variable
+dag <- empty_dag() +
+  node_td("death", type="next_time", prob_fun=0.0001,
+          event_duration=Inf)
 
+## a simple recurrent time-to-event node with a constant probability of
+## occurrence, independent of any other variable
+dag <- empty_dag() +
+  node_td("car_crash", type="next_time", prob_fun=0.001, event_duration=1)
+
+## a next-time node with a probability function dependent on a
+## time-fixed variable
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="next_time", prob_fun=prob_car_crash,
+          parents="sex")
+
+## a little more complex car crash simulation, where the probability for
+## a car crash is dependent on the sex, and the probability of death is
+## highly increased for 3 days after a car crash happened
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+prob_death <- function(data) {
+  ifelse(data$car_crash, 0.1, 0.0001)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="next_time", prob_fun=prob_car_crash,
+          parents="sex", event_duration=3) +
+  node_td("death", type="next_time", prob_fun=prob_death,
+          parents="car_crash", event_duration=Inf)
+
+# use the sim_discrete_time function to simulate data from one of these DAGs:
+sim <- sim_discrete_event(dag, n_sim=20, max_t=500)
 
 ## more examples can be found in the vignettes of this package
 }

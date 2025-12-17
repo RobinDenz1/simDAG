@@ -804,7 +804,7 @@ check_inputs_network <- function(name, net, time_varying, args) {
 check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
                                             t0_data, t0_transform_fun,
                                             t0_transform_args, max_t,
-                                            censor_at_max_t) {
+                                            censor_at_max_t, redraw_at_t) {
 
   # rudimentary type checks
   if (!is.null(t0_data)) {
@@ -819,6 +819,14 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
               (length(max_t) == 1 && is.numeric(max_t) && max_t > 0))
   stopifnot("'censor_at_max_t' should be either TRUE or FALSE." =
               length(censor_at_max_t) == 1 && is.logical(censor_at_max_t))
+
+  if (!(is.null(redraw_at_t) | (!is.null(redraw_at_t) &&
+                                length(redraw_at_t) > 0 &&
+                                is.numeric(redraw_at_t) &&
+                                all(redraw_at_t > 0)))) {
+    stop("'redraw_at_t' must be either NULL or a numeric vector",
+         " containing only positive numbers.", call.=FALSE)
+  }
 
   # needs some time-varying nodes
   if (!is_time_varying_dag(dag)) {
@@ -835,7 +843,23 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
     stop("All time-varying nodes added using the node_td() function",
          " should be of type='next_time' when using sim_discrete_event().",
          " If other node types are needed, use the sim_discrete_time()",
-         " function instead.")
+         " function instead.", call.=FALSE)
+  }
+
+  # check for internally used names
+  tx_names <- names_DAG_level(dag, level="tx")
+  internal_names <- c(".id", ".time", ".trunc_time", ".time_of_next_event",
+                      ".time_of_next_change", ".min_time_of_next_event",
+                      ".min_time_of_next_change", ".event_duration",
+                      ".immunity_duration", ".next_is_event", ".kind",
+                      ".event", ".change", ".event_count", ".time_cuts",
+                      "start", "stop")
+  not_allowed <- tx_names[tx_names %in% internal_names]
+  if (length(not_allowed) > 0) {
+    stop("The following node names are used internally by sim_discrete_event()",
+         " and can therefore not be used as node names: '",
+         paste0(not_allowed, collapse="', '"), "'.\n",
+         "Please re-name those nodes and re-run the function.", call.=FALSE)
   }
 
   # check content of t0_data
