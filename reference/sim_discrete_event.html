@@ -53,6 +53,7 @@
 <span>                   t0_data<span class="op">=</span><span class="cn">NULL</span>, t0_transform_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   t0_transform_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                   <span class="va">max_t</span>, <span class="va">remove_if</span>, <span class="va">break_if</span>,</span>
+<span>                   redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   censor_at_max_t<span class="op">=</span><span class="cn">FALSE</span>, target_event<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -86,6 +87,9 @@
 
   <dt id="arg-break-if">break_if<a class="anchor" aria-label="anchor" href="#arg-break-if"></a></dt>
 <dd><p>A condition that will be evaluated after each jump to the next event (but after subsetting, if <code>remove_if</code> was specified). If the condition is met, the simulation stops early. Contrary to the <code>remove_if</code> argument, this condition should return exactly one <code>TRUE</code> or <code>FALSE</code> value and is not directly evaluated on the <code>data</code>. To use variables generated in the simulation in this condition, users should use the <code>$</code> syntax (e.g. use <code>data$X</code> instead of just <code>X</code>). Keep this argument unspecified (default) to not use this functionality.</p></dd>
+
+  <dt id="arg-redraw-at-t">redraw_at_t<a class="anchor" aria-label="anchor" href="#arg-redraw-at-t"></a></dt>
+<dd><p>A numeric vector of positive values specifying times at which the time to the next event should be re-drawn, regardless of whether an event occurred at this time or not. This may be useful to specify effects or baseline probabilities that vary over discrete intervals of time. Note that using this argument potentially adds multiple additional rows to the output, in which no variables change. Set to <code>NULL</code> to not use this functionality (default).</p></dd>
 
   <dt id="arg-censor-at-max-t">censor_at_max_t<a class="anchor" aria-label="anchor" href="#arg-censor-at-max-t"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether the last generated time should be censored at the user-specified value of <code>max_t</code>. Since the simulation jumps times at events, the last observed event time may often be larger than <code>max_t</code> initially. Setting this to <code>TRUE</code> censors these values appropriately and potentially discards the last state-change.</p></dd>
@@ -153,6 +157,39 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">454236</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## simulating death dependent on age, sex, bmi</span></span></span>
+<span class="r-in"><span><span class="co">## NOTE: this example is explained in detail in one of the vignettes</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># initializing a DAG with nodes for generating data at t0</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"bmi"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"age"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">0.4</span><span class="op">)</span>, intercept<span class="op">=</span><span class="fl">12</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># a function to calculate the probability of death as a</span></span></span>
+<span class="r-in"><span><span class="co"># linear combination of age, sex and bmi on the log scale</span></span></span>
+<span class="r-in"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">beta_age</span>, <span class="va">beta_sex</span>, <span class="va">beta_bmi</span>,</span></span>
+<span class="r-in"><span>                       <span class="va">beta_sickness</span>, <span class="va">intercept</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">prob</span> <span class="op">&lt;-</span> <span class="va">intercept</span> <span class="op">+</span> <span class="va">data</span><span class="op">$</span><span class="va">age</span><span class="op">*</span><span class="va">beta_age</span> <span class="op">+</span> <span class="va">data</span><span class="op">$</span><span class="va">sex</span><span class="op">*</span><span class="va">beta_sex</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="va">data</span><span class="op">$</span><span class="va">bmi</span><span class="op">*</span><span class="va">beta_bmi</span> <span class="op">+</span> <span class="va">data</span><span class="op">$</span><span class="va">sickness</span><span class="op">*</span><span class="va">beta_sickness</span></span></span>
+<span class="r-in"><span>  <span class="va">prob</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># adding time-dependent nodes to the dag</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"sickness"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span></span>
+<span class="r-in"><span>          event_duration<span class="op">=</span><span class="fl">50</span>, immunity_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"bmi"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          prob_fun<span class="op">=</span><span class="va">prob_death</span>, beta_age<span class="op">=</span><span class="fl">0.1</span>, beta_bmi<span class="op">=</span><span class="fl">0.3</span>, beta_sex<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>,</span></span>
+<span class="r-in"><span>          beta_sickness<span class="op">=</span><span class="fl">1.1</span>,</span></span>
+<span class="r-in"><span>          intercept<span class="op">=</span><span class="op">-</span><span class="fl">20</span>, event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># run simulation for 100 people, until everyone died</span></span></span>
+<span class="r-in"><span><span class="va">sim_dt</span> <span class="op">&lt;-</span> <span class="fu">sim_discrete_event</span><span class="op">(</span>n_sim<span class="op">=</span><span class="fl">100</span>, dag<span class="op">=</span><span class="va">dag</span>, max_t<span class="op">=</span><span class="cn">Inf</span>,</span></span>
+<span class="r-in"><span>                             remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>                             target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

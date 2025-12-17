@@ -11,7 +11,7 @@ details.
 
 ``` r
 node_next_time(data, prob_fun, ..., distr_fun=rtexp,
-               event_duration=Inf,
+               distr_fun_args=list(), event_duration=Inf,
                immunity_duration=event_duration)
 ```
 
@@ -29,11 +29,11 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
   covariates per person. The summarised score is then used in the
   `distr_fun` function call that follows internally. For example, when
   using `distr_fun="rtexp"` (default), the `prob_fun` should generate
-  the person-specific probability of experiencing the event. Any
-  function may be used, as long as it has a named argument called
-  `data`. Alternatively this argument can be set to a single number,
-  resulting in a fixed summary score being used for every simulated
-  individual at every point in time.
+  the person-specific probability of experiencing the event during 1
+  time unit. Any function may be used, as long as it has a named
+  argument called `data`. Alternatively this argument can be set to a
+  single number, resulting in a fixed summary score being used for every
+  simulated individual at every point in time.
 
 - ...:
 
@@ -53,6 +53,11 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
   are strictly larger than `l`. A classic example for such a function is
   the [`rtexp`](https://robindenz1.github.io/simDAG/reference/rtexp.md)
   function (the default). See examples and the associated vignette.
+
+- distr_fun_args:
+
+  A list of named arguments that should be passed to the function
+  specified in the `distr_fun` argument.
 
 - event_duration:
 
@@ -174,7 +179,48 @@ as it always returns `NULL`.
 ``` r
 library(simDAG)
 
+## a simple terminal time-to-event node, with a constant probability of
+## occurrence, independent of any other variable
+dag <- empty_dag() +
+  node_td("death", type="next_time", prob_fun=0.0001,
+          event_duration=Inf)
 
+## a simple recurrent time-to-event node with a constant probability of
+## occurrence, independent of any other variable
+dag <- empty_dag() +
+  node_td("car_crash", type="next_time", prob_fun=0.001, event_duration=1)
+
+## a next-time node with a probability function dependent on a
+## time-fixed variable
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="next_time", prob_fun=prob_car_crash,
+          parents="sex")
+
+## a little more complex car crash simulation, where the probability for
+## a car crash is dependent on the sex, and the probability of death is
+## highly increased for 3 days after a car crash happened
+prob_car_crash <- function(data) {
+  ifelse(data$sex==1, 0.001, 0.01)
+}
+
+prob_death <- function(data) {
+  ifelse(data$car_crash, 0.1, 0.0001)
+}
+
+dag <- empty_dag() +
+  node("sex", type="rbernoulli", p=0.5) +
+  node_td("car_crash", type="next_time", prob_fun=prob_car_crash,
+          parents="sex", event_duration=3) +
+  node_td("death", type="next_time", prob_fun=prob_death,
+          parents="car_crash", event_duration=Inf)
+
+# use the sim_discrete_time function to simulate data from one of these DAGs:
+sim <- sim_discrete_event(dag, n_sim=20, max_t=500)
 
 ## more examples can be found in the vignettes of this package
 ```

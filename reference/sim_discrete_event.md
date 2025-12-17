@@ -18,6 +18,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
                    max_t, remove_if, break_if,
+                   redraw_at_t=NULL,
                    censor_at_max_t=FALSE, target_event=NULL,
                    keep_only_first=FALSE, check_inputs=TRUE)
 ```
@@ -111,6 +112,16 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   generated in the simulation in this condition, users should use the
   `$` syntax (e.g. use `data$X` instead of just `X`). Keep this argument
   unspecified (default) to not use this functionality.
+
+- redraw_at_t:
+
+  A numeric vector of positive values specifying times at which the time
+  to the next event should be re-drawn, regardless of whether an event
+  occurred at this time or not. This may be useful to specify effects or
+  baseline probabilities that vary over discrete intervals of time. Note
+  that using this argument potentially adds multiple additional rows to
+  the output, in which no variables change. Set to `NULL` to not use
+  this functionality (default).
 
 - censor_at_max_t:
 
@@ -308,4 +319,38 @@ Pearson Education Limited.
 library(simDAG)
 
 set.seed(454236)
+
+## simulating death dependent on age, sex, bmi
+## NOTE: this example is explained in detail in one of the vignettes
+
+# initializing a DAG with nodes for generating data at t0
+dag <- empty_dag() +
+  node("age", type="rnorm", mean=50, sd=4) +
+  node("sex", type="rbernoulli", p=0.5) +
+  node("bmi", type="gaussian", parents=c("sex", "age"),
+       betas=c(1.1, 0.4), intercept=12, error=2)
+
+# a function to calculate the probability of death as a
+# linear combination of age, sex and bmi on the log scale
+prob_death <- function(data, beta_age, beta_sex, beta_bmi,
+                       beta_sickness, intercept) {
+  prob <- intercept + data$age*beta_age + data$sex*beta_sex +
+    data$bmi*beta_bmi + data$sickness*beta_sickness
+  prob <- 1/(1 + exp(-prob))
+  return(prob)
+}
+
+# adding time-dependent nodes to the dag
+dag <- dag +
+  node_td("sickness", type="next_time", prob_fun=0.01,
+          event_duration=50, immunity_duration=Inf) +
+  node_td("death", type="next_time", parents=c("age", "sex", "bmi"),
+          prob_fun=prob_death, beta_age=0.1, beta_bmi=0.3, beta_sex=-0.2,
+          beta_sickness=1.1,
+          intercept=-20, event_duration=Inf)
+
+# run simulation for 100 people, until everyone died
+sim_dt <- sim_discrete_event(n_sim=100, dag=dag, max_t=Inf,
+                             remove_if=death==TRUE,
+                             target_event="death")
 ```

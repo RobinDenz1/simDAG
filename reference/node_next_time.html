@@ -50,7 +50,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_next_time</span><span class="op">(</span><span class="va">data</span>, <span class="va">prob_fun</span>, <span class="va">...</span>, distr_fun<span class="op">=</span><span class="va">rtexp</span>,</span>
-<span>               event_duration<span class="op">=</span><span class="cn">Inf</span>,</span>
+<span>               distr_fun_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, event_duration<span class="op">=</span><span class="cn">Inf</span>,</span>
 <span>               immunity_duration<span class="op">=</span><span class="va">event_duration</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -61,13 +61,16 @@
 <dd><p>A <code>data.table</code> containing all columns specified by <code>parents</code>. Similar objects such as <code>data.frame</code>s are not supported.</p></dd>
 
   <dt id="arg-prob-fun">prob_fun<a class="anchor" aria-label="anchor" href="#arg-prob-fun"></a></dt>
-<dd><p>A function that returns a numeric vector of size <code>nrow(data)</code>. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the <code>distr_fun</code> function call that follows internally. For example, when using <code>distr_fun="rtexp"</code> (default), the <code>prob_fun</code> should generate the person-specific probability of experiencing the event. Any function may be used, as long as it has a named argument called <code>data</code>. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time.</p></dd>
+<dd><p>A function that returns a numeric vector of size <code>nrow(data)</code>. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the <code>distr_fun</code> function call that follows internally. For example, when using <code>distr_fun="rtexp"</code> (default), the <code>prob_fun</code> should generate the person-specific probability of experiencing the event during 1 time unit. Any function may be used, as long as it has a named argument called <code>data</code>. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time.</p></dd>
 
   <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>An arbitrary amount of additional named arguments passed to <code>prob_fun</code>. Ignore this if you do not want to pass any arguments. Also ignored if <code>prob_fun</code> is a single number.</p></dd>
 
   <dt id="arg-distr-fun">distr_fun<a class="anchor" aria-label="anchor" href="#arg-distr-fun"></a></dt>
 <dd><p>A function that returns the (left-truncated) next time at which the variable turns to <code>TRUE</code>. Any function that has at least three named arguments <code>n</code> (the number of times to draw), <code>rate</code> (the summary score returned by <code>prob_fun</code>) and <code>l</code> (the time of left-truncation) may be used. The function additionally needs to be vectorised over both <code>rate</code> and <code>l</code>, so that a vector of different values may be supplied. The left-truncation is required, so that it only generated times that are strictly larger than <code>l</code>. A classic example for such a function is the <code><a href="rtexp.html">rtexp</a></code> function (the default). See examples and the associated vignette.</p></dd>
+
+  <dt id="arg-distr-fun-args">distr_fun_args<a class="anchor" aria-label="anchor" href="#arg-distr-fun-args"></a></dt>
+<dd><p>A list of named arguments that should be passed to the function specified in the <code>distr_fun</code> argument.</p></dd>
 
   <dt id="arg-event-duration">event_duration<a class="anchor" aria-label="anchor" href="#arg-event-duration"></a></dt>
 <dd><p>A single number &gt; 0 specifying how long the event should last. During this period, the corresponding variable is set to <code>TRUE</code>.</p></dd>
@@ -107,9 +110,51 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## a simple terminal time-to-event node, with a constant probability of</span></span></span>
+<span class="r-in"><span><span class="co">## occurrence, independent of any other variable</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.0001</span>,</span></span>
+<span class="r-in"><span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## a simple recurrent time-to-event node with a constant probability of</span></span></span>
+<span class="r-in"><span><span class="co">## occurrence, independent of any other variable</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"car_crash"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.001</span>, event_duration<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## a next-time node with a probability function dependent on a</span></span></span>
+<span class="r-in"><span><span class="co">## time-fixed variable</span></span></span>
+<span class="r-in"><span><span class="va">prob_car_crash</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">sex</span><span class="op">==</span><span class="fl">1</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"car_crash"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="va">prob_car_crash</span>,</span></span>
+<span class="r-in"><span>          parents<span class="op">=</span><span class="st">"sex"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## a little more complex car crash simulation, where the probability for</span></span></span>
+<span class="r-in"><span><span class="co">## a car crash is dependent on the sex, and the probability of death is</span></span></span>
+<span class="r-in"><span><span class="co">## highly increased for 3 days after a car crash happened</span></span></span>
+<span class="r-in"><span><span class="va">prob_car_crash</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">sex</span><span class="op">==</span><span class="fl">1</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">car_crash</span>, <span class="fl">0.1</span>, <span class="fl">0.0001</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"car_crash"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="va">prob_car_crash</span>,</span></span>
+<span class="r-in"><span>          parents<span class="op">=</span><span class="st">"sex"</span>, event_duration<span class="op">=</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="va">prob_death</span>,</span></span>
+<span class="r-in"><span>          parents<span class="op">=</span><span class="st">"car_crash"</span>, event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># use the sim_discrete_time function to simulate data from one of these DAGs:</span></span></span>
+<span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">20</span>, max_t<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## more examples can be found in the vignettes of this package</span></span></span>
 </code></pre></div>
