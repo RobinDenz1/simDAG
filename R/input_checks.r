@@ -851,9 +851,9 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
   internal_names <- c(".id", ".time", ".trunc_time", ".time_of_next_event",
                       ".time_of_next_change", ".min_time_of_next_event",
                       ".min_time_of_next_change", ".event_duration",
-                      ".immunity_duration", ".next_is_event", ".kind",
-                      ".event", ".change", ".event_count", ".time_cuts",
-                      "start", "stop")
+                      ".immunity_duration", ".kind", ".col", ".change",
+                      ".event_count", ".time_cuts", "start", "stop",
+                      ".is_new_event", ".is_new_change")
   not_allowed <- tx_names[tx_names %in% internal_names]
   if (length(not_allowed) > 0) {
     stop("The following node names are used internally by sim_discrete_event()",

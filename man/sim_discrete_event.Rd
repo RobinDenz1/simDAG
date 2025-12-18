@@ -11,8 +11,9 @@ EXPERIMENTAL: Similar to \code{\link{sim_discrete_time}}, this function allows u
 sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
-                   max_t, remove_if, break_if,
-                   redraw_at_t=NULL,
+                   max_t=Inf, remove_if, break_if,
+                   max_loops=10000, redraw_at_t=NULL,
+                   allow_ties=FALSE,
                    censor_at_max_t=FALSE, target_event=NULL,
                    keep_only_first=FALSE, check_inputs=TRUE)
 }
@@ -44,8 +45,14 @@ A condition that will be evaluated directly on the generated \code{data.table} a
   \item{break_if}{
 A condition that will be evaluated after each jump to the next event (but after subsetting, if \code{remove_if} was specified). If the condition is met, the simulation stops early. Contrary to the \code{remove_if} argument, this condition should return exactly one \code{TRUE} or \code{FALSE} value and is not directly evaluated on the \code{data}. To use variables generated in the simulation in this condition, users should use the \code{$} syntax (e.g. use \code{data$X} instead of just \code{X}). Keep this argument unspecified (default) to not use this functionality.
   }
+  \item{max_loops}{
+A single positive number, specifying the maximum amount of loops the simulation is allowed to run before it terminates. This argument exists so that if all of \code{max_t}, \code{remove_if} and \code{break_if} fail to terminate the simulation eventually, the code does not run forever. In nearly all cases it is, however, preferable to end the simulation using one of the other three arguments. A warning message is therefore returned whenever the simulation is stopped through reaching this limit.
+  }
   \item{redraw_at_t}{
 A numeric vector of positive values specifying times at which the time to the next event should be re-drawn, regardless of whether an event occurred at this time or not. This may be useful to specify effects or baseline probabilities that vary over discrete intervals of time. Note that using this argument potentially adds multiple additional rows to the output, in which no variables change. Set to \code{NULL} to not use this functionality (default).
+  }
+  \item{allow_ties}{
+Either \code{TRUE} or \code{FALSE} (default), specifying whether multiple events (or changes from \code{TRUE} to \code{FALSE} in some variables) per individual at the exact same time should be allowed. If the times until the next event are continuous, the chances for an exact tie are astronomically small, so it is usually fine to keep this at \code{FALSE}. Should a tie be found anyways, an error will be returned. If some custom function is supplied to the \code{distr_fun} argument of one or more time-dependent nodes, which produce integer times, this argument should be set to \code{TRUE}. Note that this function is much faster with \code{allow_ties=FALSE}, especially with large \code{n_sim}.
   }
   \item{censor_at_max_t}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the last generated time should be censored at the user-specified value of \code{max_t}. Since the simulation jumps times at events, the last observed event time may often be larger than \code{max_t} initially. Setting this to \code{TRUE} censors these values appropriately and potentially discards the last state-change.

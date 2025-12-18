@@ -209,17 +209,264 @@ test_that("event_duration working", {
   expect_true(all(res_X3$n==1))
 })
 
+test_that("immunity_duration working", {
+
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
+            event_duration=10, immunity_duration=750) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.01,
+            event_duration=45, immunity_duration=1000) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            event_duration=200, immunity_duration=Inf) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                            remove_if=Y==TRUE, censor_at_max_t=TRUE)
+
+  # all event-less times are at least 740 in X1
+  sim[, grp := rleid(.id, X1)]
+  res_X1 <- sim[X1 == FALSE ,
+                .(event_start = first(start),
+                  event_stop  = last(stop),
+                  duration    = last(stop) - first(start)),
+                by = .(.id, grp)
+  ][, grp := NULL]
+  res_X1[, is_first_row := seq_len(.N)==1, by=.id]
+  res_X1 <- subset(res_X1, is_first_row==FALSE)
+
+  expect_true(min(res_X1) < 740)
+
+  # all event-less times (or Inf if stop > max_t) in X2
+  sim[, grp := rleid(.id, X2)]
+  res_X2 <- sim[X2 == FALSE ,
+                .(event_start = first(start),
+                  event_stop  = last(stop),
+                  duration    = last(stop) - first(start)),
+                by = .(.id, grp)
+  ][, grp := NULL]
+  res_X2[, is_first_row := seq_len(.N)==1, by=.id]
+  res_X2 <- subset(res_X2, is_first_row==FALSE)
+
+  expect_true(min(res_X2) < 955)
+
+  # only one event for X3
+  sim[, grp := rleid(.id, X3)]
+  sim <- subset(sim, X3==TRUE)
+  res_X3 <- sim[, .(n = uniqueN(grp)), by=.id]
+
+  expect_true(all(res_X3$n==1))
+})
+
+test_that("supplying t0_data", {
+
+  dagt0 <- empty_dag() +
+    node("A", type="rbernoulli")
+
+  t0_data <- sim_from_dag(dagt0, n_sim=1000)
+
+  dag <- empty_dag() +
+    node_td("Y", type="next_time", prob_fun=0.01)
+
+  sim <- sim_discrete_event(dag, t0_data=copy(t0_data), max_t=Inf)
+  sim <- subset(sim, !is.na(stop))
+  expect_equal(sim$A, t0_data$A)
+})
+
+test_that("using t0_transform_fun", {
+
+  dag <- empty_dag() +
+    node("A", type="rconstant", constant=10) +
+    node_td("Y", type="next_time", prob_fun=0.01)
+
+  test_fun <- function(data, value) {
+    data$A <- data$A + value
+    return(data)
+  }
+
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                            t0_transform_fun=test_fun,
+                            t0_transform_args=list(value=10))
+  expect_true(all(sim$A==20))
+})
+
+test_that("redraw_at_t working", {
+
+  set.seed(12349)
+
+  dag <- empty_dag() +
+    node_td("Y", type="next_time", prob_fun=0.0000001)
+
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                            redraw_at_t=c(45, 400, 1220))
+  sim <- subset(sim, is.finite(stop))
+
+  # NOTE: earlier events would be possible, so this isn't always TRUE
+  expect_equal(sim$start, rep(c(0, 45, 400, 1220), 1000))
+})
+
+test_that("interrelated time-dependent events", {
+
+  # probability function for L(t)
+  prob_L <- function(data, base_p, rr_A, rr_M, rr_X) {
+    p <- base_p * rr_M^(data$M_event) * rr_A^(data$A) * rr_X^(data$X)
+    return(p)
+  }
+
+  # probability function for M(t)
+  prob_M <- function(data, base_p, rr_A, rr_L, rr_X) {
+    p <- base_p * rr_L^(data$L_event) * rr_A^(data$A) * rr_X^(data$X)
+    return(p)
+  }
+
+  # probability function for Y(t)
+  prob_Y <- function(data, base_p, rr_A, rr_M, rr_L, rr_X) {
+    p <- base_p * rr_M^(data$M_event) * rr_L^(data$L_event) * rr_A^(data$A) *
+      rr_X^(data$X)
+    return(p)
+  }
+
+  dag <- empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="rbernoulli", p=0.5) +
+    node_td("L_event", type="next_time", prob_fun=prob_L,
+            event_duration=Inf,
+            base_p=0.01, rr_A=0.6, rr_M=0.6, rr_X=0.8,
+            parents=c("M_event", "A", "X")) +
+    node_td("M_event", type="next_time", prob_fun=prob_M,
+            event_duration=Inf,
+            base_p=0.01, rr_A=0.2, rr_L=3, rr_X=0.8,
+            parents=c("L_event", "A", "X")) +
+    node_td("Y_event", type="next_time", prob_fun=prob_Y,
+            parents=c("M_event", "L_event", "A", "X"),
+            event_duration=Inf, base_p=0.0001,
+            rr_A=0.9, rr_M=5, rr_L=2.5, rr_X=0.8)
+
+  set.seed(23452143)
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+  expect_equal(round(mean(sim$start), 3), 349.783)
+})
+
+test_that("target_event and censor_at_max_t", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  # without keep_only_first, only NA changes to Inf
+  set.seed(1234)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y")
+
+  set.seed(1234)
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
+                             censor_at_max_t=TRUE)
+  sim1[is.na(stop), stop := Inf]
+  expect_equal(sim1, sim2)
+
+  # with keep_only_first, there is no difference at all
+  set.seed(1234)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
+                             keep_only_first=TRUE)
+
+  set.seed(1234)
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
+                             censor_at_max_t=TRUE, keep_only_first=TRUE)
+  expect_equal(sim1, sim2)
+})
+
+test_that("break_if working", {
+
+  dag <- empty_dag() +
+    node_td(c("Y1", "Y2", "Y3"), type="next_time", prob_fun=0.001,
+            event_duration=50)
+
+  set.seed(1324)
+  expect_no_error(sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                                     break_if=any(data$.time > 4000)))
+})
+
+test_that("same output for allow_ties when no ties are present", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  set.seed(1234)
+  sim_no_ties <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                                    allow_ties=FALSE)
+
+  set.seed(1234)
+  sim_with_ties <- sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                                      allow_ties=TRUE)
+
+  expect_equal(sim_no_ties, sim_with_ties)
+})
+
+test_that("works with actual ties", {
+
+  round_rtexp <- function(n, rate, l) {
+    round(rtexp(n=n, rate=rate, l=l))
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
+            distr_fun=round_rtexp) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001,
+            distr_fun=round_rtexp) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            distr_fun=round_rtexp) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7,
+            distr_fun=round_rtexp)
+
+  set.seed(1234)
+
+  # fails if ties are present but allow_ties=FALSE
+  expect_error(sim_discrete_event(dag, n_sim=1000, max_t=Inf,
+                                  allow_ties=FALSE),
+               paste0("Multiple changes at the same point in time ",
+               "occurred, but allow_ties=FALSE was used. ",
+               "Set allow_ties=TRUE and re-run this function."))
+
+  # less than 5 * 1000 rows, because some individuals had ties
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, allow_ties=TRUE)
+  expect_equal(nrow(sim), 4989)
+})
+
+test_that("node_next_time returns NULL", {
+  expect_null(node_next_time())
+})
+
+test_that("warning if max_loops reached", {
+
+  set.seed(356345)
+
+  dag <- empty_dag() +
+    node_td("A", type="next_time", prob_fun=0.01, event_duration=10)
+
+  expect_warning(sim_discrete_event(dag, n_sim=100, max_loops=10))
+})
+
+test_that("error with no dag", {
+  expect_error(sim_discrete_event(dag=1, n_sim=100, max_t=Inf))
+})
+
 test_that("error with internal node name", {
 
   dag <- empty_dag() +
-    node_td(".event", type="next_time", prob_fun=0.1)
+    node_td(".time", type="next_time", prob_fun=0.1)
 
   expect_error(sim_discrete_event(dag, n_sim=100, max_t=Inf))
 })
-
-# TODO: check if
-# - immunity_duration works
-# - interrelated events work
-# - check the arguments that are also used in sim_discrete_time()
-# - what happens if censor_at_max_t and target_event are used at the same time?
-# - redraw_at_t working

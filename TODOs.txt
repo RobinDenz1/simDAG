@@ -2,25 +2,21 @@
 ###### Bugs & TODOS ######
 
 	- add "unif" argument to node_competing_events()
+	- using remove_if in sim_discrete_time() probably fails with network() or network_td()
 
 sim_discrete_event:
 
     General:
-	- write Tests
 	- write Vignette
 	- update documentation throughout the package
-	- currently fails when multiple events happen exactly at the same time
 	- add this function to sim_n_datasets()
 
     missing features:
 	- allow formula
 	- allow network dependencies
 	- change how .event_count works, to allow the amount of previous events to influence other events
-
-node_next_time:
-
-- add examples to man page
-- add Input checks
+	- remove_not_at_risk argument
+	- allow internal other distr_fun (cox, aft models, ...)
 
 ####### New Features: #######
 

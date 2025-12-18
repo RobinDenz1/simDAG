@@ -10,12 +10,14 @@
 #' @importFrom data.table setcolorder
 #' @importFrom data.table setnames
 #' @importFrom data.table shift
+#' @importFrom data.table uniqueN
 #' @export
 sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
                                t0_transform_args=list(),
-                               max_t, remove_if, break_if,
-                               redraw_at_t=NULL,
+                               max_t=Inf, remove_if, break_if,
+                               max_loops=10000, redraw_at_t=NULL,
+                               allow_ties=FALSE,
                                censor_at_max_t=FALSE, target_event=NULL,
                                keep_only_first=FALSE, check_inputs=TRUE) {
 
@@ -23,8 +25,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   .id <- .time <- .trunc_time <- .time_of_next_event <-
     .time_of_next_change <- .min_time_of_next_event <-
     .min_time_of_next_change <- .event_duration <- .immunity_duration <-
-    .next_is_event <- .kind <- .event <- .change <- .event_count <- . <-
-    start <- .time_cuts <- NULL
+    .kind <- .change <- .event_count <- . <- start <- .col <-
+    .time_cuts <- .is_new_event <- .is_new_change <- NULL
 
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
@@ -115,17 +117,19 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   data[, .time_of_next_change := Inf]
   data[, .event_count := 0]
 
-  # extract event_durations and add them to the data
+  # extract event_duration from all nodes and add them to the data
   event_durations <- vapply(tx_nodes, FUN=extract_node_arg,
                             FUN.VALUE=numeric(1), fun=node_next_time,
                             arg="event_duration")
   data[, .event_duration := rep(event_durations, n_sim)]
 
-  # extract immunity_durations and add them to the data
+  # extract immunity_duration from all nodes and add them to the data
   immunity_durations <- vapply(tx_nodes, FUN=extract_node_arg,
                                FUN.VALUE=numeric(1), fun=node_next_time,
                                arg="immunity_duration")
   data[, .immunity_duration := rep(immunity_durations, n_sim)]
+
+  loop_count <- 0
 
   ## main loop, runs until condition is met or nothing is left
   repeat {
@@ -155,7 +159,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       args_dist$l <- args_p$data$.trunc_time
 
       distr_fun_out <- tryCatch({
-        do.call(tx_nodes[[i]]$distr_fun, args_dist)},
+        do.call(tx_nodes[[i]]$distr_fun, args=args_dist)},
         error=function(e){
           stop("Calling 'distr_fun' failed with error message:\n", e,
                call.=FALSE)
@@ -172,66 +176,43 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     ), by=.id]
 
     # update simulation times
-    data[, .next_is_event := .min_time_of_next_event < .min_time_of_next_change]
-    data[, .time := fifelse(.next_is_event==TRUE, .min_time_of_next_event,
+    data[, .time := fifelse(.min_time_of_next_event < .min_time_of_next_change,
+                            .min_time_of_next_event,
                             .min_time_of_next_change)]
     data[.time > .trunc_time, .trunc_time := .time]
 
+    # check for new events / changes
+    data[, .is_new_event := .time==.time_of_next_event]
+    data[, .is_new_change := .time==.time_of_next_change]
+
     # set variables to TRUE if needed
-    d_event <- data[.min_time_of_next_event==.time_of_next_event &
-                      .next_is_event==TRUE,
-                    .(.event = .kind[1]), by=.id]
-
-    if (nrow(d_event) > 0) {
-      data <- merge.data.table(data, d_event, by=".id", all.x=TRUE)
-
-      for (col in var_names) {
-        data[.event==col, (col) := TRUE]
-      }
-    } else {
-      data[, .event := NA]
-    }
+    data <- set_cols_to_value(data=data, .value=TRUE, type="event",
+                              var_names=var_names, allow_ties=allow_ties)
 
     # set .time_of_next_change for all new events
-    data[.kind==.event, `:=`(
+    data[.is_new_event==TRUE, `:=`(
       .time_of_next_change = .time + .event_duration,
       .time_of_next_event = Inf,
       .event_count = .event_count + 1
     )]
-    data[.kind==.event, .trunc_time := .time + .immunity_duration]
+    data[.is_new_event==TRUE, .trunc_time := .time + .immunity_duration]
 
     # set variables back to FALSE if needed
-    d_change <- data[.min_time_of_next_change==.time_of_next_change &
-                       .next_is_event==FALSE,
-                     .(.change = .kind[1]), by=.id]
-
-    if (nrow(d_change) > 0) {
-      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
-
-      for (col in var_names) {
-        data[.change==col, (col) := FALSE]
-      }
-    } else {
-      data[, .change := NA]
-    }
+    data <- set_cols_to_value(data=data, .value=FALSE, type="change",
+                              var_names=var_names, allow_ties=allow_ties)
 
     # set .time_of_next_change back to Inf for all variables that
     # turned back to FALSE
-    data[.min_time_of_next_change==.time_of_next_change & .next_is_event==FALSE,
-         .time_of_next_change := Inf]
+    data[.time==.time_of_next_change, .time_of_next_change := Inf]
 
     # save state of the simulation
     out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
 
     # remove rows that no longer need to be updated
-    data <- data[!(is.infinite(.event_duration) & .kind==.event &
-                   !is.na(.event)) & .time < max_t &
-                   !(is.infinite(.immunity_duration) & .kind==.change &
-                     !is.na(.change))]
 
-    # remove unneeded columns
-    data[, .event := NULL]
-    data[, .change := NULL]
+    data <- data[!(is.infinite(.event_duration) & .is_new_event==TRUE) &
+                 !(is.infinite(.immunity_duration) & .is_new_change==TRUE) &
+                 .time < max_t]
 
     # subset if specified
     if (!miss_remove_if) {
@@ -242,6 +223,16 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     if (nrow(data)==0 | (!miss_break_if && eval(break_expr))) {
       break
     }
+
+    # break if max loops reached
+    if (loop_count==max_loops) {
+      warning("Simulation stopped because the maximum amount of loops was",
+              " reached. Adjust the 'max_loops' argument or use the",
+              " 'break_if', 'remove_if' or 'max_t' arguments to define",
+              " better ends of the simulation.", call.=FALSE)
+      break
+    }
+    loop_count <- loop_count + 1
   }
 
   # create a start-stop output dataset
@@ -259,7 +250,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   # remove time-cuts from output
   if (!is.null(redraw_at_t)) {
-    d_start_stop <- d_start_stop[.time_cuts==FALSE]
+    d_start_stop <- d_start_stop[.time_cuts==FALSE & is.finite(start)]
     d_start_stop[, .time_cuts := NULL]
   }
 
@@ -355,4 +346,52 @@ timecuts <- function(n, rate, l, cuts) {
   next_time_cut[is.na(next_time_cut)] <- Inf
 
   return(next_time_cut)
+}
+
+## this function efficiently either sets the covariate values to TRUE if
+## a new event occured or sets them back to FALSE if needed
+set_cols_to_value <- function(data, .value, type, var_names, allow_ties) {
+
+  .is_new_event <- .kind <- .id <- .is_new_change <- .time <-
+    .time_of_next_event <- . <- .time_of_next_change <- .change <- NULL
+
+  # slower version that allows ties
+  if (allow_ties) {
+    for (.col in var_names) {
+      if (type=="event") {
+        data[.is_new_event==TRUE & .kind==.col, (.col) := TRUE]
+        data[, (.col) := any(get(.col)), by=.id]
+      } else {
+        data[.is_new_change==TRUE & .kind==.col, (.col) := FALSE]
+        data[, (.col) := sum(get(.col))==.N, by=.id]
+      }
+    }
+    # faster version that does not allow ties
+  } else {
+
+    if (type=="event") {
+      d_change <- data[.time==.time_of_next_event,
+                       .(.change = .kind), by=.id]
+    } else {
+      d_change <- data[.time==.time_of_next_change,
+                       .(.change = .kind), by=.id]
+    }
+
+    # check for ties
+    if (uniqueN(d_change$.id)!=nrow(d_change)) {
+      stop("Multiple changes at the same point in time occurred, but",
+           " allow_ties=FALSE was used. Set allow_ties=TRUE and re-run",
+           " this function.", call.=FALSE)
+    }
+
+    if (nrow(d_change) > 0) {
+      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
+
+      for (.col in var_names) {
+        data[.change==.col, (.col) := .value]
+      }
+      data[, .change := NULL]
+    }
+  }
+  return(data)
 }
