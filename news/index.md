@@ -5,6 +5,17 @@
 New Features
 
 - Added the
+  [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  function, which allows users to perform discrete-event simulations to
+  generate complex longitudinal data in continuous time. This function
+  is usually much faster than comparable
+  [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+  calls, although at the cost of some flexibility.
+- Added the
+  [`rtexp()`](https://robindenz1.github.io/simDAG/reference/rtexp.md)
+  function to allow sampling from left-truncated exponential
+  distributions.
+- Added the
   [`rsample()`](https://robindenz1.github.io/simDAG/reference/rsample.md)
   function as a convenient wrapper around
   [`sample()`](https://rdrr.io/r/base/sample.html), as suggested by Ed

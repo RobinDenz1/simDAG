@@ -17,8 +17,9 @@ simulation approach. See details.
 sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
-                   max_t, remove_if, break_if,
-                   redraw_at_t=NULL,
+                   max_t=Inf, remove_if, break_if,
+                   max_loops=10000, redraw_at_t=NULL,
+                   allow_ties=FALSE,
                    censor_at_max_t=FALSE, target_event=NULL,
                    keep_only_first=FALSE, check_inputs=TRUE)
 ```
@@ -113,6 +114,17 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   `$` syntax (e.g. use `data$X` instead of just `X`). Keep this argument
   unspecified (default) to not use this functionality.
 
+- max_loops:
+
+  A single positive number, specifying the maximum amount of loops the
+  simulation is allowed to run before it terminates. This argument
+  exists so that if all of `max_t`, `remove_if` and `break_if` fail to
+  terminate the simulation eventually, the code does not run forever. In
+  nearly all cases it is, however, preferable to end the simulation
+  using one of the other three arguments. A warning message is therefore
+  returned whenever the simulation is stopped through reaching this
+  limit.
+
 - redraw_at_t:
 
   A numeric vector of positive values specifying times at which the time
@@ -122,6 +134,19 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   that using this argument potentially adds multiple additional rows to
   the output, in which no variables change. Set to `NULL` to not use
   this functionality (default).
+
+- allow_ties:
+
+  Either `TRUE` or `FALSE` (default), specifying whether multiple events
+  (or changes from `TRUE` to `FALSE` in some variables) per individual
+  at the exact same time should be allowed. If the times until the next
+  event are continuous, the chances for an exact tie are astronomically
+  small, so it is usually fine to keep this at `FALSE`. Should a tie be
+  found anyways, an error will be returned. If some custom function is
+  supplied to the `distr_fun` argument of one or more time-dependent
+  nodes, which produce integer times, this argument should be set to
+  `TRUE`. Note that this function is much faster with
+  `allow_ties=FALSE`, especially with large `n_sim`.
 
 - censor_at_max_t:
 

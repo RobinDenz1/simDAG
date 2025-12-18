@@ -157,7 +157,7 @@ discrete-time simulations using
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)).
 The reason for this is that each time a node is generated or updated
 over time, the mapping of individuals to their neighbors' values plus
-the subsequent aggregation has to be performed, which required
+the subsequent aggregation has to be performed, which requires
 [`merge()`](https://rdrr.io/r/base/merge.html) calls etc. Usually this
 should not be a problem, but it might be for some large discrete-time
 simulations. If the same

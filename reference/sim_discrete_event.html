@@ -52,8 +52,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_discrete_event</span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="cn">NULL</span>, t0_sort_dag<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                   t0_data<span class="op">=</span><span class="cn">NULL</span>, t0_transform_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   t0_transform_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>                   <span class="va">max_t</span>, <span class="va">remove_if</span>, <span class="va">break_if</span>,</span>
-<span>                   redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>                   max_t<span class="op">=</span><span class="cn">Inf</span>, <span class="va">remove_if</span>, <span class="va">break_if</span>,</span>
+<span>                   max_loops<span class="op">=</span><span class="fl">10000</span>, redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>                   allow_ties<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                   censor_at_max_t<span class="op">=</span><span class="cn">FALSE</span>, target_event<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -88,8 +89,14 @@
   <dt id="arg-break-if">break_if<a class="anchor" aria-label="anchor" href="#arg-break-if"></a></dt>
 <dd><p>A condition that will be evaluated after each jump to the next event (but after subsetting, if <code>remove_if</code> was specified). If the condition is met, the simulation stops early. Contrary to the <code>remove_if</code> argument, this condition should return exactly one <code>TRUE</code> or <code>FALSE</code> value and is not directly evaluated on the <code>data</code>. To use variables generated in the simulation in this condition, users should use the <code>$</code> syntax (e.g. use <code>data$X</code> instead of just <code>X</code>). Keep this argument unspecified (default) to not use this functionality.</p></dd>
 
+  <dt id="arg-max-loops">max_loops<a class="anchor" aria-label="anchor" href="#arg-max-loops"></a></dt>
+<dd><p>A single positive number, specifying the maximum amount of loops the simulation is allowed to run before it terminates. This argument exists so that if all of <code>max_t</code>, <code>remove_if</code> and <code>break_if</code> fail to terminate the simulation eventually, the code does not run forever. In nearly all cases it is, however, preferable to end the simulation using one of the other three arguments. A warning message is therefore returned whenever the simulation is stopped through reaching this limit.</p></dd>
+
   <dt id="arg-redraw-at-t">redraw_at_t<a class="anchor" aria-label="anchor" href="#arg-redraw-at-t"></a></dt>
 <dd><p>A numeric vector of positive values specifying times at which the time to the next event should be re-drawn, regardless of whether an event occurred at this time or not. This may be useful to specify effects or baseline probabilities that vary over discrete intervals of time. Note that using this argument potentially adds multiple additional rows to the output, in which no variables change. Set to <code>NULL</code> to not use this functionality (default).</p></dd>
+
+  <dt id="arg-allow-ties">allow_ties<a class="anchor" aria-label="anchor" href="#arg-allow-ties"></a></dt>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code> (default), specifying whether multiple events (or changes from <code>TRUE</code> to <code>FALSE</code> in some variables) per individual at the exact same time should be allowed. If the times until the next event are continuous, the chances for an exact tie are astronomically small, so it is usually fine to keep this at <code>FALSE</code>. Should a tie be found anyways, an error will be returned. If some custom function is supplied to the <code>distr_fun</code> argument of one or more time-dependent nodes, which produce integer times, this argument should be set to <code>TRUE</code>. Note that this function is much faster with <code>allow_ties=FALSE</code>, especially with large <code>n_sim</code>.</p></dd>
 
   <dt id="arg-censor-at-max-t">censor_at_max_t<a class="anchor" aria-label="anchor" href="#arg-censor-at-max-t"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether the last generated time should be censored at the user-specified value of <code>max_t</code>. Since the simulation jumps times at events, the last observed event time may often be larger than <code>max_t</code> initially. Setting this to <code>TRUE</code> censors these values appropriately and potentially discards the last state-change.</p></dd>

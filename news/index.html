@@ -45,7 +45,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.2" id="simdag-042">simDAG 0.4.2<a class="anchor" aria-label="anchor" href="#simdag-042"></a></h2>
 <p>New Features</p>
-<ul><li>Added the <code><a href="../reference/rsample.html">rsample()</a></code> function as a convenient wrapper around <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code>, as suggested by Ed Hagen.</li>
+<ul><li>Added the <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> function, which allows users to perform discrete-event simulations to generate complex longitudinal data in continuous time. This function is usually much faster than comparable <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> calls, although at the cost of some flexibility.</li>
+<li>Added the <code><a href="../reference/rtexp.html">rtexp()</a></code> function to allow sampling from left-truncated exponential distributions.</li>
+<li>Added the <code><a href="../reference/rsample.html">rsample()</a></code> function as a convenient wrapper around <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code>, as suggested by Ed Hagen.</li>
 </ul><p>Enhancements</p>
 <ul><li>Added the <code>remove_if</code> and <code>break_if</code> arguments to the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function, to allow users some options that potentially make the simulation much faster.</li>
 </ul></div>
