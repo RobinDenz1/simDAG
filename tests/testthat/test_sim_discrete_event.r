@@ -190,7 +190,7 @@ test_that("event_duration working", {
                     is.infinite(res_X1$duration)))
 
   # all 700 (or Inf if stop > max_t) in X2
-  sim[, grp := rleid(.id, X2)]
+  sim[, grp := data.table::rleid(.id, X2)]
   res_X2 <- sim[X2 == TRUE,
                 .(event_start = first(start),
                   event_stop  = last(stop),
@@ -495,5 +495,61 @@ test_that("helpful error if distr_fun fails", {
   expect_error(sim_discrete_event(dag, n_sim=10))
 })
 
-# TODO:
-# - check ties more carefully
+test_that("using event_count=TRUE is same as .event_count in same node", {
+
+  prob_X2 <- function(data, kind) {
+    if (kind==1) {
+      0.001 * 5^(data$Y_event_count)
+    } else {
+      0.001 * 5^(data$.event_count)
+    }
+  }
+
+  # using .event_count
+  set.seed(123446)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X", type="next_time", prob_fun=0.001) +
+    node_td("Y", type="next_time", prob_fun=prob_X2, event_duration=100,
+            event_count=TRUE, kind=2)
+  sim1 <- sim_discrete_event(dag, n_sim=100, max_t=1000, remove_if=X==TRUE)
+
+  # using event_count=TRUE
+  set.seed(123446)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X", type="next_time", prob_fun=0.001) +
+    node_td("Y", type="next_time", prob_fun=prob_X2, event_duration=100,
+            event_count=TRUE, kind=1)
+  sim2 <- sim_discrete_event(dag, n_sim=100, max_t=1000, remove_if=X==TRUE)
+
+  expect_equal(sim1, sim2)
+
+  # the latter allows dependency of event counts on other events
+  set.seed(123446)
+
+  prob_X3 <- function(data) {
+    0.001 * 1.2^(data$Y_event_count)
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X", type="next_time", prob_fun=prob_X3) +
+    node_td("Y", type="next_time", prob_fun=prob_X2, event_duration=100,
+            event_count=TRUE, kind=1)
+  expect_no_error(sim_discrete_event(dag, n_sim=100, max_t=1000,
+                                     remove_if=X==TRUE))
+
+  # using the include_event_counts argument works
+  set.seed(1234)
+  sim1 <- sim_discrete_event(dag, n_sim=100, max_t=1000,
+                             remove_if=X==TRUE)
+  set.seed(1234)
+  sim2 <- sim_discrete_event(dag, n_sim=100, max_t=1000,
+                             remove_if=X==TRUE, include_event_counts=FALSE)
+
+  sim1[, Y_event_count := NULL]
+  expect_equal(sim1, sim2)
+})

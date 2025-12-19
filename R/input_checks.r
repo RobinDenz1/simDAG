@@ -813,7 +813,8 @@ check_inputs_network <- function(name, net, time_varying, args) {
 check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
                                             t0_data, t0_transform_fun,
                                             t0_transform_args, max_t,
-                                            censor_at_max_t, redraw_at_t) {
+                                            censor_at_max_t, redraw_at_t,
+                                            include_event_counts) {
 
   # rudimentary type checks
   if (!is.null(t0_data)) {
@@ -828,6 +829,9 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
               (length(max_t) == 1 && is.numeric(max_t) && max_t > 0))
   stopifnot("'censor_at_max_t' should be either TRUE or FALSE." =
               length(censor_at_max_t) == 1 && is.logical(censor_at_max_t))
+  stopifnot("'include_event_counts' should be either TRUE or FALSE." =
+              length(include_event_counts) == 1 &&
+              is.logical(include_event_counts))
 
   if (!(is.null(redraw_at_t) | (!is.null(redraw_at_t) &&
                                 length(redraw_at_t) > 0 &&

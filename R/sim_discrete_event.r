@@ -12,6 +12,7 @@
 #' @importFrom data.table setnames
 #' @importFrom data.table shift
 #' @importFrom data.table uniqueN
+#' @importFrom data.table setnafill
 #' @export
 sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
@@ -20,7 +21,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                max_loops=10000, redraw_at_t=NULL,
                                allow_ties=FALSE,
                                censor_at_max_t=FALSE, target_event=NULL,
-                               keep_only_first=FALSE, check_inputs=TRUE) {
+                               keep_only_first=FALSE, include_event_counts=TRUE,
+                               check_inputs=TRUE) {
 
   # silence devtools check() warnings
   .id <- .time <- .trunc_time <- .time_of_next_event <-
@@ -44,7 +46,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                     t0_transform_args=t0_transform_args,
                                     max_t=max_t,
                                     censor_at_max_t=censor_at_max_t,
-                                    redraw_at_t=redraw_at_t)
+                                    redraw_at_t=redraw_at_t,
+                                    include_event_counts=include_event_counts)
   }
 
   # add another node that enforces a time-break at specific points in time
@@ -130,6 +133,23 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                arg="immunity_duration")
   data[, .immunity_duration := rep(immunity_durations, n_sim)]
 
+  # extract whether an event_count should be added
+  event_count_ind <- vapply(tx_nodes, FUN=extract_node_arg,
+                            FUN.VALUE=logical(1), fun=node_next_time,
+                            arg="event_count")
+  has_event_counts <- sum(event_count_ind) > 0
+
+  if (has_event_counts) {
+    event_count_rel <- var_names[event_count_ind]
+    event_count_names <- paste0(event_count_rel, "_event_count")
+
+    data[, (event_count_names) := 0]
+
+    if (include_event_counts) {
+      cnames <- c(cnames, event_count_names)
+    }
+  }
+
   loop_count <- 0
 
   ## main loop, runs until condition is met or nothing is left
@@ -186,6 +206,14 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     data[, .is_new_event := .time==.time_of_next_event]
     data[, .is_new_change := .time==.time_of_next_change]
 
+    # increase event count
+    if (has_event_counts) {
+      data <- set_cols_to_value(data=data, .value=TRUE, type="event_count",
+                                var_names=event_count_rel,
+                                event_count_names=event_count_names,
+                                allow_ties=allow_ties)
+    }
+
     # set variables to TRUE if needed
     data <- set_cols_to_value(data=data, .value=TRUE, type="event",
                               var_names=var_names, allow_ties=allow_ties)
@@ -236,7 +264,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   }
 
   # create a start-stop output dataset
-  d_start_stop <- rbindlist(out)
+  d_start_stop <- rbindlist(out, fill=TRUE)
   setkey(d_start_stop, .id, .time)
 
   setnames(d_start_stop, old=".time", new="start")
@@ -267,6 +295,11 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                               keep_only_first=keep_only_first)
   }
 
+  # fill NA values in event counts
+  if (include_event_counts && has_event_counts) {
+    setnafill(d_start_stop, type="const", fill=0, cols=event_count_names)
+  }
+
   return(d_start_stop)
 }
 
@@ -277,7 +310,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 #' @export
 node_next_time <- function(data, prob_fun, ..., distr_fun=rtexp,
                            distr_fun_args=list(), event_duration=Inf,
-                           immunity_duration=event_duration) {
+                           immunity_duration=event_duration,
+                           event_count=FALSE) {
   return(NULL)
 }
 
@@ -308,6 +342,7 @@ remove_node_internals <- function(node) {
   node$immunity_duration <- NULL
   node$distr_fun <- NULL
   node$distr_fun_args <- NULL
+  node$event_count <- NULL
 
   return(node)
 }
@@ -350,26 +385,39 @@ timecuts <- function(n, rate, l, cuts) {
 
 ## this function efficiently either sets the covariate values to TRUE if
 ## a new event occurred or sets them back to FALSE if needed
-set_cols_to_value <- function(data, .value, type, var_names, allow_ties) {
+set_cols_to_value <- function(data, .value, type, var_names, allow_ties,
+                              event_count_names=NULL) {
 
   .is_new_event <- .kind <- .id <- .is_new_change <- .time <-
     .time_of_next_event <- . <- .time_of_next_change <- .change <- NULL
 
   # slower version that allows ties
   if (allow_ties) {
-    for (.col in var_names) {
-      if (type=="event") {
-        data[.is_new_event==TRUE & .kind==.col, (.col) := TRUE]
-        data[, (.col) := any(get(.col)), by=.id]
-      } else {
-        data[.is_new_change==TRUE & .kind==.col, (.col) := FALSE]
-        data[, (.col) := sum(get(.col))==.N, by=.id]
+
+    if (type=="event_count") {
+
+      for (i in seq_len(length(var_names))) {
+        data[.is_new_event==TRUE & .kind==var_names[i],
+             (event_count_names[i]) := get(event_count_names[i]) + 1]
+        data[, (event_count_names[i]) := max(get(event_count_names[i])),
+             by=.id]
+      }
+    } else {
+
+      for (.col in var_names) {
+        if (type=="event") {
+          data[.is_new_event==TRUE & .kind==.col, (.col) := TRUE]
+          data[, (.col) := any(get(.col)), by=.id]
+        } else if (type=="change") {
+          data[.is_new_change==TRUE & .kind==.col, (.col) := FALSE]
+          data[, (.col) := sum(get(.col))==.N, by=.id]
+        }
       }
     }
-    # faster version that does not allow ties
+  # faster version that does not allow ties
   } else {
 
-    if (type=="event") {
+    if (type=="event" | type=="event_count") {
       d_change <- data[.time==.time_of_next_event,
                        .(.change = .kind), by=.id]
     } else {
@@ -387,8 +435,13 @@ set_cols_to_value <- function(data, .value, type, var_names, allow_ties) {
     if (nrow(d_change) > 0) {
       data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
 
-      for (.col in var_names) {
-        data[.change==.col, (.col) := .value]
+      for (i in seq_len(length(var_names))) {
+        if (type=="event" | type=="change") {
+          data[.change==var_names[i], (var_names[i]) := .value]
+        } else {
+          data[.change==var_names[i],
+               (event_count_names[i]) := get(event_count_names[i]) + 1]
+        }
       }
       data[, .change := NULL]
     }

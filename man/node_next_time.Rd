@@ -10,7 +10,8 @@ This node essentially models a dichotomous time-dependent variable for which the
 \usage{
 node_next_time(data, prob_fun, ..., distr_fun=rtexp,
                distr_fun_args=list(), event_duration=Inf,
-               immunity_duration=event_duration)
+               immunity_duration=event_duration,
+               event_count=FALSE)
 }
 \arguments{
   \item{data}{
@@ -33,6 +34,9 @@ A single number > 0 specifying how long the event should last. During this perio
   }
   \item{immunity_duration}{
 A single number >= \code{event_duration} specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over \code{event_duration + 10} should be used. The corresponding variable is set to \code{FALSE} after the \code{event_duration} is up and until the \code{immunity_duration} is over.
+  }
+  \item{event_count}{
+Either \code{TRUE} or \code{FALSE} (default), specifying whether an additional column should be added that counts the number of times this variable has been \code{TRUE} previously. If \code{TRUE}, the column will be named by taking the name of the node and appending \code{"_event_count"}. It is 0 at the beginning and increases by 1 at each point in time that the variable changes its status from \code{FALSE} to \code{TRUE}. Note that this may increase the time it takes to run the simulation. If the count of previous events is only needed for processing in the variable itself, a faster alternative is to keep this argument at \code{FALSE} and to use the internal \code{.event_count} column instead. Only use this argument if other variables should be dependent on the event count of this variable.
   }
 }
 \details{

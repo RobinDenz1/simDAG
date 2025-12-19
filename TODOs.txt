@@ -12,7 +12,6 @@ sim_discrete_event:
     missing features:
 	- allow formula
 	- allow network dependencies
-	- change how .event_count works, to allow the amount of previous events to influence other events
 	- add remove_not_at_risk argument
 	- allow internal other distr_fun (cox, aft models, ...)
 
