@@ -1,4 +1,4 @@
-# Simulate Data from a `DAG` with Time-Dependent Variables using Discrete-Event Simulation
+# Simulate Data from a `DAG` with Time-Dependent Variables in Continuous Time
 
 EXPERIMENTAL: Similar to
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md),

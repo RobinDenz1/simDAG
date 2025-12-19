@@ -250,9 +250,12 @@ function, which simply returns the sum of its parents:</p>
 <h3 id="requirements-2">Requirements<a class="anchor" aria-label="anchor" href="#requirements-2"></a>
 </h3>
 <p>By time-dependent nodes we mean nodes that are created using the
-<code><a href="../reference/node.html">node_td()</a></code> function. In general, this works in essentially
-the same way as for simple root nodes or child nodes. The requirements
-are:</p>
+<code><a href="../reference/node.html">node_td()</a></code> function. Currently, the
+<code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> function only supports nodes of type
+<code>"next_time"</code>, so the following text is exclusively about
+time-dependent nodes in <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>. In general,
+definining custom time-dependent nodes works in essentially the same way
+as for simple root nodes or child nodes. The requirements are:</p>
 <ul>
 <li>
 <strong>1.)</strong> Its’ name should start with <code>node_</code>

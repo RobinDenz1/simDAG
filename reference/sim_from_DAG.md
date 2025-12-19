@@ -97,14 +97,18 @@ functions and in the vignettes of this package.
 Yes and no. It theoretically can, but only if the user-specified `dag`
 directly specifies a node for each desired point in time. Using the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-is better in some cases. A brief discussion about this topic can be
-found in the vignettes of this package.
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions is better in some cases. A brief discussion about this topic
+can be found in the vignettes of this package.
 
 If time-dependent nodes were added to the `dag` using
 [`node_td`](https://robindenz1.github.io/simDAG/reference/node.md)
 calls, this function may not be used. Only the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function will work in that case.
+and
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions will work in that case.
 
 ***Networks-Based Simulation***
 

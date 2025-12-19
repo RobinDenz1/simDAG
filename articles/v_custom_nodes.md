@@ -174,8 +174,14 @@ head(data)
 
 By time-dependent nodes we mean nodes that are created using the
 [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
-function. In general, this works in essentially the same way as for
-simple root nodes or child nodes. The requirements are:
+function. Currently, the
+[`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+function only supports nodes of type `"next_time"`, so the following
+text is exclusively about time-dependent nodes in
+[`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md).
+In general, definining custom time-dependent nodes works in essentially
+the same way as for simple root nodes or child nodes. The requirements
+are:
 
 - **1.)** Its’ name should start with `node_` (if you want to use a
   string to define it in `type`).

@@ -11,22 +11,27 @@ efficient as possible.
 
 ***What features are included in this package?***
 
-This package includes two main simulation functions: the
+This package includes three main simulation functions: the
 [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function, which can be used to simulate data from a previously defined
-causal DAG and node information and the
+causal DAG and node information, the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function, which implements a framework to conduct discrete-time
-simulations. The former is very easy to use, but cannot deal with
-time-varying variable easily. The latter is a little more difficult to
-use (usually requiring the user to write some functions himself), but
-allows the simulation of arbitrarily complex longitudinal data.
+simulations and the
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+function for discrete-event simulations. The former is very easy to use,
+but cannot deal with time-varying variable easily. The latter two are a
+little more difficult to use (usually requiring the user to write some
+functions himself), but allow the simulation of arbitrarily complex
+longitudinal data in discrete and continuous time.
 
 Through a collection of implemented node types, this package allows the
 user to generate data with a mix of binary, categorical, count and
 time-to-event data. The
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function additionally enables the user to generate time-to-event data
+and
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions additionally enable the user to generate time-to-event data
 with, if desired, a mix of competing events, recurrent events,
 time-varying variables that influence each other and any types of
 censoring.
@@ -64,7 +69,9 @@ between those manually, you can still use the
 function. If you want more complex data with time-varying variables,
 particularly with time-to-event outcomes, you should consider using the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function.
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions.
 
 ***What features are missing from this package?***
 
@@ -78,7 +85,8 @@ for multilevel modeling to other node types.
 The simcausal package was a big inspiration for this package. In
 contrast to it, however, it allows quite a bit more flexibility. A big
 difference is that this package includes a comprehensive framework for
-discrete-time simulations and the simcausal package does not.
+discrete-time and discrete-event simulations and the simcausal package
+does not.
 
 ***Where can I get more information?***
 
@@ -105,11 +113,14 @@ provisionally accepted in the *Journal of Statistical Software*. The
 preprint version of this article is available on arXiv (Denz and
 Timmesfeld 2025).
 
-***I have a problem using the `sim_discrete_time` function***
+***I have a problem using the `sim_discrete_time` or
+`sim_discrete_event` function***
 
 The
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function can become difficult to use depending on what kind of data the
+and
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions can become difficult to use depending on what kind of data the
 user wants to generate. For this reason we put in extra effort to make
 the documentation and examples as clear and helpful as possible. Please
 consult the relevant documentation pages and the vignettes before

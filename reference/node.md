@@ -4,10 +4,11 @@ These functions should be used in conjunction with the
 [`empty_dag`](https://robindenz1.github.io/simDAG/reference/empty_dag.md)
 function to create `DAG` objects, which can then be used to simulate
 data using the
-[`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
-function or the
+[`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md),
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function.
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions.
 
 ## Usage
 
@@ -76,15 +77,16 @@ node_td(name, type, parents=NULL, formula=NULL, ...)
 ## Details
 
 To generate data using the
-[`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
-function or the
+[`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md),
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function, it is required to create a `DAG` object first. This object
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions, it is required to create a `DAG` object first. This object
 needs to contain information about the causal structure of the data
 (e.g. which variable causes which variable) and the specific structural
 equations for each variable (information about causal coefficients, type
 of distribution etc.). In this package, the `node` and/or `node_td`
-function is used in conjunction with the
+functions are used in conjunction with the
 [`empty_dag`](https://robindenz1.github.io/simDAG/reference/empty_dag.md)
 function to create this object.
 
@@ -107,12 +109,15 @@ syntax (`...`).
 By calling `node` you are indicating that this node is a time-fixed
 variable which should only be generated once. By using `node_td` you are
 indicating that it is a time-dependent node, which will be updated at
-each step in time when using a discrete-time simulation.
+each step in time when using a discrete-time simulation, or at event
+changes in discrete-event simulations.
 
 `node_td` should only be used if you are planning to perform a
-discrete-time simulation with the
+discrete-time or discrete-event simulation with the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function. `DAG` objects including time-dependent nodes may not be used
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions. `DAG` objects including time-dependent nodes may not be used
 in the
 [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function.
@@ -128,7 +133,7 @@ additional arguments can be specified using the `...` syntax. In the
 `type="rnorm"` example, the user could set the mean and standard
 deviation using `node(name="example", type="rnorm", mean=10, sd=5)`.
 
-For convenience, this package additionally includes four custom
+For convenience, this package additionally includes five custom
 root-node functions:
 
 - "[rbernoulli](https://robindenz1.github.io/simDAG/reference/rbernoulli.md)":
@@ -139,6 +144,9 @@ root-node functions:
 
 - "[rsample](https://robindenz1.github.io/simDAG/reference/rsample.md)":
   Draws random samples from a given vector.
+
+- "[rtexp](https://robindenz1.github.io/simDAG/reference/rtexp.md)":
+  Draws random values from a left-truncated exponential distribution.
 
 - "[rconstant](https://robindenz1.github.io/simDAG/reference/rconstant.md)":
   Used to set a variable to a constant value.
@@ -213,6 +221,10 @@ convenience to use in `node_td` calls:
   A node based on repeatedly checking whether one of multiple mutually
   exclusive events occurs at each point in time.
 
+- "[next_time](https://robindenz1.github.io/simDAG/reference/node_next_time.md)":
+  A node that draws the time of the next event in discrete-event
+  simulation.
+
 However, the user may also use any of the child node types in a
 `node_td` call directly. For custom time-dependent node types, please
 consult the associated vignette.
@@ -254,12 +266,14 @@ cyclic graph using the
 [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function, an error will be produced.
 
-However, in the realm of discrete-time simulations, cyclic causal
-structures are perfectly reasonable. A variable \\A\\ at \\t = 1\\ may
-influence a variable \\B\\ at \\t = 2\\, which in turn may influence
-variable \\A\\ at \\t = 3\\ again. Therefore, when using the `node_td`
-function to simulate time-dependent data using the
+However, in the realm of discrete-time or discrete-event simulations,
+cyclic causal structures are perfectly reasonable. A variable \\A\\ at
+\\t = 1\\ may influence a variable \\B\\ at \\t = 2\\, which in turn may
+influence variable \\A\\ at \\t = 3\\ again. Therefore, when using the
+`node_td` function to simulate time-dependent data using the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
 function, cyclic structures are allowed to be present and no error will
 be produced.
 

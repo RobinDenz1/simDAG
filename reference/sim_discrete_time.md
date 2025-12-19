@@ -1,4 +1,4 @@
-# Simulate Data from a `DAG` with Time-Dependent Variables
+# Simulate Data from a `DAG` with Time-Dependent Variables in Discrete Time
 
 Similar to the
 [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
@@ -304,6 +304,12 @@ deteriorate performance in other scenarios. We recommend checking the
 computation time on a single example with and without using either
 `remove_if` and/or `break_if` (if appropriate) and making the decision
 based on that small benchmark.
+
+If speed is of particular importance, it may make sense to use the
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+function instead. The discrete-event simulation framework is much
+faster, but a little less flexible than the discrete-time framework. See
+the relevant documentation page for more information.
 
 ***What do I do with the output?***:
 

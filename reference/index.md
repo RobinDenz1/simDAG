@@ -77,13 +77,14 @@ Simulate data from a DAG and manipulate or visualize the output
 - [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
   :
 
-  Simulate Data from a `DAG` with Time-Dependent Variables
+  Simulate Data from a `DAG` with Time-Dependent Variables in Discrete
+  Time
 
 - [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
   :
 
-  Simulate Data from a `DAG` with Time-Dependent Variables using
-  Discrete-Event Simulation
+  Simulate Data from a `DAG` with Time-Dependent Variables in Continuous
+  Time
 
 - [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)
   :
