@@ -13,6 +13,25 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
                               data_format_args=data_format_args,
                               progressbar=progressbar)
 
+  # select which function should be used
+  if (length(dag$tx_nodes) > 0) {
+    types <- vapply(dag$tx_nodes, FUN=function(x){x$type_str},
+                    FUN.VALUE=character(1))
+    if ("next_time" %in% types) {
+      sim <- "DES"
+    } else {
+      sim <- "DTS"
+    }
+  } else {
+    sim <- "DAG"
+  }
+
+  if (sim=="DES" & data_format %in% c("long", "wide")) {
+    warning("Only the 'start_stop' format is supported with discrete-event",
+            " simulations. No data transformation was carried out.",
+            call.=FALSE)
+  }
+
   # without parallel processing
   if (n_cores==1) {
 
@@ -21,7 +40,7 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
     for (i in seq_len(n_repeats)) {
       out[[i]] <- generate_one_dataset(dag=dag, data_format=data_format,
                                        data_format_args=data_format_args,
-                                       n_sim=n_sim, ...)
+                                       n_sim=n_sim, sim=sim, ...)
     }
 
   # with parallel processing
@@ -69,7 +88,7 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
 
       generate_one_dataset(dag=dag, data_format=data_format,
                            data_format_args=data_format_args,
-                           n_sim=n_sim, ...)
+                           n_sim=n_sim, sim=sim, ...)
     }
     on.exit(close(pb))
     on.exit(parallel::stopCluster(cl))
@@ -81,23 +100,28 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
 ## generate one dataset using either the sim_from_dag() or the
 ## sim_discrete_time() function and optionally format it
 generate_one_dataset <- function(dag, data_format, data_format_args, n_sim,
-                                 ...) {
+                                 sim, ...) {
 
   # simulate the dataset
-  if (length(dag$tx_nodes) > 0) {
+  if (sim=="DTS") {
     dat <- sim_discrete_time(dag=dag, n_sim=n_sim, ...)
+  } else if (sim=="DES") {
+    dat <- sim_discrete_event(dag=dag, n_sim=n_sim, ...)
   } else {
     dat <- sim_from_dag(dag=dag, n_sim=n_sim, ...)
   }
 
   # transform it, if specified
   if (data_format %in% c("start_stop", "long", "wide") &&
-      length(dag$tx_nodes) > 0) {
+      sim=="DTS") {
 
     data_format_args$to <- data_format
     data_format_args$sim <- dat
     dat <- do.call("sim2data", args=data_format_args)
 
+  } else if (data_format %in% c("start_stop", "long", "wide") &&
+             sim=="DES") {
+    # do nothing
   } else if (data_format != "raw") {
     data_format_args$data <- dat
     dat <- do.call(data_format, args=data_format_args)

@@ -623,6 +623,15 @@ check_inputs_sim_discrete_time <- function(n_sim, dag, t0_sort_dag,
     stopifnot("'save_states' must be either 'last', 'all' or 'at_t'." =
                 is.element(save_states, c("last", "all", "at_t")))
   }
+
+  # no next_time nodes allowed
+  types <- vapply(tx_nodes, FUN=function(x){x$type_str},
+                  FUN.VALUE=character(1))
+  if ("next_time" %in% types) {
+    stop("Nodes of type='next_time' are not allowed in sim_discrete_time()",
+         ". Use sim_discrete_event() instead or re-define the DAG.",
+         call.=FALSE)
+  }
 }
 
 ## checking the inputs of the node_time_to_event function
@@ -885,7 +894,7 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
     names_args <- names(t0_transform_args)
     if (!all(names_args %in% names_fun)) {
       stop("The following arguments are in 't0_transform_args' but are",
-           " not define in 't0_transform_fun': ",
+           " not defined in 't0_transform_fun': ",
            paste0(names_args[!names_args %in% names_fun], collapse=","),
            call.=FALSE)
     }

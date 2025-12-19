@@ -2,7 +2,7 @@
 \alias{sim_discrete_event}
 
 \title{
-Simulate Data from a \code{DAG} with Time-Dependent Variables using Discrete-Event Simulation
+Simulate Data from a \code{DAG} with Time-Dependent Variables in Continuous Time
 }
 \description{
 EXPERIMENTAL: Similar to \code{\link{sim_discrete_time}}, this function allows users to generate complex data with time-varying variables from a \code{DAG} defined using \code{\link{node}} and \code{\link{node_td}} calls. In contrast to \code{\link{sim_discrete_time}}, time is modelled as a continuous variable using a discrete-event simulation approach. See details.

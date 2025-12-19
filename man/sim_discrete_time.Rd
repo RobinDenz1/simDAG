@@ -2,7 +2,7 @@
 \alias{sim_discrete_time}
 
 \title{
-Simulate Data from a \code{DAG} with Time-Dependent Variables
+Simulate Data from a \code{DAG} with Time-Dependent Variables in Discrete Time
 }
 \description{
 Similar to the \code{\link{sim_from_dag}} function, this function can be used to generate data from a given \code{DAG} created using the \code{\link{empty_dag}} and \code{\link{node}} or \code{\link{node_td}} functions (and possibly \code{\link{network}} or \code{\link{network_td}} functions). In contrast to the \code{\link{sim_from_dag}} function, this function utilizes a discrete-time simulation approach. This is not an "off-the-shelves" simulation function, it should rather be seen as a "framework-function", making it easier to create discrete-time-simulations. It usually requires custom functions written by the user. See details.
@@ -98,6 +98,8 @@ As in the \code{\link{sim_from_dag}} function, networks-based simulations are al
 All functions in this package rely on the \code{data.table} backend in order to make them more memory efficient and faster. It is however important to note that the time to simulate a dataset increases non-linearly with an increasing \code{max_t} value and additional time-dependent nodes. This is usually not a concern for smaller datasets, but if \code{n_sim} is very large (say > 1 million) this function will get rather slow. Note also that using the \code{formula} argument is a lot more computationally expensive than using the \code{parents}, \code{betas} approach to specify certain nodes.
 
 In some cases, the \code{remove_if} or \code{break_if} arguments may reduce the computation time considerably. For example, if the user is only interested in the first time that some variable \code{Y} turns \code{TRUE}, it may make sense to use \code{remove_if=Y==TRUE}. Under the hood, the function then removes any individual where \code{Y} is already \code{TRUE}, so that the \code{data} shrinks and no further computations are performed for these individuals. Unofrtunately, whether or not this actually does improve performance is dependent on multiple factors. With large \code{n_sim} and \code{max_t}, a constant or skewed probability distribution of \code{Y} and especially when expensive calculations are performed at each point in time, the performance gains may be very large. This is, however, not always the case. The added computational burden of actually doing the subsetting itself at each point in time may offset any performance gains or even deteriorate performance in other scenarios. We recommend checking the computation time on a single example with and without using either \code{remove_if} and/or \code{break_if} (if appropriate) and making the decision based on that small benchmark.
+
+If speed is of particular importance, it may make sense to use the \code{\link{sim_discrete_event}} function instead. The discrete-event simulation framework is much faster, but a little less flexible than the discrete-time framework. See the relevant documentation page for more information.
 
 \strong{\emph{What do I do with the output?}}:
 

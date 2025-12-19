@@ -6,6 +6,9 @@ dag <- empty_dag() +
 dag_td <- empty_dag() +
   node_td("A", "time_to_event", prob_fun=0.01)
 
+dag_des <- empty_dag() +
+  node_td("Y", type="next_time", prob_fun=0.01, event_duration=Inf)
+
 test_that("without td, basecase", {
   out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=1, n_sim=10)
   expect_true(length(out) == 10)
@@ -40,16 +43,6 @@ test_that("with td, data_format", {
   expect_true(inherits(out[[1]], "data.table"))
 })
 
-on_ci <- getFromNamespace("on_ci", ns="testthat")
-on_cran <- getFromNamespace("on_cran", ns="testthat")
-
-# due to a bug on github actions, only run these tests locally for now
-# NOTE: the bug is due to RcppZiggurat not being installed properly
-# https://github.com/eddelbuettel/rcppziggurat/issues/22
-# so it has nothing to do with the simDAG package or the functionality tested
-# here
-#if (!(on_ci())) {
-
 test_that("without td, parallel", {
   out <- sim_n_datasets(dag=dag, n_repeats=10, n_cores=2, n_sim=10)
   expect_true(length(out) == 10)
@@ -66,6 +59,28 @@ test_that("with td, parallel", {
 test_that("with td, parallel", {
   expect_output(sim_n_datasets(dag=dag_td, n_repeats=10, n_cores=2, n_sim=10,
                                max_t=100))
+})
+
+test_that("with DES, basecase", {
+  out <- sim_n_datasets(dag=dag_des, n_repeats=10, n_cores=1, n_sim=10,
+                        max_t=100)
+  expect_true(length(out) == 10)
+  expect_true(inherits(out[[1]], "data.table"))
+})
+
+test_that("with DES, parallel", {
+  out <- sim_n_datasets(dag=dag_des, n_repeats=10, n_cores=2, n_sim=10,
+                        max_t=100)
+  expect_true(length(out) == 10)
+  expect_true(inherits(out[[1]], "data.table"))
+})
+
+test_that("with DES, data_format warning", {
+  expect_warning(sim_n_datasets(dag=dag_des, n_repeats=10, n_cores=1, n_sim=10,
+                                max_t=100, data_format="long"),
+                 paste0("Only the 'start_stop' format is supported ",
+                        "with discrete-event simulations. No data ",
+                        "transformation was carried out."))
 })
 
 test_that("custom function for prob_fun, parallel", {
@@ -90,5 +105,3 @@ test_that("custom function for prob_fun, parallel", {
   expect_no_error(out <- sim_n_datasets(dag=dag, n_sim=100, n_repeats=2,
                                         max_t=10, n_cores=2))
 })
-
-#}

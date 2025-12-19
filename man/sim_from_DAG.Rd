@@ -42,9 +42,9 @@ Concrete details on how to specify the needed \code{dag} object are given in the
 
 \strong{\emph{Can this function create longitudinal data?}}
 
-Yes and no. It theoretically can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{\link{sim_discrete_time}} is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
+Yes and no. It theoretically can, but only if the user-specified \code{dag} directly specifies a node for each desired point in time. Using the \code{\link{sim_discrete_time}} or \code{\link{sim_discrete_event}} functions is better in some cases. A brief discussion about this topic can be found in the vignettes of this package.
 
-If time-dependent nodes were added to the \code{dag} using \code{\link{node_td}} calls, this function may not be used. Only the \code{\link{sim_discrete_time}} function will work in that case.
+If time-dependent nodes were added to the \code{dag} using \code{\link{node_td}} calls, this function may not be used. Only the \code{\link{sim_discrete_time}} and \code{\link{sim_discrete_event}} functions will work in that case.
 
 \strong{\emph{Networks-Based Simulation}}
 

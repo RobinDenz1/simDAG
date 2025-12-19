@@ -127,7 +127,7 @@ head(data)
 
 ## Requirements
 
-By time-dependent nodes we mean nodes that are created using the `node_td()` function. In general, this works in essentially the same way as for simple root nodes or child nodes. The requirements are:
+By time-dependent nodes we mean nodes that are created using the `node_td()` function. Currently, the `sim_discrete_event()` function only supports nodes of type `"next_time"`, so the following text is exclusively about time-dependent nodes in `sim_discrete_time()`. In general, definining custom time-dependent nodes works in essentially the same way as for simple root nodes or child nodes. The requirements are:
 
 * **1.)** Its' name should start with `node_` (if you want to use a string to define it in `type`).
 * **2.)** If it is a child node, it should contain an argument called `data` (contains the already generated data).

@@ -418,3 +418,13 @@ test_that("helpful error message static network error t = 0", {
                       " 'net' argument should have exactly 100 ",
                       "vertices, not 10."), fixed=TRUE)
 })
+
+test_that("error message when using node_next_time", {
+
+  dag <- empty_dag() +
+    node(c("A", "C"), type="rbernoulli") +
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=1) +
+    node_td("Y", type="next_time", prob_fun=0.01)
+
+  expect_error(sim_discrete_time(dag, n_sim=100, max_t=50))
+})

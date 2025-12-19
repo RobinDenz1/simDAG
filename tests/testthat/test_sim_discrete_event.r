@@ -274,6 +274,9 @@ test_that("supplying t0_data", {
   sim <- sim_discrete_event(dag, t0_data=copy(t0_data), max_t=Inf)
   sim <- subset(sim, !is.na(stop))
   expect_equal(sim$A, t0_data$A)
+
+  # warning if n_sim is specified anyways
+  expect_warning(sim_discrete_event(dag, n_sim=10, t0_data=t0_data))
 })
 
 test_that("using t0_transform_fun", {
@@ -291,6 +294,10 @@ test_that("using t0_transform_fun", {
                             t0_transform_fun=test_fun,
                             t0_transform_args=list(value=10))
   expect_true(all(sim$A==20))
+
+  # error when arg is not defined in function
+  expect_error(sim_discrete_event(dag, n_sim=100, t0_transform_fun=test_fun,
+                                  t0_transform_args=list(value=10, value2=1)))
 })
 
 test_that("redraw_at_t working", {
@@ -463,10 +470,30 @@ test_that("error with no dag", {
   expect_error(sim_discrete_event(dag=1, n_sim=100, max_t=Inf))
 })
 
-test_that("error with internal node name", {
+test_that("helpful error if prob_fun fails", {
+
+  test_fun <- function(data) {
+    stop("This is an error")
+  }
 
   dag <- empty_dag() +
-    node_td(".time", type="next_time", prob_fun=0.1)
+    node_td("Y", type="next_time", prob_fun=test_fun, event_duration=Inf)
 
-  expect_error(sim_discrete_event(dag, n_sim=100, max_t=Inf))
+  expect_error(sim_discrete_event(dag, n_sim=10))
 })
+
+test_that("helpful error if distr_fun fails", {
+
+  test_fun <- function(n, rate, l) {
+    stop("This is an error")
+  }
+
+  dag <- empty_dag() +
+    node_td("Y", type="next_time", prob_fun=0.01, event_duration=Inf,
+            distr_fun=test_fun)
+
+  expect_error(sim_discrete_event(dag, n_sim=10))
+})
+
+# TODO:
+# - check ties more carefully

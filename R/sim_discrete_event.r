@@ -4,6 +4,7 @@
 #' @importFrom data.table copy
 #' @importFrom data.table melt.data.table
 #' @importFrom data.table merge.data.table
+#' @importFrom data.table as.data.table
 #' @importFrom data.table setkey
 #' @importFrom data.table rbindlist
 #' @importFrom data.table fifelse
@@ -78,7 +79,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                          check_inputs=check_inputs)
     data[, .id := seq(1, n_sim)]
   } else {
-    data <- data.table::setDT(t0_data)
+    data <- as.data.table(t0_data)
     n_sim <- nrow(data)
     data[, .id := seq(1, n_sim)]
   }
@@ -209,7 +210,6 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
 
     # remove rows that no longer need to be updated
-
     data <- data[!(is.infinite(.event_duration) & .is_new_event==TRUE) &
                  !(is.infinite(.immunity_duration) & .is_new_change==TRUE) &
                  .time < max_t]
@@ -349,7 +349,7 @@ timecuts <- function(n, rate, l, cuts) {
 }
 
 ## this function efficiently either sets the covariate values to TRUE if
-## a new event occured or sets them back to FALSE if needed
+## a new event occurred or sets them back to FALSE if needed
 set_cols_to_value <- function(data, .value, type, var_names, allow_ties) {
 
   .is_new_event <- .kind <- .id <- .is_new_change <- .time <-
