@@ -12,7 +12,8 @@ details.
 ``` r
 node_next_time(data, prob_fun, ..., distr_fun=rtexp,
                distr_fun_args=list(), event_duration=Inf,
-               immunity_duration=event_duration)
+               immunity_duration=event_duration,
+               event_count=FALSE)
 ```
 
 ## Arguments
@@ -72,6 +73,21 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
   of 10 time units after the event is over `event_duration + 10` should
   be used. The corresponding variable is set to `FALSE` after the
   `event_duration` is up and until the `immunity_duration` is over.
+
+- event_count:
+
+  Either `TRUE` or `FALSE` (default), specifying whether an additional
+  column should be added that counts the number of times this variable
+  has been `TRUE` previously. If `TRUE`, the column will be named by
+  taking the name of the node and appending `"_event_count"`. It is 0 at
+  the beginning and increases by 1 at each point in time that the
+  variable changes its status from `FALSE` to `TRUE`. Note that this may
+  increase the time it takes to run the simulation. If the count of
+  previous events is only needed for processing in the variable itself,
+  a faster alternative is to keep this argument at `FALSE` and to use
+  the internal `.event_count` column instead. Only use this argument if
+  other variables should be dependent on the event count of this
+  variable.
 
 ## Details
 

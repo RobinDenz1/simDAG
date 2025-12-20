@@ -53,10 +53,11 @@
 <span>                   t0_data<span class="op">=</span><span class="cn">NULL</span>, t0_transform_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   t0_transform_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                   max_t<span class="op">=</span><span class="cn">Inf</span>, <span class="va">remove_if</span>, <span class="va">break_if</span>,</span>
-<span>                   max_loops<span class="op">=</span><span class="fl">10000</span>, redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
-<span>                   allow_ties<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span>                   censor_at_max_t<span class="op">=</span><span class="cn">FALSE</span>, target_event<span class="op">=</span><span class="cn">NULL</span>,</span>
-<span>                   keep_only_first<span class="op">=</span><span class="cn">FALSE</span>, check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                   max_loops<span class="op">=</span><span class="fl">1000</span>, redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>                   allow_ties<span class="op">=</span><span class="cn">FALSE</span>, censor_at_max_t<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>                   target_event<span class="op">=</span><span class="cn">NULL</span>, keep_only_first<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>                   include_event_counts<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                   check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -107,6 +108,9 @@
   <dt id="arg-keep-only-first">keep_only_first<a class="anchor" aria-label="anchor" href="#arg-keep-only-first"></a></dt>
 <dd><p>Only used when <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, all information after the first event per person will be discarded. Useful when <code>target_event</code> should be treated as a terminal variable.</p></dd>
 
+  <dt id="arg-include-event-counts">include_event_counts<a class="anchor" aria-label="anchor" href="#arg-include-event-counts"></a></dt>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether event counts of time-dependent nodes in which <code>event_count=TRUE</code> was used should be included in the output or not.</p></dd>
+
   <dt id="arg-check-inputs">check_inputs<a class="anchor" aria-label="anchor" href="#arg-check-inputs"></a></dt>
 <dd><p>Whether to perform plausibility checks for the user input or not. Is set to <code>TRUE</code> by default, but can be set to <code>FALSE</code> in order to speed things up when using this function in a simulation study or something similar.</p></dd>
 
@@ -117,7 +121,7 @@
 
 <p>This function is purely experimental. It currently needs more tests and checks. Use at your own risk.</p>
 <p><strong><em>What is Discrete-Event Simulation?</em></strong>:</p>
-<p>In discrete-event simulations (DES), the system is modelled as a sequence of distinct events that occur over time any may influence each other. In contrast to discrete-time simulations, the time in a DES is only advanced by some amount whenever an event occurs. The state of the system is then updated according to this event and the next advancement is made. The possibly simplest example of a DES, as compared to a discrete-time simulation is a system with just one variable, <code>Y</code> for a single individual. At the start, <code>Y</code> is zero. We are interested only in the time at which <code>Y</code> turns 1 for the first time. The probability of 1 turning one in one unit of time is set to a fixed value of 0.01. In a discrete-time simulation, we would perform a single Bernoulli trial with probability 0.01. If this trial returns a 1, we are finished and save the current simulation time. If it is 0, we increase the time by 1 and repeat the process until <code>Y</code> is eventually 1. In DES on the other hand, we would simply draw the time until <code>Y</code> turns 1 from a suitable distribution (in this example a simple exponential distribution would be sufficient).</p>
+<p>In discrete-event simulations (DES), the system is modelled as a sequence of distinct events that occur over time any may influence each other. In contrast to discrete-time simulations, the time in a DES is only advanced by some amount whenever an event occurs. The state of the system is then updated according to this event and the next advancement is made. The possibly simplest example of a DES, as compared to a discrete-time simulation is a system with just one variable, <code>Y</code> for a single individual. At the start, <code>Y</code> is zero. We are interested only in the time at which <code>Y</code> turns 1 for the first time. The probability of <code>Y</code> turning one in a single unit of time is set to a fixed value of 0.01. In a discrete-time simulation, we would perform a single Bernoulli trial with probability 0.01. If this trial returns a 1, we are finished and save the current simulation time. If the Bernoulli trial returns a 0, we increase the time by 1 and repeat the process until <code>Y</code> is eventually 1. In DES on the other hand, we would simply draw the time until <code>Y</code> turns 1 from a suitable distribution (in this example a simple exponential distribution with <code>rate=0.01</code> would be sufficient).</p>
 <p>In such simple cases, using a discrete-time simulation approach is clearly a worse strategy. There is no reason to perform so many computations when drawing a single exponentially distributed random number is enough. With more complex data generation processes, for example include time-varying variables that influence each other over time, using DES gets more complicated.</p>
 <p><strong><em>How it Works</em></strong>:</p>
 <p>Internally, this function works by first simulating data using the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function. Alternatively, the user can supply a custom <code>data.table</code> using the <code>t0_data</code> argument. This data defines the state of all entities at \(t = 0\). Afterwards, the following algorithm is used for each simulated individual:</p>
@@ -128,7 +132,7 @@
 <p><strong><em>Specifying the <code>dag</code> argument</em></strong>:</p>
 <p>The <code>dag</code> argument should be specified as described in the <code><a href="node.html">node</a></code> documentation page. More examples specific to discrete-event simulations can be found in the vignettes and the examples. The only difference to specifying a <code>dag</code> for the <code><a href="sim_from_DAG.html">sim_from_dag</a></code> function is that the <code>dag</code> here should contain at least one time-dependent node added using the <code><a href="node.html">node_td</a></code> function, that uses <code>type="next_time"</code>.</p>
 <p><strong><em>Networks-Based Simulation</em></strong>:</p>
-<p>Currently not supported, but will be in future versions.</p>
+<p>Currently only time-constant networks added using the <code><a href="network.html">network</a></code> function are supported. They are also only supported for data generation at \(t = 0\). All following calculations will be made ignoring the network. If time-dependent networks or network dependencies in time-dependent variables are desired, the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function has to be used instead.</p>
 <p><strong><em>Speed Considerations</em></strong>:</p>
 <p>In general, this function should be <em>a lot faster</em> than a corresponding <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> call, because it does not require going through all considered points in time directly. Its computation time therefore does not change substantially (or at all) with higher values of <code>max_t</code>. Instead, it only increases with higher values of <code>n_sim</code>, the amount of time-dependent variables and, most importantly, with the frequency by which these variables change. The more frequently a variable changes back and forth between <code>TRUE</code> and <code>FALSE</code>, the more iterations are needed and thus the more time is needed.</p>
 <p><strong><em>Current limitations</em></strong>:</p>

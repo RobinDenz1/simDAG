@@ -51,7 +51,8 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_next_time</span><span class="op">(</span><span class="va">data</span>, <span class="va">prob_fun</span>, <span class="va">...</span>, distr_fun<span class="op">=</span><span class="va">rtexp</span>,</span>
 <span>               distr_fun_args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, event_duration<span class="op">=</span><span class="cn">Inf</span>,</span>
-<span>               immunity_duration<span class="op">=</span><span class="va">event_duration</span><span class="op">)</span></span></code></pre></div>
+<span>               immunity_duration<span class="op">=</span><span class="va">event_duration</span>,</span>
+<span>               event_count<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +78,9 @@
 
   <dt id="arg-immunity-duration">immunity_duration<a class="anchor" aria-label="anchor" href="#arg-immunity-duration"></a></dt>
 <dd><p>A single number &gt;= <code>event_duration</code> specifying how long the person should be immune to the event after it is over. The count internally starts when the event starts, so in order to use an immunity duration of 10 time units after the event is over <code>event_duration + 10</code> should be used. The corresponding variable is set to <code>FALSE</code> after the <code>event_duration</code> is up and until the <code>immunity_duration</code> is over.</p></dd>
+
+  <dt id="arg-event-count">event_count<a class="anchor" aria-label="anchor" href="#arg-event-count"></a></dt>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code> (default), specifying whether an additional column should be added that counts the number of times this variable has been <code>TRUE</code> previously. If <code>TRUE</code>, the column will be named by taking the name of the node and appending <code>"_event_count"</code>. It is 0 at the beginning and increases by 1 at each point in time that the variable changes its status from <code>FALSE</code> to <code>TRUE</code>. Note that this may increase the time it takes to run the simulation. If the count of previous events is only needed for processing in the variable itself, a faster alternative is to keep this argument at <code>FALSE</code> and to use the internal <code>.event_count</code> column instead. Only use this argument if other variables should be dependent on the event count of this variable.</p></dd>
 
 </dl></div>
     <div class="section level2">
