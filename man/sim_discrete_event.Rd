@@ -12,10 +12,9 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
                    max_t=Inf, remove_if, break_if,
-                   max_loops=10000, redraw_at_t=NULL,
-                   allow_ties=FALSE,
-                   censor_at_max_t=FALSE, target_event=NULL,
-                   keep_only_first=FALSE,
+                   max_loops=1000, redraw_at_t=NULL,
+                   allow_ties=FALSE, censor_at_max_t=FALSE,
+                   target_event=NULL, keep_only_first=FALSE,
                    include_event_counts=TRUE,
                    check_inputs=TRUE)
 }
@@ -78,7 +77,7 @@ This function is purely experimental. It currently needs more tests and checks. 
 
 \strong{\emph{What is Discrete-Event Simulation?}}:
 
-In discrete-event simulations (DES), the system is modelled as a sequence of distinct events that occur over time any may influence each other. In contrast to discrete-time simulations, the time in a DES is only advanced by some amount whenever an event occurs. The state of the system is then updated according to this event and the next advancement is made. The possibly simplest example of a DES, as compared to a discrete-time simulation is a system with just one variable, \code{Y} for a single individual. At the start, \code{Y} is zero. We are interested only in the time at which \code{Y} turns 1 for the first time. The probability of 1 turning one in one unit of time is set to a fixed value of 0.01. In a discrete-time simulation, we would perform a single Bernoulli trial with probability 0.01. If this trial returns a 1, we are finished and save the current simulation time. If it is 0, we increase the time by 1 and repeat the process until \code{Y} is eventually 1. In DES on the other hand, we would simply draw the time until \code{Y} turns 1 from a suitable distribution (in this example a simple exponential distribution would be sufficient).
+In discrete-event simulations (DES), the system is modelled as a sequence of distinct events that occur over time any may influence each other. In contrast to discrete-time simulations, the time in a DES is only advanced by some amount whenever an event occurs. The state of the system is then updated according to this event and the next advancement is made. The possibly simplest example of a DES, as compared to a discrete-time simulation is a system with just one variable, \code{Y} for a single individual. At the start, \code{Y} is zero. We are interested only in the time at which \code{Y} turns 1 for the first time. The probability of \code{Y} turning one in a single unit of time is set to a fixed value of 0.01. In a discrete-time simulation, we would perform a single Bernoulli trial with probability 0.01. If this trial returns a 1, we are finished and save the current simulation time. If the Bernoulli trial returns a 0, we increase the time by 1 and repeat the process until \code{Y} is eventually 1. In DES on the other hand, we would simply draw the time until \code{Y} turns 1 from a suitable distribution (in this example a simple exponential distribution with \code{rate=0.01} would be sufficient).
 
 In such simple cases, using a discrete-time simulation approach is clearly a worse strategy. There is no reason to perform so many computations when drawing a single exponentially distributed random number is enough. With more complex data generation processes, for example include time-varying variables that influence each other over time, using DES gets more complicated.
 
@@ -98,7 +97,7 @@ The \code{dag} argument should be specified as described in the \code{\link{node
 
 \strong{\emph{Networks-Based Simulation}}:
 
-Currently not supported, but will be in future versions.
+Currently only time-constant networks added using the \code{\link{network}} function are supported. They are also only supported for data generation at \eqn{t = 0}. All following calculations will be made ignoring the network. If time-dependent networks or network dependencies in time-dependent variables are desired, the \code{\link{sim_discrete_time}} function has to be used instead.
 
 \strong{\emph{Speed Considerations}}:
 

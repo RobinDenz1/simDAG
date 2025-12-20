@@ -18,11 +18,10 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
                                t0_transform_args=list(),
                                max_t=Inf, remove_if, break_if,
-                               max_loops=10000, redraw_at_t=NULL,
-                               allow_ties=FALSE,
-                               censor_at_max_t=FALSE, target_event=NULL,
-                               keep_only_first=FALSE, include_event_counts=TRUE,
-                               check_inputs=TRUE) {
+                               max_loops=1000, redraw_at_t=NULL,
+                               allow_ties=FALSE, censor_at_max_t=FALSE,
+                               target_event=NULL, keep_only_first=FALSE,
+                               include_event_counts=TRUE, check_inputs=TRUE) {
 
   # silence devtools check() warnings
   .id <- .time <- .trunc_time <- .time_of_next_event <-

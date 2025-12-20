@@ -14,6 +14,7 @@ sim_discrete_event:
 	- allow network dependencies
 	- add remove_not_at_risk argument
 	- allow internal other distr_fun (cox, aft models, ...)
+	- maybe allow "delays"?
 
 ####### New Features: #######
 
