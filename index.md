@@ -12,7 +12,8 @@ model (linear, logistic, multinomial, cox, …) or other function. The
 result is a dataset that has the same causal structure as the specified
 DAG and by expectation the same distributions and coefficients as
 initially specified. It also implements a comprehensive framework for
-conducting discrete-time simulations in a similar fashion.
+conducting discrete-time and discrete-event simulations in a similar
+fashion and directly supports network dependencies among individuals.
 
 ## Installation
 

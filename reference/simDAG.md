@@ -98,6 +98,8 @@ vignettes of this package, which can be accessed using:
 
 - [`vignette(topic="v_sim_discrete_time", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_time.md)
 
+- [`vignette(topic="v_sim_discrete_event", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.md)
+
 - [`vignette(topic="v_covid_example", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_covid_example.md)
 
 - [`vignette(topic="v_using_formulas", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_using_formulas.md)
@@ -111,7 +113,7 @@ vignettes of this package, which can be accessed using:
 A separate (already peer-reviewed) article about this package has been
 provisionally accepted in the *Journal of Statistical Software*. The
 preprint version of this article is available on arXiv (Denz and
-Timmesfeld 2025).
+Timmesfeld 2025) and as a vignette in this package.
 
 ***I have a problem using the `sim_discrete_time` or
 `sim_discrete_event` function***

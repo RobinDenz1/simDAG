@@ -28,6 +28,15 @@ Enhancements
   function, to allow users some options that potentially make the
   simulation much faster.
 
+Documentation
+
+- Small changes to include the new
+  [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  everywhere.
+- Added a new vignette introducing the
+  [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  function.
+
 ## simDAG 0.4.1
 
 CRAN release: 2025-10-15

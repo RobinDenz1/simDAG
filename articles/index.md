@@ -10,6 +10,8 @@
   DAG](https://robindenz1.github.io/simDAG/articles/v_custom_nodes.md):
 - [Simulating Data using a Discrete-Time
   Approach](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_time.md):
+- [Simulating Data using a Discrete-Event
+  Approach](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.md):
 - [Simulating Covid-19 Vaccine Data using a Discrete-Time
   Simulation](https://robindenz1.github.io/simDAG/articles/v_covid_example.md):
 - [Simulating Data from a DAG with Network

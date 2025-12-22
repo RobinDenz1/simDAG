@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/v_using_formulas.html">Specifying Formulas in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_custom_nodes.html">Specifying Custom Node Types in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_discrete_event.html">Simulating Data using a Discrete-Event Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
@@ -263,7 +264,7 @@ event (once you are dead, there is no going back).</p>
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_discrete_time_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="672"></p>
+<p><img src="v_sim_discrete_time_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <p>To finally generate the desired data, we simply call the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -291,7 +292,7 @@ associated with the output of the <code><a href="../reference/sim_discrete_time.
 function like this:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">)</span></span></code></pre></div>
-<p><img src="v_sim_discrete_time_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="672"></p>
+<p><img src="v_sim_discrete_time_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 <p>A subtlety that may arise when we are interested in such terminal
 event times is that the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function only
 runs for <code>max_t</code> steps. In our example above, 50 steps (or

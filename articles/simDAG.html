@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/v_using_formulas.html">Specifying Formulas in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_custom_nodes.html">Specifying Custom Node Types in a DAG</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
+    <li><a class="dropdown-item" href="../articles/v_sim_discrete_event.html">Simulating Data using a Discrete-Event Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
@@ -664,7 +665,7 @@ al. 2024)</span> to put the nodes into position and the
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggforce.data-imaginist.com" class="external-link">"ggforce"</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, layout<span class="op">=</span><span class="st">"as_tree"</span>, node_size<span class="op">=</span><span class="fl">0.15</span>, node_fill<span class="op">=</span><span class="st">"grey"</span>,</span>
 <span>     node_text_fontface<span class="op">=</span><span class="st">"italic"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simDAG_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="528" style="display: block; margin: auto;"></p>
+<p><img src="simDAG_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="528" style="display: block; margin: auto;"></p>
 <p>The output is not exactly the same as Figure 1 because of space
 reasons, but it is very similar. Additionally, the underlying structural
 equations may be printed directly using the associated S3
@@ -950,7 +951,7 @@ produces the following output:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, node_size<span class="op">=</span><span class="fl">0.3</span>, node_fill<span class="op">=</span><span class="st">"grey"</span>,</span>
 <span>     node_text_fontface<span class="op">=</span><span class="st">"italic"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simDAG_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="528" style="display: block; margin: auto;"></p>
+<p><img src="simDAG_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="528" style="display: block; margin: auto;"></p>
 <p>The underlying structural equations are:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span>
@@ -1083,7 +1084,7 @@ proposed package is given below.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span>, node_size<span class="op">=</span><span class="fl">0.2</span>, node_fill<span class="op">=</span><span class="st">"grey"</span>,</span>
 <span>     node_text_fontface<span class="op">=</span><span class="st">"italic"</span>, layout<span class="op">=</span><span class="st">"in_circle"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simDAG_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="528" style="display: block; margin: auto;"></p>
+<p><img src="simDAG_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="528" style="display: block; margin: auto;"></p>
 <p>The structural equations can again be printed using the
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> function:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -1147,7 +1148,7 @@ very simple DAG with only one time-dependent node
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
 at three points in time,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">t \in \{0, 1, 2\}</annotation></semantics></math>:</p>
-<p><img src="simDAG_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" width="528" style="display: block; margin: auto;"></p>
+<p><img src="simDAG_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="528" style="display: block; margin: auto;"></p>
 <p>In this DAG,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">Y_t</annotation></semantics></math>
 is only caused by values of itself at
@@ -1653,7 +1654,7 @@ runtime is calculated using the <code>microbenchmark</code> package
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>                     transform<span class="op">=</span><span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images_v_joss/runtime.png" class="r-plt" width="600" style="display: block; margin: auto;"></p>
+<p><img src="images_v_joss/runtime.png" class="r-plt" alt="" width="600" style="display: block; margin: auto;"></p>
 <p>The runtime increases more sharply with higher values of
 <code>max_t</code> than it does with higher values of
 <code>n_sim</code>, because each additional considered point in time
