@@ -43,6 +43,7 @@ The documentation pages contain a lot of information, relevant examples and some
 \itemize{
   \item{\code{vignette(topic="v_sim_from_dag", package="simDAG")}}
   \item{\code{vignette(topic="v_sim_discrete_time", package="simDAG")}}
+  \item{\code{vignette(topic="v_sim_discrete_event", package="simDAG")}}
   \item{\code{vignette(topic="v_covid_example", package="simDAG")}}
   \item{\code{vignette(topic="v_using_formulas", package="simDAG")}}
   \item{\code{vignette(topic="v_custom_nodes", package="simDAG")}}
@@ -50,7 +51,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_sim_networks", package="simDAG")}}
 }
 
-A separate (already peer-reviewed) article about this package has been provisionally accepted in the \emph{Journal of Statistical Software}. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025).
+A separate (already peer-reviewed) article about this package has been provisionally accepted in the \emph{Journal of Statistical Software}. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025) and as a vignette in this package.
 
 \strong{\emph{I have a problem using the \code{sim_discrete_time} or \code{sim_discrete_event} function}}
 

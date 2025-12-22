@@ -1,5 +1,5 @@
 Package: simDAG
-Title: Simulate Data from a DAG and Associated Node Information
+Title: Simulate Data from a (time-dependent) DAG
 Version: 0.4.1.9000
 Authors@R: c(
     person("Robin", "Denz", , "robin.denz@rub.de", role = c("aut", "cre")),
@@ -10,7 +10,7 @@ Description: Simulate complex data from a given directed acyclic graph and infor
 	Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to
 	one of many implemented regressions, such as logistic regression, linear
 	regression, poisson regression or any other function. Also includes a comprehensive framework for discrete-time
-	simulation, and networks-based simulation which can generate even more complex longitudinal and dependent data.
+	simulation, discrete-event simulation, and networks-based simulation which can generate even more complex longitudinal and dependent data.
 	For more details, see Robin Denz, Nina Timmesfeld (2025) <doi:10.48550/arXiv.2506.01498>.
 License: GPL (>= 3)
 URL: https://github.com/RobinDenz1/simDAG,

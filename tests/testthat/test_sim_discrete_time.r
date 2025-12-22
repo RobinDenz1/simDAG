@@ -336,6 +336,20 @@ test_that("break_if usage", {
   expect_true(all(sim$data$Y_time <= 2 | is.na(sim$data$Y_time)))
 })
 
+test_that("warning with remove_if and network usage", {
+
+  gen_network <- function(n_sim) {
+    igraph::sample_gnm(n=10, m=30)
+  }
+
+  dag <- empty_dag() +
+    network("net1", net=gen_network) +
+    node(c("A", "C"), type="rbernoulli") +
+    node_td("B", type="gaussian", formula= ~ -1 + A*2 + C*3, error=3)
+
+  expect_warning(sim_discrete_time(dag, n_sim=10, max_t=5, remove_if=B > 5))
+})
+
 test_that("helpful error message formula error", {
 
   dag <- empty_dag() +

@@ -859,6 +859,12 @@ check_inputs_sim_discrete_event <- function(dag, n_sim, t0_sort_dag,
          " function instead.", call.=FALSE)
   }
 
+  # time-dependent networks not supported
+  if (length(dag$td_networks) > 0) {
+    stop("Time-dependent networks are currently not supported in",
+         " the sim_discrete_event() function.", call.=FALSE)
+  }
+
   # check for internally used names
   tx_names <- names_DAG_level(dag, level="tx")
   internal_names <- c(".id", ".time", ".trunc_time", ".time_of_next_event",

@@ -150,6 +150,12 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     cond_expr <- substitute(remove_if)
     data_t0 <- copy(data)
     l_max_t <- vector(mode="list", length=max_t)
+
+    if (length(dag$networks) > 0 | length(dag$td_networks) > 0) {
+      warning("Using the 'remove_if' argument with one or more network() or",
+              " network_td() calls added to the supplied DAG is currently",
+              " not supported and may lead to errors.", call.=FALSE)
+    }
   } else {
     data_t0 <- NULL
     d_max_t <- NULL

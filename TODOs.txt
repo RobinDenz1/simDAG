@@ -2,16 +2,11 @@
 ###### Bugs & TODOS ######
 
 	- add "unif" argument to node_competing_events()
-	- using remove_if in sim_discrete_time() probably fails with network() or network_td()
 
 sim_discrete_event:
 
-    General:
-	- write Vignette
-
     missing features:
 	- allow formula
-	- allow network dependencies
 	- add remove_not_at_risk argument
 	- allow internal other distr_fun (cox, aft models, ...)
 	- maybe allow "delays"?

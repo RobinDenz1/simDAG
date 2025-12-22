@@ -65,6 +65,12 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   }
   if (!miss_remove_if) {
     cond_expr <- substitute(remove_if)
+
+    if (length(dag$networks) > 0) {
+      warning("Using the 'remove_if' argument with one or more network() or",
+              " network_td() calls added to the supplied DAG is currently",
+              " not supported and may lead to errors.", call.=FALSE)
+    }
   }
 
   tx_nodes <- prepare_next_time_nodes(dag$tx_nodes)

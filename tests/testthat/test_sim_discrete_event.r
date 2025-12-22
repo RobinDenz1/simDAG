@@ -553,3 +553,42 @@ test_that("using event_count=TRUE is same as .event_count in same node", {
   sim1[, Y_event_count := NULL]
   expect_equal(sim1, sim2)
 })
+
+test_that("warning with networks in DAG and remove_if", {
+
+  set.seed(1234)
+
+  g1 <- igraph::sample_gnm(n=50, m=35)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    network("g1", net=g1) +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
+            event_duration=10, immunity_duration=750) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.01,
+            event_duration=45, immunity_duration=1000) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            event_duration=200, immunity_duration=Inf) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  expect_warning(sim_discrete_event(dag, n_sim=50, max_t=Inf,
+                                    remove_if=Y==TRUE, censor_at_max_t=TRUE))
+})
+
+test_that("error with time-dependent networks", {
+
+  gen_network <- function(n_sim) {
+    return(NULL)
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("Y", type="next_time", prob_fun=0.001) +
+    network_td("some_network", net=gen_network)
+
+  expect_error(sim_discrete_event(dag, n_sim=100, max_t=Inf),
+               paste0("Time-dependent networks are currently not ",
+                      "supported in the sim_discrete_event() function."),
+               fixed=TRUE)
+})

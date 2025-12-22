@@ -9,6 +9,7 @@ articles:
       - v_using_formulas
       - v_custom_nodes
       - v_sim_discrete_time
+      - v_sim_discrete_event
       - v_covid_example
       - v_sim_networks
       - v_cookbook

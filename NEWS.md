@@ -11,6 +11,11 @@ Enhancements
 
 * Added the `remove_if` and `break_if` arguments to the `sim_discrete_time()` function, to allow users some options that potentially make the simulation much faster.
 
+Documentation
+
+* Small changes to include the new `sim_discrete_event()` everywhere.
+* Added a new vignette introducing the `sim_discrete_event()` function.
+
 # simDAG 0.4.1
 
 New Features
