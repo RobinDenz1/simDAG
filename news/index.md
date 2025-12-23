@@ -27,6 +27,9 @@ Enhancements
   [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
   function, to allow users some options that potentially make the
   simulation much faster.
+- Allow function input to the `data_format` argument of the
+  [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)
+  function to avoid potentially weird bugs in parallel processing.
 
 Documentation
 
