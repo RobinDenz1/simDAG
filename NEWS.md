@@ -10,6 +10,7 @@ New Features
 Enhancements
 
 * Added the `remove_if` and `break_if` arguments to the `sim_discrete_time()` function, to allow users some options that potentially make the simulation much faster.
+* Allow function input to the `data_format` argument of the `sim_n_datasets()` function to avoid potentially weird bugs in parallel processing.
 
 Documentation
 

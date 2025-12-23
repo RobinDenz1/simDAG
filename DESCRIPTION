@@ -1,5 +1,5 @@
 Package: simDAG
-Title: Simulate Data from a (time-dependent) DAG
+Title: Simulate Data from a (time-dependent) causal DAG
 Version: 0.4.1.9000
 Authors@R: c(
     person("Robin", "Denz", , "robin.denz@rub.de", role = c("aut", "cre")),

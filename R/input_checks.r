@@ -769,8 +769,10 @@ check_inputs_sim_n_datasets <- function(dag, n_repeats, n_cores,
   } else if (!(length(n_cores)==1 && is.numeric(n_cores) &&
                n_cores >= 1)) {
     stop("'n_cores' must be a single positive number.", call.=FALSE)
-  } else if (!(length(data_format)==1 && is.character(data_format))) {
-    stop("'data_format' must be a single character string.", call.=FALSE)
+  } else if (!(is.function(data_format) ||
+               (length(data_format)==1 && is.character(data_format)))) {
+    stop("'data_format' must be a single character string or a function.",
+         call.=FALSE)
   } else if (!is.list(data_format_args)) {
     stop("'data_format_args' must be a list.", call.=FALSE)
   } else if (!(length(progressbar)==1 && is.logical(progressbar))) {

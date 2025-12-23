@@ -26,7 +26,8 @@ sim_n_datasets <- function(dag, n_sim, n_repeats, n_cores=1,
     sim <- "DAG"
   }
 
-  if (sim=="DES" & data_format %in% c("long", "wide")) {
+  if (sim=="DES" && !is.function(data_format) &&
+      data_format %in% c("long", "wide")) {
     warning("Only the 'start_stop' format is supported with discrete-event",
             " simulations. No data transformation was carried out.",
             call.=FALSE)
@@ -112,17 +113,17 @@ generate_one_dataset <- function(dag, data_format, data_format_args, n_sim,
   }
 
   # transform it, if specified
-  if (data_format %in% c("start_stop", "long", "wide") &&
-      sim=="DTS") {
+  if (!is.function(data_format) && sim=="DTS" &&
+      data_format %in% c("start_stop", "long", "wide")) {
 
     data_format_args$to <- data_format
     data_format_args$sim <- dat
     dat <- do.call("sim2data", args=data_format_args)
 
-  } else if (data_format %in% c("start_stop", "long", "wide") &&
-             sim=="DES") {
+  } else if (!is.function(data_format) && sim=="DES" &&
+             data_format %in% c("start_stop", "long", "wide")) {
     # do nothing
-  } else if (data_format != "raw") {
+  } else if (is.function(data_format) || data_format != "raw") {
     data_format_args$data <- dat
     dat <- do.call(data_format, args=data_format_args)
   }

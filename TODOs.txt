@@ -2,14 +2,7 @@
 ###### Bugs & TODOS ######
 
 	- add "unif" argument to node_competing_events()
-
-sim_discrete_event:
-
-    missing features:
-	- allow formula
-	- add remove_not_at_risk argument
-	- allow internal other distr_fun (cox, aft models, ...)
-	- maybe allow "delays"?
+	- in sim_discrete_event(), if multiple events happen at the same time, target_event functionality does not work
 
 ####### New Features: #######
 
@@ -19,6 +12,12 @@ node_time_to_event:
 
 sim_discrete_time:
 	- maybe include t = 0 in output (or an option for it)?
+
+sim_discrete_event:
+	- allow formula
+	- add remove_not_at_risk argument
+	- allow internal other distr_fun (cox, aft models, ...)
+	- maybe allow "delays"?
 
 sim_from_dag:
 	- implement more node types:

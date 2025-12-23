@@ -13,6 +13,7 @@
 #' @importFrom data.table shift
 #' @importFrom data.table uniqueN
 #' @importFrom data.table setnafill
+#' @importFrom data.table rleid
 #' @export
 sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
@@ -203,8 +204,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
     # update simulation times
     data[, .time := fifelse(.min_time_of_next_event < .min_time_of_next_change,
-                            .min_time_of_next_event,
-                            .min_time_of_next_change)]
+                            .min_time_of_next_event, .min_time_of_next_change)]
     data[.time > .trunc_time, .trunc_time := .time]
 
     # check for new events / changes

@@ -105,3 +105,21 @@ test_that("custom function for prob_fun, parallel", {
   expect_no_error(out <- sim_n_datasets(dag=dag, n_sim=100, n_repeats=2,
                                         max_t=10, n_cores=2))
 })
+
+test_that("custom function for data_format, parallel", {
+
+  data_fun <- function(data) {
+    return(data)
+  }
+
+  assign("data_fun", value=data_fun, envir=.GlobalEnv)
+
+  dag <- empty_dag() +
+    node("A", "rnorm", mean=10, sd=120) +
+    node("B", "rbernoulli", p=0.3) +
+    node_td("C", "time_to_event", prob_fun=0.01)
+
+  expect_no_error(out <- sim_n_datasets(dag=dag, n_sim=100, n_repeats=2,
+                                        max_t=10, n_cores=2,
+                                        data_format=data_fun))
+})
