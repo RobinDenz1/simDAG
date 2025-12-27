@@ -1440,7 +1440,7 @@ competing events data without the use of discrete-time simulation
 ## Computational details
 
 The results in this paper were obtained using `R` 4.5.2 with the
-`data.table` 1.17.8 package, the `survival` 3.8.3 package, the `igraph`
+`data.table` 1.18.0 package, the `survival` 3.8.3 package, the `igraph`
 2.2.1 package, the `ggplot2` 4.0.1 package and the `simDAG` 0.4.1.9000
 package. `R` itself and all packages used are available from the
 Comprehensive `R` Archive Network (CRAN) at
