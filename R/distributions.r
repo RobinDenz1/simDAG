@@ -71,7 +71,14 @@ rconstant <- function(n, constant) {
 ## simply sample from x to generate a node
 #' @export
 rsample <- function(n, x, replace=FALSE, prob=NULL) {
-  out <- sample(x=x, size=n, replace=replace, prob=prob)
+
+  if (is.data.frame(x)) {
+    ind <- sample.int(n=nrow(x), size=n, replace=replace, prob=prob)
+    out <- x[ind, ]
+  } else {
+    out <- sample(x=x, size=n, replace=replace, prob=prob)
+  }
+
   return(out)
 }
 
