@@ -8,8 +8,9 @@ Generate the Next Time of an Event in Discrete-Event Simulation
 This node essentially models a dichotomous time-dependent variable for which the time of the event will be important for later usage. Can only be used inside of the \code{\link{sim_discrete_event}} function, not outside of it or in other simulation functions. See details.
 }
 \usage{
-node_next_time(data, prob_fun, ..., distr_fun=rtexp,
-               distr_fun_args=list(), event_duration=Inf,
+node_next_time(data, formula, prob_fun, ...,
+               distr_fun=rtexp, distr_fun_args=list(),
+               event_duration=Inf,
                immunity_duration=event_duration,
                event_count=FALSE)
 }
@@ -17,11 +18,14 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
   \item{data}{
 A \code{data.table} containing all columns specified by \code{parents}. Similar objects such as \code{data.frame}s are not supported.
   }
+  \item{formula}{
+An optional \code{formula} that may be used to define the probability that will be passed to \code{distr_fun} using a binomial regression model. If supplied, the \code{\link{node_binomial}} function will be called internally with \code{return_prob=TRUE} (calculating only the probability as estimated using the model). See \code{?node} or the associated vignette for more information about how a \code{formula} should be defined in this package. This argument is ignored if \code{prob_fun} is specified.
+  }
   \item{prob_fun}{
-A function that returns a numeric vector of size \code{nrow(data)}. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the \code{distr_fun} function call that follows internally. For example, when using \code{distr_fun="rtexp"} (default), the \code{prob_fun} should generate the person-specific probability of experiencing the event during 1 time unit. Any function may be used, as long as it has a named argument called \code{data}. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time.
+A function that returns a numeric vector of size \code{nrow(data)}. These numbers should be used to summarise the effect of the considered covariates per person. The summarised score is then used in the \code{distr_fun} function call that follows internally. For example, when using \code{distr_fun="rtexp"} (default), the \code{prob_fun} should generate the person-specific probability of experiencing the event during 1 time unit. Any function may be used, as long as it has a named argument called \code{data}. Alternatively this argument can be set to a single number, resulting in a fixed summary score being used for every simulated individual at every point in time. The \code{formula} argument may be used as a convenient alternative if users want to specify a binomial regression model.
   }
   \item{...}{
-An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
+An arbitrary amount of additional named arguments passed to \code{prob_fun} if \code{prob_fun} is specified. If \code{formula} is specified and \code{prob_fun} is not, these additional arguments are passed directly to the \code{\link{node_binomial}} function. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{distr_fun}{
 A function that returns the (left-truncated) next time at which the variable turns to \code{TRUE}. Any function that has at least three named arguments \code{n} (the number of times to draw), \code{rate} (the summary score returned by \code{prob_fun}) and \code{l} (the time of left-truncation) may be used. The function additionally needs to be vectorised over both \code{rate} and \code{l}, so that a vector of different values may be supplied. The left-truncation is required, so that it only generated times that are strictly larger than \code{l}. A classic example for such a function is the \code{\link{rtexp}} function (the default). See examples and the associated vignette.

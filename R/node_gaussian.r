@@ -23,8 +23,7 @@ node_gaussian <- function(data, parents, formula=NULL, betas,
     data <- as.data.frame(data[, parents, with=FALSE])
   }
 
-  out <- intercept +
-    rowSums(mapply("*", data, betas))
+  out <- calc_linpred(data=data, betas=betas, intercept=intercept)
 
   if (link=="log") {
     out <- exp(out)
@@ -33,5 +32,16 @@ node_gaussian <- function(data, parents, formula=NULL, betas,
   }
 
   out <- out + stats::rnorm(n=nrow(data), mean=0, sd=error)
+  return(out)
+}
+
+## calculates the linear predictor given data, betas and intercept
+calc_linpred <- function(data, betas, intercept) {
+
+  if (nrow(data)==1) {
+    out <- intercept + sum(mapply("*", data, betas))
+  } else {
+    out <- intercept + rowSums(mapply("*", data, betas))
+  }
   return(out)
 }

@@ -15,7 +15,7 @@ node_negative_binomial <- function(data, parents, formula=NULL, betas,
     data <- as.data.frame(data[, parents, with=FALSE])
   }
 
-  eta <- intercept + rowSums(mapply("*", data, betas))
+  eta <- calc_linpred(data=data, betas=betas, intercept=intercept)
 
   if (link=="log") {
     eta <- exp(eta)

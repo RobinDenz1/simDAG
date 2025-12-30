@@ -1,10 +1,14 @@
 
 test_that("works with function input", {
+  test_fun <- function(a, b, c) {
+    return(a + b^c)
+  }
+
   expect_true(supports_mixed_terms(node_gaussian))
   expect_true(supports_mixed_terms(node_binomial))
   expect_true(supports_mixed_terms(node_poisson))
   expect_true(!supports_mixed_terms(node_negative_binomial))
-  expect_true(!supports_mixed_terms(substr))
+  expect_true(!supports_mixed_terms(test_fun))
 })
 
 test_that("works with string input", {

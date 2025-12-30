@@ -1,21 +1,21 @@
 
 ###### Bugs & TODOS ######
 
-	- add "unif" argument to node_competing_events()
 	- in sim_discrete_event(), if multiple events happen at the same time, target_event functionality does not work
 
 ####### New Features: #######
 
 node_time_to_event:
-	- add support for formula (interpreted as logistic model) to make some
+	- add support for formula (interpreted as binomial model) to make some
 	  model formulations more convenient
 
 sim_discrete_time:
 	- maybe include t = 0 in output (or an option for it)?
 
 sim_discrete_event:
-	- allow formula
 	- add remove_not_at_risk argument
+
+node_next_time:
 	- allow internal other distr_fun (cox, aft models, ...)
 	- maybe allow "delays"?
 
@@ -27,11 +27,15 @@ sim_from_dag:
 dag_from_data:
 	- should allow multinomial
 	- should allow formula input with interactions / non-linear terms etc.
+	- should allow time-dependent nodes
+		-> if time-dependent nodes are allowed, it could be used to apply the parametric g-formula
+		-> write vignette about that
 
 node_competing_events:
 	- allow vector input in immunity_duration: this would require me to augment
 	  the probability matrix, because then other events would still be possible
 	- allow stuff like time_since_last / event_count
+	- add unif argument as in node_time_to_event()
 	
 sim2start_stop:
 	- add support for competing event nodes

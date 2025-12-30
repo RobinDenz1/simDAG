@@ -121,6 +121,22 @@ head(sim, 9)
 
 As can be seen, the treatment keeps switching between `TRUE` and `FALSE` until the `death` is eventually reached. If we increased `n_sim` and fit a Cox proportional hazards regression model with the time-to `death` as the endpoint and the `treatment` as covariate, we would be able to recover the 0.8 as the hazard ratio for the treatment. The same strategy could of course be used for any amount of time-varying variables.
 
+Above, we used the `prob_fun` argument to specify the probabilities, so that the connection to the `sim_discrete_time()` approach is more clear. Alternatively, we could also use the much more convenient `formula` interface:
+
+```{r}
+dag <- empty_dag() +
+  node_td("treatment", type="next_time", prob_fun=0.01,
+          event_duration=100) +
+  node_td("death", type="next_time",
+          formula= ~ log(0.001) + log(0.8)*treatment, link="log",
+          event_duration=Inf)
+
+sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
+                          target_event="death")
+```
+
+Here, we simply specified the log-binomial model as one would when specifying a simple binomial regression model (see `?node_binomial`). Note that although the results are theoretically equivalent when the same seed is used, they are not identical in practice, due to small floating point errors. This should not be an issue in practice.
+
 # Some things to consider
 
 ## Time-Dependent probabilities and effects
@@ -163,10 +179,6 @@ By default, the time until the next event is drawn from a (truncated) exponentia
 For example, consider the following code:
 
 ```{r}
-prob_death <- function(data) {
-  0.001 * 0.8^(data$treatment)
-}
-
 integer_rtexp <- function(n, rate, l) {
   ceiling(rtexp(n=n, rate=rate, l=l))
 }
@@ -174,7 +186,8 @@ integer_rtexp <- function(n, rate, l) {
 dag <- empty_dag() +
   node_td("treatment", type="next_time", prob_fun=0.01,
           event_duration=100, distr_fun=integer_rtexp) +
-  node_td("death", type="next_time", prob_fun=prob_death,
+  node_td("death", type="next_time",
+          formula= ~ log(0.001) + log(0.8)*treatment, link="log",
           event_duration=Inf, distr_fun=integer_rtexp)
 
 sim <- sim_discrete_event(dag, n_sim=1000, remove_if=death==TRUE,

@@ -8,9 +8,6 @@ check_intercept <- function(intercept) {
          call.=FALSE)
   } else if (length(intercept) == 0) {
     stop("No intercept found in supplied 'formula'.", call.=FALSE)
-  } else if (is.na(as.numeric(intercept))) {
-    stop("Intercept supplied in 'formula' is not a number. ",
-         "Supplied intercept: ", intercept, call.=FALSE)
   }
 }
 
@@ -65,7 +62,7 @@ str2numeric <- function(string) {
            USE.NAMES=FALSE)},
     error=function(e){
       stop("One or more of the supplied beta coefficients ",
-           "in 'formula' are not numbers.", call.=FALSE)}
+           "in 'formula' or the intercept are not numbers.", call.=FALSE)}
   )
   return(out)
 }
@@ -127,6 +124,7 @@ parse_formula <- function(formula, node_type) {
   } else {
     intercept <- formvec[!has_star]
     check_intercept(intercept)
+    intercept <- str2numeric(intercept)
   }
 
   # split rest further by variable / value pairs
@@ -386,7 +384,7 @@ get_interaction_term_for_formula <- function(parts, data, d_combs) {
 ## check if two objects are the same
 ## this is essentially equivalent to the new version of isTRUE(all.equal())
 is_same_object <- function(fun1, fun2) {
-  out <- all.equal(fun1, fun2)
+  out <- base::all.equal(fun1, fun2)
   return(is.logical(out) && length(out)==1 && !is.na(out) && out)
 }
 

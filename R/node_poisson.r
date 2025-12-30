@@ -23,7 +23,7 @@ node_poisson <- function(data, parents, formula=NULL, betas, intercept,
     data <- as.data.frame(data[, parents, with=FALSE])
   }
 
-  mu <- intercept + rowSums(mapply("*", data, betas))
+  mu <- calc_linpred(data=data, betas=betas, intercept=intercept)
 
   if (link=="log") {
     mu <- exp(mu)

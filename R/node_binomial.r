@@ -23,8 +23,7 @@ node_binomial <- function(data, parents, formula=NULL, betas, intercept,
       data <- as.data.frame(data[, parents, with=FALSE])
     }
 
-    prob <- intercept +
-      rowSums(mapply("*", data, betas))
+    prob <- calc_linpred(data=data, betas=betas, intercept=intercept)
 
     # apply link function if needed
     if (link=="logit") {
@@ -37,6 +36,10 @@ node_binomial <- function(data, parents, formula=NULL, betas, intercept,
       prob <- stats::pcauchy(prob)
     } else if (link=="cloglog") {
       prob <- 1 - exp(-exp(prob))
+    }
+
+    if (return_prob) {
+      return(prob)
     }
 
     out <- rbernoulli(n=nrow(data), p=prob)
@@ -57,9 +60,5 @@ node_binomial <- function(data, parents, formula=NULL, betas, intercept,
     out <- as.numeric(out)
   }
 
-  if (return_prob & is.null(var_corr)) {
-    return(prob)
-  } else {
-    return(out)
-  }
+  return(out)
 }

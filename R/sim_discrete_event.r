@@ -167,23 +167,45 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       rel_row <- data$.kind==var_names[i] &
         is.infinite(data$.time_of_next_change)
 
-      # call prob_fun with correct arguments
       args_p <- remove_node_internals(tx_nodes[[i]])
-      args_p$data <- data[rel_row==TRUE]
 
-      p_est <- tryCatch({
-        do.call(tx_nodes[[i]]$prob_fun, args=args_p)},
-        error=function(e){
-          stop("Calling 'prob_fun' failed with error message:\n", e,
-               call.=FALSE)
-        }
-      )
+      # call prob_fun with correct arguments
+      if (!is.null(tx_nodes[[i]]$prob_fun)) {
+        args_p$data <- data[rel_row==TRUE]
+
+        p_est <- tryCatch({
+          do.call(tx_nodes[[i]]$prob_fun, args=args_p)},
+          error=function(e){
+            stop("Calling 'prob_fun' failed with error message:\n", e,
+                 call.=FALSE)
+          }
+        )
+      # use formula instead otherwise
+      } else if (!is.null(tx_nodes[[i]]$formula)) {
+        args_p <- args_from_formula(args=args_p, formula=tx_nodes[[i]]$formula,
+                                    node_type="binomial")
+        args_p$return_prob <- TRUE
+
+        args_p$data <- tryCatch({
+          data_for_formula(data=data[rel_row==TRUE], args=args_p,
+                           networks=list())},
+          error=function(e){
+            stop("An error occured when interpreting the formula of node '",
+                 tx_nodes[[i]]$name, "'. The message was:\n", e,
+                 call.=FALSE)
+          }
+        )
+        p_est <- do.call(node_binomial, args=args_p)
+      } else {
+        stop("Either 'prob_fun' or 'formula' need to be specified when",
+             " using nodes of type='next_time'.", call.=FALSE)
+      }
 
       # draw time until next event from truncated distribution
       args_dist <- tx_nodes[[i]]$distr_fun_args
       args_dist$n <- sum(rel_row)
       args_dist$rate <- p_est
-      args_dist$l <- args_p$data$.trunc_time
+      args_dist$l <- data[rel_row==TRUE]$.trunc_time
 
       distr_fun_out <- tryCatch({
         do.call(tx_nodes[[i]]$distr_fun, args=args_dist)},
@@ -313,7 +335,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 #       sim_discrete_event() function does it all internally, but it
 #       needs to be defined anyways so it is correctly processed in node()
 #' @export
-node_next_time <- function(data, prob_fun, ..., distr_fun=rtexp,
+node_next_time <- function(data, formula, prob_fun, ..., distr_fun=rtexp,
                            distr_fun_args=list(), event_duration=Inf,
                            immunity_duration=event_duration,
                            event_count=FALSE) {
@@ -368,6 +390,10 @@ prepare_next_time_nodes <- function(nodes) {
       nodes[[i]]$prob_fun <- pass_value
     }
 
+    # prepare formula
+    if (!is.null(nodes[[i]]$formula)) {
+      nodes[[i]]$formula <- sanitize_formula(nodes[[i]]$formula)
+    }
   }
   return(nodes)
 }

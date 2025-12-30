@@ -47,8 +47,8 @@ test_that("with a missing intercept", {
 test_that("intercept not a number", {
   formula <- "~ Alpha + A*2 + B*3 + C*3"
   expect_error(suppressWarnings(parse_formula(formula, node_type="gaussian")),
-               paste0("Intercept supplied in 'formula' is not a number. ",
-                      "Supplied intercept: Alpha"))
+               paste0("One or more of the supplied beta coefficients ",
+                      "in 'formula' or the intercept are not numbers."))
 })
 
 test_that("with a missing coefficient", {
@@ -71,7 +71,7 @@ test_that("beta not a number", {
   formula <- "~ 5 + A*C + B*3 + C*3"
   expect_error(suppressWarnings(parse_formula(formula, node_type="gaussian")),
                paste0("One or more of the supplied beta coefficients ",
-                      "in 'formula' are not numbers."))
+                      "in 'formula' or the intercept are not numbers."))
 })
 
 test_that("allows functions of numbers", {

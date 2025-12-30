@@ -180,9 +180,10 @@ test_that("event_duration working", {
   # all 1000 (or Inf if stop > max_t) in X1
   sim[, grp := rleid(.id, X1)]
   res_X1 <- sim[X1 == TRUE,
-                 .(event_start = first(start),
-                   event_stop  = last(stop),
-                   duration    = last(stop) - first(start)),
+                 .(event_start = data.table::first(start),
+                   event_stop  = data.table::last(stop),
+                   duration    = data.table::last(stop) -
+                     data.table::first(start)),
                  by = .(.id, grp)
   ][, grp := NULL]
 
@@ -192,9 +193,10 @@ test_that("event_duration working", {
   # all 700 (or Inf if stop > max_t) in X2
   sim[, grp := data.table::rleid(.id, X2)]
   res_X2 <- sim[X2 == TRUE,
-                .(event_start = first(start),
-                  event_stop  = last(stop),
-                  duration    = last(stop) - first(start)),
+                .(event_start = data.table::first(start),
+                  event_stop  = data.table::last(stop),
+                  duration    = data.table::last(stop) -
+                    data.table::first(start)),
                 by = .(.id, grp)
   ][, grp := NULL]
 
@@ -230,9 +232,10 @@ test_that("immunity_duration working", {
   # all event-less times are at least 740 in X1
   sim[, grp := rleid(.id, X1)]
   res_X1 <- sim[X1 == FALSE ,
-                .(event_start = first(start),
-                  event_stop  = last(stop),
-                  duration    = last(stop) - first(start)),
+                .(event_start = data.table::first(start),
+                  event_stop  = data.table::last(stop),
+                  duration    = data.table::last(stop) -
+                    data.table::first(start)),
                 by = .(.id, grp)
   ][, grp := NULL]
   res_X1[, is_first_row := seq_len(.N)==1, by=.id]
@@ -243,9 +246,10 @@ test_that("immunity_duration working", {
   # all event-less times (or Inf if stop > max_t) in X2
   sim[, grp := rleid(.id, X2)]
   res_X2 <- sim[X2 == FALSE ,
-                .(event_start = first(start),
-                  event_stop  = last(stop),
-                  duration    = last(stop) - first(start)),
+                .(event_start = data.table::first(start),
+                  event_stop  = data.table::last(stop),
+                  duration    = data.table::last(stop) -
+                    data.table::first(start)),
                 by = .(.id, grp)
   ][, grp := NULL]
   res_X2[, is_first_row := seq_len(.N)==1, by=.id]
@@ -456,45 +460,6 @@ test_that("node_next_time returns NULL", {
   expect_null(node_next_time())
 })
 
-test_that("warning if max_loops reached", {
-
-  set.seed(356345)
-
-  dag <- empty_dag() +
-    node_td("A", type="next_time", prob_fun=0.01, event_duration=10)
-
-  expect_warning(sim_discrete_event(dag, n_sim=100, max_loops=10))
-})
-
-test_that("error with no dag", {
-  expect_error(sim_discrete_event(dag=1, n_sim=100, max_t=Inf))
-})
-
-test_that("helpful error if prob_fun fails", {
-
-  test_fun <- function(data) {
-    stop("This is an error")
-  }
-
-  dag <- empty_dag() +
-    node_td("Y", type="next_time", prob_fun=test_fun, event_duration=Inf)
-
-  expect_error(sim_discrete_event(dag, n_sim=10))
-})
-
-test_that("helpful error if distr_fun fails", {
-
-  test_fun <- function(n, rate, l) {
-    stop("This is an error")
-  }
-
-  dag <- empty_dag() +
-    node_td("Y", type="next_time", prob_fun=0.01, event_duration=Inf,
-            distr_fun=test_fun)
-
-  expect_error(sim_discrete_event(dag, n_sim=10))
-})
-
 test_that("using event_count=TRUE is same as .event_count in same node", {
 
   prob_X2 <- function(data, kind) {
@@ -552,6 +517,139 @@ test_that("using event_count=TRUE is same as .event_count in same node", {
 
   sim1[, Y_event_count := NULL]
   expect_equal(sim1, sim2)
+})
+
+test_that("equal formula and prob_fun give equivalent results", {
+
+  # NOTE: rounding is used here, because otherwise the results are not
+  #       *exactly* the same due to floating point errors
+  round_rtexp <- function(n, rate, l) {
+    ceiling(rtexp(n=n, rate=rate, l=l))
+  }
+
+  # using prob_fun
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
+            distr_fun=round_rtexp) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001,
+            distr_fun=round_rtexp) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            distr_fun=round_rtexp) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7,
+            distr_fun=round_rtexp)
+
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, allow_ties=TRUE)
+
+  # using formula
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
+            distr_fun=round_rtexp) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001,
+            distr_fun=round_rtexp) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
+            distr_fun=round_rtexp) +
+    node_td("Y", type="next_time",
+            formula= ~ log(0.001) + A*log(0.8) + X1*log(1.5) + X2*log(2) +
+              X3*log(0.7), link="log", distr_fun=round_rtexp)
+
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, allow_ties=TRUE)
+
+  expect_equal(sim1, sim2)
+})
+
+test_that("different links with formula work", {
+
+  # log link
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time",
+            formula= ~ log(0.001) + A*log(0.8) + X1*log(1.5) + X2*log(2) +
+              X3*log(0.7), link="log")
+
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  # logit link
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time",
+            formula= ~ log(0.001) + A*log(0.8) + X1*log(1.5) + X2*log(2) +
+              X3*log(0.7), link="logit")
+
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  expect_true(!all(sim1$start==sim2$start))
+})
+
+test_that("formula works with remove_if", {
+
+  set.seed(134)
+
+  dag <- empty_dag() +
+    node_td("treatment", type="next_time", prob_fun=0.01,
+            event_duration=100) +
+    node_td("death", type="next_time",
+            formula= ~ log(0.001) + log(0.8)*treatment, link="log",
+            event_duration=Inf)
+
+  sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
+                            target_event="death")
+  expect_equal(nrow(sim), 98)
+})
+
+test_that("warning if max_loops reached", {
+
+  set.seed(356345)
+
+  dag <- empty_dag() +
+    node_td("A", type="next_time", prob_fun=0.01, event_duration=10)
+
+  expect_warning(sim_discrete_event(dag, n_sim=100, max_loops=10))
+})
+
+test_that("error with no dag", {
+  expect_error(sim_discrete_event(dag=1, n_sim=100, max_t=Inf))
+})
+
+test_that("helpful error if prob_fun fails", {
+
+  test_fun <- function(data) {
+    stop("This is an error")
+  }
+
+  dag <- empty_dag() +
+    node_td("Y", type="next_time", prob_fun=test_fun, event_duration=Inf)
+
+  expect_error(sim_discrete_event(dag, n_sim=10))
+})
+
+test_that("helpful error if distr_fun fails", {
+
+  test_fun <- function(n, rate, l) {
+    stop("This is an error")
+  }
+
+  dag <- empty_dag() +
+    node_td("Y", type="next_time", prob_fun=0.01, event_duration=Inf,
+            distr_fun=test_fun)
+
+  expect_error(sim_discrete_event(dag, n_sim=10))
 })
 
 test_that("warning with networks in DAG and remove_if", {
