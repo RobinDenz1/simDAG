@@ -362,6 +362,27 @@ proportional hazards regression model with the time-to
 covariate, we would be able to recover the 0.8 as the hazard ratio for
 the treatment. The same strategy could of course be used for any amount
 of time-varying variables.</p>
+<p>Above, we used the <code>prob_fun</code> argument to specify the
+probabilities, so that the connection to the
+<code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> approach is more clear. Alternatively,
+we could also use the much more convenient <code>formula</code>
+interface:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"treatment"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="fl">100</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>,</span>
+<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">*</span><span class="va">treatment</span>, link<span class="op">=</span><span class="st">"log"</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we simply specified the log-binomial model as one would when
+specifying a simple binomial regression model (see
+<code><a href="../reference/node_binomial.html">?node_binomial</a></code>). Note that although the results are
+theoretically equivalent when the same seed is used, they are not
+identical in practice, due to small floating point errors. This should
+not be an issue in practice.</p>
 </div>
 <div class="section level2">
 <h2 id="some-things-to-consider">Some things to consider<a class="anchor" aria-label="anchor" href="#some-things-to-consider"></a>
@@ -378,7 +399,7 @@ to the next event should be re-drawn. By additionally making the
 probability function supplied to a time-dependent node time-specific, we
 can then use a piecewise-constant probability instead. Consider the
 following code:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="va">base_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">.time</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span><span class="op">)</span></span>
@@ -396,14 +417,14 @@ following code:</p>
 <span>                          target_event<span class="op">=</span><span class="st">"death"</span>, redraw_at_t<span class="op">=</span><span class="fl">300</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
-<span><span class="co">#&gt;      .id    start     stop treatment  death</span></span>
-<span><span class="co">#&gt;    &lt;int&gt;    &lt;num&gt;    &lt;num&gt;    &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1   0.0000 218.7493     FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:     1 218.7493 300.0000      TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 3:     1 300.0000 318.7493      TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 4:     1 318.7493 329.5813     FALSE   TRUE</span></span>
-<span><span class="co">#&gt; 5:     2   0.0000 224.3341     FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 6:     2 224.3341 231.5720      TRUE   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt;      .id     start      stop treatment  death</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;     &lt;num&gt;     &lt;num&gt;    &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     1   0.00000  32.13286     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1  32.13286 132.13286      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 3:     1 132.13286 300.00000     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1 300.00000 440.08265     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 5:     1 440.08265 540.08265      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1 540.08265 648.71324     FALSE  FALSE</span></span></code></pre></div>
 <p>In this code, the baseline probability is 0.001 until
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>300</mn></mrow><annotation encoding="application/x-tex">t = 300</annotation></semantics></math>
 and then increases to 0.005. It is not sufficient to only define the
@@ -464,19 +485,16 @@ computations to be a lot faster. If, however, the user supplies a custom
 function that generates integer based times, this argument needs to be
 set to <code>TRUE</code> (otherwise an error will be returned).</p>
 <p>For example, consider the following code:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fl">0.001</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">^</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">treatment</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">integer_rtexp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">rate</span>, <span class="va">l</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">integer_rtexp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">rate</span>, <span class="va">l</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="../reference/rtexp.html">rtexp</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>, rate<span class="op">=</span><span class="va">rate</span>, l<span class="op">=</span><span class="va">l</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"treatment"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
 <span>          event_duration<span class="op">=</span><span class="fl">100</span>, distr_fun<span class="op">=</span><span class="va">integer_rtexp</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="va">prob_death</span>,</span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>,</span>
+<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">*</span><span class="va">treatment</span>, link<span class="op">=</span><span class="st">"log"</span>,</span>
 <span>          event_duration<span class="op">=</span><span class="cn">Inf</span>, distr_fun<span class="op">=</span><span class="va">integer_rtexp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>

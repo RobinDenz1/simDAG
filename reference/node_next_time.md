@@ -10,8 +10,9 @@ details.
 ## Usage
 
 ``` r
-node_next_time(data, prob_fun, ..., distr_fun=rtexp,
-               distr_fun_args=list(), event_duration=Inf,
+node_next_time(data, formula, prob_fun, ...,
+               distr_fun=rtexp, distr_fun_args=list(),
+               event_duration=Inf,
                immunity_duration=event_duration,
                event_count=FALSE)
 ```
@@ -22,6 +23,19 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
 
   A `data.table` containing all columns specified by `parents`. Similar
   objects such as `data.frame`s are not supported.
+
+- formula:
+
+  An optional `formula` that may be used to define the probability that
+  will be passed to `distr_fun` using a binomial regression model. If
+  supplied, the
+  [`node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)
+  function will be called internally with `return_prob=TRUE`
+  (calculating only the probability as estimated using the model). See
+  [`?node`](https://robindenz1.github.io/simDAG/reference/node.md) or
+  the associated vignette for more information about how a `formula`
+  should be defined in this package. This argument is ignored if
+  `prob_fun` is specified.
 
 - prob_fun:
 
@@ -34,12 +48,17 @@ node_next_time(data, prob_fun, ..., distr_fun=rtexp,
   time unit. Any function may be used, as long as it has a named
   argument called `data`. Alternatively this argument can be set to a
   single number, resulting in a fixed summary score being used for every
-  simulated individual at every point in time.
+  simulated individual at every point in time. The `formula` argument
+  may be used as a convenient alternative if users want to specify a
+  binomial regression model.
 
 - ...:
 
-  An arbitrary amount of additional named arguments passed to
-  `prob_fun`. Ignore this if you do not want to pass any arguments. Also
+  An arbitrary amount of additional named arguments passed to `prob_fun`
+  if `prob_fun` is specified. If `formula` is specified and `prob_fun`
+  is not, these additional arguments are passed directly to the
+  [`node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)
+  function. Ignore this if you do not want to pass any arguments. Also
   ignored if `prob_fun` is a single number.
 
 - distr_fun:

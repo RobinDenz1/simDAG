@@ -30,6 +30,24 @@ Enhancements
 - Allow function input to the `data_format` argument of the
   [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)
   function to avoid potentially weird bugs in parallel processing.
+- There was a slight change to
+  [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md),
+  which increases performance if `return_probs=TRUE` is used (avoiding a
+  needless
+  [`rbernoulli()`](https://robindenz1.github.io/simDAG/reference/rbernoulli.md)
+  call). The results of simulations with a `DAG` containing a node with
+  both `type="binomial"` and `return_probs=TRUE` might therefore differ
+  on the same random number generator seed as compared to previous
+  versions.
+
+Bug Fixes
+
+- Fixed a bug where using `n_sim=1` in
+  [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
+  lead to a false error with some child node types.
+- Function calls on the `intercept` part of enhanced `formula`s are now
+  supported correctly. Previously, `formula`s like `~ log(0.1) + 2\*A`
+  would have resulted in a false error.
 
 Documentation
 

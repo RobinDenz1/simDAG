@@ -274,6 +274,31 @@ the endpoint and the `treatment` as covariate, we would be able to
 recover the 0.8 as the hazard ratio for the treatment. The same strategy
 could of course be used for any amount of time-varying variables.
 
+Above, we used the `prob_fun` argument to specify the probabilities, so
+that the connection to the
+[`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+approach is more clear. Alternatively, we could also use the much more
+convenient `formula` interface:
+
+``` r
+dag <- empty_dag() +
+  node_td("treatment", type="next_time", prob_fun=0.01,
+          event_duration=100) +
+  node_td("death", type="next_time",
+          formula= ~ log(0.001) + log(0.8)*treatment, link="log",
+          event_duration=Inf)
+
+sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
+                          target_event="death")
+```
+
+Here, we simply specified the log-binomial model as one would when
+specifying a simple binomial regression model (see
+[`?node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)).
+Note that although the results are theoretically equivalent when the
+same seed is used, they are not identical in practice, due to small
+floating point errors. This should not be an issue in practice.
+
 ## Some things to consider
 
 ### Time-Dependent probabilities and effects
@@ -306,14 +331,14 @@ sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
                           target_event="death", redraw_at_t=300)
 head(sim)
 #> Key: <.id, start>
-#>      .id    start     stop treatment  death
-#>    <int>    <num>    <num>    <lgcl> <lgcl>
-#> 1:     1   0.0000 218.7493     FALSE  FALSE
-#> 2:     1 218.7493 300.0000      TRUE  FALSE
-#> 3:     1 300.0000 318.7493      TRUE  FALSE
-#> 4:     1 318.7493 329.5813     FALSE   TRUE
-#> 5:     2   0.0000 224.3341     FALSE  FALSE
-#> 6:     2 224.3341 231.5720      TRUE   TRUE
+#>      .id     start      stop treatment  death
+#>    <int>     <num>     <num>    <lgcl> <lgcl>
+#> 1:     1   0.00000  32.13286     FALSE  FALSE
+#> 2:     1  32.13286 132.13286      TRUE  FALSE
+#> 3:     1 132.13286 300.00000     FALSE  FALSE
+#> 4:     1 300.00000 440.08265     FALSE  FALSE
+#> 5:     1 440.08265 540.08265      TRUE  FALSE
+#> 6:     1 540.08265 648.71324     FALSE  FALSE
 ```
 
 In this code, the baseline probability is 0.001 until $t = 300$ and then
@@ -376,10 +401,6 @@ an error will be returned).
 For example, consider the following code:
 
 ``` r
-prob_death <- function(data) {
-  0.001 * 0.8^(data$treatment)
-}
-
 integer_rtexp <- function(n, rate, l) {
   ceiling(rtexp(n=n, rate=rate, l=l))
 }
@@ -387,7 +408,8 @@ integer_rtexp <- function(n, rate, l) {
 dag <- empty_dag() +
   node_td("treatment", type="next_time", prob_fun=0.01,
           event_duration=100, distr_fun=integer_rtexp) +
-  node_td("death", type="next_time", prob_fun=prob_death,
+  node_td("death", type="next_time",
+          formula= ~ log(0.001) + log(0.8)*treatment, link="log",
           event_duration=Inf, distr_fun=integer_rtexp)
 
 sim <- sim_discrete_event(dag, n_sim=1000, remove_if=death==TRUE,
