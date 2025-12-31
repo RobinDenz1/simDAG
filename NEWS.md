@@ -16,7 +16,7 @@ Enhancements
 Bug Fixes
 
 * Fixed a bug where using `n_sim=1` in `sim_from_dag()` lead to a false error with some child node types. 
-* Function calls on the `intercept` part of enhanced `formula`s are now supported correctly. Previously, `formula`s like `~ log(0.1) + 2\*A` would have resulted in a false error.
+* Function calls on the `intercept` part of enhanced `formula`s are now supported correctly. Previously, `formula`s like `~ log(0.1) + 2*A` would have resulted in a false error.
 
 Documentation
 

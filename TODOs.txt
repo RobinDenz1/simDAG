@@ -1,7 +1,6 @@
 
 ###### Bugs & TODOS ######
 
-	- in sim_discrete_event(), if multiple events happen at the same time, target_event functionality does not work
 
 ####### New Features: #######
 
@@ -11,9 +10,6 @@ node_time_to_event:
 
 sim_discrete_time:
 	- maybe include t = 0 in output (or an option for it)?
-
-sim_discrete_event:
-	- add remove_not_at_risk argument
 
 node_next_time:
 	- allow internal other distr_fun (cox, aft models, ...)

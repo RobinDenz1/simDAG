@@ -36,7 +36,7 @@ test_that("general test case", {
   set.seed(1234)
   sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y")
 
-  expect_true(nrow(sim)==4000)
+  expect_true(nrow(sim)==5000)
   expect_true(all(d_final$sum_event==4))
   expect_true(all(sim$sum_event==sim$index))
 })
@@ -78,7 +78,7 @@ test_that("using a single number in prob_fun works", {
   sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
   expect_equal(nrow(sim), 5000)
   expect_equal(round(mean(sim$start), 3), 287.271)
-  expect_equal(round(mean(sim$stop, na.rm=TRUE), 3), 359.089)
+  expect_equal(round(mean(sim[is.finite(stop)]$stop), 3), 359.089)
 })
 
 test_that("unrelated variables are equal to rtexp()", {
@@ -276,7 +276,7 @@ test_that("supplying t0_data", {
     node_td("Y", type="next_time", prob_fun=0.01)
 
   sim <- sim_discrete_event(dag, t0_data=copy(t0_data), max_t=Inf)
-  sim <- subset(sim, !is.na(stop))
+  sim <- subset(sim, is.finite(stop))
   expect_equal(sim$A, t0_data$A)
 
   # warning if n_sim is specified anyways
@@ -371,17 +371,16 @@ test_that("target_event and censor_at_max_t", {
     node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
             rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
 
-  # without keep_only_first, only NA changes to Inf
+  # without keep_only_first, nothing changes
   set.seed(1234)
   sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y")
 
   set.seed(1234)
   sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
                              censor_at_max_t=TRUE)
-  sim1[is.na(stop), stop := Inf]
   expect_equal(sim1, sim2)
 
-  # with keep_only_first, there is no difference at all
+  # with keep_only_first, there is no difference at all either
   set.seed(1234)
   sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
                              keep_only_first=TRUE)
@@ -390,6 +389,66 @@ test_that("target_event and censor_at_max_t", {
   sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
                              censor_at_max_t=TRUE, keep_only_first=TRUE)
   expect_equal(sim1, sim2)
+})
+
+test_that("target_event functionality working", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7)
+
+  set.seed(123454)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y")
+
+  # event is never in the last row
+  sim1[, count := seq_len(.N), by=.id]
+  last_row <- sim1[count==5]
+
+  expect_true(!any(last_row$Y))
+
+  # with keep_only_first, event is always in the last row
+  set.seed(123454)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
+                             keep_only_first=TRUE)
+
+  sim1[, count := seq_len(.N), by=.id]
+  last_row <- sim1[count==5]
+
+  expect_true(all(last_row$Y))
+
+  # removing not at risk leads to the same results as keep_only_first
+  # since immunity_duration = Inf
+  set.seed(123454)
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf, target_event="Y",
+                             remove_not_at_risk=TRUE)
+
+  sim1[, count := NULL]
+  expect_equal(sim1, sim2)
+
+  # no longer the same with recurring event
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time", prob_fun=prob_Y, base_p=0.001,
+            rr_A=0.8, rr_X1=1.5, rr_X2=2, rr_X3=0.7,
+            event_duration=100, immunity_duration=500)
+
+  set.seed(123454)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=2000, target_event="Y",
+                             keep_only_first=TRUE)
+
+  set.seed(123454)
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=2000, target_event="Y",
+                             remove_not_at_risk=TRUE)
+
+  expect_equal(nrow(sim1), 3394)
+  expect_equal(nrow(sim2), 6182)
 })
 
 test_that("break_if working", {
@@ -610,7 +669,7 @@ test_that("formula works with remove_if", {
 
   sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
                             target_event="death")
-  expect_equal(nrow(sim), 98)
+  expect_equal(nrow(sim), 108)
 })
 
 test_that("warning if max_loops reached", {

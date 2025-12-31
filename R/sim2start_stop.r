@@ -342,7 +342,8 @@ merge_nested_lists <- function(nested_list) {
 
 ## given a node list, returns the used event_duration or immunity_duration
 ## if not specified by user, returns default value
-get_event_duration <- function(node, type="event_duration") {
+get_event_duration <- function(node, type="event_duration",
+                               fun=node_time_to_event) {
 
   in_node <- node[[type]]
 
@@ -351,7 +352,7 @@ get_event_duration <- function(node, type="event_duration") {
   }
 
   if (is.null(in_node)) {
-    dur <- formals(node_time_to_event)[["event_duration"]]
+    dur <- formals(fun)[["event_duration"]]
   } else {
     dur <- in_node
   }

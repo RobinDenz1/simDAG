@@ -15,6 +15,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    max_loops=1000, redraw_at_t=NULL,
                    allow_ties=FALSE, censor_at_max_t=FALSE,
                    target_event=NULL, keep_only_first=FALSE,
+                   remove_not_at_risk=FALSE,
                    include_event_counts=TRUE,
                    check_inputs=TRUE)
 }
@@ -63,6 +64,9 @@ By default (keeping this argument at \code{FALSE}) all time-varying nodes are tr
   }
   \item{keep_only_first}{
 Only used when \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, all information after the first event per person will be discarded. Useful when \code{target_event} should be treated as a terminal variable.
+  }
+  \item{remove_not_at_risk}{
+Only used when \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, all information after an event that is recorded during the \code{immunity_duration} of an event (e.g. when the person is not at-risk for another event) is removed from the start-stop data. This may be needed when the goal is to fit time-to-event models to the data in some situations.
   }
   \item{include_event_counts}{
 Either \code{TRUE} or \code{FALSE}, specifying whether event counts of time-dependent nodes in which \code{event_count=TRUE} was used should be included in the output or not.

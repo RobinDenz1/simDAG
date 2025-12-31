@@ -22,6 +22,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                max_loops=1000, redraw_at_t=NULL,
                                allow_ties=FALSE, censor_at_max_t=FALSE,
                                target_event=NULL, keep_only_first=FALSE,
+                               remove_not_at_risk=FALSE,
                                include_event_counts=TRUE, check_inputs=TRUE) {
 
   # silence devtools check() warnings
@@ -295,7 +296,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   setkey(d_start_stop, .id, .time)
 
   setnames(d_start_stop, old=".time", new="start")
-  d_start_stop[, stop := shift(start, n=-1, fill=NA), by=.id]
+  d_start_stop[, stop := shift(start, n=-1, fill=Inf), by=.id]
 
   # re-order columns
   cnames <- cnames[!cnames %in% c(".id", ".time")]
@@ -312,14 +313,29 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   # potentially censor at max_t
   if (censor_at_max_t) {
     d_start_stop <- d_start_stop[start < max_t]
-    d_start_stop[stop > max_t | is.na(stop), stop := max_t]
+    d_start_stop[stop > max_t, stop := max_t]
   }
 
   # transform it to be event centric, if specified
   if (!is.null(target_event)) {
-    d_start_stop <- collapse_for_target_event(data=d_start_stop,
-                                              target_event=target_event,
-                                              keep_only_first=keep_only_first)
+    set_event_centric(data=d_start_stop, target_event=target_event)
+
+    # remove everything after first event, if specified
+    if (keep_only_first) {
+      d_start_stop <- keep_only_first_event(data=d_start_stop,
+                                            target_event=target_event)
+    # remove times not at risk, if specified
+    } else if (remove_not_at_risk) {
+      target_immunity <-
+        get_event_duration(node=tx_nodes[var_names==target_event][[1]],
+                           fun=node_next_time,
+                           type="immunity_duration")
+
+      d_start_stop <- remove_not_at_risk(data=d_start_stop,
+                                         duration=target_immunity,
+                                         target_event=target_event,
+                                         overlap=FALSE, continuous=TRUE)
+    }
   }
 
   # fill NA values in event counts
@@ -477,5 +493,25 @@ set_cols_to_value <- function(data, .value, type, var_names, allow_ties,
       data[, .change := NULL]
     }
   }
+  return(data)
+}
+
+## makes all intervals "event-centric" as needed for time-to-event models
+set_event_centric <- function(data, target_event) {
+  .id <- NULL
+  data[, (target_event) := get(target_event)==FALSE &
+         shift(get(target_event), n=-1, fill=FALSE)==TRUE, by=.id]
+}
+
+## removes all rows after first event, assuming that data is already
+## "event-centric"
+keep_only_first_event <- function(data, target_event) {
+
+  .event_count <- .id <- NULL
+
+  data[, .event_count := shift(cumsum(get(target_event)), n=1, fill=0), by=.id]
+  data <- data[.event_count==0]
+  data[, .event_count := NULL]
+
   return(data)
 }

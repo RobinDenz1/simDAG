@@ -18,7 +18,6 @@ collapse_for_target_event <- function(data, target_event,
   . <- .time <- .id <- start <- stop <- NULL
 
   data <- copy(data)
-  max_t <- max(data$stop)
 
   # get indicator whether the current row is equal to the next row,
   # including all columns of interest - minus target_event
@@ -69,13 +68,14 @@ check_next_row_equal <- function(x) {
 #' @importFrom data.table fifelse
 #' @importFrom data.table shift
 #' @importFrom data.table :=
-remove_not_at_risk <- function(data, duration, target_event, overlap) {
+remove_not_at_risk <- function(data, duration, target_event, overlap,
+                               continuous=FALSE) {
 
   .last_event <- .id <- .start_in_event <- .stop_in_event <- start <- NULL
 
   # if overlapping ones are supplied, simply re-transform to non-overlapping
   # start-stop format, perform the transformation and re-add the + 1
-  if (overlap) {
+  if (overlap & !continuous) {
     data[, stop := stop - 1]
   }
 
@@ -83,15 +83,31 @@ remove_not_at_risk <- function(data, duration, target_event, overlap) {
   data[, .last_event := na_locf(fifelse(eval(parse(text=target_event))==TRUE,
                                              stop, NA)), by=.id]
   data[, .last_event := shift(.last_event, n=1), by=.id]
-  data[is.na(.last_event), .last_event := .Machine$integer.max]
+
+  if (continuous) {
+    .max_value <- Inf
+  } else {
+    .max_value <- .Machine$integer.max
+  }
+  data[is.na(.last_event), .last_event := .max_value]
 
   # check if start is during an event
-  data[, .start_in_event := start > .last_event &
-         start < (.last_event + duration)]
+  if (continuous) {
+    data[, .stop_in_event := stop > .last_event &
+           stop <= (.last_event + duration)]
+  } else {
+    data[, .start_in_event := start > .last_event &
+           start < (.last_event + duration)]
+  }
 
   # check if stop is during an event
-  data[, .stop_in_event := stop > .last_event &
-         stop < (.last_event + duration)]
+  if (continuous) {
+    data[, .start_in_event := start >= .last_event &
+           start < (.last_event + duration)]
+  } else {
+    data[, .stop_in_event := stop > .last_event &
+           stop < (.last_event + duration)]
+  }
 
   # remove row if it is entirely during an event
   data <- data[!(.start_in_event==TRUE & .stop_in_event==TRUE)]
@@ -99,7 +115,7 @@ remove_not_at_risk <- function(data, duration, target_event, overlap) {
   # change start if only partially in there
   data[.start_in_event==TRUE, start := .last_event + duration]
 
-  if (overlap) {
+  if (overlap & !continuous) {
     data[, stop := stop + 1]
   }
 
