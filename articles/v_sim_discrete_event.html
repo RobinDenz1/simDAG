@@ -273,14 +273,14 @@ The following code may be used to implement this:</p>
 <span><span class="va">simDES</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag_des</span>, n_sim<span class="op">=</span><span class="fl">10</span>, target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">simDES</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
-<span><span class="co">#&gt;      .id start       stop  death</span></span>
-<span><span class="co">#&gt;    &lt;int&gt; &lt;num&gt;      &lt;num&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     0 103.242570   TRUE</span></span>
-<span><span class="co">#&gt; 2:     2     0 141.148734   TRUE</span></span>
-<span><span class="co">#&gt; 3:     3     0 105.549136   TRUE</span></span>
-<span><span class="co">#&gt; 4:     4     0  92.690158   TRUE</span></span>
-<span><span class="co">#&gt; 5:     5     0   2.877996   TRUE</span></span>
-<span><span class="co">#&gt; 6:     6     0 148.742697   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt;      .id    start     stop  death</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;    &lt;num&gt;    &lt;num&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     1   0.0000 102.2426   TRUE</span></span>
+<span><span class="co">#&gt; 2:     1 102.2426      Inf  FALSE</span></span>
+<span><span class="co">#&gt; 3:     2   0.0000 140.1487   TRUE</span></span>
+<span><span class="co">#&gt; 4:     2 140.1487      Inf  FALSE</span></span>
+<span><span class="co">#&gt; 5:     3   0.0000 104.5491   TRUE</span></span>
+<span><span class="co">#&gt; 6:     3 104.5491      Inf  FALSE</span></span></code></pre></div>
 <p>There are some differences to the output of the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function. First, because we are using
 the DES approach, the time is continuous and not discrete. Secondly, the
@@ -353,7 +353,7 @@ little prettier.</p>
 <span><span class="co">#&gt; 6:     1 420.23653 520.23653      TRUE  FALSE</span></span>
 <span><span class="co">#&gt; 7:     1 520.23653 606.02564     FALSE  FALSE</span></span>
 <span><span class="co">#&gt; 8:     1 606.02564 706.02564      TRUE  FALSE</span></span>
-<span><span class="co">#&gt; 9:     1 706.02564 861.85932     FALSE   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 9:     1 706.02564 860.85932     FALSE   TRUE</span></span></code></pre></div>
 <p>As can be seen, the treatment keeps switching between
 <code>TRUE</code> and <code>FALSE</code> until the <code>death</code> is
 eventually reached. If we increased <code>n_sim</code> and fit a Cox

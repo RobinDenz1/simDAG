@@ -57,6 +57,7 @@
 <span>                   max_loops<span class="op">=</span><span class="fl">1000</span>, redraw_at_t<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>                   allow_ties<span class="op">=</span><span class="cn">FALSE</span>, censor_at_max_t<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                   target_event<span class="op">=</span><span class="cn">NULL</span>, keep_only_first<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>                   remove_not_at_risk<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>                   include_event_counts<span class="op">=</span><span class="cn">TRUE</span>,</span>
 <span>                   check_inputs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -108,6 +109,9 @@
 
   <dt id="arg-keep-only-first">keep_only_first<a class="anchor" aria-label="anchor" href="#arg-keep-only-first"></a></dt>
 <dd><p>Only used when <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, all information after the first event per person will be discarded. Useful when <code>target_event</code> should be treated as a terminal variable.</p></dd>
+
+  <dt id="arg-remove-not-at-risk">remove_not_at_risk<a class="anchor" aria-label="anchor" href="#arg-remove-not-at-risk"></a></dt>
+<dd><p>Only used when <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, all information after an event that is recorded during the <code>immunity_duration</code> of an event (e.g. when the person is not at-risk for another event) is removed from the start-stop data. This may be needed when the goal is to fit time-to-event models to the data in some situations.</p></dd>
 
   <dt id="arg-include-event-counts">include_event_counts<a class="anchor" aria-label="anchor" href="#arg-include-event-counts"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether event counts of time-dependent nodes in which <code>event_count=TRUE</code> was used should be included in the output or not.</p></dd>

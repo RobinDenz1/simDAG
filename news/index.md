@@ -46,7 +46,7 @@ Bug Fixes
   [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
   lead to a false error with some child node types.
 - Function calls on the `intercept` part of enhanced `formula`s are now
-  supported correctly. Previously, `formula`s like `~ log(0.1) + 2\*A`
+  supported correctly. Previously, `formula`s like `~ log(0.1) + 2*A`
   would have resulted in a false error.
 
 Documentation

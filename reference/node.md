@@ -59,10 +59,10 @@ node_td(name, type, parents=NULL, formula=NULL, ...)
   whenever a categorical variable is used in the formula. This argument
   is supported for build-in nodes of type `"binomial"`, `"gaussian"`,
   `"poisson"`, `"negative_binomial"`, `"cox"`, `"aftreg"`, `"ahreg"`,
-  `"ehreg"`, `"poreg"` and `"ypreg"` and for any custom node defined by
-  the user. It is also supported for nodes of type `"identity"`, but
-  slightly different input is expected in that case. See examples and
-  the associated vignette for an in-depth explanation.
+  `"ehreg"`, `"poreg"`, `"ypreg"` and `"next_time"` and for any custom
+  node defined by the user. It is also supported for nodes of type
+  `"identity"`, but slightly different input is expected in that case.
+  See examples and the associated vignette for an in-depth explanation.
 
 - ...:
 

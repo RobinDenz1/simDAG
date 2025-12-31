@@ -180,14 +180,14 @@ dag_des <- empty_dag() +
 simDES <- sim_discrete_event(dag_des, n_sim=10, target_event="death")
 head(simDES)
 #> Key: <.id, start>
-#>      .id start       stop  death
-#>    <int> <num>      <num> <lgcl>
-#> 1:     1     0 103.242570   TRUE
-#> 2:     2     0 141.148734   TRUE
-#> 3:     3     0 105.549136   TRUE
-#> 4:     4     0  92.690158   TRUE
-#> 5:     5     0   2.877996   TRUE
-#> 6:     6     0 148.742697   TRUE
+#>      .id    start     stop  death
+#>    <int>    <num>    <num> <lgcl>
+#> 1:     1   0.0000 102.2426   TRUE
+#> 2:     1 102.2426      Inf  FALSE
+#> 3:     2   0.0000 140.1487   TRUE
+#> 4:     2 140.1487      Inf  FALSE
+#> 5:     3   0.0000 104.5491   TRUE
+#> 6:     3 104.5491      Inf  FALSE
 ```
 
 There are some differences to the output of the
@@ -264,7 +264,7 @@ head(sim, 9)
 #> 6:     1 420.23653 520.23653      TRUE  FALSE
 #> 7:     1 520.23653 606.02564     FALSE  FALSE
 #> 8:     1 606.02564 706.02564      TRUE  FALSE
-#> 9:     1 706.02564 861.85932     FALSE   TRUE
+#> 9:     1 706.02564 860.85932     FALSE   TRUE
 ```
 
 As can be seen, the treatment keeps switching between `TRUE` and `FALSE`
