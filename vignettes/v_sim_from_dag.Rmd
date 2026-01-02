@@ -71,6 +71,7 @@ The `simDAG` package implements the following types of `child_nodes` directly:
 | `node_negative_binomial()` | A node based on negative binomial regression (count data) |
 | `node_zeroinfl()` | A node based on a zero-inflated poisson / negative binomial regression (count data) |
 | `node_cox()` | A node based on cox regression (time-to-event data) |
+| `node_aalen()` | A node based on an Aalen additive hazards model (time-to-event data) |
 | `node_aftreg()` | A node based on accelerated failure time regression (time-to-event data) |
 | `node_ahreg()` | A node based on accelerated hazards regression (time-to-event data) |
 | `node_ehreg()` | A node based on an extended hazards model (time-to-event data) |

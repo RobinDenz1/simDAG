@@ -6,12 +6,14 @@ New Features
 * Added the `sim_discrete_event()` function, which allows users to perform discrete-event simulations to generate complex longitudinal data in continuous time. This function is usually much faster than comparable `sim_discrete_time()` calls, although at the cost of some flexibility.
 * Added the `rtexp()` function to allow sampling from left-truncated exponential distributions.
 * Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen.
+* Added the `node_aalen()` function to allow data to be generated according to an Aalen additive hazards model with time-constant betas and baseline hazard.
 
 Enhancements
 
 * Added the `remove_if` and `break_if` arguments to the `sim_discrete_time()` function, to allow users some options that potentially make the simulation much faster.
 * Allow function input to the `data_format` argument of the `sim_n_datasets()` function to avoid potentially weird bugs in parallel processing.
 * There was a slight change to `node_binomial()`, which increases performance if `return_probs=TRUE` is used (avoiding a needless `rbernoulli()` call). The results of simulations with a `DAG` containing a node with both `type="binomial"` and `return_probs=TRUE` might therefore differ on the same random number generator seed as compared to previous versions.
+* Changed the default of `cens_dist` in `node_cox()` to `NULL`.
 
 Bug Fixes
 

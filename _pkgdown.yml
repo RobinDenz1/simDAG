@@ -64,6 +64,7 @@ reference:
       - node_identity
       - node_mixture
       - node_cox
+      - node_aalen
       - node_rsurv
     
     - title: Time-dependent nodes

@@ -15,7 +15,7 @@ sim_surv_time <- function(row, betas, dist, lambda, gamma) {
 ## a node modeled using cox-regression
 #' @export
 node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
-                     lambda, gamma, cens_dist, cens_args, name,
+                     lambda, gamma, cens_dist=NULL, cens_args, name,
                      as_two_cols=TRUE) {
 
   if (!data.table::is.data.table(data)) {

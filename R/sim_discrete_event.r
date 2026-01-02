@@ -183,7 +183,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
         )
       # use formula instead otherwise
       } else if (!is.null(tx_nodes[[i]]$formula)) {
-        args_p <- args_from_formula(args=args_p, formula=tx_nodes[[i]]$formula,
+        args_p <- args_from_formula(args=args_p,
+                                    formula=tx_nodes[[i]]$formula,
                                     node_type="binomial")
         args_p$return_prob <- TRUE
 
