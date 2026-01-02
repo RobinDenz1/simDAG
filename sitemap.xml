@@ -17,6 +17,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/add_node.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/as.dagitty.DAG.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/as.igraph.DAG.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/dag2matrix.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/dag_from_data.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/do.html</loc></url>
@@ -27,6 +28,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/net.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/network.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/reference/node_aalen.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_binomial.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_competing_events.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/node_conditional_distr.html</loc></url>

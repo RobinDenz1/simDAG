@@ -1,6 +1,6 @@
 # Changelog
 
-## simDAG 0.4.2
+## simDAG 0.5.0
 
 New Features
 
@@ -20,6 +20,14 @@ New Features
   function as a convenient wrapper around
   [`sample()`](https://rdrr.io/r/base/sample.html), as suggested by Ed
   Hagen.
+- Added the
+  [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)
+  function to allow data to be generated according to an Aalen additive
+  hazards model with time-constant betas and baseline hazard.
+- Added the
+  [`as_tidy_dagitty.DAG()`](https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.md)
+  method, which allows direct conversion of `DAG` to `tidy_dagitty`
+  objects used to create plots in the `ggdag` package.
 
 Enhancements
 
@@ -39,6 +47,9 @@ Enhancements
   both `type="binomial"` and `return_probs=TRUE` might therefore differ
   on the same random number generator seed as compared to previous
   versions.
+- Changed the default of `cens_dist` in
+  [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
+  to `NULL`.
 
 Bug Fixes
 

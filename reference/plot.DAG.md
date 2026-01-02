@@ -200,10 +200,13 @@ competitor to those packages. The functionality offered here is rather
 limited. It is designed to produce decent plots for small DAGs which are
 easy to create. If this function is not enough to create an adequate
 plot, users can use the
-[`dag2matrix`](https://robindenz1.github.io/simDAG/reference/dag2matrix.md)
-function to obtain an adjacency matrix from the `DAG` object and
-directly use this matrix and the igraph package (or similar ones) to get
-much better plots.
+[`dag2matrix`](https://robindenz1.github.io/simDAG/reference/dag2matrix.md),
+[`as.igraph.DAG`](https://robindenz1.github.io/simDAG/reference/as.igraph.DAG.md)
+or
+[`as_tidy_dagitty.DAG`](https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.md)
+functions to transform the `DAG` into other formats, which allow usage
+of much better plotting routines, such as the ones provided by the
+igraph or ggdag packages.
 
 If the `DAG` supplied to this function contains time-varying variables,
 the resulting plot may contain cycles or even bi-directional arrows,
@@ -230,7 +233,9 @@ Returns a standard `ggplot2` object.
 
 [`empty_dag`](https://robindenz1.github.io/simDAG/reference/empty_dag.md),
 [`node`](https://robindenz1.github.io/simDAG/reference/node.md),
-[`node_td`](https://robindenz1.github.io/simDAG/reference/node.md)
+[`node_td`](https://robindenz1.github.io/simDAG/reference/node.md),
+[`as.igraph.DAG`](https://robindenz1.github.io/simDAG/reference/as.igraph.DAG.md),
+[`as_tidy_dagitty.DAG`](https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.md)
 
 ## Examples
 
@@ -262,6 +267,5 @@ dag <- dag +
 
 plot(dag)
 }
-#> Loading required namespace: ggforce
 
 ```

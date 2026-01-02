@@ -190,6 +190,9 @@ convenience:
 - "[cox](https://robindenz1.github.io/simDAG/reference/node_cox.md)": A
   node based on cox-regression.
 
+- "[aalen](https://robindenz1.github.io/simDAG/reference/node_aalen.md)":
+  A node based on an Aalen additive hazards model.
+
 - "[aftreg](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)":
   A node based on an accelerated failure time model.
 

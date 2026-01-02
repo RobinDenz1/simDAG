@@ -34,8 +34,10 @@ node_next_time(data, formula, prob_fun, ...,
   (calculating only the probability as estimated using the model). See
   [`?node`](https://robindenz1.github.io/simDAG/reference/node.md) or
   the associated vignette for more information about how a `formula`
-  should be defined in this package. This argument is ignored if
-  `prob_fun` is specified.
+  should be defined in this package. Note that
+  [`net`](https://robindenz1.github.io/simDAG/reference/net.md) terms
+  are currently not supported in this node type. This argument is
+  ignored if `prob_fun` is specified.
 
 - prob_fun:
 

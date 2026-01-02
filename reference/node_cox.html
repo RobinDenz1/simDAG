@@ -51,7 +51,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_cox</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>, <span class="va">surv_dist</span>, <span class="va">lambda</span>, <span class="va">gamma</span>,</span>
-<span>         <span class="va">cens_dist</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>         cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,7 +79,7 @@
 <dd><p>A single number used as parameter defined by <code>surv_dist</code>.</p></dd>
 
   <dt id="arg-cens-dist">cens_dist<a class="anchor" aria-label="anchor" href="#arg-cens-dist"></a></dt>
-<dd><p>A single character naming the distribution function that should be used to generate the censoring times or a suitable function. For example, <code>"runif"</code> could be used to generate uniformly distributed censoring times. Set to <code>NULL</code> to get no censoring.</p></dd>
+<dd><p>A single character naming the distribution function that should be used to generate the censoring times or a suitable function. For example, <code>"runif"</code> could be used to generate uniformly distributed censoring times. Set to <code>NULL</code> to get no censoring (default).</p></dd>
 
   <dt id="arg-cens-args">cens_args<a class="anchor" aria-label="anchor" href="#arg-cens-args"></a></dt>
 <dd><p>A list of named arguments which will be passed to the function specified by the <code>cens_dist</code> argument.</p></dd>
@@ -94,7 +94,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.</p>
-<p>Unlike the other <code><a href="node.html">node</a></code> type functions, this function usually adds <strong>two</strong> columns to the resulting dataset instead of one. The first column is called <code>paste0(name, "_event")</code> and is a logical variable, where <code>TRUE</code> indicates that the event has happened and <code>FALSE</code> indicates right-censoring. The second column is named <code>paste0(name, "_time")</code> and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the <code>as_two_cols</code> argument.</p>
+<p>Unlike the other <code><a href="node.html">node</a></code> type functions, this function usually adds <strong>two</strong> columns to the resulting dataset instead of one. The first column is called <code>paste0(name, "_status")</code> and is a logical variable, where <code>TRUE</code> indicates that the event has happened and <code>FALSE</code> indicates right-censoring. The second column is named <code>paste0(name, "_time")</code> and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the <code>as_two_cols</code> argument.</p>
 <p>To simulate more complex time-to-event data, the user may need to use the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function instead.</p>
     </div>
     <div class="section level2">
@@ -107,7 +107,7 @@
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns a <code>data.table</code> of length <code>nrow(data)</code> containing two columns if <code>as_two_cols=TRUE</code> and always when <code>cens_dist</code> is specified. In this case, both columns start with the nodes <code>name</code> and end with <code>_event</code> and <code>_time</code>. The first is a logical vector, the second a numeric one. If <code>as_two_cols=FALSE</code> and <code>cens_dist</code> is <code>NULL</code>, a numeric vector is returned instead.</p>
+    <p>Returns a <code>data.table</code> of length <code>nrow(data)</code> containing two columns if <code>as_two_cols=TRUE</code> and always when <code>cens_dist</code> is specified. In this case, both columns start with the nodes <code>name</code> and end with <code>_status</code> and <code>_time</code>. The first is a logical vector, the second a numeric one. If <code>as_two_cols=FALSE</code> and <code>cens_dist</code> is <code>NULL</code>, a numeric vector is returned instead.</p>
     </div>
 
     <div class="section level2">

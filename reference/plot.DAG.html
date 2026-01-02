@@ -151,7 +151,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function uses the <span class="pkg">igraph</span> package to find a suitable layout for the plot and then uses the <span class="pkg">ggplot2</span> package in conjunction with the <code>geom_circle</code> function of the <span class="pkg">ggforce</span> package to plot the directed acyclic graph defined by a <code>DAG</code> object. Since it returns a <code>ggplot</code> object, the user may use any standard <code>ggplot2</code> syntax to augment the plot or to save it using the <code>ggsave</code> function.</p>
-<p>Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the <span class="pkg">igraph</span> package. See Pitts and Fowler (2024) for a review. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the <code><a href="dag2matrix.html">dag2matrix</a></code> function to obtain an adjacency matrix from the <code>DAG</code> object and directly use this matrix and the <span class="pkg">igraph</span> package (or similar ones) to get much better plots.</p>
+<p>Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the <span class="pkg">igraph</span> package. See Pitts and Fowler (2024) for a review. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the <code><a href="dag2matrix.html">dag2matrix</a></code>, <code><a href="as.igraph.DAG.html">as.igraph.DAG</a></code> or <code><a href="as_tidy_dagitty.DAG.html">as_tidy_dagitty.DAG</a></code> functions to transform the <code>DAG</code> into other formats, which allow usage of much better plotting routines, such as the ones provided by the <span class="pkg">igraph</span> or <span class="pkg">ggdag</span> packages.</p>
 <p>If the <code>DAG</code> supplied to this function contains time-varying variables, the resulting plot may contain cycles or even bi-directional arrows, depending on the <code>DAG</code>. The reason for that is, that the time-dimension is not shown in the plot. Note also that even though, technically, every time-varying node has itself as a parent, no arrows showing this dependence will be added to the plot.</p>
     </div>
     <div class="section level2">
@@ -168,7 +168,7 @@
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="empty_dag.html">empty_dag</a></code>, <code><a href="node.html">node</a></code>, <code><a href="node.html">node_td</a></code></p></div>
+    <div class="dont-index"><p><code><a href="empty_dag.html">empty_dag</a></code>, <code><a href="node.html">node</a></code>, <code><a href="node.html">node_td</a></code>, <code><a href="as.igraph.DAG.html">as.igraph.DAG</a></code>, <code><a href="as_tidy_dagitty.DAG.html">as_tidy_dagitty.DAG</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -200,7 +200,6 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dag</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: ggforce</span>
 <span class="r-plt img"><img src="plot.DAG-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="plot.DAG-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>

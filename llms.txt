@@ -191,6 +191,11 @@ Create, manipulate and inspect DAGs
 
   Transform a `DAG` object into a `dagitty` object
 
+- [`as_tidy_dagitty(`*`<DAG>`*`)`](https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.md)
+  :
+
+  Transform a `DAG` object into a `tidy_dagitty` object
+
 - [`do()`](https://robindenz1.github.io/simDAG/reference/do.md) :
 
   Pearls do-operator for `DAG` objects
@@ -291,6 +296,8 @@ Functions that can be used as child nodes
   : Generate Data from a Mixture of Node Definitions
 - [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
   : Generate Data from a Cox-Regression Model
+- [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)
+  : Generate Data from an Aalen Additive Hazards Model
 - [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)
   [`node_ahreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)
   [`node_ehreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)
