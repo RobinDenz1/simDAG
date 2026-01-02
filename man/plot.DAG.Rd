@@ -105,7 +105,7 @@ Further arguments passed to the \code{layout} function specified by the argument
 \details{
 This function uses the \pkg{igraph} package to find a suitable layout for the plot and then uses the \pkg{ggplot2} package in conjunction with the \code{geom_circle} function of the \pkg{ggforce} package to plot the directed acyclic graph defined by a \code{DAG} object. Since it returns a \code{ggplot} object, the user may use any standard \code{ggplot2} syntax to augment the plot or to save it using the \code{ggsave} function.
 
-Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the \pkg{igraph} package. See Pitts and Fowler (2024) for a review. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the \code{\link{dag2matrix}} function to obtain an adjacency matrix from the \code{DAG} object and directly use this matrix and the \pkg{igraph} package (or similar ones) to get much better plots.
+Note that there are multiple great packages specifically designed to plot directed acyclic graphs, such as the \pkg{igraph} package. See Pitts and Fowler (2024) for a review. This function is not meant to be a competitor to those packages. The functionality offered here is rather limited. It is designed to produce decent plots for small DAGs which are easy to create. If this function is not enough to create an adequate plot, users can use the \code{\link{dag2matrix}}, \code{\link{as.igraph.DAG}} or \code{\link{as_tidy_dagitty.DAG}} functions to transform the \code{DAG} into other formats, which allow usage of much better plotting routines, such as the ones provided by the \pkg{igraph} or \pkg{ggdag} packages.
 
 If the \code{DAG} supplied to this function contains time-varying variables, the resulting plot may contain cycles or even bi-directional arrows, depending on the \code{DAG}. The reason for that is, that the time-dimension is not shown in the plot. Note also that even though, technically, every time-varying node has itself as a parent, no arrows showing this dependence will be added to the plot.
 }
@@ -119,7 +119,7 @@ Pitts, Amy J. and Charlotte R. Fowler (2024). Comparison of Open-Source Software
 Returns a standard \code{ggplot2} object.
 }
 \seealso{
-\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}
+\code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{as.igraph.DAG}}, \code{\link{as_tidy_dagitty.DAG}}
 }
 \examples{
 library(simDAG)

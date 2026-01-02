@@ -14,8 +14,6 @@ sim_discrete_time:
 node_next_time:
 	- allow internal other distr_fun (cox, aft models, ...)
 	- maybe allow "delays"?
-	- update internals in input checks
-	- throw error if net() terms are in formula
 
 sim_from_dag:
 	- implement more node types:

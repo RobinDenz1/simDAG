@@ -190,7 +190,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
         args_p$data <- tryCatch({
           data_for_formula(data=data[rel_row==TRUE], args=args_p,
-                           networks=list())},
+                           networks=list(), net_allowed=FALSE)},
           error=function(e){
             stop("An error occured when interpreting the formula of node '",
                  tx_nodes[[i]]$name, "'. The message was:\n", e,

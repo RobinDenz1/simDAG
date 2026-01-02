@@ -222,6 +222,45 @@ as.dagitty.DAG <- function(x, include_root_nodes=TRUE,
   return(out)
 }
 
+## turns a DAG object into a tidy_dagitty object
+#' @importFrom ggdag as_tidy_dagitty
+#' @export
+as_tidy_dagitty.DAG <- function(x, include_root_nodes=TRUE,
+                                include_td_nodes=TRUE,
+                                include_networks=FALSE,
+                                seed=NULL, layout="nicely", ...) {
+
+  requireNamespace("igraph", quietly=TRUE)
+
+  # turn DAG into igraph object
+  g <- as.igraph(x=x, include_root_nodes=include_root_nodes,
+                 include_td_nodes=include_td_nodes,
+                 include_networks=include_networks)
+
+  # turn adjacency matrix into edgelist
+  out <- as.data.frame(igraph::as_edgelist(g))
+  colnames(out) <- c("name", "to")
+
+  # add missing nodes without any edges if present
+  names_dag <- names_DAG(x, include_tx_nodes=include_td_nodes)
+  mis_names <- unique(names_dag[!names_dag %in% c(out$name, out$to)])
+
+  if (length(mis_names) > 0) {
+    out_tmp <- data.frame(name=mis_names, to=NA)
+    out <- rbind(out, out_tmp)
+  }
+
+  # turn edgelist into tidy_dagitty
+  out <- ggdag::as_tidy_dagitty(
+    x=out,
+    seed=seed,
+    layout=layout,
+    ...
+  )
+
+  return(out)
+}
+
 # get names of nodes in a DAG at a given level (root, child, tx)
 names_DAG_level <- function(dag, level) {
 

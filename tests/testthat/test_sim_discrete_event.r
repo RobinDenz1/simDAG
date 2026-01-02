@@ -749,3 +749,22 @@ test_that("error with time-dependent networks", {
                       "supported in the sim_discrete_event() function."),
                fixed=TRUE)
 })
+
+test_that("error with net() terms in formula", {
+
+  set.seed(1234)
+
+  g1 <- igraph::sample_gnm(n=100, m=35)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    network("g1", net=g1) +
+    node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01) +
+    node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001) +
+    node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02) +
+    node_td("Y", type="next_time",
+            formula = ~ log(0.001) + A*log(0.8) + X1*log(1.5) + X2*log(2) +
+              X3*log(0.7) + net(mean(X1))*0.1, link="logit")
+
+  expect_error(sim_discrete_event(dag, n_sim=100, max_t=Inf, allow_ties=FALSE))
+})

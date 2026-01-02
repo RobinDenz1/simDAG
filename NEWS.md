@@ -1,5 +1,5 @@
 
-# simDAG 0.4.2
+# simDAG 0.5.0
 
 New Features
 
@@ -7,6 +7,7 @@ New Features
 * Added the `rtexp()` function to allow sampling from left-truncated exponential distributions.
 * Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen.
 * Added the `node_aalen()` function to allow data to be generated according to an Aalen additive hazards model with time-constant betas and baseline hazard.
+* Added the `as_tidy_dagitty.DAG()` method, which allows direct conversion of `DAG` to `tidy_dagitty` objects used to create plots in the `ggdag` package.
 
 Enhancements
 

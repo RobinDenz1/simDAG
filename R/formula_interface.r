@@ -201,7 +201,7 @@ args_from_formula <- function(args, formula, node_type) {
 ## create a fitting dataset for special formula based nodes
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
-data_for_formula <- function(data, args, networks=list()) {
+data_for_formula <- function(data, args, networks=list(), net_allowed=TRUE) {
 
   name <- term <- NULL
 
@@ -259,6 +259,11 @@ data_for_formula <- function(data, args, networks=list()) {
   form_net <- get_net_terms(args$parents)
 
   if (length(form_net) > 0) {
+
+    if (!net_allowed) {
+      stop("Using net() in the 'formula' of a node of type 'next_time'",
+           " is currently not supported.", call.=FALSE)
+    }
 
     # add network terms to data
     d_net <- rbindlist(lapply(form_net, FUN=function(x) {eval(str2lang(x))}),

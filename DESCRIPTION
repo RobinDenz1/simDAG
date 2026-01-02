@@ -21,7 +21,8 @@ Imports:
 	Rfast,
 	rlang,
 	igraph (>= 2.0.0),
-	dagitty
+	dagitty,
+	ggdag
 Suggests:
     knitr,
     rmarkdown,
