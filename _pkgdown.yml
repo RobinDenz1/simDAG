@@ -26,7 +26,7 @@ reference:
       - plot.DAG
       - as.igraph.DAG
       - as.dagitty.DAG
-      - as_tidy_daggity.DAG
+      - as_tidy_dagitty.DAG
       - do
       - dag2matrix
       - matrix2dag
