@@ -104,12 +104,10 @@ We simply pass the `node_advance_age()` function to the `type` argument of the `
 Note that we could also directly use the enhanced `formula` interface for the `death` node here to get equivalent results without having to define a `prob_fun` as:
 
 ```{r}
-dag <- dag +
-  node_td("age", type="advance_age", parents="age") +
-  node_td("death", type="time_to_event",
-          formula= ~ -10 + 0.15*age + 0.25*sex,
-          event_duration=Inf, save_past_events=TRUE,
-          check_inputs=FALSE)
+node_td("death", type="time_to_event",
+        formula= ~ -10 + 0.15*age + 0.25*sex,
+        event_duration=Inf, save_past_events=TRUE,
+        check_inputs=FALSE)
 ```
 
 This is often more convenient, but does not allow as much flexibility as the `prob_fun` argument. To visualize the resulting DAG, we can use the associated `plot()` method:

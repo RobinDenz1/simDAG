@@ -16,7 +16,13 @@ do <- function(dag, names, values) {
 
   # replace with constant value definition
   for (i in seq_len(length(names))) {
-    dag <- dag + node(name=names[i], type="rconstant", constant=values[[i]])
+    if (inherits(values[[i]], "DAG.node")) {
+      node_i <- values[[i]]
+      node_i$name <- names[i]
+      dag <- dag + node_i
+    } else {
+      dag <- dag + node(name=names[i], type="rconstant", constant=values[[i]])
+    }
   }
 
   return(dag)

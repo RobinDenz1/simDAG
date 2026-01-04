@@ -18,12 +18,12 @@ A \code{DAG} object created using the \code{\link{empty_dag}} and \code{\link{no
 A character string specifying names of nodes in the \code{dag} object. The value of these nodes will be set to the corresponding value specified in the \code{values} argument. If the node is not already defined in \code{dag}, a new one will be added without warning.
   }
   \item{values}{
-A vector or list of any values. These nodes defined with the \code{names} argument will be set to those values.
+A vector or list of any values or \code{\link{node}} / \code{\link{node_td}} definitions. These nodes defined with the \code{names} argument will be set to those values or the new node definitions.
   }
 }
 \details{
 
-Internally this function simply removes the old node definition of all nodes in \code{names} and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition. The same effect can be created by directly specifying the \code{DAG} in this way from the start (see examples).
+Internally this function simply removes the old node definition of all nodes in \code{names} and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in \code{values} is a signle value. If it is a new \code{\link{node}} or \code{\link{node_td}} instead, the new definition replaces the old one. The same effect can be created by directly specifying the \code{DAG} in this way from the start (see examples).
 
 This function does not alter the original \code{DAG} in place. Instead, it returns a modified version of the \code{DAG}. In other words, using only \code{do(dag, names="A", values=3)} will not change the \code{dag} object.
 
@@ -60,4 +60,16 @@ dag2 <- empty_dag() +
 
 # use do() on multiple variables: do(smoking = TRUE, sex = FALSE)
 dag2 <- do(dag, names=c("smoking", "sex"), values=list(TRUE, FALSE))
+
+## set node in DAG to a completely new definition
+dag <- empty_dag() +
+  node("death", "binomial", c("age", "sex"), betas=c(1, 2), intercept=-10) +
+  node("age", type="rnorm", mean=10, sd=2) +
+  node("sex", parents="", type="rbernoulli", p=0.5) +
+  node("smoking", parents=c("sex", "age"), type="binomial",
+       betas=c(0.6, 0.2), intercept=-2)
+
+dag2 <- do(dag, names="smoking", values=list(
+  node(".", type="poisson", formula= ~ -2 + age*0.2 + sex*1.2)
+))
 }

@@ -672,14 +672,14 @@ test_that("formula works with remove_if", {
   expect_equal(nrow(sim), 108)
 })
 
-test_that("warning if max_loops reached", {
+test_that("warning if max_iter reached", {
 
   set.seed(356345)
 
   dag <- empty_dag() +
     node_td("A", type="next_time", prob_fun=0.01, event_duration=10)
 
-  expect_warning(sim_discrete_event(dag, n_sim=100, max_loops=10))
+  expect_warning(sim_discrete_event(dag, n_sim=100, max_iter=10))
 })
 
 test_that("error with no dag", {

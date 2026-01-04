@@ -12,7 +12,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
                    max_t=Inf, remove_if, break_if,
-                   max_loops=1000, redraw_at_t=NULL,
+                   max_iter=1000, redraw_at_t=NULL,
                    allow_ties=FALSE, censor_at_max_t=FALSE,
                    target_event=NULL, keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
@@ -47,7 +47,7 @@ A condition that will be evaluated directly on the generated \code{data.table} a
   \item{break_if}{
 A condition that will be evaluated after each jump to the next event (but after subsetting, if \code{remove_if} was specified). If the condition is met, the simulation stops early. Contrary to the \code{remove_if} argument, this condition should return exactly one \code{TRUE} or \code{FALSE} value and is not directly evaluated on the \code{data}. To use variables generated in the simulation in this condition, users should use the \code{$} syntax (e.g. use \code{data$X} instead of just \code{X}). Keep this argument unspecified (default) to not use this functionality.
   }
-  \item{max_loops}{
+  \item{max_iter}{
 A single positive number, specifying the maximum amount of loops the simulation is allowed to run before it terminates. This argument exists so that if all of \code{max_t}, \code{remove_if} and \code{break_if} fail to terminate the simulation eventually, the code does not run forever. In nearly all cases it is, however, preferable to end the simulation using one of the other three arguments. A warning message is therefore returned whenever the simulation is stopped through reaching this limit.
   }
   \item{redraw_at_t}{

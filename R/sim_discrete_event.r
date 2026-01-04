@@ -19,7 +19,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_data=NULL, t0_transform_fun=NULL,
                                t0_transform_args=list(),
                                max_t=Inf, remove_if, break_if,
-                               max_loops=1000, redraw_at_t=NULL,
+                               max_iter=1000, redraw_at_t=NULL,
                                allow_ties=FALSE, censor_at_max_t=FALSE,
                                target_event=NULL, keep_only_first=FALSE,
                                remove_not_at_risk=FALSE,
@@ -282,9 +282,9 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     }
 
     # break if max loops reached
-    if (loop_count==max_loops) {
+    if (loop_count==max_iter) {
       warning("Simulation stopped because the maximum amount of loops was",
-              " reached. Adjust the 'max_loops' argument or use the",
+              " reached. Adjust the 'max_iter' argument or use the",
               " 'break_if', 'remove_if' or 'max_t' arguments to define",
               " better ends of the simulation.", call.=FALSE)
       break
