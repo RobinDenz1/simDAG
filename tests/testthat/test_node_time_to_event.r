@@ -194,3 +194,50 @@ test_that("using the 'unif' argument", {
 
   expect_equal(data$A, data$B)
 })
+
+test_that("using the formula argument is equal to calling node_binomial", {
+
+  # using prob_fun
+  prob_Y <- function(data) {
+    out <- node_binomial(data=data, parents=c("A", "B"), betas=c(0.2, -0.2),
+                         intercept=-2, return_prob=TRUE)
+    return(out)
+  }
+
+  dag1 <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", prob_fun=prob_Y, parents=c("A", "B"))
+
+  # using formula
+  dag2 <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", formula= ~ -2 + A*0.2 + B*-0.2)
+
+  set.seed(1234)
+  sim1 <- sim_discrete_time(dag1, n_sim=100, max_t=5)
+
+  set.seed(1234)
+  sim2 <- sim_discrete_time(dag2, n_sim=100, max_t=5)
+
+  expect_equal(sim1$data, sim2$data)
+})
+
+test_that("formula works with other links", {
+
+  dag1 <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", formula= ~ -2 + A*1.2 + B*-0.2)
+
+  dag2 <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", formula= ~ -2 + A*1.2 + B*-0.2,
+            link="log")
+
+  set.seed(1234)
+  sim1 <- sim_discrete_time(dag1, n_sim=100, max_t=5)
+
+  set.seed(1234)
+  sim2 <- sim_discrete_time(dag2, n_sim=100, max_t=5)
+
+  expect_true(sum(sim1$data$Y_event) != sum(sim2$data$Y_event))
+})

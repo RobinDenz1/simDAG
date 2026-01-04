@@ -4,7 +4,8 @@
 #' @importFrom data.table fifelse
 #' @export
 node_time_to_event <- function(data, parents, sim_time, past_states,
-                               name, prob_fun, ..., event_duration=1,
+                               name, formula, prob_fun=NULL, ...,
+                               event_duration=1,
                                immunity_duration=event_duration, unif=NULL,
                                time_since_last=FALSE, event_count=FALSE,
                                save_past_events=TRUE, check_inputs=TRUE,
@@ -35,8 +36,13 @@ node_time_to_event <- function(data, parents, sim_time, past_states,
   # get event probabilities
   if (is.function(prob_fun)) {
     event_prob <- do.call(prob_fun, args=prob_fun_args)
-  } else {
+  } else if (is.numeric(prob_fun)) {
     event_prob <- prob_fun
+  } else {
+    prob_fun_args$return_prob <- TRUE
+    prob_fun_args$parents <- prob_fun_args$parents_binom
+    prob_fun_args$parents_binom <- NULL
+    event_prob <- do.call(node_binomial, args=prob_fun_args)
   }
 
   # specific names

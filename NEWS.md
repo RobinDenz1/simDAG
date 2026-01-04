@@ -15,6 +15,7 @@ Enhancements
 * Allow function input to the `data_format` argument of the `sim_n_datasets()` function to avoid potentially weird bugs in parallel processing.
 * There was a slight change to `node_binomial()`, which increases performance if `return_probs=TRUE` is used (avoiding a needless `rbernoulli()` call). The results of simulations with a `DAG` containing a node with both `type="binomial"` and `return_probs=TRUE` might therefore differ on the same random number generator seed as compared to previous versions.
 * Changed the default of `cens_dist` in `node_cox()` to `NULL`.
+* Added the `formula` argument to `node_time_to_event()` to allow users to easily calculate event probabilities from binomial regression models without having to specify a `prob_fun`.
 
 Bug Fixes
 

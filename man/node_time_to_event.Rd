@@ -9,7 +9,7 @@ This node essentially models a dichotomous time-dependent variable for which the
 }
 \usage{
 node_time_to_event(data, parents, sim_time, past_states, name,
-                   prob_fun, ..., event_duration=1,
+                   formula, prob_fun=NULL, ..., event_duration=1,
                    immunity_duration=event_duration, unif=NULL,
                    time_since_last=FALSE, event_count=FALSE,
                    save_past_events=TRUE, check_inputs=TRUE,
@@ -31,11 +31,14 @@ A list of \code{data.table}s including previous states of the simulation. This a
   \item{name}{
 The name of the node. This will be used as prefix before the \code{_event}, \code{_time} columns. If the \code{time_since_last} or \code{event_count} arguments are set to \code{TRUE}, this will also be used as prefix for those respective columns.
   }
+  \item{formula}{
+An optional enhanced formula, as used throughout the package. This may be used instead of the \code{prob_fun} argument, to specify a binomial regression model that should be used to calculate the probability instead. If specified (and \code{prob_fun=NULL}), the \code{\link{node_binomial}} function is used with \code{return_prob=TRUE} to obtain the probabilities. If \code{prob_fun} is specified, this argument is ignored.
+  }
   \item{prob_fun}{
 A function that returns a numeric vector of size \code{nrow(data)} containing only numbers between 0 and 1. These numbers specify the person-specific probability of experiencing the event modeled by this node at the particular point in time of the simulation. The corresponding event will be generated internally using the \code{\link{rbernoulli}} function. The function needs to have a named argument called \code{data}. If the function has an argument named \code{sim_time}, the current simulation time will also be passed to this function automatically, allowing time-dependent probabilities to be generated. Alternatively this argument can be set to a single number (between 0 and 1), resulting in a fixed probability of occurrence for every simulated individual at every point in time.
   }
   \item{...}{
-An arbitrary amount of additional named arguments passed to \code{prob_fun}. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
+An arbitrary amount of additional named arguments passed to \code{prob_fun} if \code{prob_fun} is specified, or to \code{\link{node_binomial}} if \code{formula} is specified and \code{prob_fun} is not. Ignore this if you do not want to pass any arguments. Also ignored if \code{prob_fun} is a single number.
   }
   \item{event_duration}{
 A single number > 0 specifying how long the event should last. The point in time at which an event occurs also counts into this duration. For example, if an event occurs at \eqn{t = 2} and it has a duration of 3, the event will be set to \code{TRUE} on \eqn{t \in \{2, 3, 4\}}. Therefore, all events must have a duration of at least 1 unit (otherwise they never happened).
@@ -73,7 +76,7 @@ In a nutshell, it simply models the occurrence of some event by calculating the 
 
 The \code{_event} column will stay \code{TRUE} until the event is over. The duration for that is controlled by the \code{event_duration} parameter. When modeling terminal events such as death, one can simply set this parameter to \code{Inf}, making the event eternal. In many cases it will also be necessary to implement some kind of immunity after the event, which can be done using the \code{immunity_duration} argument. This effectively sets the probability of another occurrence of the event to 0 in the next \code{immunity_duration} time steps. During the immunity duration, the event may be \code{TRUE} (if the event is still ongoing) or \code{FALSE} (if the \code{event_duration} has already passed). The \code{_time} column is similarly set to the time of occurrence of the event and reset to \code{NA} when the \code{immunity_duration} is over.
 
-The probability of occurrence is calculated using the function provided by the user using the \code{prob_fun} argument. This can be an arbitrary complex function. The only requirement is that it takes \code{data} as a first argument. The columns defined by the \code{parents} argument will be passed to this argument automatically. If it has an argument called \code{sim_time}, the current time of the simulation will automatically be passed to it as well. Any further arguments can be passed using the \code{...} syntax. A simple example could be a logistic regression node, in which the probability is calculated as an additive linear combination of the columns defined by \code{parents}. A more complex function could include simulation-time dependent effects, further effects dependent on past event times etc. Examples can be found below and in the vignettes.
+The probability of occurrence is calculated using the function provided by the user using the \code{prob_fun} argument. This can be an arbitrary complex function. The only requirement is that it takes \code{data} as a first argument. The columns defined by the \code{parents} argument will be passed to this argument automatically. If it has an argument called \code{sim_time}, the current time of the simulation will automatically be passed to it as well. Any further arguments can be passed using the \code{...} syntax. A simple example could be a logistic regression node, in which the probability is calculated as an additive linear combination of the columns defined by \code{parents} (this could also be achieved more cleanly using the \code{formula} argument). A more complex function could include simulation-time dependent effects, further effects dependent on past event times etc. Examples can be found below and in the vignettes.
 
 \strong{\emph{How it is Used}}:
 
@@ -155,6 +158,13 @@ dag <- empty_dag() +
 
 # use the sim_discrete_time function to simulate data from one of these DAGs:
 sim <- sim_discrete_time(dag, n_sim=20, max_t=500)
+
+# using a logistic regression model to specify the probability with the
+# enhanced formula interface
+dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", formula= ~ -2 + A*1.2 + B*-0.2,
+            event_duration=10)
 
 ## more examples can be found in the vignettes of this package
 }

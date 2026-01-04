@@ -4,21 +4,13 @@
 
 ####### New Features: #######
 
-node_time_to_event:
-	- add support for formula (interpreted as binomial model) to make some
-	  model formulations more convenient
-
 sim_discrete_time:
 	- maybe include t = 0 in output (or an option for it)?
+	- allow all nodes to be based on previous t in one argument
 
 node_next_time:
 	- allow internal other distr_fun (cox, aft models, ...)
 	- maybe allow "delays"?
-
-sim_from_dag:
-	- implement more node types:
-		- ordinal regression
-		- whatever models one can find may be nice
 
 dag_from_data:
 	- should allow multinomial
