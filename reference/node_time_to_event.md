@@ -12,7 +12,7 @@ function, not outside of it. See details.
 
 ``` r
 node_time_to_event(data, parents, sim_time, past_states, name,
-                   prob_fun, ..., event_duration=1,
+                   formula, prob_fun=NULL, ..., event_duration=1,
                    immunity_duration=event_duration, unif=NULL,
                    time_since_last=FALSE, event_count=FALSE,
                    save_past_events=TRUE, check_inputs=TRUE,
@@ -57,6 +57,16 @@ node_time_to_event(data, parents, sim_time, past_states, name,
   are set to `TRUE`, this will also be used as prefix for those
   respective columns.
 
+- formula:
+
+  An optional enhanced formula, as used throughout the package. This may
+  be used instead of the `prob_fun` argument, to specify a binomial
+  regression model that should be used to calculate the probability
+  instead. If specified (and `prob_fun=NULL`), the
+  [`node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)
+  function is used with `return_prob=TRUE` to obtain the probabilities.
+  If `prob_fun` is specified, this argument is ignored.
+
 - prob_fun:
 
   A function that returns a numeric vector of size `nrow(data)`
@@ -75,9 +85,12 @@ node_time_to_event(data, parents, sim_time, past_states, name,
 
 - ...:
 
-  An arbitrary amount of additional named arguments passed to
-  `prob_fun`. Ignore this if you do not want to pass any arguments. Also
-  ignored if `prob_fun` is a single number.
+  An arbitrary amount of additional named arguments passed to `prob_fun`
+  if `prob_fun` is specified, or to
+  [`node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)
+  if `formula` is specified and `prob_fun` is not. Ignore this if you do
+  not want to pass any arguments. Also ignored if `prob_fun` is a single
+  number.
 
 - event_duration:
 
@@ -210,9 +223,10 @@ passed to this argument automatically. If it has an argument called
 passed to it as well. Any further arguments can be passed using the
 `...` syntax. A simple example could be a logistic regression node, in
 which the probability is calculated as an additive linear combination of
-the columns defined by `parents`. A more complex function could include
-simulation-time dependent effects, further effects dependent on past
-event times etc. Examples can be found below and in the vignettes.
+the columns defined by `parents` (this could also be achieved more
+cleanly using the `formula` argument). A more complex function could
+include simulation-time dependent effects, further effects dependent on
+past event times etc. Examples can be found below and in the vignettes.
 
 ***How it is Used***:
 
@@ -327,6 +341,13 @@ dag <- empty_dag() +
 
 # use the sim_discrete_time function to simulate data from one of these DAGs:
 sim <- sim_discrete_time(dag, n_sim=20, max_t=500)
+
+# using a logistic regression model to specify the probability with the
+# enhanced formula interface
+dag <- empty_dag() +
+    node(c("A", "B"), type="rnorm") +
+    node_td("Y", type="time_to_event", formula= ~ -2 + A*1.2 + B*-0.2,
+            event_duration=10)
 
 ## more examples can be found in the vignettes of this package
 ```

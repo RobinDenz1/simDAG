@@ -50,6 +50,10 @@ Enhancements
 - Changed the default of `cens_dist` in
   [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
   to `NULL`.
+- Added the `formula` argument to
+  [`node_time_to_event()`](https://robindenz1.github.io/simDAG/reference/node_time_to_event.md)
+  to allow users to easily calculate event probabilities from binomial
+  regression models without having to specify a `prob_fun`.
 
 Bug Fixes
 
