@@ -30,16 +30,23 @@ do(dag, names, values)
 
 - values:
 
-  A vector or list of any values. These nodes defined with the `names`
-  argument will be set to those values.
+  A vector or list of any values or
+  [`node`](https://robindenz1.github.io/simDAG/reference/node.md) /
+  [`node_td`](https://robindenz1.github.io/simDAG/reference/node.md)
+  definitions. These nodes defined with the `names` argument will be set
+  to those values or the new node definitions.
 
 ## Details
 
 Internally this function simply removes the old node definition of all
 nodes in `names` and replaces it with a new node definition that defines
-the node as a constant value, irrespective of the original definition.
-The same effect can be created by directly specifying the `DAG` in this
-way from the start (see examples).
+the node as a constant value, irrespective of the original definition,
+if the corresponding entry in `values` is a signle value. If it is a new
+[`node`](https://robindenz1.github.io/simDAG/reference/node.md) or
+[`node_td`](https://robindenz1.github.io/simDAG/reference/node.md)
+instead, the new definition replaces the old one. The same effect can be
+created by directly specifying the `DAG` in this way from the start (see
+examples).
 
 This function does not alter the original `DAG` in place. Instead, it
 returns a modified version of the `DAG`. In other words, using only
@@ -83,4 +90,16 @@ dag2 <- empty_dag() +
 
 # use do() on multiple variables: do(smoking = TRUE, sex = FALSE)
 dag2 <- do(dag, names=c("smoking", "sex"), values=list(TRUE, FALSE))
+
+## set node in DAG to a completely new definition
+dag <- empty_dag() +
+  node("death", "binomial", c("age", "sex"), betas=c(1, 2), intercept=-10) +
+  node("age", type="rnorm", mean=10, sd=2) +
+  node("sex", parents="", type="rbernoulli", p=0.5) +
+  node("smoking", parents=c("sex", "age"), type="binomial",
+       betas=c(0.6, 0.2), intercept=-2)
+
+dag2 <- do(dag, names="smoking", values=list(
+  node(".", type="poisson", formula= ~ -2 + age*0.2 + sex*1.2)
+))
 ```

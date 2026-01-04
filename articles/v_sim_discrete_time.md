@@ -197,12 +197,16 @@ for the `death` node here to get equivalent results without having to
 define a `prob_fun` as:
 
 ``` r
-dag <- dag +
-  node_td("age", type="advance_age", parents="age") +
-  node_td("death", type="time_to_event",
-          formula= ~ -10 + 0.15*age + 0.25*sex,
-          event_duration=Inf, save_past_events=TRUE,
-          check_inputs=FALSE)
+node_td("death", type="time_to_event",
+        formula= ~ -10 + 0.15*age + 0.25*sex,
+        event_duration=Inf, save_past_events=TRUE,
+        check_inputs=FALSE)
+#> A DAG.node object specifying a single child node with:
+#>   - name: 'death'
+#>   - type: 'time_to_event'
+#>   - parents: 'age', 'sex'
+#>   - with additional parameters: formula, event_duration, save_past_events, check_inputs
+#> This node may change over time.
 ```
 
 This is often more convenient, but does not allow as much flexibility as
@@ -232,12 +236,12 @@ By setting `max_t=50`, we are letting this simulation run for 50
 head(sim_dat$data)
 #>         age    sex death_event death_time   .id
 #>       <num> <lgcl>      <lgcl>      <int> <int>
-#> 1: 129.8124   TRUE        TRUE         14     1
-#> 2: 122.1270   TRUE        TRUE          7     2
-#> 3: 127.5702  FALSE        TRUE         16     3
-#> 4: 132.3259  FALSE        TRUE          8     4
-#> 5: 125.4795  FALSE        TRUE          9     5
-#> 6: 128.6128  FALSE        TRUE          5     6
+#> 1: 79.81243   TRUE        TRUE         27     1
+#> 2: 72.12698   TRUE        TRUE         13     2
+#> 3: 77.57016  FALSE        TRUE         31     3
+#> 4: 82.32593  FALSE        TRUE         16     4
+#> 5: 75.47951  FALSE        TRUE         17     5
+#> 6: 78.61284  FALSE        TRUE          9     6
 ```
 
 It is easy to see that all people died over the course of those 50 years
@@ -276,7 +280,7 @@ sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=1000000,
 
 Here, we specify that the simulation should run for a million years, but
 be stopped early once all individuals are dead. The time at which the
-simulation was stopped can be accessed using `sim_dat$break_t` and is 19
+simulation was stopped can be accessed using `sim_dat$break_t` and is 36
 in this case. Note that this strategy may lead to unexpectedly long
 computation times, if the event is very unlikely for some individuals.
 The `remove_if` argument may then also be helpful to speed things up
@@ -338,12 +342,12 @@ sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50)
 head(sim_dat$data)
 #>         age    sex cve_event cve_time   .id
 #>       <num> <lgcl>    <lgcl>    <int> <int>
-#> 1: 81.15802   TRUE     FALSE       NA     1
-#> 2: 80.33614   TRUE     FALSE       NA     2
-#> 3: 79.38431   TRUE     FALSE       NA     3
-#> 4: 74.85916  FALSE     FALSE       NA     4
-#> 5: 77.81136   TRUE     FALSE       NA     5
-#> 6: 71.57548  FALSE     FALSE       NA     6
+#> 1: 81.23076  FALSE     FALSE       NA     1
+#> 2: 74.05308   TRUE     FALSE       NA     2
+#> 3: 83.03159  FALSE     FALSE       NA     3
+#> 4: 75.38063   TRUE     FALSE       NA     4
+#> 5: 88.27912   TRUE     FALSE       NA     5
+#> 6: 81.15802   TRUE     FALSE       NA     6
 ```
 
 In this case, the data is a little more complex. At time $t = 50$, only
@@ -361,12 +365,12 @@ d_start_stop <- sim2data(sim_dat, to="start_stop")
 head(d_start_stop)
 #>      .id start  stop    cve      age    sex
 #>    <int> <int> <num> <lgcl>    <num> <lgcl>
-#> 1:     1     1    50  FALSE 81.15802   TRUE
-#> 2:     2     1    50  FALSE 80.33614   TRUE
-#> 3:     3     1    47  FALSE 79.38431   TRUE
-#> 4:     3    48    48   TRUE 79.38431   TRUE
-#> 5:     3    49    50  FALSE 79.38431   TRUE
-#> 6:     4     1    50  FALSE 74.85916  FALSE
+#> 1:     1     1    50  FALSE 81.23076  FALSE
+#> 2:     2     1    50  FALSE 74.05308   TRUE
+#> 3:     3     1    48  FALSE 83.03159  FALSE
+#> 4:     3    49    49   TRUE 83.03159  FALSE
+#> 5:     3    50    50  FALSE 83.03159  FALSE
+#> 6:     4     1    50  FALSE 75.38063   TRUE
 ```
 
 In this format, we can clearly see when the events occurred. This type
@@ -382,12 +386,12 @@ head(d_long)
 #> Key: <.id, .time>
 #>      .id .time    cve      age    sex
 #>    <int> <int> <lgcl>    <num> <lgcl>
-#> 1:     1     1  FALSE 81.15802   TRUE
-#> 2:     1     2  FALSE 81.15802   TRUE
-#> 3:     1     3  FALSE 81.15802   TRUE
-#> 4:     1     4  FALSE 81.15802   TRUE
-#> 5:     1     5  FALSE 81.15802   TRUE
-#> 6:     1     6  FALSE 81.15802   TRUE
+#> 1:     1     1  FALSE 81.23076  FALSE
+#> 2:     1     2  FALSE 81.23076  FALSE
+#> 3:     1     3  FALSE 81.23076  FALSE
+#> 4:     1     4  FALSE 81.23076  FALSE
+#> 5:     1     5  FALSE 81.23076  FALSE
+#> 6:     1     6  FALSE 81.23076  FALSE
 ```
 
 This may also be useful to fit discrete-time survival models.

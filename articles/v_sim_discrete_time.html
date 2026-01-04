@@ -265,12 +265,16 @@ event (once you are dead, there is no going back).</p>
 get equivalent results without having to define a <code>prob_fun</code>
 as:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"advance_age"</span>, parents<span class="op">=</span><span class="st">"age"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>,</span>
-<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">10</span> <span class="op">+</span> <span class="fl">0.15</span><span class="op">*</span><span class="va">age</span> <span class="op">+</span> <span class="fl">0.25</span><span class="op">*</span><span class="va">sex</span>,</span>
-<span>          event_duration<span class="op">=</span><span class="cn">Inf</span>, save_past_events<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>          check_inputs<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>,</span>
+<span>        formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">10</span> <span class="op">+</span> <span class="fl">0.15</span><span class="op">*</span><span class="va">age</span> <span class="op">+</span> <span class="fl">0.25</span><span class="op">*</span><span class="va">sex</span>,</span>
+<span>        event_duration<span class="op">=</span><span class="cn">Inf</span>, save_past_events<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        check_inputs<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; A DAG.node object specifying a single child node with:</span></span>
+<span><span class="co">#&gt;   - name: 'death'</span></span>
+<span><span class="co">#&gt;   - type: 'time_to_event'</span></span>
+<span><span class="co">#&gt;   - parents: 'age', 'sex'</span></span>
+<span><span class="co">#&gt;   - with additional parameters: formula, event_duration, save_past_events, check_inputs</span></span>
+<span><span class="co">#&gt; This node may change over time.</span></span></code></pre></div>
 <p>This is often more convenient, but does not allow as much flexibility
 as the <code>prob_fun</code> argument. To visualize the resulting DAG,
 we can use the associated <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method:</p>
@@ -288,12 +292,12 @@ for 50 (simulated) years. The results look like this:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         age    sex death_event death_time   .id</span></span>
 <span><span class="co">#&gt;       &lt;num&gt; &lt;lgcl&gt;      &lt;lgcl&gt;      &lt;int&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1: 129.8124   TRUE        TRUE         14     1</span></span>
-<span><span class="co">#&gt; 2: 122.1270   TRUE        TRUE          7     2</span></span>
-<span><span class="co">#&gt; 3: 127.5702  FALSE        TRUE         16     3</span></span>
-<span><span class="co">#&gt; 4: 132.3259  FALSE        TRUE          8     4</span></span>
-<span><span class="co">#&gt; 5: 125.4795  FALSE        TRUE          9     5</span></span>
-<span><span class="co">#&gt; 6: 128.6128  FALSE        TRUE          5     6</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 79.81243   TRUE        TRUE         27     1</span></span>
+<span><span class="co">#&gt; 2: 72.12698   TRUE        TRUE         13     2</span></span>
+<span><span class="co">#&gt; 3: 77.57016  FALSE        TRUE         31     3</span></span>
+<span><span class="co">#&gt; 4: 82.32593  FALSE        TRUE         16     4</span></span>
+<span><span class="co">#&gt; 5: 75.47951  FALSE        TRUE         17     5</span></span>
+<span><span class="co">#&gt; 6: 78.61284  FALSE        TRUE          9     6</span></span></code></pre></div>
 <p>It is easy to see that all people died over the course of those 50
 years by looking at the <code>death_event</code> column. The
 <code>death_time</code> column records the time at which each person
@@ -322,7 +326,7 @@ early. For example we may use:</p>
 <p>Here, we specify that the simulation should run for a million years,
 but be stopped early once all individuals are dead. The time at which
 the simulation was stopped can be accessed using
-<code>sim_dat$break_t</code> and is 19 in this case. Note that this
+<code>sim_dat$break_t</code> and is 36 in this case. Note that this
 strategy may lead to unexpectedly long computation times, if the event
 is very unlikely for some individuals. The <code>remove_if</code>
 argument may then also be helpful to speed things up (see
@@ -373,12 +377,12 @@ possible recurrent events. Now we call the
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_dat</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         age    sex cve_event cve_time   .id</span></span>
 <span><span class="co">#&gt;       &lt;num&gt; &lt;lgcl&gt;    &lt;lgcl&gt;    &lt;int&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1: 81.15802   TRUE     FALSE       NA     1</span></span>
-<span><span class="co">#&gt; 2: 80.33614   TRUE     FALSE       NA     2</span></span>
-<span><span class="co">#&gt; 3: 79.38431   TRUE     FALSE       NA     3</span></span>
-<span><span class="co">#&gt; 4: 74.85916  FALSE     FALSE       NA     4</span></span>
-<span><span class="co">#&gt; 5: 77.81136   TRUE     FALSE       NA     5</span></span>
-<span><span class="co">#&gt; 6: 71.57548  FALSE     FALSE       NA     6</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 81.23076  FALSE     FALSE       NA     1</span></span>
+<span><span class="co">#&gt; 2: 74.05308   TRUE     FALSE       NA     2</span></span>
+<span><span class="co">#&gt; 3: 83.03159  FALSE     FALSE       NA     3</span></span>
+<span><span class="co">#&gt; 4: 75.38063   TRUE     FALSE       NA     4</span></span>
+<span><span class="co">#&gt; 5: 88.27912   TRUE     FALSE       NA     5</span></span>
+<span><span class="co">#&gt; 6: 81.15802   TRUE     FALSE       NA     6</span></span></code></pre></div>
 <p>In this case, the data is a little more complex. At time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">t = 50</annotation></semantics></math>,
 only one person is currently experiencing a cardiovascular event, which
@@ -393,12 +397,12 @@ information.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">d_start_stop</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      .id start  stop    cve      age    sex</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;num&gt; &lt;lgcl&gt;    &lt;num&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1    50  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 2:     2     1    50  FALSE 80.33614   TRUE</span></span>
-<span><span class="co">#&gt; 3:     3     1    47  FALSE 79.38431   TRUE</span></span>
-<span><span class="co">#&gt; 4:     3    48    48   TRUE 79.38431   TRUE</span></span>
-<span><span class="co">#&gt; 5:     3    49    50  FALSE 79.38431   TRUE</span></span>
-<span><span class="co">#&gt; 6:     4     1    50  FALSE 74.85916  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1    50  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 2:     2     1    50  FALSE 74.05308   TRUE</span></span>
+<span><span class="co">#&gt; 3:     3     1    48  FALSE 83.03159  FALSE</span></span>
+<span><span class="co">#&gt; 4:     3    49    49   TRUE 83.03159  FALSE</span></span>
+<span><span class="co">#&gt; 5:     3    50    50  FALSE 83.03159  FALSE</span></span>
+<span><span class="co">#&gt; 6:     4     1    50  FALSE 75.38063   TRUE</span></span></code></pre></div>
 <p>In this format, we can clearly see when the events occurred. This
 type of format is usually used to fit statistical models for
 time-to-event data (although before fitting those, you might want to
@@ -411,12 +415,12 @@ Another possibility is to transform it into the long-format:</p>
 <span><span class="co">#&gt; Key: &lt;.id, .time&gt;</span></span>
 <span><span class="co">#&gt;      .id .time    cve      age    sex</span></span>
 <span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;lgcl&gt;    &lt;num&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1     1  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 2:     1     2  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 3:     1     3  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 4:     1     4  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 5:     1     5  FALSE 81.15802   TRUE</span></span>
-<span><span class="co">#&gt; 6:     1     6  FALSE 81.15802   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:     1     1  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1     2  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 3:     1     3  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1     4  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 5:     1     5  FALSE 81.23076  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1     6  FALSE 81.23076  FALSE</span></span></code></pre></div>
 <p>This may also be useful to fit discrete-time survival models.</p>
 <p>The simulation done here assumes that the time and number of previous
 events has no effect on any further events of the patient. This

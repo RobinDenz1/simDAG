@@ -54,6 +54,9 @@ Enhancements
   [`node_time_to_event()`](https://robindenz1.github.io/simDAG/reference/node_time_to_event.md)
   to allow users to easily calculate event probabilities from binomial
   regression models without having to specify a `prob_fun`.
+- Allow `DAG.node` definitions in the `values` argument of the
+  [`do()`](https://robindenz1.github.io/simDAG/reference/do.md)
+  function, to make changing existing `DAG`s easier.
 
 Bug Fixes
 

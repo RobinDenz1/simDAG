@@ -244,7 +244,7 @@ gotten a similar effect using the `break_if` argument, or limit the
 amount of time the simulation may run with `max_t`. The latter is not
 very useful here, because we are interested in the time of death. If we
 hadn’t used any of these arguments, the simulation would be updated
-exactly `1000` times per person (default value of the `max_loops`
+exactly `1000` times per person (default value of the `max_iter`
 argument), because `treatment` does not have a terminal state (both its
 `event_duration` and `immunity_duration` are finite). The `target_event`
 argument is only used to make the output a little prettier.

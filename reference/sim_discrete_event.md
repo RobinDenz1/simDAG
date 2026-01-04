@@ -18,7 +18,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_data=NULL, t0_transform_fun=NULL,
                    t0_transform_args=list(),
                    max_t=Inf, remove_if, break_if,
-                   max_loops=1000, redraw_at_t=NULL,
+                   max_iter=1000, redraw_at_t=NULL,
                    allow_ties=FALSE, censor_at_max_t=FALSE,
                    target_event=NULL, keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
@@ -116,7 +116,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   `$` syntax (e.g. use `data$X` instead of just `X`). Keep this argument
   unspecified (default) to not use this functionality.
 
-- max_loops:
+- max_iter:
 
   A single positive number, specifying the maximum amount of loops the
   simulation is allowed to run before it terminates. This argument

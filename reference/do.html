@@ -63,14 +63,14 @@
 <dd><p>A character string specifying names of nodes in the <code>dag</code> object. The value of these nodes will be set to the corresponding value specified in the <code>values</code> argument. If the node is not already defined in <code>dag</code>, a new one will be added without warning.</p></dd>
 
   <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
-<dd><p>A vector or list of any values. These nodes defined with the <code>names</code> argument will be set to those values.</p></dd>
+<dd><p>A vector or list of any values or <code><a href="node.html">node</a></code> / <code><a href="node.html">node_td</a></code> definitions. These nodes defined with the <code>names</code> argument will be set to those values or the new node definitions.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 
-<p>Internally this function simply removes the old node definition of all nodes in <code>names</code> and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition. The same effect can be created by directly specifying the <code>DAG</code> in this way from the start (see examples).</p>
+<p>Internally this function simply removes the old node definition of all nodes in <code>names</code> and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in <code>values</code> is a signle value. If it is a new <code><a href="node.html">node</a></code> or <code><a href="node.html">node_td</a></code> instead, the new definition replaces the old one. The same effect can be created by directly specifying the <code>DAG</code> in this way from the start (see examples).</p>
 <p>This function does not alter the original <code>DAG</code> in place. Instead, it returns a modified version of the <code>DAG</code>. In other words, using only <code>do(dag, names="A", values=3)</code> will not change the <code>dag</code> object.</p>
     </div>
     <div class="section level2">
@@ -110,6 +110,18 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># use do() on multiple variables: do(smoking = TRUE, sex = FALSE)</span></span></span>
 <span class="r-in"><span><span class="va">dag2</span> <span class="op">&lt;-</span> <span class="fu">do</span><span class="op">(</span><span class="va">dag</span>, names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"smoking"</span>, <span class="st">"sex"</span><span class="op">)</span>, values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## set node in DAG to a completely new definition</span></span></span>
+<span class="r-in"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"death"</span>, <span class="st">"binomial"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span><span class="op">)</span>, betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, intercept<span class="op">=</span><span class="op">-</span><span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">10</span>, sd<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, parents<span class="op">=</span><span class="st">""</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"smoking"</span>, parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"age"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"binomial"</span>,</span></span>
+<span class="r-in"><span>       betas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.2</span><span class="op">)</span>, intercept<span class="op">=</span><span class="op">-</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dag2</span> <span class="op">&lt;-</span> <span class="fu">do</span><span class="op">(</span><span class="va">dag</span>, names<span class="op">=</span><span class="st">"smoking"</span>, values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="node.html">node</a></span><span class="op">(</span><span class="st">"."</span>, type<span class="op">=</span><span class="st">"poisson"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">0.2</span> <span class="op">+</span> <span class="va">sex</span><span class="op">*</span><span class="fl">1.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
