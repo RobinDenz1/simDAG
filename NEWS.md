@@ -14,7 +14,7 @@ Enhancements
 * Added the `remove_if` and `break_if` arguments to the `sim_discrete_time()` function, to allow users some options that potentially make the simulation much faster.
 * Allow function input to the `data_format` argument of the `sim_n_datasets()` function to avoid potentially weird bugs in parallel processing.
 * There was a slight change to `node_binomial()`, which increases performance if `return_probs=TRUE` is used (avoiding a needless `rbernoulli()` call). The results of simulations with a `DAG` containing a node with both `type="binomial"` and `return_probs=TRUE` might therefore differ on the same random number generator seed as compared to previous versions.
-* Changed the default of `cens_dist` in `node_cox()` to `NULL`.
+* Made the `node_cox()` function faster, added the `left` argument to it to allow left-truncation and  changed the default of `cens_dist` to `NULL`. These changes likely result in different data being generated as compared to previous versions, even with the same random number generator seed.
 * Added the `formula` argument to `node_time_to_event()` to allow users to easily calculate event probabilities from binomial regression models without having to specify a `prob_fun`.
 * Allow `DAG.node` definitions in the `values` argument of the `do()` function, to make changing existing `DAG`s easier.
 

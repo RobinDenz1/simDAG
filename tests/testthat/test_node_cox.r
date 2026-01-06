@@ -14,7 +14,7 @@ test_that("with censoring", {
 
   expect_equal(colnames(out), c("A", "B", "C_time", "C_status"))
   expect_true(all(out$C_status==1))
-  expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
+  expect_equal(mean(out$C_time), 0.051396, tolerance=0.0001)
 })
 
 test_that("calling the function directly", {
@@ -32,7 +32,7 @@ test_that("calling the function directly", {
 
   expect_equal(colnames(out), c("C_time", "C_status"))
   expect_true(all(out$C_status==1))
-  expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
+  expect_equal(mean(out$C_time), 0.0514, tolerance=0.0001)
 })
 
 test_that("without censoring", {
@@ -49,12 +49,12 @@ test_that("without censoring", {
 
   expect_equal(colnames(out), c("A", "B", "C_time", "C_status"))
   expect_true(all(out$C_status==1))
-  expect_equal(mean(out$C_time), 0.04249061, tolerance=0.0001)
+  expect_equal(mean(out$C_time), 0.05253, tolerance=0.0001)
 })
 
 test_that("with formula", {
 
-  set.seed(3245)
+  set.seed(32457)
 
   dag <- empty_dag() +
     node("A", type="rnorm", mean=10, sd=2) +
@@ -67,12 +67,12 @@ test_that("with formula", {
 
   expect_equal(colnames(out), c("A", "B", "C_time", "C_status"))
   expect_true(all(out$C_status==1))
-  expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
+  expect_equal(mean(out$C_time), 0.04857, tolerance=0.0001)
 })
 
 test_that("with enhanced formula", {
 
-  set.seed(3245)
+  set.seed(32457)
 
   dag <- empty_dag() +
     node("A", type="rnorm", mean=10, sd=2) +
@@ -85,7 +85,7 @@ test_that("with enhanced formula", {
 
   expect_equal(colnames(out), c("A", "B", "C_time", "C_status"))
   expect_true(all(out$C_status==1))
-  expect_equal(mean(out$C_time), 0.04942, tolerance=0.0001)
+  expect_equal(mean(out$C_time), 0.04857, tolerance=0.0001)
 })
 
 test_that("without censoring: exponential", {
@@ -125,5 +125,19 @@ test_that("using only one variable in formula", {
 
   data <- sim_from_dag(dag, n_sim=100)
 
-  expect_equal(round(mean(data$Y_time), 3), 1.561)
+  expect_equal(round(mean(data$Y_time), 3), 2.24)
+})
+
+test_that("left-truncation works", {
+
+  set.seed(32457)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=2) +
+    node("B", type="rbernoulli", p=0.5) +
+    node("C", type="cox", formula=~A*0.2 + BTRUE*1,
+         lambda=2, gamma=1, surv_dist="weibull", left=15)
+
+  out <- sim_from_dag(dag=dag, n_sim=100)
+  expect_true(all(out$C_time > 15))
 })

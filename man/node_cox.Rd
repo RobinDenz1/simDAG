@@ -9,7 +9,8 @@ Data from the parents is used to generate the node using cox-regression using th
 }
 \usage{
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
-         cens_dist=NULL, cens_args, name, as_two_cols=TRUE)
+         cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
+         left=0)
 }
 \arguments{
   \item{data}{
@@ -45,6 +46,9 @@ A single character string specifying the name of the node.
   \item{as_two_cols}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the output should be divided into two columns. When \code{cens_dist} is specified, this argument will always be treated as \code{TRUE} because two columns are needed to encode both the time to the event and the status indicator. When no censoring is applied, however, users may set this argument to \code{FALSE} to simply return the numbers as they are.
   }
+  \item{left}{
+Either a single number >= 0, or a numeric vector of length \code{nrow(data)} containing only numbers >= 0. When simulating the survival times, only numbers larger than these will be generated using correctly left-truncated sampling. Note that this does not affect the censoring times, only the generated survival times will be left-truncated. Set to 0 (default) to not use left-truncation.
+  }
 }
 \details{
 The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.
@@ -52,6 +56,9 @@ The survival times are generated according to the cox proportional-hazards regre
 Unlike the other \code{\link{node}} type functions, this function usually adds \strong{two} columns to the resulting dataset instead of one. The first column is called \code{paste0(name, "_status")} and is a logical variable, where \code{TRUE} indicates that the event has happened and \code{FALSE} indicates right-censoring. The second column is named \code{paste0(name, "_time")} and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the \code{as_two_cols} argument.
 
 To simulate more complex time-to-event data, the user may need to use the \code{\link{sim_discrete_time}} function instead.
+}
+\note{
+This function was updated internally in version 0.5.0 to make it faster and to allow the \code{left} argument. Generating data using this updated version will generally result in different results as compared to earlier versions, even when using the same random number generator seed. To replicate earlier results, please install earlier versions of this package.
 }
 \references{
 Bender R, Augustin T, Blettner M. Generating survival times to simulate Cox proportional hazards models. Statistics in Medicine. 2005; 24 (11): 1713-1723.

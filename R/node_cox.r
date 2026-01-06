@@ -1,14 +1,27 @@
 
 ## simulate survival time according to Bender et al. (2005)
-sim_surv_time <- function(row, betas, dist, lambda, gamma) {
-  U <- stats::runif(1, min=0, max=1)
-  eff <- sum(row * betas)
+sim_surv_time <- function(data, betas, dist, lambda, gamma=NULL, left=0) {
 
-  if (dist=="weibull") {
-    surv_time <- (-(log(U)/(lambda*exp(eff))))^(1/gamma)
-  } else if (dist=="exponential") {
-    surv_time <- -(log(U)/(lambda*exp(eff)))
+  eff <- calc_linpred(data=data, betas=betas, intercept=0)
+  U <- stats::runif(nrow(data))
+
+  # cumulative baseline hazard at left
+  if (dist == "weibull") {
+    H0_left <- lambda * left^gamma
+  } else if (dist == "exponential") {
+    H0_left <- lambda * left
   }
+
+  # conditional survival inversion
+  H0_t <- H0_left - log(1 - U) / exp(eff)
+
+  # invert cumulative baseline hazard
+  if (dist == "weibull") {
+    surv_time <- (H0_t / lambda)^(1 / gamma)
+  } else if (dist == "exponential") {
+    surv_time <- H0_t / lambda
+  }
+
   return(surv_time)
 }
 
@@ -16,7 +29,7 @@ sim_surv_time <- function(row, betas, dist, lambda, gamma) {
 #' @export
 node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
                      lambda, gamma, cens_dist=NULL, cens_args, name,
-                     as_two_cols=TRUE) {
+                     as_two_cols=TRUE, left=0) {
 
   if (!data.table::is.data.table(data)) {
     data.table::setDT(data)
@@ -30,9 +43,8 @@ node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
   }
 
   # generate survival times
-  time <- apply(data, MARGIN=1,
-                FUN=sim_surv_time, betas=betas, dist=surv_dist,
-                lambda=lambda, gamma=gamma)
+  time <- sim_surv_time(data=data, betas=betas, dist=surv_dist, lambda=lambda,
+                        gamma=gamma, left=left)
 
   if (!as_two_cols && is.null(cens_dist)) {
     out_data <- time
