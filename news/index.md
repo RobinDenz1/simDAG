@@ -47,9 +47,13 @@ Enhancements
   both `type="binomial"` and `return_probs=TRUE` might therefore differ
   on the same random number generator seed as compared to previous
   versions.
-- Changed the default of `cens_dist` in
+- Made the
   [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
-  to `NULL`.
+  function faster, added the `left` argument to it to allow
+  left-truncation and changed the default of `cens_dist` to `NULL`.
+  These changes likely result in different data being generated as
+  compared to previous versions, even with the same random number
+  generator seed.
 - Added the `formula` argument to
   [`node_time_to_event()`](https://robindenz1.github.io/simDAG/reference/node_time_to_event.md)
   to allow users to easily calculate event probabilities from binomial

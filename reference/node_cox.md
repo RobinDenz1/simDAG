@@ -7,7 +7,8 @@ using the method of Bender et al. (2005).
 
 ``` r
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
-         cens_dist=NULL, cens_args, name, as_two_cols=TRUE)
+         cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
+         left=0)
 ```
 
 ## Arguments
@@ -78,6 +79,15 @@ node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
   censoring is applied, however, users may set this argument to `FALSE`
   to simply return the numbers as they are.
 
+- left:
+
+  Either a single number \>= 0, or a numeric vector of length
+  `nrow(data)` containing only numbers \>= 0. When simulating the
+  survival times, only numbers larger than these will be generated using
+  correctly left-truncated sampling. Note that this does not affect the
+  censoring times, only the generated survival times will be
+  left-truncated. Set to 0 (default) to not use left-truncation.
+
 ## Details
 
 The survival times are generated according to the cox
@@ -105,6 +115,15 @@ To simulate more complex time-to-event data, the user may need to use
 the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function instead.
+
+## Note
+
+This function was updated internally in version 0.5.0 to make it faster
+and to allow the `left` argument. Generating data using this updated
+version will generally result in different results as compared to
+earlier versions, even when using the same random number generator seed.
+To replicate earlier results, please install earlier versions of this
+package.
 
 ## References
 

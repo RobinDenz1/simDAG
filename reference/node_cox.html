@@ -51,7 +51,8 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_cox</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, formula<span class="op">=</span><span class="cn">NULL</span>, <span class="va">betas</span>, <span class="va">surv_dist</span>, <span class="va">lambda</span>, <span class="va">gamma</span>,</span>
-<span>         cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>         cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>         left<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -90,12 +91,19 @@
   <dt id="arg-as-two-cols">as_two_cols<a class="anchor" aria-label="anchor" href="#arg-as-two-cols"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether the output should be divided into two columns. When <code>cens_dist</code> is specified, this argument will always be treated as <code>TRUE</code> because two columns are needed to encode both the time to the event and the status indicator. When no censoring is applied, however, users may set this argument to <code>FALSE</code> to simply return the numbers as they are.</p></dd>
 
+  <dt id="arg-left">left<a class="anchor" aria-label="anchor" href="#arg-left"></a></dt>
+<dd><p>Either a single number &gt;= 0, or a numeric vector of length <code>nrow(data)</code> containing only numbers &gt;= 0. When simulating the survival times, only numbers larger than these will be generated using correctly left-truncated sampling. Note that this does not affect the censoring times, only the generated survival times will be left-truncated. Set to 0 (default) to not use left-truncation.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.</p>
 <p>Unlike the other <code><a href="node.html">node</a></code> type functions, this function usually adds <strong>two</strong> columns to the resulting dataset instead of one. The first column is called <code>paste0(name, "_status")</code> and is a logical variable, where <code>TRUE</code> indicates that the event has happened and <code>FALSE</code> indicates right-censoring. The second column is named <code>paste0(name, "_time")</code> and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the <code>as_two_cols</code> argument.</p>
 <p>To simulate more complex time-to-event data, the user may need to use the <code><a href="sim_discrete_time.html">sim_discrete_time</a></code> function instead.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p>This function was updated internally in version 0.5.0 to make it faster and to allow the <code>left</code> argument. Generating data using this updated version will generally result in different results as compared to earlier versions, even when using the same random number generator seed. To replicate earlier results, please install earlier versions of this package.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
