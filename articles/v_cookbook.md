@@ -412,6 +412,70 @@ Note that the estimate above will not show an exact hazard ratio of 0.5,
 because only 500 individuals were simulated. With increasing `n_sim`,
 the estimated value will be closer to the true value of 0.5.
 
+If continuous time is required, a nearly equivalent discrete-event
+simulation may be used:
+
+``` r
+dag <- empty_dag() +
+  node_td("A", type="next_time", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="next_time",
+          formula= ~ log(0.01) + log(0.5)*A,
+          event_duration=Inf)
+
+data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
+                           keep_only_first=TRUE)
+head(data)
+#> Key: <.id, start>
+#>      .id     start      stop      A      Y
+#>    <int>     <num>     <num> <lgcl> <lgcl>
+#> 1:     1   0.00000  77.60547  FALSE  FALSE
+#> 2:     1  77.60547  97.60547   TRUE  FALSE
+#> 3:     1  97.60547 121.82781  FALSE  FALSE
+#> 4:     1 121.82781 141.82781   TRUE  FALSE
+#> 5:     1 141.82781 197.83302  FALSE  FALSE
+#> 6:     1 197.83302 217.83302   TRUE  FALSE
+```
+
+Here, we used nodes of type `"next_time"` instead, as required for
+[`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+calls. Otherwise the specification is very similar. Note that instead of
+using a custom probability function, we used the `formula` interface to
+specify the probability of `Y`. This could have been done in the
+discrete-time simulation as well, but for performance reasons it is
+often better to use `prob_fun`.
+
+Again, we can check the code by fitting the corresponding Cox model:
+
+``` r
+mod <- coxph(Surv(start, stop, Y) ~ A, data=data)
+summary(mod)
+#> Call:
+#> coxph(formula = Surv(start, stop, Y) ~ A, data = data)
+#> 
+#>   n= 1396, number of events= 497 
+#> 
+#>          coef exp(coef) se(coef)      z Pr(>|z|)    
+#> ATRUE -1.0892    0.3365   0.1863 -5.848 4.98e-09 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#>       exp(coef) exp(-coef) lower .95 upper .95
+#> ATRUE    0.3365      2.972    0.2336    0.4847
+#> 
+#> Concordance= 0.543  (se = 0.007 )
+#> Likelihood ratio test= 47.01  on 1 df,   p=7e-12
+#> Wald test            = 34.2  on 1 df,   p=5e-09
+#> Score (logrank) test = 37.68  on 1 df,   p=8e-10
+```
+
+Which again shows a hazard ratio for `A` that is fairly close to 0.5, as
+expected. Alternatively, we could have used `model="cox"` here to
+directly use the
+[`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
+functionality to generate the times for `Y`. This may be useful when
+Weibull distributed baseline hazards should be used.
+
 ### Aalen Additive Hazards Model with Time-Dependent Covariates
 
 Similar to the Cox model shown above, the Aalen additive hazards model
@@ -445,17 +509,50 @@ data <- sim2data(sim, to="start_stop", overlap=TRUE, target_event="Y",
 head(data)
 #>      .id start  stop      A      Y
 #>    <int> <int> <num> <lgcl> <lgcl>
-#> 1:     1     1   105  FALSE   TRUE
-#> 2:     2     1    49  FALSE   TRUE
-#> 3:     3     1   254  FALSE  FALSE
-#> 4:     3   254   274   TRUE  FALSE
-#> 5:     3   274   322  FALSE  FALSE
-#> 6:     3   322   342   TRUE  FALSE
+#> 1:     1     1   133  FALSE  FALSE
+#> 2:     1   133   153   TRUE  FALSE
+#> 3:     1   153   476  FALSE  FALSE
+#> 4:     1   476   490   TRUE   TRUE
+#> 5:     2     1   148  FALSE  FALSE
+#> 6:     2   148   168   TRUE  FALSE
 ```
 
 The coefficients could be recovered using an `aalen()` model from the
 `timereg` R package. The code is not shown to avoid an unneeded
 dependency on that package.
+
+Again, we could use the
+[`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+function instead, if we want to generate data from the same data
+generation process but with continuous time:
+
+``` r
+dag <- empty_dag() +
+  node_td("A", type="next_time", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="next_time",
+          formula= ~ 0.001 + A*0.05, model="aalen",
+          event_duration=Inf)
+
+data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
+                           keep_only_first=TRUE)
+head(data)
+#> Key: <.id, start>
+#>      .id     start      stop      A      Y
+#>    <int>     <num>     <num> <lgcl> <lgcl>
+#> 1:     1   0.00000  27.46853  FALSE  FALSE
+#> 2:     1  27.46853  40.18321   TRUE   TRUE
+#> 3:     2   0.00000  14.72661  FALSE  FALSE
+#> 4:     2  14.72661  34.39991   TRUE   TRUE
+#> 5:     3   0.00000 274.71466  FALSE  FALSE
+#> 6:     3 274.71466 288.78126   TRUE   TRUE
+```
+
+This specification uses the `model` argument to specify that an Aalen
+additive hazards model should be used to generate the time until `Y`. By
+also specifying a `formula`, the model is fully specified and times are
+generated directly from
+[`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md).
 
 ## Miscellaneous Simulations
 
@@ -481,12 +578,12 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>    school female       age      score
 #>    <char> <lgcl>     <num>      <num>
-#> 1:      J   TRUE  9.060191  0.6103906
-#> 2:      G   TRUE 18.758197  0.5601779
-#> 3:      J   TRUE 14.948317  1.4862632
-#> 4:      C  FALSE  9.978993 -3.2609397
-#> 5:      D  FALSE 14.413468 -1.6006045
-#> 6:      A  FALSE 13.147173 -1.4654531
+#> 1:      I   TRUE 12.957818  3.1832933
+#> 2:      C   TRUE  7.924776  2.8786369
+#> 3:      D   TRUE 10.176482  2.8363160
+#> 4:      F  FALSE 10.180657  0.3773207
+#> 5:      I  FALSE 10.157362 -1.2590350
+#> 6:      C  FALSE 12.908317  0.8219375
 ```
 
 In this example, there is a single random effect for school, with a
@@ -516,14 +613,14 @@ dag <- empty_dag() +
        ))
 data <- sim_from_dag(dag, n_sim=10)
 head(data)
-#>    strata       var1       var2          Y
-#>    <lgcl>      <num>      <num>      <num>
-#> 1:   TRUE  1.8650262  1.3216871  6.2860129
-#> 2:   TRUE  0.5357810 -0.4622341  4.0256795
-#> 3:  FALSE -0.5255262 -1.0383955 -0.3599495
-#> 4:  FALSE -0.4952464 -0.4233173 -1.1806965
-#> 5:   TRUE -0.5181156  0.6334964  6.6033972
-#> 6:   TRUE  0.6530059 -1.4336485  3.1526539
+#>    strata        var1        var2          Y
+#>    <lgcl>       <num>       <num>      <num>
+#> 1:  FALSE -0.92575296  0.63422389 -3.7713404
+#> 2:   TRUE  0.13016410 -0.08978755  5.8966310
+#> 3:  FALSE -0.04944792 -0.47909778 -1.4346367
+#> 4:  FALSE -1.33428562  0.08187681 -5.0422909
+#> 5:  FALSE  0.20001205  0.03793749 -2.5544498
+#> 6:  FALSE  0.82301745  1.84891790  0.3152809
 ```
 
 Using the `distr` argument, we can easily define to which simulated
@@ -582,12 +679,12 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>       A_real A_missing A_observed
 #>        <num>    <lgcl>      <num>
-#> 1: 11.556228     FALSE  11.556228
-#> 2: 11.204382      TRUE         NA
-#> 3: 12.000508     FALSE  12.000508
-#> 4:  8.320528      TRUE         NA
-#> 5:  5.679615     FALSE   5.679615
-#> 6: 13.858496      TRUE         NA
+#> 1:  8.990730      TRUE         NA
+#> 2:  8.742281     FALSE   8.742281
+#> 3: 11.689047      TRUE         NA
+#> 4: 10.882558     FALSE  10.882558
+#> 5: 11.637514     FALSE  11.637514
+#> 6:  5.727022     FALSE   5.727022
 ```
 
 In this DAG, the real values of node `A` are generated first.
@@ -615,14 +712,14 @@ dag <- empty_dag() +
 
 data <- sim_from_dag(dag, n_sim=10)
 head(data)
-#>          A_real B_real A_missing B_missing   A_observed B_observed
-#>           <num> <lgcl>    <lgcl>    <lgcl>        <num>     <lgcl>
-#> 1:  0.007654443  FALSE     FALSE     FALSE  0.007654443      FALSE
-#> 2: -1.504186161  FALSE     FALSE     FALSE -1.504186161      FALSE
-#> 3:  0.402660828  FALSE     FALSE     FALSE  0.402660828      FALSE
-#> 4:  0.686922785  FALSE     FALSE     FALSE  0.686922785      FALSE
-#> 5: -0.140018261   TRUE     FALSE     FALSE -0.140018261       TRUE
-#> 6: -0.141692283  FALSE      TRUE     FALSE           NA      FALSE
+#>        A_real B_real A_missing B_missing A_observed B_observed
+#>         <num> <lgcl>    <lgcl>    <lgcl>      <num>     <lgcl>
+#> 1:  0.5992828   TRUE     FALSE     FALSE  0.5992828       TRUE
+#> 2:  0.2296464  FALSE     FALSE     FALSE  0.2296464      FALSE
+#> 3: -1.1221036   TRUE     FALSE     FALSE -1.1221036       TRUE
+#> 4: -0.5055837  FALSE     FALSE     FALSE -0.5055837      FALSE
+#> 5:  0.2642537   TRUE     FALSE     FALSE  0.2642537       TRUE
+#> 6:  0.7590262   TRUE     FALSE     FALSE  0.7590262       TRUE
 ```
 
 Here, the missingness in `A_observed` is again MCAR, because it is
@@ -651,11 +748,11 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>    Disease_real Disease_observed
 #>          <lgcl>           <lgcl>
-#> 1:         TRUE             TRUE
+#> 1:        FALSE            FALSE
 #> 2:        FALSE            FALSE
-#> 3:        FALSE            FALSE
-#> 4:        FALSE            FALSE
-#> 5:         TRUE             TRUE
+#> 3:         TRUE             TRUE
+#> 4:         TRUE             TRUE
+#> 5:        FALSE            FALSE
 #> 6:        FALSE            FALSE
 ```
 
@@ -683,10 +780,10 @@ head(data)
 #>    <lgcl>       <lgcl>           <lgcl>
 #> 1:  FALSE        FALSE            FALSE
 #> 2:  FALSE         TRUE             TRUE
-#> 3:   TRUE        FALSE            FALSE
-#> 4:   TRUE        FALSE            FALSE
-#> 5:   TRUE         TRUE             TRUE
-#> 6:   TRUE        FALSE            FALSE
+#> 3:  FALSE        FALSE            FALSE
+#> 4:  FALSE        FALSE            FALSE
+#> 5:  FALSE         TRUE            FALSE
+#> 6:   TRUE         TRUE             TRUE
 ```
 
 In this extended example, `Sex` is equally distributed among the

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,7 @@
 <dd><p>Only used when <code>to="start_stop"</code> and <code>target_event</code> is not <code>NULL</code>. Either <code>TRUE</code> or <code>FALSE</code> (default). If <code>TRUE</code>, the <code>event_duration</code> and <code>immunity_duration</code> of the <code>target_event</code> are taken into account when constructing the start-stop data. More precisely, the time in which individuals are not at-risk because they are either still currently experiencing the event or because they are immune to the event is removed from the start-stop data. This may be necessary when fitting some survival regression models, because these time-periods should not be counted as time at-risk.</p></dd>
 
   <dt id="arg-remove-vars">remove_vars<a class="anchor" aria-label="anchor" href="#arg-remove-vars"></a></dt>
-<dd><p>An optional character vector specifying which variables should <em>not</em> be included in the ouput. Set to <code>NULL</code> to include all variables included in the <code>sim</code> object (default).</p></dd>
+<dd><p>An optional character vector specifying which variables should <em>not</em> be included in the output. Set to <code>NULL</code> to include all variables included in the <code>sim</code> object (default).</p></dd>
 
   <dt id="arg-as-data-frame">as_data_frame<a class="anchor" aria-label="anchor" href="#arg-as-data-frame"></a></dt>
 <dd><p>Set this argument to <code>TRUE</code> to return a <code>data.frame</code> instead of a <code>data.table</code>.</p></dd>

@@ -12,7 +12,7 @@ details.
 ``` r
 node_next_time(data, formula, prob_fun, ...,
                distr_fun=rtexp, distr_fun_args=list(),
-               event_duration=Inf,
+               model=NULL, event_duration=Inf,
                immunity_duration=event_duration,
                event_count=FALSE)
 ```
@@ -57,11 +57,13 @@ node_next_time(data, formula, prob_fun, ...,
 - ...:
 
   An arbitrary amount of additional named arguments passed to `prob_fun`
-  if `prob_fun` is specified. If `formula` is specified and `prob_fun`
-  is not, these additional arguments are passed directly to the
+  if `prob_fun` is specified. If `formula` is specified and both
+  `prob_fun` and `model` are not, these additional arguments are passed
+  directly to the
   [`node_binomial`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)
-  function. Ignore this if you do not want to pass any arguments. Also
-  ignored if `prob_fun` is a single number.
+  function instead. If `model` is specified, these arguments are passed
+  to the respective model function. Ignore this if you do not want to
+  pass any arguments. Also ignored if `prob_fun` is a single number.
 
 - distr_fun:
 
@@ -80,6 +82,20 @@ node_next_time(data, formula, prob_fun, ...,
 
   A list of named arguments that should be passed to the function
   specified in the `distr_fun` argument.
+
+- model:
+
+  Alternative way to specify how the next time should be generated.
+  Takes a single character string, specifying a time-to-event node.
+  Currently supported values are `"cox"` (to use the
+  [`node_cox`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
+  function to generate the next time) and `"aalen"` (to use the
+  [`node_aalen`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)
+  function to generate the next time). If this argument is specified,
+  both `prob_fun` and `distr_fun` are ignored. Concurrent use of the
+  `formula` argument is supported. Further arguments that need to be
+  passed to the respective node function can be passed through the `...`
+  syntax.
 
 - event_duration:
 
@@ -152,7 +168,7 @@ the time of the next event in each of them. Lets say those are 20 and
 42, respectively. The simulation time is then advanced to 20, setting
 `A` to `TRUE`. At this point, the `prob_fun` and `distr_fun` arguments
 are called again for `B`, because `B` might be dependent on current
-values of `A`, drawing a new next event time for `B`. Cruicially, this
+values of `A`, drawing a new next event time for `B`. Crucially, this
 time is drawn from a left-truncated `distr_fun`, so that it is always
 larger than the current time of 20. Lets say that new time is 53.
 

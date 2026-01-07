@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -318,7 +318,7 @@ death. Consider the following code:</p>
 <code>treatment</code>, which has a fixed probability of being given to
 a person. It then has an effect for 100 time units, after which the
 variable turns back to <code>FALSE</code>. Once it is <code>FALSE</code>
-again, it may be given to the same person again immediatly, with a
+again, it may be given to the same person again immediately, with a
 probability of 0.01. The probability of the <code>death</code> of a
 person is now no longer fixed, but a function of the
 <code>treatment</code> status. The general probability of death is 0.001
@@ -442,12 +442,42 @@ distribution with the new rate of 0.005 (truncated at 300).</p>
 time-dependent effects as well. One would only need to adjust the
 <code>prob_death()</code> function so that it has a different factor for
 <code>treatment</code> depending on the time. Using continuously
-changing probabilities is more difficult, but possible. If for example,
-we assume that the baseline probability follows a Weibull distribution,
-we could use the same algorithm that is used in the
-<code><a href="../reference/node_cox.html">node_cox()</a></code> function to draw the event times instead. This
-could be done by changing the <code>distr_fun</code> argument inside the
-relevant <code><a href="../reference/node.html">node_td()</a></code> call appropriately.</p>
+changing probabilities is also possible, but requires a different
+approach. The easiest way to do this is by using the <code>model</code>
+argument. Consider the code below:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"treatment"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="fl">100</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>,</span>
+<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">*</span><span class="va">treatment</span>, model<span class="op">=</span><span class="st">"cox"</span>,</span>
+<span>          surv_dist<span class="op">=</span><span class="st">"weibull"</span>, gamma<span class="op">=</span><span class="fl">1.5</span>, lambda<span class="op">=</span><span class="fl">0.0001</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
+<span><span class="co">#&gt;      .id     start      stop treatment  death</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;     &lt;num&gt;     &lt;num&gt;    &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     1   0.00000  40.59338     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1  40.59338 140.59338      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 3:     1 140.59338 171.25288     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 4:     1 171.25288 271.25288      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 5:     1 271.25288 314.34103     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     1 314.34103 414.34103      TRUE  FALSE</span></span></code></pre></div>
+<p>Here, we use a Cox proportional hazards model with a Weibull baseline
+hazard function to generate the time of <code>death</code> instead of
+directly defining the probability functions and drawing values using an
+exponential distribution. Since the Weibull distribution is not constant
+over time, this is a valid strategy if we want continuously changing
+baseline event probabilities.</p>
+<p>In theory, the same strategy could be used for any other
+time-to-event model, such as Aalen additive hazards models, accelerated
+failure time models etc. Users only need a function that simulates data
+from such models and directly allows left-truncation. Currently, only
+Cox and Aalen models are supported through the <code>model</code>
+argument, but we are working on further built-in options.</p>
 </div>
 <div class="section level3">
 <h3 id="categorical-count-continuous-variables">Categorical / Count / Continuous variables<a class="anchor" aria-label="anchor" href="#categorical-count-continuous-variables"></a>
@@ -485,7 +515,7 @@ computations to be a lot faster. If, however, the user supplies a custom
 function that generates integer based times, this argument needs to be
 set to <code>TRUE</code> (otherwise an error will be returned).</p>
 <p>For example, consider the following code:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">integer_rtexp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">rate</span>, <span class="va">l</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="../reference/rtexp.html">rtexp</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>, rate<span class="op">=</span><span class="va">rate</span>, l<span class="op">=</span><span class="va">l</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>

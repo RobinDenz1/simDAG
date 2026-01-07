@@ -179,7 +179,7 @@ function. Currently, the
 function only supports nodes of type `"next_time"`, so the following
 text is exclusively about time-dependent nodes in
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md).
-In general, definining custom time-dependent nodes works in essentially
+In general, defining custom time-dependent nodes works in essentially
 the same way as for simple root nodes or child nodes. The requirements
 are:
 

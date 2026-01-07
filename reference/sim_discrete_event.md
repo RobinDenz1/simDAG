@@ -1,6 +1,6 @@
 # Simulate Data from a `DAG` with Time-Dependent Variables in Continuous Time
 
-EXPERIMENTAL: Similar to
+Similar to
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md),
 this function allows users to generate complex data with time-varying
 variables from a `DAG` defined using
@@ -87,7 +87,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   A single number specifying the time needs to be reached for all
   individuals for the simulation to be terminated. This can be set to
-  `Inf`, if the end of the simulation can be determinated through other
+  `Inf`, if the end of the simulation can be terminated through other
   means (e.g. the `remove_if` or `break_if` arguments, or when all
   variables have an event duration or immunity duration that is
   infinite).
@@ -199,8 +199,12 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
 ## Details
 
-This function is purely experimental. It currently needs more tests and
-checks. Use at your own risk.
+This function and the corresponding node interface implemented through
+the
+[`node_next_time`](https://robindenz1.github.io/simDAG/reference/node_next_time.md)
+function are still fairly new and may not have reached a stable state.
+The functionality is tested and should work fine, but the arguments,
+syntax and general functionality may still change in upcoming releases.
 
 ***What is Discrete-Event Simulation?***:
 

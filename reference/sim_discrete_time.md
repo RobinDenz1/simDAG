@@ -293,7 +293,7 @@ interested in the first time that some variable `Y` turns `TRUE`, it may
 make sense to use `remove_if=Y==TRUE`. Under the hood, the function then
 removes any individual where `Y` is already `TRUE`, so that the `data`
 shrinks and no further computations are performed for these individuals.
-Unofrtunately, whether or not this actually does improve performance is
+Unfortunately, whether or not this actually does improve performance is
 dependent on multiple factors. With large `n_sim` and `max_t`, a
 constant or skewed probability distribution of `Y` and especially when
 expensive calculations are performed at each point in time, the

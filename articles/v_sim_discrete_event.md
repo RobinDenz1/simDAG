@@ -230,7 +230,7 @@ Here, we specified two time-dependent nodes of type `"next_time"`. The
 first one denotes the `treatment`, which has a fixed probability of
 being given to a person. It then has an effect for 100 time units, after
 which the variable turns back to `FALSE`. Once it is `FALSE` again, it
-may be given to the same person again immediatly, with a probability of
+may be given to the same person again immediately, with a probability of
 0.01. The probability of the `death` of a person is now no longer fixed,
 but a function of the `treatment` status. The general probability of
 death is 0.001 per time unit, but it is reduced by a factor of 0.8 if
@@ -356,14 +356,46 @@ The same strategy could be used to define piecewise-constant
 time-dependent effects as well. One would only need to adjust the
 `prob_death()` function so that it has a different factor for
 `treatment` depending on the time. Using continuously changing
-probabilities is more difficult, but possible. If for example, we assume
-that the baseline probability follows a Weibull distribution, we could
-use the same algorithm that is used in the
-[`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
-function to draw the event times instead. This could be done by changing
-the `distr_fun` argument inside the relevant
-[`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
-call appropriately.
+probabilities is also possible, but requires a different approach. The
+easiest way to do this is by using the `model` argument. Consider the
+code below:
+
+``` r
+dag <- empty_dag() +
+  node_td("treatment", type="next_time", prob_fun=0.01,
+          event_duration=100) +
+  node_td("death", type="next_time",
+          formula= ~ log(0.8)*treatment, model="cox",
+          surv_dist="weibull", gamma=1.5, lambda=0.0001,
+          event_duration=Inf)
+
+sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
+                          target_event="death", keep_only_first=TRUE)
+head(sim)
+#> Key: <.id, start>
+#>      .id     start      stop treatment  death
+#>    <int>     <num>     <num>    <lgcl> <lgcl>
+#> 1:     1   0.00000  40.59338     FALSE  FALSE
+#> 2:     1  40.59338 140.59338      TRUE  FALSE
+#> 3:     1 140.59338 171.25288     FALSE  FALSE
+#> 4:     1 171.25288 271.25288      TRUE  FALSE
+#> 5:     1 271.25288 314.34103     FALSE  FALSE
+#> 6:     1 314.34103 414.34103      TRUE  FALSE
+```
+
+Here, we use a Cox proportional hazards model with a Weibull baseline
+hazard function to generate the time of `death` instead of directly
+defining the probability functions and drawing values using an
+exponential distribution. Since the Weibull distribution is not constant
+over time, this is a valid strategy if we want continuously changing
+baseline event probabilities.
+
+In theory, the same strategy could be used for any other time-to-event
+model, such as Aalen additive hazards models, accelerated failure time
+models etc. Users only need a function that simulates data from such
+models and directly allows left-truncation. Currently, only Cox and
+Aalen models are supported through the `model` argument, but we are
+working on further built-in options.
 
 ### Categorical / Count / Continuous variables
 

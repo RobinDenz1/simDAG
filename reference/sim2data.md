@@ -92,7 +92,7 @@ as.data.frame(x, row.names=NULL, optional=FALSE, to,
 - remove_vars:
 
   An optional character vector specifying which variables should *not*
-  be included in the ouput. Set to `NULL` to include all variables
+  be included in the output. Set to `NULL` to include all variables
   included in the `sim` object (default).
 
 - as_data_frame:
