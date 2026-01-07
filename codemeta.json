@@ -2,13 +2,13 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "simDAG",
-  "description": "Simulate complex data from a given directed acyclic graph and information about each individual node. Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to one of many implemented regressions, such as logistic regression, linear regression, poisson regression or any other function. Also includes a comprehensive framework for discrete-time simulation, and networks-based simulation which can generate even more complex longitudinal and dependent data. For more details, see Robin Denz, Nina Timmesfeld (2025) <doi:10.48550/arXiv.2506.01498>.",
-  "name": "simDAG: Simulate Data from a DAG and Associated Node Information",
+  "description": "Simulate complex data from a given directed acyclic graph and information about each individual node. Root nodes are simply sampled from the specified distribution. Child Nodes are simulated according to one of many implemented regressions, such as logistic regression, linear regression, poisson regression or any other function. Also includes a comprehensive framework for discrete-time simulation, discrete-event simulation, and networks-based simulation which can generate even more complex longitudinal and dependent data. For more details, see Robin Denz, Nina Timmesfeld (2025) <doi:10.48550/arXiv.2506.01498>.",
+  "name": "simDAG: Simulate Data from a (time-dependent) causal DAG",
   "relatedLink": "https://robindenz1.github.io/simDAG/",
   "codeRepository": "https://github.com/RobinDenz1/simDAG",
   "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -288,9 +288,21 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=dagitty"
     },
+    "6": {
+      "@type": "SoftwareApplication",
+      "identifier": "ggdag",
+      "name": "ggdag",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=ggdag"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "1776.349KB",
+  "fileSize": "2008.656KB",
   "citation": [
     {
       "@type": "CreativeWork",

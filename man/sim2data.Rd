@@ -53,7 +53,7 @@ Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}
 Only used when \code{to="start_stop"} and \code{target_event} is not \code{NULL}. Either \code{TRUE} or \code{FALSE} (default). If \code{TRUE}, the \code{event_duration} and \code{immunity_duration} of the \code{target_event} are taken into account when constructing the start-stop data. More precisely, the time in which individuals are not at-risk because they are either still currently experiencing the event or because they are immune to the event is removed from the start-stop data. This may be necessary when fitting some survival regression models, because these time-periods should not be counted as time at-risk.
   }
   \item{remove_vars}{
-An optional character vector specifying which variables should \emph{not} be included in the ouput. Set to \code{NULL} to include all variables included in the \code{sim} object (default).
+An optional character vector specifying which variables should \emph{not} be included in the output. Set to \code{NULL} to include all variables included in the \code{sim} object (default).
   }
   \item{as_data_frame}{
 Set this argument to \code{TRUE} to return a \code{data.frame} instead of a \code{data.table}.

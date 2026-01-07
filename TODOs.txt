@@ -9,7 +9,7 @@ sim_discrete_time:
 	- allow all nodes to be based on previous t in one argument
 
 node_next_time:
-	- allow internal other distr_fun (cox, aft models, ...)
+	- allow parametric survival models in "model" if rsurv package is updated
 	- maybe allow "delays"?
 
 dag_from_data:

@@ -492,7 +492,7 @@ test_that("works with actual ties", {
   dag <- empty_dag() +
     node("A", type="rbernoulli") +
     node_td("X1", type="next_time", prob_fun=prob_X, base_p=0.01,
-            distr_fun=round_rtexp) +
+            distr_fun=round_rtexp, event_count=TRUE) +
     node_td("X2", type="next_time", prob_fun=prob_X, base_p=0.001,
             distr_fun=round_rtexp) +
     node_td("X3", type="next_time", prob_fun=prob_X, base_p=0.02,
@@ -672,6 +672,53 @@ test_that("formula works with remove_if", {
   expect_equal(nrow(sim), 108)
 })
 
+test_that("model argument works", {
+
+  # with formula
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=0.01) +
+    node_td("X2", type="next_time", prob_fun=0.001) +
+    node_td("X3", type="next_time", prob_fun=0.02) +
+    node_td("Y", type="next_time",
+            formula= ~ A*log(0.8) + X1*log(1.5) + X2*log(2) + X3*log(0.7),
+            model="cox", surv_dist="weibull", lambda=0.1, gamma=0.7)
+
+  set.seed(1234)
+  sim1 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  # should be the same without formula
+  dag1 <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=0.01) +
+    node_td("X2", type="next_time", prob_fun=0.001) +
+    node_td("X3", type="next_time", prob_fun=0.02) +
+    node_td("Y", type="next_time",
+            parents=c("A", "X1", "X2", "X3"),
+            betas=c(log(0.8), log(1.5), log(2), log(0.7)),
+            model="cox", surv_dist="weibull", lambda=0.1, gamma=0.7)
+
+  set.seed(1234)
+  sim2 <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  expect_equal(sim1, sim2)
+
+  # aalen model works as well
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=0.01) +
+    node_td("X2", type="next_time", prob_fun=0.001) +
+    node_td("X3", type="next_time", prob_fun=0.3) +
+    node_td("Y", type="next_time",
+            formula= ~ 0.1 + A*0.2 + X1*-0.05 + X2*0.05 + X3*0.05,
+            model="aalen")
+
+  set.seed(1234)
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  expect_equal(nrow(sim), 5000)
+})
+
 test_that("warning if max_iter reached", {
 
   set.seed(356345)
@@ -731,6 +778,31 @@ test_that("warning with networks in DAG and remove_if", {
 
   expect_warning(sim_discrete_event(dag, n_sim=50, max_t=Inf,
                                     remove_if=Y==TRUE, censor_at_max_t=TRUE))
+})
+
+test_that("helpful error when using model argument", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=0.01) +
+    node_td("X2", type="next_time", prob_fun=0.001) +
+    node_td("X3", type="next_time", prob_fun=0.3) +
+    node_td("Y", type="next_time",
+            formula= ~ 0.1 + A*0.2 + X1*-500 + X2*0.05 + X3*-500,
+            model="aalen")
+
+  expect_error(sim_discrete_event(dag, n_sim=1000, max_t=Inf))
+})
+
+test_that("error if next_time node does not specify anything", {
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time")
+
+  expect_error(sim_discrete_event(dag, n_sim=1000, max_t=Inf),
+               paste0("Either 'prob_fun', 'formula' or 'model' need to be ",
+                      "specified when using nodes of type='next_time'."))
 })
 
 test_that("error with time-dependent networks", {

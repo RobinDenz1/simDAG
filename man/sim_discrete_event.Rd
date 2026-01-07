@@ -5,7 +5,7 @@
 Simulate Data from a \code{DAG} with Time-Dependent Variables in Continuous Time
 }
 \description{
-EXPERIMENTAL: Similar to \code{\link{sim_discrete_time}}, this function allows users to generate complex data with time-varying variables from a \code{DAG} defined using \code{\link{node}} and \code{\link{node_td}} calls. In contrast to \code{\link{sim_discrete_time}}, time is modelled as a continuous variable using a discrete-event simulation approach. See details.
+Similar to \code{\link{sim_discrete_time}}, this function allows users to generate complex data with time-varying variables from a \code{DAG} defined using \code{\link{node}} and \code{\link{node_td}} calls. In contrast to \code{\link{sim_discrete_time}}, time is modelled as a continuous variable using a discrete-event simulation approach. See details.
 }
 \usage{
 sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
@@ -39,7 +39,7 @@ An optional function that takes the data created at \eqn{t = 0} as the first arg
 A named list of additional arguments passed to the \code{t0_transform_fun}. Ignored if \code{t0_transform_fun=NULL}.
   }
   \item{max_t}{
-A single number specifying the time needs to be reached for all individuals for the simulation to be terminated. This can be set to \code{Inf}, if the end of the simulation can be determinated through other means (e.g. the \code{remove_if} or \code{break_if} arguments, or when all variables have an event duration or immunity duration that is infinite).
+A single number specifying the time needs to be reached for all individuals for the simulation to be terminated. This can be set to \code{Inf}, if the end of the simulation can be terminated through other means (e.g. the \code{remove_if} or \code{break_if} arguments, or when all variables have an event duration or immunity duration that is infinite).
   }
   \item{remove_if}{
 A condition that will be evaluated directly on the generated \code{data.table} after each jump to the next event. All rows for which the condition is \code{TRUE} are removed from the \code{data} at this point in time. The condition may contain names of any variable that were generated. If all rows are removed through this condition, the simulation stops early. This argument may be useful to save computation time, if a large number of variables or many state changed need to be considered and the user only cares about the first time a condition is met for some individuals. Keep this argument unspecified (default) to not use this functionality.
@@ -77,7 +77,7 @@ Whether to perform plausibility checks for the user input or not. Is set to \cod
 }
 \details{
 
-This function is purely experimental. It currently needs more tests and checks. Use at your own risk.
+This function and the corresponding node interface implemented through the \code{\link{node_next_time}} function are still fairly new and may not have reached a stable state. The functionality is tested and should work fine, but the arguments, syntax and general functionality may still change in upcoming releases.
 
 \strong{\emph{What is Discrete-Event Simulation?}}:
 

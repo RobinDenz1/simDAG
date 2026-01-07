@@ -168,25 +168,23 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       rel_row <- data$.kind==var_names[i] &
         is.infinite(data$.time_of_next_change)
 
+      # skip node if done for everyone
+      if (sum(rel_row)==0) {
+        next
+      }
+
       args_p <- remove_node_internals(tx_nodes[[i]])
 
-      # call prob_fun with correct arguments
-      if (!is.null(tx_nodes[[i]]$prob_fun)) {
-        args_p$data <- data[rel_row==TRUE]
-
-        p_est <- tryCatch({
-          do.call(tx_nodes[[i]]$prob_fun, args=args_p)},
-          error=function(e){
-            stop("Calling 'prob_fun' failed with error message:\n", e,
-                 call.=FALSE)
-          }
-        )
-      # use formula instead otherwise
-      } else if (!is.null(tx_nodes[[i]]$formula)) {
+      # parse formula if needed
+      if (!is.null(tx_nodes[[i]]$formula)) {
+        if (is.null(tx_nodes[[i]]$model)) {
+          node_type <- "binomial"
+        } else {
+          node_type <- tx_nodes[[i]]$model
+        }
         args_p <- args_from_formula(args=args_p,
                                     formula=tx_nodes[[i]]$formula,
-                                    node_type="binomial")
-        args_p$return_prob <- TRUE
+                                    node_type=node_type)
 
         args_p$data <- tryCatch({
           data_for_formula(data=data[rel_row==TRUE], args=args_p,
@@ -197,10 +195,45 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                  call.=FALSE)
           }
         )
+      }
+
+      # run respective node function if model is specified directly
+      if (!is.null(tx_nodes[[i]]$model)) {
+        node_fun <- get(paste0("node_", tx_nodes[[i]]$model))
+
+        args_p$left <- data[rel_row==TRUE]$.trunc_time
+        args_p$as_two_cols <- FALSE
+
+        distr_fun_out <- tryCatch({
+          do.call(node_fun, args=args_p)},
+          error=function(e){
+            stop("An error occurred when generating times for node '",
+                 tx_nodes[[i]]$name, "'. The message was:\n", e,
+                 call.=FALSE)
+          }
+        )
+
+        data[rel_row==TRUE, .time_of_next_event := distr_fun_out]
+
+        next
+      # call prob_fun with correct arguments
+      } else if (!is.null(tx_nodes[[i]]$prob_fun)) {
+        args_p$data <- data[rel_row==TRUE]
+
+        p_est <- tryCatch({
+          do.call(tx_nodes[[i]]$prob_fun, args=args_p)},
+          error=function(e){
+            stop("Calling 'prob_fun' failed with error message:\n", e,
+                 call.=FALSE)
+          }
+        )
+      # use formula in binomial model instead otherwise
+      } else if (!is.null(tx_nodes[[i]]$formula)) {
+        args_p$return_prob <- TRUE
         p_est <- do.call(node_binomial, args=args_p)
       } else {
-        stop("Either 'prob_fun' or 'formula' need to be specified when",
-             " using nodes of type='next_time'.", call.=FALSE)
+        stop("Either 'prob_fun', 'formula' or 'model' need to be specified",
+             " when using nodes of type='next_time'.", call.=FALSE)
       }
 
       # draw time until next event from truncated distribution
@@ -212,7 +245,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       distr_fun_out <- tryCatch({
         do.call(tx_nodes[[i]]$distr_fun, args=args_dist)},
         error=function(e){
-          stop("Calling 'distr_fun' failed with error message:\n", e,
+          stop("An error occurred when calling 'distr_fun' of node ':",
+               tx_nodes[[i]]$name, "'. The message was:\n", e,
                call.=FALSE)
         }
       )
@@ -353,7 +387,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 #       needs to be defined anyways so it is correctly processed in node()
 #' @export
 node_next_time <- function(data, formula, prob_fun, ..., distr_fun=rtexp,
-                           distr_fun_args=list(), event_duration=Inf,
+                           distr_fun_args=list(), model=NULL,
+                           event_duration=Inf,
                            immunity_duration=event_duration,
                            event_count=FALSE) {
   return(NULL)
@@ -387,6 +422,7 @@ remove_node_internals <- function(node) {
   node$distr_fun <- NULL
   node$distr_fun_args <- NULL
   node$event_count <- NULL
+  node$model <- NULL
 
   return(node)
 }

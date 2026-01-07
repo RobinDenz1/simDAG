@@ -236,6 +236,32 @@ summary(mod)
 
 Note that the estimate above will not show an exact hazard ratio of 0.5, because only 500 individuals were simulated. With increasing `n_sim`, the estimated value will be closer to the true value of 0.5.
 
+If continuous time is required, a nearly equivalent discrete-event simulation may be used:
+
+```{r}
+dag <- empty_dag() +
+  node_td("A", type="next_time", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="next_time",
+          formula= ~ log(0.01) + log(0.5)*A,
+          event_duration=Inf)
+
+data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
+                           keep_only_first=TRUE)
+head(data)
+```
+
+Here, we used nodes of type `"next_time"` instead, as required for `sim_discrete_event()` calls. Otherwise the specification is very similar. Note that instead of using a custom probability function, we used the `formula` interface to specify the probability of `Y`. This could have been done in the discrete-time simulation as well, but for performance reasons it is often better to use `prob_fun`.
+
+Again, we can check the code by fitting the corresponding Cox model:
+
+```{r}
+mod <- coxph(Surv(start, stop, Y) ~ A, data=data)
+summary(mod)
+```
+
+Which again shows a hazard ratio for `A` that is fairly close to 0.5, as expected. Alternatively, we could have used `model="cox"` here to directly use the `node_cox()` functionality to generate the times for `Y`. This may be useful when Weibull distributed baseline hazards should be used.
+
 ## Aalen Additive Hazards Model with Time-Dependent Covariates
 
 Similar to the Cox model shown above, the Aalen additive hazards model with a time-dependent covariate is defined as:
@@ -266,6 +292,23 @@ head(data)
 ```
 
 The coefficients could be recovered using an `aalen()` model from the `timereg` R package. The code is not shown to avoid an unneeded dependency on that package.
+
+Again, we could use the `sim_discrete_event()` function instead, if we want to generate data from the same data generation process but with continuous time:
+
+```{r}
+dag <- empty_dag() +
+  node_td("A", type="next_time", prob_fun=0.01,
+          event_duration=20) +
+  node_td("Y", type="next_time",
+          formula= ~ 0.001 + A*0.05, model="aalen",
+          event_duration=Inf)
+
+data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
+                           keep_only_first=TRUE)
+head(data)
+```
+
+This specification uses the `model` argument to specify that an Aalen additive hazards model should be used to generate the time until `Y`. By also specifying a `formula`, the model is fully specified and times are generated directly from `node_aalen()`.
 
 # Miscellaneous Simulations
 
