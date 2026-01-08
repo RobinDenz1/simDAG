@@ -175,7 +175,7 @@ event.</li>
 </ol></li>
 <li><ol start="5" style="list-style-type: decimal">
 <li>Go back to step (2) and repeat until either some condition is met or
-no changes are possibly anymore (may happen is every time-dependent
+no changes are possibly anymore (may happen if every time-dependent
 variable has reached a terminal state).</li>
 </ol></li>
 </ul>
@@ -267,20 +267,20 @@ needed potentially hundreds or thousands in the discrete-time approach.
 The following code may be used to implement this:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag_des</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
-<span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>, event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">simDES</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag_des</span>, n_sim<span class="op">=</span><span class="fl">10</span>, target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span>
+<span><span class="va">simDES</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag_des</span>, n_sim<span class="op">=</span><span class="fl">10</span>, target_event<span class="op">=</span><span class="st">"death"</span>,</span>
+<span>                             keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">simDES</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
-<span><span class="co">#&gt;      .id    start     stop  death</span></span>
-<span><span class="co">#&gt;    &lt;int&gt;    &lt;num&gt;    &lt;num&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:     1   0.0000 102.2426   TRUE</span></span>
-<span><span class="co">#&gt; 2:     1 102.2426      Inf  FALSE</span></span>
-<span><span class="co">#&gt; 3:     2   0.0000 140.1487   TRUE</span></span>
-<span><span class="co">#&gt; 4:     2 140.1487      Inf  FALSE</span></span>
-<span><span class="co">#&gt; 5:     3   0.0000 104.5491   TRUE</span></span>
-<span><span class="co">#&gt; 6:     3 104.5491      Inf  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt;      .id start       stop  death</span></span>
+<span><span class="co">#&gt;    &lt;int&gt; &lt;num&gt;      &lt;num&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     1     0 102.242570   TRUE</span></span>
+<span><span class="co">#&gt; 2:     2     0 140.148734   TRUE</span></span>
+<span><span class="co">#&gt; 3:     3     0 104.549136   TRUE</span></span>
+<span><span class="co">#&gt; 4:     4     0  91.690158   TRUE</span></span>
+<span><span class="co">#&gt; 5:     5     0   1.877996   TRUE</span></span>
+<span><span class="co">#&gt; 6:     6     0 147.742697   TRUE</span></span></code></pre></div>
 <p>There are some differences to the output of the
 <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> function. First, because we are using
 the DES approach, the time is continuous and not discrete. Secondly, the
@@ -312,7 +312,7 @@ death. Consider the following code:</p>
 <span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
-<span>                          target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span></code></pre></div>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Here, we specified two time-dependent nodes of type
 <code>"next_time"</code>. The first one denotes the
 <code>treatment</code>, which has a fixed probability of being given to
@@ -376,7 +376,7 @@ interface:</p>
 <span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
-<span>                          target_event<span class="op">=</span><span class="st">"death"</span><span class="op">)</span></span></code></pre></div>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Here, we simply specified the log-binomial model as one would when
 specifying a simple binomial regression model (see
 <code><a href="../reference/node_binomial.html">?node_binomial</a></code>). Note that although the results are
@@ -414,7 +414,8 @@ following code:</p>
 <span>          event_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
-<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, redraw_at_t<span class="op">=</span><span class="fl">300</span><span class="op">)</span></span>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, redraw_at_t<span class="op">=</span><span class="fl">300</span>,</span>
+<span>                          keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
 <span><span class="co">#&gt;      .id     start      stop treatment  death</span></span>
@@ -528,7 +529,8 @@ set to <code>TRUE</code> (otherwise an error will be returned).</p>
 <span>          event_duration<span class="op">=</span><span class="cn">Inf</span>, distr_fun<span class="op">=</span><span class="va">integer_rtexp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
-<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, allow_ties<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, allow_ties<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                          keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Here, we use an artificially discretized version of the truncated
 exponential distribution to generate the time until the next change.
 This may lead to ties, so we need to set <code>allow_ties=TRUE</code>.

@@ -82,7 +82,7 @@ is as follows for every individual:
 - 4.  Update the value of the time-dependent variable that generated
       this event.
 - 5.  Go back to step (2) and repeat until either some condition is met
-      or no changes are possibly anymore (may happen is every
+      or no changes are possibly anymore (may happen if every
       time-dependent variable has reached a terminal state).
 
 The
@@ -174,20 +174,20 @@ The following code may be used to implement this:
 
 ``` r
 dag_des <- empty_dag() +
-  node_td("death", type="next_time", prob_fun=0.01,
-          event_duration=Inf)
+  node_td("death", type="next_time", prob_fun=0.01, event_duration=Inf)
 
-simDES <- sim_discrete_event(dag_des, n_sim=10, target_event="death")
+simDES <- sim_discrete_event(dag_des, n_sim=10, target_event="death",
+                             keep_only_first=TRUE)
 head(simDES)
 #> Key: <.id, start>
-#>      .id    start     stop  death
-#>    <int>    <num>    <num> <lgcl>
-#> 1:     1   0.0000 102.2426   TRUE
-#> 2:     1 102.2426      Inf  FALSE
-#> 3:     2   0.0000 140.1487   TRUE
-#> 4:     2 140.1487      Inf  FALSE
-#> 5:     3   0.0000 104.5491   TRUE
-#> 6:     3 104.5491      Inf  FALSE
+#>      .id start       stop  death
+#>    <int> <num>      <num> <lgcl>
+#> 1:     1     0 102.242570   TRUE
+#> 2:     2     0 140.148734   TRUE
+#> 3:     3     0 104.549136   TRUE
+#> 4:     4     0  91.690158   TRUE
+#> 5:     5     0   1.877996   TRUE
+#> 6:     6     0 147.742697   TRUE
 ```
 
 There are some differences to the output of the
@@ -223,7 +223,7 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death")
+                          target_event="death", keep_only_first=TRUE)
 ```
 
 Here, we specified two time-dependent nodes of type `"next_time"`. The
@@ -289,7 +289,7 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death")
+                          target_event="death", keep_only_first=TRUE)
 ```
 
 Here, we simply specified the log-binomial model as one would when
@@ -328,7 +328,8 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death", redraw_at_t=300)
+                          target_event="death", redraw_at_t=300,
+                          keep_only_first=TRUE)
 head(sim)
 #> Key: <.id, start>
 #>      .id     start      stop treatment  death
@@ -445,7 +446,8 @@ dag <- empty_dag() +
           event_duration=Inf, distr_fun=integer_rtexp)
 
 sim <- sim_discrete_event(dag, n_sim=1000, remove_if=death==TRUE,
-                          target_event="death", allow_ties=TRUE)
+                          target_event="death", allow_ties=TRUE,
+                          keep_only_first=TRUE)
 ```
 
 Here, we use an artificially discretized version of the truncated
