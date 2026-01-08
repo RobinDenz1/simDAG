@@ -41,7 +41,7 @@ This approach has many names and usages in the literature. In physics and chemis
 * (2) For each of the $m$ considered time-dependent variables, generate the time until the next change based on some distributional assumptions (possibly dependent on any variables contained in the current state)
 * (3) Advance the simulation to the minimum of the values drawn in step (2).
 * (4) Update the value of the time-dependent variable that generated this event.
-* (5) Go back to step (2) and repeat until either some condition is met or no changes are possibly anymore (may happen is every time-dependent variable has reached a terminal state).
+* (5) Go back to step (2) and repeat until either some condition is met or no changes are possibly anymore (may happen if every time-dependent variable has reached a terminal state).
 
 The `sim_discrete_event()` directly implements this workflow, assuming that individuals (rows in the `data`) do not influence each other. A data set at $t = 0$ is either simulated using the `sim_from_dag()` function or supplied directly by the user (using the `t0_data` argument). This data set is then updated according to the time-dependent nodes added to the `dag` using `node_td()` calls. After each update, the state of the simulation is saved, so that the final output is a single dataset in the start-stop format. Below we give a short example on how this works in practice. We use a similar example to the one used in the discrete-time simulation vignette, to allow direct comparisons with the discrete-time approach.
 
@@ -79,10 +79,10 @@ Since we are only interested in a single variable, which has a terminal state (o
 
 ```{r}
 dag_des <- empty_dag() +
-  node_td("death", type="next_time", prob_fun=0.01,
-          event_duration=Inf)
+  node_td("death", type="next_time", prob_fun=0.01, event_duration=Inf)
 
-simDES <- sim_discrete_event(dag_des, n_sim=10, target_event="death")
+simDES <- sim_discrete_event(dag_des, n_sim=10, target_event="death",
+                             keep_only_first=TRUE)
 head(simDES)
 ```
 
@@ -106,7 +106,7 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death")
+                          target_event="death", keep_only_first=TRUE)
 ```
 
 Here, we specified two time-dependent nodes of type `"next_time"`. The first one denotes the `treatment`, which has a fixed probability of being given to a person. It then has an effect for 100 time units, after which the variable turns back to `FALSE`. Once it is `FALSE` again, it may be given to the same person again immediately, with a probability of 0.01. The probability of the `death` of a person is now no longer fixed, but a function of the `treatment` status. The general probability of death is 0.001 per time unit, but it is reduced by a factor of 0.8 if the `treatment` is currently in effect.
@@ -132,7 +132,7 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death")
+                          target_event="death", keep_only_first=TRUE)
 ```
 
 Here, we simply specified the log-binomial model as one would when specifying a simple binomial regression model (see `?node_binomial`). Note that although the results are theoretically equivalent when the same seed is used, they are not identical in practice, due to small floating point errors. This should not be an issue in practice.
@@ -158,7 +158,8 @@ dag <- empty_dag() +
           event_duration=Inf)
 
 sim <- sim_discrete_event(dag, n_sim=10, remove_if=death==TRUE,
-                          target_event="death", redraw_at_t=300)
+                          target_event="death", redraw_at_t=300,
+                          keep_only_first=TRUE)
 head(sim)
 ```
 
@@ -209,7 +210,8 @@ dag <- empty_dag() +
           event_duration=Inf, distr_fun=integer_rtexp)
 
 sim <- sim_discrete_event(dag, n_sim=1000, remove_if=death==TRUE,
-                          target_event="death", allow_ties=TRUE)
+                          target_event="death", allow_ties=TRUE,
+                          keep_only_first=TRUE)
 ```
 
 Here, we use an artificially discretized version of the truncated exponential distribution to generate the time until the next change. This may lead to ties, so we need to set `allow_ties=TRUE`. Note that for sample sizes below 10000, the computational differences are very small. Only with large `n_sim` does the difference between `allow_ties=TRUE` and `allow_ties=FALSE` become more noticeable.
