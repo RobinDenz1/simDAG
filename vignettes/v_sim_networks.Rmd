@@ -322,7 +322,7 @@ gen_network <- function(n_sim, data) {
 }
 ```
 
-Here the `id_different_sex()` function simply takes in an edge of the graph and checks whether both vertices have the same type. The `gen_network()` function first generates a random graph and then adds the `sex` contained in the supplied `data` as a type to each node. It then deletes all edges where the type (e.g. `sex`) of the vertices is not the same. We can incorporate this into a `DAG` using:
+Here the `is_different_sex()` function simply takes in an edge of the graph and checks whether both vertices have the same type. The `gen_network()` function first generates a random graph and then adds the `sex` contained in the supplied `data` as a type to each node. It then deletes all edges where the type (e.g. `sex`) of the vertices is not the same. We can incorporate this into a `DAG` using:
 
 ```{r}
 dag <- empty_dag() +

@@ -1,7 +1,8 @@
 
 ## simulate data using functions from rsurv package
 node_rsurv <- function(data, parents, betas, baseline, dist, package, u, type,
-                       cens_dist, cens_args, name, as_two_cols=TRUE, ...) {
+                       cens_dist, cens_args, name, as_two_cols=TRUE,
+                       left=0, right=Inf, ...) {
 
   requireNamespace("rsurv", quietly=TRUE)
 
@@ -11,15 +12,27 @@ node_rsurv <- function(data, parents, betas, baseline, dist, package, u, type,
 
   # pass to relevant rsurv function
   rsurv_fun <- utils::getFromNamespace(paste0("r", type), "rsurv")
-  times <- rsurv_fun(data=data, formula=formula, beta=betas,
-                     baseline=baseline, dist=dist, package=package,
-                     u=u, ...)
+
+  if (utils::packageVersion("rsurv") >= "0.0.3") {
+    times <- rsurv_fun(data=data, formula=formula, beta=betas,
+                       baseline=baseline, dist=dist, package=package,
+                       u=u, lwr=left, upr=right, ...)
+  } else {
+    times <- rsurv_fun(data=data, formula=formula, beta=betas,
+                       baseline=baseline, dist=dist, package=package,
+                       u=u, ...)
+    if (any(left > 0 | right < Inf)) {
+      warning("The arguments 'left' and 'right' require 'rsurv'",
+              " package version 0.0.3 or higher. Please update the",
+              " package and re-run this function.", call.=FALSE)
+    }
+  }
 
   # apply censoring if specified
   if (!as_two_cols && is.null(cens_dist)) {
-    out_data <- times
+    out_data <- as.numeric(times)
   } else {
-    out_data <- add_censoring(times=times, cens_dist=cens_dist,
+    out_data <- add_censoring(times=as.numeric(times), cens_dist=cens_dist,
                               cens_args=cens_args, name=name)
   }
 
@@ -36,12 +49,13 @@ formula_from_parents <- function(parents) {
 node_aftreg <- function(data, parents, betas, baseline, dist=NULL,
                         package=NULL, u=stats::runif(nrow(data)),
                         cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-                        ...) {
+                        left=0, right=Inf, ...) {
 
   out <- node_rsurv(data=data, parents=parents, betas=betas,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
-                    as_two_cols=as_two_cols, type="aftreg", ...)
+                    as_two_cols=as_two_cols, type="aftreg", left=left,
+                    right=right, ...)
   return(out)
 }
 
@@ -50,12 +64,13 @@ node_aftreg <- function(data, parents, betas, baseline, dist=NULL,
 node_ahreg <- function(data, parents, betas, baseline, dist=NULL,
                        package=NULL, u=stats::runif(nrow(data)),
                        cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-                       ...) {
+                       left=0, right=Inf, ...) {
 
   out <- node_rsurv(data=data, parents=parents, betas=betas,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
-                    as_two_cols=as_two_cols, type="ahreg", ...)
+                    as_two_cols=as_two_cols, type="ahreg", left=left,
+                    right=right, ...)
   return(out)
 }
 
@@ -64,12 +79,13 @@ node_ahreg <- function(data, parents, betas, baseline, dist=NULL,
 node_ehreg <- function(data, parents, betas, phi, baseline, dist=NULL,
                        package=NULL, u=stats::runif(nrow(data)),
                        cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-                       ...) {
+                       left=0, right=Inf, ...) {
 
   out <- node_rsurv(data=data, parents=parents, betas=betas, phi=phi,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
-                    as_two_cols=as_two_cols, type="ehreg", ...)
+                    as_two_cols=as_two_cols, type="ehreg", left=left,
+                    right=right, ...)
   return(out)
 }
 
@@ -78,12 +94,13 @@ node_ehreg <- function(data, parents, betas, phi, baseline, dist=NULL,
 node_poreg <- function(data, parents, betas, baseline, dist=NULL,
                        package=NULL, u=stats::runif(nrow(data)),
                        cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-                       ...) {
+                       left=0, right=Inf, ...) {
 
   out <- node_rsurv(data=data, parents=parents, betas=betas,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
-                    as_two_cols=as_two_cols, type="poreg", ...)
+                    as_two_cols=as_two_cols, type="poreg", left=left,
+                    right=right, ...)
   return(out)
 }
 
@@ -92,11 +109,12 @@ node_poreg <- function(data, parents, betas, baseline, dist=NULL,
 node_ypreg <- function(data, parents, betas, phi, baseline, dist=NULL,
                        package=NULL, u=stats::runif(nrow(data)),
                        cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-                       ...) {
+                       left=0, right=Inf, ...) {
 
   out <- node_rsurv(data=data, parents=parents, betas=betas, phi=phi,
                     baseline=baseline, dist=dist, package=package, u=u,
                     cens_dist=cens_dist, cens_args=cens_args, name=name,
-                    as_two_cols=as_two_cols, type="ypreg", ...)
+                    as_two_cols=as_two_cols, type="ypreg", left=left,
+                    right=right, ...)
   return(out)
 }

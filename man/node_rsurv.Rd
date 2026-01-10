@@ -16,27 +16,27 @@ Data from the parents is used to generate the node using either an accelerated f
 node_aftreg(data, parents, betas, baseline, dist=NULL,
             package=NULL, u=stats::runif(nrow(data)),
             cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-            ...)
+            left=0, right=Inf, ...)
 
 node_ahreg(data, parents, betas, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_ehreg(data, parents, betas, phi, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_poreg(data, parents, betas, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_ypreg(data, parents, betas, phi, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 }
 \arguments{
   \item{data}{
@@ -74,6 +74,12 @@ A single character string specifying the name of the node.
   }
   \item{as_two_cols}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the output should be divided into two columns. When \code{cens_dist} is specified, this argument will always be treated as \code{TRUE} because two columns are needed to encode both the time to the event and the status indicator. When no censoring is applied, however, users may set this argument to \code{FALSE} to simply return the numbers as they are.
+  }
+  \item{left}{
+Either a single number \code{>= 0}, or a numeric vector of length \code{nrow(data)} containing only numbers \code{>= 0}. When simulating the survival times, only numbers larger than these will be generated using correctly left-truncated sampling. Note that this does not affect the censoring times, only the generated survival times will be left-truncated. Set to 0 (default) to not use left-truncation. Corresponds to the \code{lwr} argument in the underlying \pkg{rsurv} functions. Only works with \code{rsurv} package version >= 0.0.3 (currently only available on github).
+  }
+  \item{right}{
+Same as the \code{left} argument, but for right-truncation, meaning that no values greater than \code{right} will be generated. Corresponds to the \code{upr} argument in the underlying \pkg{rsurv} functions. Only works with \code{rsurv} package version >= 0.0.3 (currently only available on github).
   }
   \item{...}{
 Further arguments passed to \code{\link[rsurv]{raftreg}}, \code{\link[rsurv]{rahreg}}, \code{\link[rsurv]{rehreg}}, \code{\link[rsurv]{rporeg}} or \code{\link[rsurv]{rypreg}}.

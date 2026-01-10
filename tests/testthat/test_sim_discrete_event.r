@@ -717,6 +717,24 @@ test_that("model argument works", {
   sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
 
   expect_equal(nrow(sim), 5000)
+
+  skip_on_cran()
+  skip_on_ci()
+
+  # rsurv functions also work
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X1", type="next_time", prob_fun=0.01) +
+    node_td("X2", type="next_time", prob_fun=0.001) +
+    node_td("X3", type="next_time", prob_fun=0.02) +
+    node_td("Y", type="next_time",
+            formula= ~ A*log(0.8) + X1*log(1.5) + X2*log(2) + X3*log(0.7),
+            model="aftreg", baseline="weibull", shape=0.2, scale=1)
+
+  set.seed(1234)
+  sim <- sim_discrete_event(dag, n_sim=1000, max_t=Inf)
+
+  expect_equal(nrow(sim), 5000)
 })
 
 test_that("warning if max_iter reached", {

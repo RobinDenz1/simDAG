@@ -34,7 +34,7 @@ A function that returns the (left-truncated) next time at which the variable tur
 A list of named arguments that should be passed to the function specified in the \code{distr_fun} argument.
   }
   \item{model}{
-Alternative way to specify how the next time should be generated. Takes a single character string, specifying a time-to-event node. Currently supported values are \code{"cox"} (to use the \code{\link{node_cox}} function to generate the next time) and \code{"aalen"} (to use the \code{\link{node_aalen}} function to generate the next time). If this argument is specified, both \code{prob_fun} and \code{distr_fun} are ignored. Concurrent use of the \code{formula} argument is supported. Further arguments that need to be passed to the respective node function can be passed through the \code{...} syntax.
+Alternative way to specify how the next time should be generated. Takes a single character string, specifying a time-to-event node or \code{NULL} (default) to not use this functionality. Currently supported values are \code{"cox"}, \code{"aalen"}, \code{"aftreg"}, \code{"ahreg"}, \code{"ehreg"}, \code{"poreg"} and \code{"ypreg"}. The node function corresponding to \code{paste0("node_", model)} is used then, so for example using \code{model="cox"} means that the \code{\link{node_cox}} function is used to generate the next times. If this argument is specified, both \code{prob_fun} and \code{distr_fun} are ignored. Concurrent use of the \code{formula} argument is supported. Further arguments that need to be passed to the respective node function can be passed through the \code{...} syntax.
   }
   \item{event_duration}{
 A single number > 0 specifying how long the event should last. During this period, the corresponding variable is set to \code{TRUE}.

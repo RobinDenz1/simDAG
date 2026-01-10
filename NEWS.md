@@ -1,4 +1,10 @@
 
+# simDAG 0.5.1 (developmental version)
+
+Enhancements
+
+* Added support for all `rsurv` package based time-to-event nodes in the `model` argument of `node_next_time()` nodes in discrete-event simulation. Many thanks to Fábio N. Demarqui (@fndemarqui) for making this possible!
+
 # simDAG 0.5.0
 
 New Features
