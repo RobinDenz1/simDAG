@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
 <dd><p>A list of named arguments that should be passed to the function specified in the <code>distr_fun</code> argument.</p></dd>
 
   <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>Alternative way to specify how the next time should be generated. Takes a single character string, specifying a time-to-event node. Currently supported values are <code>"cox"</code> (to use the <code><a href="node_cox.html">node_cox</a></code> function to generate the next time) and <code>"aalen"</code> (to use the <code><a href="node_aalen.html">node_aalen</a></code> function to generate the next time). If this argument is specified, both <code>prob_fun</code> and <code>distr_fun</code> are ignored. Concurrent use of the <code>formula</code> argument is supported. Further arguments that need to be passed to the respective node function can be passed through the <code>...</code> syntax.</p></dd>
+<dd><p>Alternative way to specify how the next time should be generated. Takes a single character string, specifying a time-to-event node or <code>NULL</code> (default) to not use this functionality. Currently supported values are <code>"cox"</code>, <code>"aalen"</code>, <code>"aftreg"</code>, <code>"ahreg"</code>, <code>"ehreg"</code>, <code>"poreg"</code> and <code>"ypreg"</code>. The node function corresponding to <code>paste0("node_", model)</code> is used then, so for example using <code>model="cox"</code> means that the <code><a href="node_cox.html">node_cox</a></code> function is used to generate the next times. If this argument is specified, both <code>prob_fun</code> and <code>distr_fun</code> are ignored. Concurrent use of the <code>formula</code> argument is supported. Further arguments that need to be passed to the respective node function can be passed through the <code>...</code> syntax.</p></dd>
 
   <dt id="arg-event-duration">event_duration<a class="anchor" aria-label="anchor" href="#arg-event-duration"></a></dt>
 <dd><p>A single number &gt; 0 specifying how long the event should last. During this period, the corresponding variable is set to <code>TRUE</code>.</p></dd>

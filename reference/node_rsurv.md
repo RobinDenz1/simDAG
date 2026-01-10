@@ -11,27 +11,27 @@ as implemented in the rsurv package (Demarqui 2024).
 node_aftreg(data, parents, betas, baseline, dist=NULL,
             package=NULL, u=stats::runif(nrow(data)),
             cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-            ...)
+            left=0, right=Inf, ...)
 
 node_ahreg(data, parents, betas, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_ehreg(data, parents, betas, phi, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_poreg(data, parents, betas, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 
 node_ypreg(data, parents, betas, phi, baseline, dist=NULL,
            package=NULL, u=stats::runif(nrow(data)),
            cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-           ...)
+           left=0, right=Inf, ...)
 ```
 
 ## Arguments
@@ -153,6 +153,26 @@ node_ypreg(data, parents, betas, phi, baseline, dist=NULL,
   encode both the time to the event and the status indicator. When no
   censoring is applied, however, users may set this argument to `FALSE`
   to simply return the numbers as they are.
+
+- left:
+
+  Either a single number `>= 0`, or a numeric vector of length
+  `nrow(data)` containing only numbers `>= 0`. When simulating the
+  survival times, only numbers larger than these will be generated using
+  correctly left-truncated sampling. Note that this does not affect the
+  censoring times, only the generated survival times will be
+  left-truncated. Set to 0 (default) to not use left-truncation.
+  Corresponds to the `lwr` argument in the underlying rsurv functions.
+  Only works with `rsurv` package version \>= 0.0.3 (currently only
+  available on github).
+
+- right:
+
+  Same as the `left` argument, but for right-truncation, meaning that no
+  values greater than `right` will be generated. Corresponds to the
+  `upr` argument in the underlying rsurv functions. Only works with
+  `rsurv` package version \>= 0.0.3 (currently only available on
+  github).
 
 - ...:
 

@@ -530,7 +530,7 @@ gen_network <- function(n_sim, data) {
 }
 ```
 
-Here the `id_different_sex()` function simply takes in an edge of the
+Here the `is_different_sex()` function simply takes in an edge of the
 graph and checks whether both vertices have the same type. The
 `gen_network()` function first generates a random graph and then adds
 the `sex` contained in the supplied `data` as a type to each node. It

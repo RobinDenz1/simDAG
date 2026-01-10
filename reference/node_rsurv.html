@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,27 +53,27 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">node_aftreg</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">baseline</span>, dist<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>            package<span class="op">=</span><span class="cn">NULL</span>, u<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>            cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>            <span class="va">...</span><span class="op">)</span></span>
+<span>            left<span class="op">=</span><span class="fl">0</span>, right<span class="op">=</span><span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">node_ahreg</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">baseline</span>, dist<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>           package<span class="op">=</span><span class="cn">NULL</span>, u<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>           <span class="va">...</span><span class="op">)</span></span>
+<span>           left<span class="op">=</span><span class="fl">0</span>, right<span class="op">=</span><span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">node_ehreg</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">phi</span>, <span class="va">baseline</span>, dist<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>           package<span class="op">=</span><span class="cn">NULL</span>, u<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>           <span class="va">...</span><span class="op">)</span></span>
+<span>           left<span class="op">=</span><span class="fl">0</span>, right<span class="op">=</span><span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">node_poreg</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">baseline</span>, dist<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>           package<span class="op">=</span><span class="cn">NULL</span>, u<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>           <span class="va">...</span><span class="op">)</span></span>
+<span>           left<span class="op">=</span><span class="fl">0</span>, right<span class="op">=</span><span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">node_ypreg</span><span class="op">(</span><span class="va">data</span>, <span class="va">parents</span>, <span class="va">betas</span>, <span class="va">phi</span>, <span class="va">baseline</span>, dist<span class="op">=</span><span class="cn">NULL</span>,</span>
 <span>           package<span class="op">=</span><span class="cn">NULL</span>, u<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           cens_dist<span class="op">=</span><span class="cn">NULL</span>, <span class="va">cens_args</span>, <span class="va">name</span>, as_two_cols<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>           <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span>           left<span class="op">=</span><span class="fl">0</span>, right<span class="op">=</span><span class="cn">Inf</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -114,6 +114,12 @@
 
   <dt id="arg-as-two-cols">as_two_cols<a class="anchor" aria-label="anchor" href="#arg-as-two-cols"></a></dt>
 <dd><p>Either <code>TRUE</code> or <code>FALSE</code>, specifying whether the output should be divided into two columns. When <code>cens_dist</code> is specified, this argument will always be treated as <code>TRUE</code> because two columns are needed to encode both the time to the event and the status indicator. When no censoring is applied, however, users may set this argument to <code>FALSE</code> to simply return the numbers as they are.</p></dd>
+
+  <dt id="arg-left">left<a class="anchor" aria-label="anchor" href="#arg-left"></a></dt>
+<dd><p>Either a single number <code>&gt;= 0</code>, or a numeric vector of length <code>nrow(data)</code> containing only numbers <code>&gt;= 0</code>. When simulating the survival times, only numbers larger than these will be generated using correctly left-truncated sampling. Note that this does not affect the censoring times, only the generated survival times will be left-truncated. Set to 0 (default) to not use left-truncation. Corresponds to the <code>lwr</code> argument in the underlying <span class="pkg">rsurv</span> functions. Only works with <code>rsurv</code> package version &gt;= 0.0.3 (currently only available on github).</p></dd>
+
+  <dt id="arg-right">right<a class="anchor" aria-label="anchor" href="#arg-right"></a></dt>
+<dd><p>Same as the <code>left</code> argument, but for right-truncation, meaning that no values greater than <code>right</code> will be generated. Corresponds to the <code>upr</code> argument in the underlying <span class="pkg">rsurv</span> functions. Only works with <code>rsurv</code> package version &gt;= 0.0.3 (currently only available on github).</p></dd>
 
   <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to <code><a href="https://fndemarqui.github.io/rsurv/reference/raftreg.html" class="external-link">raftreg</a></code>, <code><a href="https://fndemarqui.github.io/rsurv/reference/rahreg.html" class="external-link">rahreg</a></code>, <code><a href="https://fndemarqui.github.io/rsurv/reference/rehreg.html" class="external-link">rehreg</a></code>, <code><a href="https://fndemarqui.github.io/rsurv/reference/rporeg.html" class="external-link">rporeg</a></code> or <code><a href="https://fndemarqui.github.io/rsurv/reference/rypreg.html" class="external-link">rypreg</a></code>.</p></dd>

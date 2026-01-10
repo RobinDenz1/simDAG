@@ -86,16 +86,18 @@ node_next_time(data, formula, prob_fun, ...,
 - model:
 
   Alternative way to specify how the next time should be generated.
-  Takes a single character string, specifying a time-to-event node.
-  Currently supported values are `"cox"` (to use the
+  Takes a single character string, specifying a time-to-event node or
+  `NULL` (default) to not use this functionality. Currently supported
+  values are `"cox"`, `"aalen"`, `"aftreg"`, `"ahreg"`, `"ehreg"`,
+  `"poreg"` and `"ypreg"`. The node function corresponding to
+  `paste0("node_", model)` is used then, so for example using
+  `model="cox"` means that the
   [`node_cox`](https://robindenz1.github.io/simDAG/reference/node_cox.md)
-  function to generate the next time) and `"aalen"` (to use the
-  [`node_aalen`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)
-  function to generate the next time). If this argument is specified,
-  both `prob_fun` and `distr_fun` are ignored. Concurrent use of the
-  `formula` argument is supported. Further arguments that need to be
-  passed to the respective node function can be passed through the `...`
-  syntax.
+  function is used to generate the next times. If this argument is
+  specified, both `prob_fun` and `distr_fun` are ignored. Concurrent use
+  of the `formula` argument is supported. Further arguments that need to
+  be passed to the respective node function can be passed through the
+  `...` syntax.
 
 - event_duration:
 
