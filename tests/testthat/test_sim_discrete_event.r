@@ -737,6 +737,27 @@ test_that("model argument works", {
   expect_equal(nrow(sim), 5000)
 })
 
+test_that("using arguments that start with 'model' works", {
+
+  prob_X2 <- function(data, model_param) {
+    if (length(model_param)==2) {
+      out <- 0.01
+    } else {
+      out <- 0.0001
+    }
+    return(out)
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node_td("X", type="next_time", prob_fun=0.001) +
+    node_td("Y", type="next_time", prob_fun=prob_X2, event_duration=100,
+            event_count=TRUE, model_param=c(1, 2, 3))
+
+  expect_no_error(sim_discrete_event(dag, n_sim=100, max_t=1000,
+                                     remove_if=X==TRUE))
+})
+
 test_that("warning if max_iter reached", {
 
   set.seed(356345)

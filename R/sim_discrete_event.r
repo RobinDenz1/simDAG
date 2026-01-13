@@ -177,10 +177,10 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
       # parse formula if needed
       if (!is.null(tx_nodes[[i]]$formula)) {
-        if (is.null(tx_nodes[[i]]$model)) {
+        if (is.null(tx_nodes[[i]][["model"]])) {
           node_type <- "binomial"
         } else {
-          node_type <- tx_nodes[[i]]$model
+          node_type <- tx_nodes[[i]][["model"]]
         }
         args_p <- args_from_formula(args=args_p,
                                     formula=tx_nodes[[i]]$formula,
@@ -198,8 +198,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       }
 
       # run respective node function if model is specified directly
-      if (!is.null(tx_nodes[[i]]$model)) {
-        node_fun <- get(paste0("node_", tx_nodes[[i]]$model))
+      if (!is.null(tx_nodes[[i]][["model"]])) {
+        node_fun <- get(paste0("node_", tx_nodes[[i]][["model"]]))
 
         args_p$left <- data[rel_row==TRUE]$.trunc_time
         args_p$as_two_cols <- FALSE
