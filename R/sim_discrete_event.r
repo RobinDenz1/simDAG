@@ -92,6 +92,21 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     data <- as.data.table(t0_data)
     n_sim <- nrow(data)
     data[, .id := seq(1, n_sim)]
+
+    # also add simulated data if specified
+    if (length(dag$root_nodes) > 0 | length(dag$child_nodes) > 0) {
+      dag$tx_nodes <- NULL
+      dag <- dag + node("..PLACEHOLDER..", type=pass_input, input=data)
+
+      d_sim <- sim_from_dag(n_sim=n_sim,
+                            dag=dag,
+                            sort_dag=t0_sort_dag,
+                            check_inputs=check_inputs)
+      cnames <- colnames(d_sim)[!colnames(d_sim) %in% colnames(data)]
+      d_sim <- d_sim[, cnames, with=FALSE]
+
+      data <- cbind(data, d_sim)
+    }
   }
 
   # perform an arbitrary data transformation right at the start

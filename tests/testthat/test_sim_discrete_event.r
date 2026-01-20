@@ -758,6 +758,23 @@ test_that("using arguments that start with 'model' works", {
                                      remove_if=X==TRUE))
 })
 
+test_that("supplying t0_data and nodes in dag", {
+
+  set.seed(1234)
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli") +
+    node("B", type="binomial", formula= ~ -1 + A*0.5 + X*2) +
+    node_td("Y", type="next_time", formula= ~ log(0.0001) + A*log(0.5) +
+            X*log(1.5))
+
+  data_t0 <- data.table(X=rnorm(n=100))
+
+  sim <- sim_discrete_event(dag, t0_data=data_t0)
+
+  expect_equal(colnames(sim), c(".id", "start", "stop", "X", "A", "B", "Y"))
+})
+
 test_that("warning if max_iter reached", {
 
   set.seed(356345)

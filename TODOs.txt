@@ -7,6 +7,7 @@
 sim_discrete_time:
 	- maybe include t = 0 in output (or an option for it)?
 	- allow all nodes to be based on previous t in one argument
+	- either allow root nodes with supplied t0_data, or throw warning if still supplied
 
 node_next_time:
 	- allow parametric survival models in "model" if rsurv package is updated

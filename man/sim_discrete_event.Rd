@@ -27,10 +27,10 @@ A \code{DAG} object created using the \code{\link{empty_dag}} function with \cod
 A single number specifying how many observations should be generated. If a \code{data.table} is supplied to the \code{t0_data} argument, this argument is ignored. The sample size will then correspond to the number of rows in \code{t0_data}.
   }
   \item{t0_sort_dag}{
-Corresponds to the \code{sort_dag} argument in the \code{\link{sim_from_dag}} function. Ignored if \code{t0_data} is specified.
+Corresponds to the \code{sort_dag} argument in the \code{\link{sim_from_dag}} function. Ignored if \code{t0_data} is specified and \code{dag} contains only time-dependent nodes.
   }
   \item{t0_data}{
-An optional \code{data.table} like object (also accepts a \code{data.frame}, \code{tibble} etc.) containing values for all relevant variables at \eqn{t = 0}. This dataset will then be transformed over time according to the nodes specified using \code{\link{node_td}} calls in \code{dag}. Alternatively, data for \eqn{t = 0} may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}.
+An optional \code{data.table} like object (also accepts a \code{data.frame}, \code{tibble} etc.) containing values for all relevant variables at \eqn{t = 0}. This dataset will then be transformed over time according to the nodes specified using \code{\link{node_td}} calls in \code{dag}. Alternatively, data for \eqn{t = 0} may be generated automatically by this function if standard \code{\link{node}} calls were added to the \code{dag}. If \code{t0_data} is specified and the \code{dag} contains time-fixed nodes, all columns from \code{t0_data} are passed first and the nodes are then simulated on top using \code{\link{sim_from_dag}}.
   }
   \item{t0_transform_fun}{
 An optional function that takes the data created at \eqn{t = 0} as the first argument. The function will be applied to the starting data and its output will replace the \code{data.table}. Can be used to perform arbitrary data transformations after the starting data was created. Set to \code{NULL} (default) to not use this functionality.
