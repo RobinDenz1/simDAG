@@ -56,7 +56,8 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
   Corresponds to the `sort_dag` argument in the
   [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
-  function. Ignored if `t0_data` is specified.
+  function. Ignored if `t0_data` is specified and `dag` contains only
+  time-dependent nodes.
 
 - t0_data:
 
@@ -68,7 +69,10 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   calls in `dag`. Alternatively, data for \\t = 0\\ may be generated
   automatically by this function if standard
   [`node`](https://robindenz1.github.io/simDAG/reference/node.md) calls
-  were added to the `dag`.
+  were added to the `dag`. If `t0_data` is specified and the `dag`
+  contains time-fixed nodes, all columns from `t0_data` are passed first
+  and the nodes are then simulated on top using
+  [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md).
 
 - t0_transform_fun:
 
