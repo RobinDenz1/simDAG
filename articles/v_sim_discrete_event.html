@@ -402,7 +402,7 @@ following code:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
-<span>  <span class="va">base_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">.time</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span><span class="op">)</span></span>
+<span>  <span class="va">base_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">.time</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">base_p</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">^</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">treatment</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>

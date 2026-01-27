@@ -42,8 +42,8 @@ node_mixture(data, parents, name, distr, default=NA)
   A unnamed list that specifies both the conditions and the
   [`node`](https://robindenz1.github.io/simDAG/reference/node.md)
   definitions. It should be specified in a similar way as the
-  [`fcase`](https://rdatatable.gitlab.io/data.table/reference/fcase.html)
-  function in pairs of conditions (coded as strings) and
+  [`fcase`](https://rdrr.io/pkg/data.table/man/fcase.html) function in
+  pairs of conditions (coded as strings) and
   [`node`](https://robindenz1.github.io/simDAG/reference/node.md)
   definitions. This means that a condition comes first, for example
   `"A==0"`, followed by some call

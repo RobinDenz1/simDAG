@@ -98,8 +98,8 @@ named `..neighbor..` includes the ids of the neighbors. The entire
 `expr` is evaluated in a data.table call of the form:
 `data[, .(variable = eval(expr)), by=id]`, making it also possible to
 use any data.table syntax such as
-[`.N`](https://rdatatable.gitlab.io/data.table/reference/special-symbols.html)
-(which would return the number of neighbors a person has).
+[`.N`](https://rdrr.io/pkg/data.table/man/special-symbols.html) (which
+would return the number of neighbors a person has).
 
 ***Specifying parents***:
 

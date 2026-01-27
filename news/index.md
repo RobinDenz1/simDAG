@@ -32,7 +32,7 @@ New Features
   [`rsample()`](https://robindenz1.github.io/simDAG/reference/rsample.md)
   function as a convenient wrapper around
   [`sample()`](https://rdrr.io/r/base/sample.html), as suggested by Ed
-  Hagen.
+  Hagen ([@grasshoppermouse](https://github.com/grasshoppermouse)).
 - Added the
   [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)
   function to allow data to be generated according to an Aalen additive

@@ -1349,7 +1349,7 @@ and
 <p>The following code may be used to define this DGP:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1463,7 +1463,7 @@ the <code>prob_fun</code> argument when defining the vaccination node as
 shown below:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_vacc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Y_event</span>, <span class="fl">0</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Y_event</span>, <span class="fl">0</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1611,7 +1611,7 @@ runtime is calculated using the <code>microbenchmark</code> package
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">run_example</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">max_t</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1821,7 +1821,7 @@ probabilities. The following code gives an example for this:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">P_0</span> <span class="op">&lt;-</span> <span class="va">P_0</span> <span class="op">+</span> <span class="fl">0.001</span><span class="op">*</span><span class="va">sim_time</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1858,7 +1858,7 @@ in the respective <code>prob_fun</code>:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span>, <span class="va">sim_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">RR_A</span> <span class="op">&lt;-</span> <span class="va">RR_A</span> <span class="op">+</span> <span class="fl">0.01</span><span class="op">*</span><span class="va">sim_time</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1897,7 +1897,7 @@ used:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">RR_A</span> <span class="op">&lt;-</span> <span class="va">RR_A</span> <span class="op">-</span> <span class="fl">0.1</span><span class="op">*</span><span class="va">data</span><span class="op">$</span><span class="va">A_time_since_last</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -2011,7 +2011,7 @@ used to generate data from this DGP:</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">prob_covid</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">d_immune</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_time_since_last</span> <span class="op">&lt;</span> <span class="va">d_immune</span>, <span class="fl">0</span>, <span class="va">P_0</span>, na<span class="op">=</span><span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_time_since_last</span> <span class="op">&lt;</span> <span class="va">d_immune</span>, <span class="fl">0</span>, <span class="va">P_0</span>, na<span class="op">=</span><span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -2064,11 +2064,11 @@ in the Covid example Section. We could do this using the following
 code:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">prob_vacc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Sex</span>, <span class="va">P_0</span><span class="op">*</span><span class="fl">2</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Sex</span>, <span class="va">P_0</span><span class="op">*</span><span class="fl">2</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -2114,7 +2114,7 @@ person received (if any). This may be done using the
 simple example:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_myoc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">P_0</span>, <span class="va">RR_A</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">A_event</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">P_0</span><span class="op">*</span><span class="va">RR_A</span>, <span class="va">P_0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">prob_vacc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
@@ -2225,11 +2225,11 @@ format. Instead, the long format is choosen here.</p>
 so that a specific order of events is always respected:</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_bachelors</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">highschool_event</span>, <span class="fl">0.01</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">highschool_event</span>, <span class="fl">0.01</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">prob_masters</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">bachelors_event</span>, <span class="fl">0.01</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">bachelors_event</span>, <span class="fl">0.01</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -2262,7 +2262,7 @@ implemented in the <code>"time_to_event"</code> node type. By setting
 <code>event_duration=Inf</code>, we ensure that no one ever “looses”
 their degree. Only afterwards do we generate whether the same person
 also received a <code>bachelors</code> degree. By using a standard
-<code><a href="https://rdatatable.gitlab.io/data.table/reference/fifelse.html" class="external-link">fifelse()</a></code> call, we can easily specify that the probability
+<code><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse()</a></code> call, we can easily specify that the probability
 of obtaining a <code>bachelors</code> degree is 0 for individuals
 without a <code>highschool</code> degree. Subsequently, we do the same
 for the <code>masters</code> node.</p>

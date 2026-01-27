@@ -1900,10 +1900,10 @@ in the `"time_to_event"` node type. By setting `event_duration=Inf`, we
 ensure that no one ever “looses” their degree. Only afterwards do we
 generate whether the same person also received a `bachelors` degree. By
 using a standard
-[`fifelse()`](https://rdatatable.gitlab.io/data.table/reference/fifelse.html)
-call, we can easily specify that the probability of obtaining a
-`bachelors` degree is 0 for individuals without a `highschool` degree.
-Subsequently, we do the same for the `masters` node.
+[`fifelse()`](https://rdrr.io/pkg/data.table/man/fifelse.html) call, we
+can easily specify that the probability of obtaining a `bachelors`
+degree is 0 for individuals without a `highschool` degree. Subsequently,
+we do the same for the `masters` node.
 
 Again, this simulation could be made much more realistic. For example,
 in the example used here there is no limitations on how close the
