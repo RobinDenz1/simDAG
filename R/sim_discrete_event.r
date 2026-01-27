@@ -425,19 +425,14 @@ extract_node_arg <- function(node, fun, arg) {
 ## argument list for a do.call())
 remove_node_internals <- function(node) {
 
-  node$name <- NULL
-  node$type_str <- NULL
-  node$type_fun <- NULL
-  node$parents <- NULL
-  node$time_varying <- NULL
-  node$..index.. <- NULL
-  node$prob_fun <- NULL
-  node$event_duration <- NULL
-  node$immunity_duration <- NULL
-  node$distr_fun <- NULL
-  node$distr_fun_args <- NULL
-  node$event_count <- NULL
-  node$model <- NULL
+  internals <- c("name", "type_str", "type_fun", "parents",
+                 "time_varying", "..index..", "prob_fun", "event_duration",
+                 "immunity_duration", "distr_fun", "distr_fun_args",
+                 "event_count", "model")
+
+  for (i in seq_len(length(internals))) {
+    node[[internals[i]]] <- NULL
+  }
 
   return(node)
 }

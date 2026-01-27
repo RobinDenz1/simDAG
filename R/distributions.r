@@ -85,6 +85,9 @@ rsample <- function(n, x, replace=FALSE, prob=NULL) {
 ## generate random values from a left truncated exponential distribution
 #' @export
 rtexp <- function (n, rate, l=NULL)  {
+
+  stopifnot("All values in 'rate' should be > 0." = all(rate > 0))
+
   if (!is.null(l)) {
     l - log(1 - stats::runif(n))/rate
   } else {

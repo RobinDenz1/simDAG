@@ -11,7 +11,7 @@ New Features
 
 * Added the `sim_discrete_event()` function, which allows users to perform discrete-event simulations to generate complex longitudinal data in continuous time. This function is usually much faster than comparable `sim_discrete_time()` calls, although at the cost of some flexibility.
 * Added the `rtexp()` function to allow sampling from left-truncated exponential distributions.
-* Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen.
+* Added the `rsample()` function as a convenient wrapper around `sample()`, as suggested by Ed Hagen (@grasshoppermouse).
 * Added the `node_aalen()` function to allow data to be generated according to an Aalen additive hazards model with time-constant betas and baseline hazard.
 * Added the `as_tidy_dagitty.DAG()` method, which allows direct conversion of `DAG` to `tidy_dagitty` objects used to create plots in the `ggdag` package.
 

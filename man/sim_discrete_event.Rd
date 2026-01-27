@@ -134,9 +134,11 @@ Additionally, the returned data will include all time-constant and time-dependen
 \references{
 Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
 
-Tang, Jiangjun, George Leu, und Hussein A. Abbass. 2020. Simulation and Computational Red Teaming for Problem Solving. Hoboken: IEEE Press.
-
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
+
+Gillespie, Daniel T. 1976. “A General Method for Numerically Simulating the Stochastic Time Evolution of Coupled Chemical Reactions.” Journal of Computational Physics 22 (4): 403–34.
+
+Anderson, David F. 2007. “A Modified Next Reaction Method for Simulating Chemical Systems with Time Dependent Propensities and Delays.” The Journal of Chemical Physics 127 (21).
 }
 \examples{
 library(simDAG)
