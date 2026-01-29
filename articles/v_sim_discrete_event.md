@@ -407,56 +407,6 @@ required, users may need to use the
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function.
 
-### Ties in event times
-
-Conceptually, no complications arise from multiple events happening at
-the same exact time, which we will call *ties* from here on. If ties
-occur, the algorithm should simply update the respective variables at
-the same time, generating only one new row for the start-stop dataset.
-The simulation may then proceed as usual. Computationally, it does make
-a difference though. The
-[`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
-function internally uses a mix of a long- and wide-format dataset.
-Updating this dataset is fast and efficient if it can be assumed that
-only one event occurs, but somewhat more involved if we have to allow
-ties. This is where the `allow_ties` argument comes in.
-
-By default, the time until the next event is drawn from a (truncated)
-exponential distribution and thus truly continuous. In this case, the
-likelihood that two generated event times, lets say for variable $A$ and
-$B$ are exactly equal are astronomically small. For all intents and
-purposes, we may ignore this possibility. The `allow_ties` argument is
-therefore set to `FALSE` by default, allowing computations to be a lot
-faster. If, however, the user supplies a custom function that generates
-integer based times, this argument needs to be set to `TRUE` (otherwise
-an error will be returned).
-
-For example, consider the following code:
-
-``` r
-integer_rtexp <- function(n, rate, l) {
-  ceiling(rtexp(n=n, rate=rate, l=l))
-}
-
-dag <- empty_dag() +
-  node_td("treatment", type="next_time", prob_fun=0.01,
-          event_duration=100, distr_fun=integer_rtexp) +
-  node_td("death", type="next_time",
-          formula= ~ log(0.001) + log(0.8)*treatment, link="log",
-          event_duration=Inf, distr_fun=integer_rtexp)
-
-sim <- sim_discrete_event(dag, n_sim=1000, remove_if=death==TRUE,
-                          target_event="death", allow_ties=TRUE,
-                          keep_only_first=TRUE)
-```
-
-Here, we use an artificially discretized version of the truncated
-exponential distribution to generate the time until the next change.
-This may lead to ties, so we need to set `allow_ties=TRUE`. Note that
-for sample sizes below 10000, the computational differences are very
-small. Only with large `n_sim` does the difference between
-`allow_ties=TRUE` and `allow_ties=FALSE` become more noticeable.
-
 ## Discussion
 
 The

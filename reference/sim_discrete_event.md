@@ -19,8 +19,8 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_transform_args=list(),
                    max_t=Inf, remove_if, break_if,
                    max_iter=1000, redraw_at_t=NULL,
-                   allow_ties=FALSE, censor_at_max_t=FALSE,
-                   target_event=NULL, keep_only_first=FALSE,
+                   censor_at_max_t=FALSE, target_event=NULL,
+                   keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
                    include_event_counts=TRUE,
                    check_inputs=TRUE)
@@ -140,19 +140,6 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   that using this argument potentially adds multiple additional rows to
   the output, in which no variables change. Set to `NULL` to not use
   this functionality (default).
-
-- allow_ties:
-
-  Either `TRUE` or `FALSE` (default), specifying whether multiple events
-  (or changes from `TRUE` to `FALSE` in some variables) per individual
-  at the exact same time should be allowed. If the times until the next
-  event are continuous, the chances for an exact tie are astronomically
-  small, so it is usually fine to keep this at `FALSE`. Should a tie be
-  found anyways, an error will be returned. If some custom function is
-  supplied to the `distr_fun` argument of one or more time-dependent
-  nodes, which produce integer times, this argument should be set to
-  `TRUE`. Note that this function is much faster with
-  `allow_ties=FALSE`, especially with large `n_sim`.
 
 - censor_at_max_t:
 

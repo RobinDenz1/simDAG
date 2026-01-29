@@ -489,56 +489,6 @@ categorical, count or continuous variables instead. If these are
 required, users may need to use the <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code>
 function.</p>
 </div>
-<div class="section level3">
-<h3 id="ties-in-event-times">Ties in event times<a class="anchor" aria-label="anchor" href="#ties-in-event-times"></a>
-</h3>
-<p>Conceptually, no complications arise from multiple events happening
-at the same exact time, which we will call <em>ties</em> from here on.
-If ties occur, the algorithm should simply update the respective
-variables at the same time, generating only one new row for the
-start-stop dataset. The simulation may then proceed as usual.
-Computationally, it does make a difference though. The
-<code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> function internally uses a mix of a
-long- and wide-format dataset. Updating this dataset is fast and
-efficient if it can be assumed that only one event occurs, but somewhat
-more involved if we have to allow ties. This is where the
-<code>allow_ties</code> argument comes in.</p>
-<p>By default, the time until the next event is drawn from a (truncated)
-exponential distribution and thus truly continuous. In this case, the
-likelihood that two generated event times, lets say for variable
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
-are exactly equal are astronomically small. For all intents and
-purposes, we may ignore this possibility. The <code>allow_ties</code>
-argument is therefore set to <code>FALSE</code> by default, allowing
-computations to be a lot faster. If, however, the user supplies a custom
-function that generates integer based times, this argument needs to be
-set to <code>TRUE</code> (otherwise an error will be returned).</p>
-<p>For example, consider the following code:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">integer_rtexp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">rate</span>, <span class="va">l</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="../reference/rtexp.html">rtexp</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">n</span>, rate<span class="op">=</span><span class="va">rate</span>, l<span class="op">=</span><span class="va">l</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"treatment"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
-<span>          event_duration<span class="op">=</span><span class="fl">100</span>, distr_fun<span class="op">=</span><span class="va">integer_rtexp</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>,</span>
-<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.001</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">*</span><span class="va">treatment</span>, link<span class="op">=</span><span class="st">"log"</span>,</span>
-<span>          event_duration<span class="op">=</span><span class="cn">Inf</span>, distr_fun<span class="op">=</span><span class="va">integer_rtexp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
-<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, allow_ties<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>                          keep_only_first<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Here, we use an artificially discretized version of the truncated
-exponential distribution to generate the time until the next change.
-This may lead to ties, so we need to set <code>allow_ties=TRUE</code>.
-Note that for sample sizes below 10000, the computational differences
-are very small. Only with large <code>n_sim</code> does the difference
-between <code>allow_ties=TRUE</code> and <code>allow_ties=FALSE</code>
-become more noticeable.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="discussion">Discussion<a class="anchor" aria-label="anchor" href="#discussion"></a>

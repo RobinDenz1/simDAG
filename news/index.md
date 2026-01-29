@@ -10,6 +10,10 @@ Enhancements
   nodes in discrete-event simulation. Many thanks to Fábio N. Demarqui
   ([@fndemarqui](https://github.com/fndemarqui)) for making this
   possible!
+- Removed the `allow_ties` argument from
+  [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  (ties are now handled automatically in a more efficient manner,
+  without the need for user intervention).
 
 ## simDAG 0.5.0
 
