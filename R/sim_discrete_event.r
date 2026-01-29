@@ -20,8 +20,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                t0_transform_args=list(),
                                max_t=Inf, remove_if, break_if,
                                max_iter=1000, redraw_at_t=NULL,
-                               allow_ties=FALSE, censor_at_max_t=FALSE,
-                               target_event=NULL, keep_only_first=FALSE,
+                               censor_at_max_t=FALSE, target_event=NULL,
+                               keep_only_first=FALSE,
                                remove_not_at_risk=FALSE,
                                include_event_counts=TRUE, check_inputs=TRUE) {
 
@@ -288,13 +288,12 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     if (has_event_counts) {
       data <- set_cols_to_value(data=data, .value=TRUE, type="event_count",
                                 var_names=event_count_rel,
-                                event_count_names=event_count_names,
-                                allow_ties=allow_ties)
+                                event_count_names=event_count_names)
     }
 
     # set variables to TRUE if needed
     data <- set_cols_to_value(data=data, .value=TRUE, type="event",
-                              var_names=var_names, allow_ties=allow_ties)
+                              var_names=var_names)
 
     # set .time_of_next_change for all new events
     data[.is_new_event==TRUE, `:=`(
@@ -306,7 +305,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 
     # set variables back to FALSE if needed
     data <- set_cols_to_value(data=data, .value=FALSE, type="change",
-                              var_names=var_names, allow_ties=allow_ties)
+                              var_names=var_names)
 
     # set .time_of_next_change back to Inf for all variables that
     # turned back to FALSE
@@ -479,67 +478,85 @@ timecuts <- function(n, rate, l, cuts) {
 
 ## this function efficiently either sets the covariate values to TRUE if
 ## a new event occurred or sets them back to FALSE if needed
-set_cols_to_value <- function(data, .value, type, var_names, allow_ties,
+set_cols_to_value <- function(data, .value, type, var_names,
                               event_count_names=NULL) {
 
-  .is_new_event <- .kind <- .id <- .is_new_change <- .time <-
-    .time_of_next_event <- . <- .time_of_next_change <- .change <- NULL
+  .time <- .time_of_next_event <- . <- .kind <- .id <-
+    .time_of_next_change <- NULL
 
-  # slower version that allows ties
-  if (allow_ties) {
+  # first step if no ties were present
+  if (type=="event" | type=="event_count") {
+    d_change <- data[.time==.time_of_next_event,
+                     .(.change = .kind), by=.id]
+  } else {
+    d_change <- data[.time==.time_of_next_change,
+                     .(.change = .kind), by=.id]
+  }
 
-    if (type=="event_count") {
+  # call faster or slower function, depending on if ties are present
+  if (uniqueN(d_change$.id) != nrow(d_change)) {
+    data <- set_cols_with_ties(data=data, .value=.value, type=type,
+                               var_names=var_names,
+                               event_count_names=event_count_names)
+  } else if (nrow(d_change) > 0) {
+    data <- set_cols_without_ties(data=data, .value=.value, type=type,
+                                  var_names=var_names,
+                                  event_count_names=event_count_names,
+                                  d_change=d_change)
+  }
 
-      for (i in seq_len(length(var_names))) {
-        data[.is_new_event==TRUE & .kind==var_names[i],
-             (event_count_names[i]) := get(event_count_names[i]) + 1]
-        data[, (event_count_names[i]) := max(get(event_count_names[i])),
-             by=.id]
-      }
-    } else {
+  return(data)
+}
 
-      for (.col in var_names) {
-        if (type=="event") {
-          data[.is_new_event==TRUE & .kind==.col, (.col) := TRUE]
-          data[, (.col) := any(get(.col)), by=.id]
-        } else if (type=="change") {
-          data[.is_new_change==TRUE & .kind==.col, (.col) := FALSE]
-          data[, (.col) := sum(get(.col))==.N, by=.id]
-        }
-      }
+## set cols to a value if ties are present
+set_cols_with_ties <- function(data, .value, type, var_names,
+                               event_count_names=NULL) {
+
+  .is_new_event <- .kind <- .id <- .is_new_change <- . <- NULL
+
+  if (type=="event_count") {
+
+    for (i in seq_len(length(var_names))) {
+      data[.is_new_event==TRUE & .kind==var_names[i],
+           (event_count_names[i]) := get(event_count_names[i]) + 1]
+      data[, (event_count_names[i]) := max(get(event_count_names[i])),
+           by=.id]
     }
-  # faster version that does not allow ties
   } else {
 
-    if (type=="event" | type=="event_count") {
-      d_change <- data[.time==.time_of_next_event,
-                       .(.change = .kind), by=.id]
-    } else {
-      d_change <- data[.time==.time_of_next_change,
-                       .(.change = .kind), by=.id]
-    }
-
-    # check for ties
-    if (uniqueN(d_change$.id)!=nrow(d_change)) {
-      stop("Multiple changes at the same point in time occurred, but",
-           " allow_ties=FALSE was used. Set allow_ties=TRUE and re-run",
-           " this function.", call.=FALSE)
-    }
-
-    if (nrow(d_change) > 0) {
-      data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
-
-      for (i in seq_len(length(var_names))) {
-        if (type=="event" | type=="change") {
-          data[.change==var_names[i], (var_names[i]) := .value]
-        } else {
-          data[.change==var_names[i],
-               (event_count_names[i]) := get(event_count_names[i]) + 1]
-        }
+    for (.col in var_names) {
+      if (type=="event") {
+        data[.is_new_event==TRUE & .kind==.col, (.col) := TRUE]
+        data[, (.col) := any(get(.col)), by=.id]
+      } else if (type=="change") {
+        data[.is_new_change==TRUE & .kind==.col, (.col) := FALSE]
+        data[, (.col) := sum(get(.col))==.N, by=.id]
       }
-      data[, .change := NULL]
     }
   }
+
+  return(data)
+}
+
+## set cols to a value if ties are not present
+set_cols_without_ties <- function(data, d_change, .value, type, var_names,
+                                  event_count_names=NULL) {
+
+  .id <- .is_new_change <- .time <- .time_of_next_event <- . <-
+    .time_of_next_change <- .change <- NULL
+
+  data <- merge.data.table(data, d_change, by=".id", all.x=TRUE)
+
+  for (i in seq_len(length(var_names))) {
+    if (type=="event" | type=="change") {
+      data[.change==var_names[i], (var_names[i]) := .value]
+    } else {
+      data[.change==var_names[i],
+           (event_count_names[i]) := get(event_count_names[i]) + 1]
+    }
+  }
+  data[, .change := NULL]
+
   return(data)
 }
 

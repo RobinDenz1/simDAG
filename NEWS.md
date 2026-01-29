@@ -4,6 +4,7 @@
 Enhancements
 
 * Added support for all `rsurv` package based time-to-event nodes in the `model` argument of `node_next_time()` nodes in discrete-event simulation. Many thanks to Fábio N. Demarqui (@fndemarqui) for making this possible!
+* Removed the `allow_ties` argument from `sim_discrete_event()` (ties are now handled automatically in a more efficient manner, without the need for user intervention).
 
 # simDAG 0.5.0
 

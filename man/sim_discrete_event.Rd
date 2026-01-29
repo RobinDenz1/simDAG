@@ -13,8 +13,8 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    t0_transform_args=list(),
                    max_t=Inf, remove_if, break_if,
                    max_iter=1000, redraw_at_t=NULL,
-                   allow_ties=FALSE, censor_at_max_t=FALSE,
-                   target_event=NULL, keep_only_first=FALSE,
+                   censor_at_max_t=FALSE, target_event=NULL,
+                   keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
                    include_event_counts=TRUE,
                    check_inputs=TRUE)
@@ -52,9 +52,6 @@ A single positive number, specifying the maximum amount of loops the simulation 
   }
   \item{redraw_at_t}{
 A numeric vector of positive values specifying times at which the time to the next event should be re-drawn, regardless of whether an event occurred at this time or not. This may be useful to specify effects or baseline probabilities that vary over discrete intervals of time. Note that using this argument potentially adds multiple additional rows to the output, in which no variables change. Set to \code{NULL} to not use this functionality (default).
-  }
-  \item{allow_ties}{
-Either \code{TRUE} or \code{FALSE} (default), specifying whether multiple events (or changes from \code{TRUE} to \code{FALSE} in some variables) per individual at the exact same time should be allowed. If the times until the next event are continuous, the chances for an exact tie are astronomically small, so it is usually fine to keep this at \code{FALSE}. Should a tie be found anyways, an error will be returned. If some custom function is supplied to the \code{distr_fun} argument of one or more time-dependent nodes, which produce integer times, this argument should be set to \code{TRUE}. Note that this function is much faster with \code{allow_ties=FALSE}, especially with large \code{n_sim}.
   }
   \item{censor_at_max_t}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the last generated time should be censored at the user-specified value of \code{max_t}. Since the simulation jumps times at events, the last observed event time may often be larger than \code{max_t} initially. Setting this to \code{TRUE} censors these values appropriately and potentially discards the last state-change.
