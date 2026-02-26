@@ -284,6 +284,8 @@ Functions that can be used as child nodes
   Strata
 - [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md)
   : Generate Data from a Multinomial Regression Model
+- [`node_polr()`](https://robindenz1.github.io/simDAG/reference/node_polr.md)
+  : Generate Data from an Ordered Logistic or Probit Regression
 - [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md)
   : Generate Data from a (Mixed) Poisson Regression Model
 - [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md)

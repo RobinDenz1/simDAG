@@ -172,6 +172,9 @@ convenience:
 - "[multinomial](https://robindenz1.github.io/simDAG/reference/node_multinomial.md)":
   A node based on multinomial regression.
 
+- "[polr](https://robindenz1.github.io/simDAG/reference/node_polr.md)":
+  A node based on ordered logistic or probit regression.
+
 - "[poisson](https://robindenz1.github.io/simDAG/reference/node_poisson.md)":
   A node based on (mixed) poisson regression.
 

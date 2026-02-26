@@ -115,6 +115,7 @@ directly:
 | [`node_gaussian()`](https://robindenz1.github.io/simDAG/reference/node_gaussian.md)                   | A node based on (mixed) linear regression (continuous data)                         |
 | [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)                   | A node based on (mixed) logistic regression (binary data)                           |
 | [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md)             | A node based on multinomial logistic regression (categorical data)                  |
+| [`node_polr()`](https://robindenz1.github.io/simDAG/reference/node_polr.md)                           | A node based on ordered logistic or probit regression (categorical data)            |
 | [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md)                     | A node based on (mixed) poisson regression (count data)                             |
 | [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md) | A node based on negative binomial regression (count data)                           |
 | [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md)                   | A node based on a zero-inflated poisson / negative binomial regression (count data) |
