@@ -180,6 +180,36 @@ check_inputs_node_negative_binomial <- function(parents, args) {
                                type="negative_binomial")
 }
 
+## input checks for polr nodes
+check_inputs_node_polr <- function(parents, args) {
+  check_inputs_node_regression(parents=parents, args=args, type="polr")
+
+  if ("link" %in% names(args) && !(length(args$link)==1 &&
+                                   is.character(args$link))) {
+    stop("Argument 'link' must be a single character string.",
+         call.=FALSE)
+  } else if ("link" %in% names(args) &&
+             !args$link %in% c("logistic", "probit", "loglog", "cloglog",
+                               "cauchit")) {
+    stop("Argument 'link' must be either 'logistic', 'probit', 'loglog', ",
+         "'cloglog' or 'cauchit' not '", args$link, "'.", call.=FALSE)
+  } else if ("output" %in% names(args) &&
+             !args$output %in% c("factor", "character")) {
+    stop("Argument 'output' must be either 'character' or 'factor' when using",
+         " type='polr'.", call.=FALSE)
+  } else if (!"cutpoints" %in% names(args)) {
+    stop("Argument 'cutpoints' must be specified when using type='polr'.",
+         call.=FALSE)
+  } else if (!(length(args$cutpoints) > 0 && is.numeric(args$cutpoints))) {
+    stop("Argument 'cutpoints' must be a numeric vector with",
+         " length > 0.", call.=FALSE)
+  } else if ("labels" %in% names(args) &&
+             length(args$labels) != (length(args$cutpoints) + 1)) {
+    stop("Argument 'labels' must be of length length(cutpoints) + 1.",
+         call.=FALSE)
+  }
+}
+
 ## checking the inputs of the sim_from_dag function
 check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
 

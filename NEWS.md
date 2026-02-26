@@ -1,6 +1,10 @@
 
 # simDAG 0.5.1 (developmental version)
 
+New Features
+
+* Added the `node_polr()` function to allow generation of data from an ordered logistic or probit regression.
+
 Enhancements
 
 * Added support for all `rsurv` package based time-to-event nodes in the `model` argument of `node_next_time()` nodes in discrete-event simulation. Many thanks to Fábio N. Demarqui (@fndemarqui) for making this possible!

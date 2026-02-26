@@ -67,6 +67,7 @@ The `simDAG` package implements the following types of `child_nodes` directly:
 | `node_gaussian()` | A node based on (mixed) linear regression (continuous data) |
 | `node_binomial()` | A node based on (mixed) logistic regression (binary data) |
 | `node_multinomial()` | A node based on multinomial logistic regression (categorical data) |
+| `node_polr()` | A node based on ordered logistic or probit regression (categorical data) |
 | `node_poisson()` | A node based on (mixed) poisson regression (count data) |
 | `node_negative_binomial()` | A node based on negative binomial regression (count data) |
 | `node_zeroinfl()` | A node based on a zero-inflated poisson / negative binomial regression (count data) |

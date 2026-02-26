@@ -68,6 +68,7 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_conditional_prob]{conditional_prob}": A node based on conditional probabilities.}
   \item{"\link[=node_conditional_distr]{conditional_distr}": A node based on conditional draws from different distributions.}
   \item{"\link[=node_multinomial]{multinomial}": A node based on multinomial regression.}
+  \item{"\link[=node_polr]{polr}": A node based on ordered logistic or probit regression.}
   \item{"\link[=node_poisson]{poisson}": A node based on (mixed) poisson regression.}
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_zeroinfl]{zeroinfl}": A node based on a zero-inflated poisson or negative binomial regression.}

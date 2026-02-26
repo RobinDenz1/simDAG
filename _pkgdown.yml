@@ -59,6 +59,7 @@ reference:
       - node_conditional_prob
       - node_conditional_distr
       - node_multinomial
+      - node_polr
       - node_poisson
       - node_negative_binomial
       - node_zeroinfl

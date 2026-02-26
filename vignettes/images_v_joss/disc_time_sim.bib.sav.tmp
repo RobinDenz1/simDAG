@@ -1,0 +1,707 @@
+@Article{Arnold2011,
+  author  = {Benjamin F. Arnold and Daniel R. Hogan and John M. {Colford Jr.} and Alan E. Hubbard},
+  journal = {BMC Medical Research Methodology},
+  title   = {Simulation Methods to Estimate Design Power: An Overview for Applied Research},
+  year    = {2011},
+  number  = {94},
+  pages   = {1--10},
+  volume  = {11},
+  doi     = {10.1186/1471-2288-11-94},
+}
+
+@Article{Morris2019,
+  author  = {Tim P. Morris and Ian R. White and Michael J. Crowther},
+  journal = {Statistics in Medicine},
+  title   = {Using Simulation Studies to Evaluate Statistical Methods},
+  year    = {2019},
+  number  = {11},
+  pages   = {2074--2102},
+  volume  = {38},
+  doi     = {10.1002/sim.8086},
+}
+
+@Article{Denz2023,
+  author  = {Robin Denz and Renate Klaaßen-Mielke and Nina Timmesfeld},
+  journal = {Statistics in Medicine},
+  title   = {A Comparison of Different Methods to Adjust Survival Curves for Confounders},
+  year    = {2023},
+  number  = {10},
+  pages   = {1461--1479},
+  volume  = {42},
+  doi     = {10.1002/sim.9681},
+}
+
+@Article{Denz2023a,
+  author  = {Robin Denz and Katharina Meiszl and Peter Ihle and Doris Oberle and Ursula Drechsel-Bäuerle and Katrin Scholz and Ingo Meyer and Nina Timmesfeld},
+  journal = {Communications in Statistics: Simulation and Computation},
+  title   = {Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses using German Health-Care Data: A Simulation Study},
+  year    = {2025},
+  volume  = {InPrint},
+  doi     = {10.1080/03610918.2025.2488942},
+}
+
+@Article{Denz2025,
+  author  = {Robin Denz and Nina Timmesfeld},
+  journal = {arXiv preprint},
+  title   = {Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package},
+  year    = {2025},
+  doi     = {10.48550/arXiv.2506.01498},
+}
+
+@Book{Kimko2002,
+  editor    = {Hui C. Kimko and Stephen B. Duffull},
+  publisher = {Marcel Dekker Inc.},
+  title     = {Simulation for Designing Clinical Trials: A Pharmacokinetic-Pharmacodynamic Modeling Perspective},
+  year      = {2002},
+  address   = {New York},
+}
+
+@Article{Nance2024,
+  author  = {Nerissa Nance and Maya L. Petersen and Mark J. {van der Laan} and Laura B. Balzer},
+  journal = {Epidemiology},
+  title   = {The Causal Roadmap and Simulations to Improve the Rigor and Reproducibility of Real-Data Applications},
+  year    = {2024},
+  number  = {6},
+  pages   = {791--800},
+  volume  = {35},
+  doi     = {10.1097/EDE.0000000000001773},
+}
+
+@Article{Sigal2016,
+  author  = {Matthew J. Sigal and R. Philip Chalmers},
+  journal = {Journal of Statistics Education},
+  title   = {Play it Again: Teaching Statistics with Monte Carlo Simulation},
+  year    = {2016},
+  number  = {3},
+  pages   = {136--156},
+  volume  = {24},
+  doi     = {10.1080/10691898.2016.1246953},
+}
+
+@Article{Fox2022,
+  author  = {Matthew P. Fox and Roch Nianogo and Jacqueline E. Rudolph and Chanelle J. Howe},
+  journal = {American Journal of Epidemiology},
+  title   = {Illustrating How to Simulate Data from Directed Acyclic Graphs to Understand Epidemiologic Concepts},
+  year    = {2022},
+  number  = {7},
+  pages   = {1300--1306},
+  volume  = {191},
+  doi     = {10.1093/aje/kwac041},
+}
+
+@Article{Asparouhov2020,
+  author  = {Tihomir Asparouhov and Bengt Muthén},
+  journal = {Structural Equation Modeling: A Multidisciplinary Journal},
+  title   = {Comparison of Models for the Analysis of Intensive Longitudinal Data},
+  year    = {2020},
+  number  = {2},
+  pages   = {275--297},
+  volume  = {27},
+  doi     = {10.1080/10705511.2019.1626733},
+}
+
+@Article{Sofrygin2017,
+  author  = {Oleg Sofrygin and Mark J. {van der Laan} and Romain Neugebauer},
+  journal = {Journal of Statistical Software},
+  title   = {simcausal R Package: Conducting Transparent and Reproducible Simulation Studies of Causal Effect Estimation with Complex Longitudinal Data},
+  year    = {2017},
+  number  = {2},
+  pages   = {1--47},
+  volume  = {81},
+  doi     = {10.18637/jss.v081.i02},
+}
+
+@Book{Pearl2009,
+  title     = {Causality: Models, Reasoning and Inference},
+  publisher = {Cambridge University Press},
+  year      = {2009},
+  author    = {Judea Pearl},
+  address   = {Cambridge},
+  edition   = {2},
+}
+
+@Article{Pearl1995,
+  author  = {Judea Pearl},
+  journal = {Biometrika},
+  title   = {Causal Diagrams for Empirical Research},
+  year    = {1995},
+  number  = {4},
+  pages   = {669--688},
+  volume  = {82},
+  doi     = {10.2307/2337329},
+}
+
+@Misc{RCT2024,
+  author       = {{R Core Team}},
+  howpublished = {R Foundation for Statistical Computing, Vienna, Austria},
+  title        = {R: A Language and Environment for Statistical Computing},
+  year         = {2024},
+  url          = {https://www.r-project.org/},
+}
+
+@Article{Byeon2023,
+  author  = {Sangmin Byeon and Woojoo Lee},
+  journal = {Journal of Minimally Invasive Surgery},
+  title   = {Directed Acyclic Graphs for Clinical Research: A Tutorial},
+  year    = {2023},
+  number  = {3},
+  pages   = {97--107},
+  volume  = {26},
+  doi     = {10.7602/jmis.2023.26.3.97},
+}
+
+@Book{Spirtes2000,
+  author    = {Peter Spirtes and Clark Glymour and Richard Scheines},
+  publisher = {MIT Press},
+  title     = {Causation, Prediction, and Search},
+  year      = {2000},
+  address   = {Cambridge},
+  number    = {2},
+}
+
+@Article{Wouk2019,
+  author  = {Kathryn Wouk and Anna E. Bauer and Nisha C. Gottfredson},
+  journal = {Addictive Behaviors},
+  title   = {How to Implement Directed Acyclic Graphs to Reduce Bias in Addiction Research},
+  year    = {2019},
+  pages   = {109--116},
+  volume  = {94},
+  doi     = {10.1016/j.addbeh.2018.09.032},
+}
+
+@Article{Imbens2020,
+  author  = {Guido W. Imbens},
+  journal = {Journal of Economic Literature},
+  title   = {Potential Outcome and Directed Acyclic Graph Approaches to Causality: Relevance for Empirical Practice in Economics},
+  year    = {2020},
+  number  = {4},
+  pages   = {1129--1179},
+  volume  = {58},
+  doi     = {10.1257/jel.20191597},
+}
+
+@Article{Textor2016,
+  author  = {Johannes Textor and Benito {van der Zander} and Mark S. Gilthorpe and Maciej Liśkiewicz and George T. H. Ellison},
+  journal = {International Journal of Epidemiology},
+  title   = {Robust Causal Inference using Directed Acyclic Graphs: The R Package daggity},
+  year    = {2016},
+  number  = {6},
+  pages   = {1887--1894},
+  volume  = {45},
+  doi     = {10.1093/ije/dyw341},
+}
+
+@Book{Kline2023,
+  author    = {Rex B. Kline},
+  publisher = {The Guilford Press},
+  title     = {Principles and Practice of Structural Equation Modeling},
+  year      = {2023},
+  address   = {New York},
+  number    = {5},
+}
+
+@Article{Kahn1962,
+  author  = {A. B. Kahn},
+  journal = {Communications of the ACM},
+  title   = {Topological Sorting of Large Networks},
+  year    = {1962},
+  number  = {11},
+  pages   = {558--562},
+  volume  = {5},
+  doi     = {10.1145/368996.369025},
+}
+
+@Book{Carsey2014,
+  author    = {Thomas M. Carsey and Jeffrey J. Harden},
+  publisher = {SAGE Publications},
+  title     = {Monte Carlo Simulation and Resampling Methods for Social Science},
+  year      = {2014},
+  address   = {Thousand Oaks},
+}
+
+@Book{Hernan2020,
+  author    = {Miguel A. Hernán and James M. Robins},
+  publisher = {CRC Press},
+  title     = {Causal Inference: What If},
+  year      = {2020},
+}
+
+@Book{Tang2020,
+  author    = {Jiangjun Tang and George Leu and Hussein A. Abbass},
+  publisher = {John Wiley \& Sons},
+  title     = {Simulation and Computational Red Teaming for Problem Solving},
+  year      = {2020},
+  address   = {Hoboke},
+}
+
+@InProceedings{Reisach2021,
+  author       = {Alexander G. Reisach and Christof Seiler and Sebastian Weichwald},
+  booktitle    = {Advances in Neural Information Processing Systems 34 (NeurIPS 2021)},
+  title        = {Beware of the Simulated DAG! Causal Discovery Benchmarks May Be Easy To Game},
+  year         = {2021},
+  editor       = {Marc'Aurelio Ranzato and Alina Beygelzimer and Yann N. Dauphin and Percy Liang and Jennifer Wortman Vaughan},
+  howpublished = {arXiv:2102.13647v3},
+}
+
+@Misc{Andrews2024,
+  author       = {Bryan Andrews and Erich Kummerfeld},
+  howpublished = {arXiv:2405.13100v1},
+  title        = {Better Simulations for Validating Causal Discovery with the DAG-Adaptation of the Onion Method},
+  year         = {2024},
+}
+
+@Article{Rosseel2012,
+  author  = {Yves Rosseel},
+  journal = {Journal of Statistical Software},
+  title   = {lavaan: An R Package for Structural Equation Modeling},
+  year    = {2012},
+  number  = {2},
+  pages   = {1--36},
+  volume  = {48},
+  doi     = {10.18637/jss.v048.i02},
+}
+
+@Manual{Jorgensen2022,
+  title  = {semTools: {U}seful tools for structural equation modeling},
+  author = {Terrence D. Jorgensen and Sunthud Pornprasertmanit and Alexander M. Schoemann and Yves Rosseel},
+  note   = {\proglang{R} package version 0.5-6},
+  year   = {2022},
+  url    = {https://CRAN.R-project.org/package=semTools},
+}
+
+@Manual{Pornprasertmanit2021,
+  title  = {simsem: SIMulated Structural Equation Modeling},
+  author = {Sunthud Pornprasertmanit and Patrick Miller and Alexander Schoemann and Terrence D. Jorgensen},
+  note   = {\proglang{R} package version 0.5-16},
+  year   = {2021},
+  url    = {https://CRAN.R-project.org/package=simsem},
+}
+
+@Article{Morina2017,
+  author  = {D. {Mori{\~{n}a}} and A. Navarro},
+  journal = {Communications in Statistics: Simulation and Computation},
+  title   = {Competing Risks Simulation with the survsim R Package},
+  year    = {2017},
+  number  = {7},
+  pages   = {5712--5722},
+  volume  = {46},
+  doi     = {10.18637/jss.v059.i02},
+}
+
+@Article{Brilleman2021,
+  author  = {Samuel L. Brilleman and Rory Wolfe and Margarita Moreno-Betancur and Michael J. Crowther},
+  journal = {Journal of Statistical Software},
+  title   = {Simulating Survival Data Using the simsurv R Package},
+  year    = {2021},
+  number  = {3},
+  volume  = {97},
+  doi     = {10.18637/jss.v097.i03},
+}
+
+@Misc{Demarqui2024,
+  author       = {Fábio N. Demarqui},
+  howpublished = {arXiv:2406.01750v1},
+  title        = {Survival Data Simulation with the R Package rsurv},
+  year         = {2024},
+}
+
+@Manual{Wang2022,
+  title  = {reda: Recurrent Event Data Analysis},
+  author = {Wenjie Wang and Haoda Fu and Sy Han and Jun Yan},
+  note   = {\proglang{R} package version 0.5.4},
+  year   = {2022},
+}
+
+@Article{Alfons2010,
+  author  = {Andreas Alfons and Matthias Templ and Peter Filzmoser},
+  journal = {Journal of Statistical Software},
+  title   = {An Object-Oriented Framework for Statistical Simulation: The R Package simFrame},
+  year    = {2010},
+  number  = {3},
+  pages   = {1--36},
+  volume  = {37},
+  doi     = {10.18637/jss.v037.i03},
+}
+
+@Article{Templ2017,
+  author  = {Matthias Templ and Bernhard Meindl and Alexander Kowarik and Olivier Dupriez},
+  journal = {Journal of Statistical Software},
+  title   = {Simulation of Synthetic Complex Data: The R Package simPop},
+  year    = {2017},
+  number  = {10},
+  pages   = {1--38},
+  volume  = {79},
+  doi     = {10.18637/jss.v079.i10},
+}
+
+@Article{Goldfeld2020,
+  author  = {Keith Goldfeld and Jacob Wujciak-Jens},
+  journal = {The Journal of Open Source Software},
+  title   = {simstudy: Illuminating Research Methods through Data Generation},
+  year    = {2020},
+  number  = {54},
+  pages   = {1--4},
+  volume  = {5},
+  doi     = {10.21105/joss.02763},
+}
+
+@Article{Hajj2023,
+  author  = {Ghadi S. Al Hajj and Johan Pensar and Geir K. Sandve},
+  journal = {PLoS One},
+  title   = {DagSim: Combining DAG-Based Model Structure with Unconstrained Data Types and Relations for Flexible, Transparent, and Modularized Data Simulation},
+  year    = {2023},
+  number  = {4},
+  volume  = {18},
+  doi     = {10.1371/journal.pone.0284443},
+}
+
+@Manual{Csardi2024,
+  title  = {igraph: Network Analysis and Visualization in R},
+  author = {Gábor Csárdi and Tamás Nepusz and Vincent Traag and Szabolcs Horvát and Fabio Zanini and Daniel Noom and Kirill Müller},
+  note   = {\proglang{R} package version 2.0.3},
+  year   = {2024},
+  doi    = {10.5281/zenodo.7682609},
+  url    = {https://CRAN.R-project.org/package=igraph},
+}
+
+@Book{Wickham2016,
+  author    = {Hadley Wickham},
+  publisher = {Springer-Verlag New York},
+  title     = {ggplot2: Elegant Graphics for Data Analysis},
+  year      = {2016},
+  isbn      = {978-3-319-24277-4},
+  url       = {https://ggplot2.tidyverse.org},
+}
+
+@Manual{Pedersen2022,
+  title  = {ggforce: Accelerating ggplot2},
+  author = {Thomas Lin Pedersen},
+  note   = {\proglang{R} package version 0.4.1},
+  year   = {2022},
+  url    = {https://CRAN.R-project.org/package=ggforce},
+}
+
+@Article{Bender2005,
+  author  = {Ralf Bender and Thomas Augustin and Maria Blettner},
+  journal = {Statistics in Medicine},
+  title   = {Generating Survival Times to Simulate Cox Proportional Hazards Models},
+  year    = {2005},
+  number  = {11},
+  pages   = {1713--1723},
+  volume  = {24},
+  doi     = {10.1002/sim.2059},
+}
+
+@Article{Gruber2015,
+  author  = {Susan Gruber and Roger W. Logan and Inmaculada Jarrín and Susana Monge and Miguel A. Hernán},
+  journal = {Statistics in Medicine},
+  title   = {Ensemble Learning of Inverse Probability Weights for Marginal Structural Modeling in Large Observational Datasets},
+  year    = {2015},
+  number  = {1},
+  pages   = {106--117},
+  volume  = {34},
+  doi     = {10.1002/sim.6322},
+}
+
+@Article{Spooner2021,
+  author  = {Fiona Spooner and Jesse F. Abrams and Karyn Morrissey and Gavin Shaddick and Michael Batty and Richard Milton and Adam Dennett and Nik Lomax and Nick Malleson and Natalie Nelissen and Alex Coleman and Jamil Nur and Ying Jin and Rory Greig and Charlie Shenton and Mark Birkin},
+  journal = {Social Science \& Medicine},
+  title   = {A Dynamic Microsimulation Model for Epidemics},
+  year    = {2021},
+  number  = {114461},
+  volume  = {291},
+  doi     = {10.1016/j.socscimed.2021.114461},
+}
+
+@Book{Banks2014,
+  author    = {Jerry Banks and John S. {Carson II} and Barry L. Nelson and David M. Nicol},
+  publisher = {Pearson Education Limited},
+  title     = {Discrete-Event System Simulation},
+  year      = {2014},
+  address   = {Edinburgh Gate},
+  volume    = {5},
+}
+
+@Article{Zhang2018a,
+  author  = {Zhongzheng Zhang and Jaako Reinikainen and Kazeem Adedayo Adeleke and Marcel E. Pieterse and Catharina G. M. Groothuis-Oudshoorn},
+  journal = {Annals of Translational Medicine},
+  title   = {Time-Varying Covariates and Coefficients in Cox Regression Models},
+  year    = {2018},
+  number  = {7},
+  pages   = {1--10},
+  volume  = {6},
+  doi     = {10.21037/atm.2018.02.12},
+}
+
+@Manual{Therneau2024,
+  title  = {A Package for Survival Analysis in R},
+  author = {Terry M Therneau},
+  note   = {\proglang{R} package version 3.5-8},
+  year   = {2024},
+  url    = {https://CRAN.R-project.org/package=survival},
+}
+
+@Manual{Barrett2024,
+  title  = {data.table: Extension of `data.frame`},
+  author = {Tyson Barrett and Matt Dowle and Arun Srinivasan and Jan Gorecki and Michael Chirico and Toby Hocking},
+  note   = {\proglang{R} package version 1.15.2},
+  year   = {2024},
+  url    = {https://CRAN.R-project.org/package=data.table},
+}
+
+@Article{Chiou2023,
+  author  = {Sy Han Chiou and Gongjun Xu and Jun Yan Chiung-Yu Huang},
+  journal = {Journal of Statistical Software},
+  title   = {Regression Modeling for Recurrent Events Possibly with an Informative Terminal Event Using R Package reReg},
+  year    = {2023},
+  number  = {5},
+  pages   = {1--34},
+  volume  = {105},
+  doi     = {10.18637/jss.v105.i05},
+}
+
+@Manual{Mersmann2023,
+  title  = {microbenchmark: Accurate Timing Functions},
+  author = {Olaf Mersmann},
+  note   = {\proglang{R} package version 1.4.10},
+  year   = {2023},
+  url    = {https://CRAN.R-project.org/package=microbenchmark},
+}
+
+@Article{Cheng2016,
+  author  = {Adam Cheng and David Kessler and Ralph Mackinnon and Todd P. Chang and Vinay M. Nadkarni and Elizabeth A. Hunt and Jordan Duval-Arnould and Yiqun Lin And David A. Cook and Martin Pusic and Joshua Hui and David Moher and Matthias Egger and Marc Auerbach},
+  journal = {Advances in Simulation},
+  title   = {Reporting Guidelines for Health Care Simulation Research: Extensions to the CONSORT and STROBE Statements},
+  year    = {2016},
+  number  = {25},
+  pages   = {1--13},
+  volume  = {1},
+  doi     = {10.1186/s41077-016-0025-y},
+}
+
+@Article{Pitts2024,
+  author  = {Amy J. Pitts and Charlotte R. Fowler},
+  journal = {Journal of Causal Inference},
+  title   = {Comparison of Open-Source Software for Producing Directed Acyclic Graphs},
+  year    = {2024},
+  number  = {1},
+  pages   = {1--10},
+  volume  = {12},
+  doi     = {10.1515/jci-2023-0031},
+}
+
+@Article{Hendry2013,
+  author  = {David J. Hendry},
+  journal = {Statistics in Medicine},
+  title   = {Data Generation for the Cox Proportional Hazards Model with Time-Dependent Covariates: A Method for Medical Researchers},
+  year    = {2013},
+  number  = {3},
+  pages   = {436--454},
+  volume  = {33},
+  doi     = {10.1002/sim.5945},
+}
+
+@Article{Austin2012,
+  author  = {Peter C. Austin},
+  journal = {Statistics in Medicine},
+  title   = {Generating Survival Times to Simulate Cox Proportional Hazards Models with Time-Varying Covariates},
+  year    = {2012},
+  number  = {29},
+  pages   = {3946--3958},
+  volume  = {31},
+  doi     = {10.1002/sim.5452},
+}
+
+@Article{Huang2020,
+  author  = {Yunda Huang and Yuanyuan Zhang and Zong Zhang and Peter B. Gilbert},
+  journal = {Statistics in Biosciences},
+  title   = {Generating Survival Times Using Cox Proportional Hazards Models with Cyclic and Piecewise Time-Varying Covariates},
+  year    = {2020},
+  pages   = {324--339},
+  volume  = {12},
+  doi     = {10.1007/s12561-020-09266-3},
+}
+
+@Article{Ngwa2022,
+  author  = {Julius S. Ngwa and Howard J. Cabral and Debbie M. Cheng and David R. Gagnon and Michael P. LaValley and L. Adrienne Cupples},
+  journal = {Communications in Statistics: Simulation and Computation},
+  title   = {Generating Survival Times with Time-Varying Covariates Using the Lambert W Function},
+  year    = {2022},
+  number  = {1},
+  pages   = {135--153},
+  volume  = {51},
+  doi     = {10.1080/03610918.2019.1648822},
+}
+
+@Article{Zhang2018,
+  author  = {Xiange Zhang},
+  journal = {BMC Health Services Research},
+  title   = {Application of Discrete Event Simulation in Health Care: A Systematic Review},
+  year    = {2018},
+  number  = {687},
+  volume  = {18},
+  doi     = {10.1186/s12913-018-3456-4},
+}
+
+@Article{Haller2014,
+  author  = {Bernhard Haller and Kurt Ulm},
+  journal = {Journal of Statistical Computation and Simulation},
+  title   = {Flexible Simulation of Competing Risks Data Following Prespecified Subdistribution Hazards},
+  year    = {2014},
+  number  = {12},
+  pages   = {2557--2576},
+  volume  = {84},
+  doi     = {10.1080/00949655.2013.793345},
+}
+
+@Book{Tutz2016,
+  author    = {Gerhard Tutz and Matthias Schmid},
+  publisher = {Springer International Publishing Switzerland},
+  title     = {Modeling Discrete Time-to-Event Data},
+  year      = {2016},
+  address   = {Cham},
+}
+
+@Article{Green2016,
+  author  = {Peter Green and Catriona J. MacLeod},
+  journal = {Methods in Ecology and Evolution},
+  title   = {simr: An R Package for Power Analysis of Generalized Linear Mixed Models by Simulation},
+  year    = {2016},
+  number  = {4},
+  pages   = {493--498},
+  volume  = {7},
+  doi     = {10.1111/2041-210X.12504},
+}
+
+@Misc{Sofrygin2017a,
+  author       = {Oleg Sofrygin and Romain Neugebauer and Mark J. {van der Laan}},
+  howpublished = {arXiv prepring},
+  title        = {Conducting Simulations in Causal Inference with Networks-Based Structural Equation Models},
+  year         = {2017},
+  doi          = {10.48550/arXiv.1705.10376},
+}
+
+@Article{Ogburn2024,
+  author  = {Elizabeth L. Ogburn and Oleg Sofrygin and Iván Díaz and Mark J. {van der Laan}},
+  journal = {Journal of the American Statistical Association},
+  title   = {Causal Inference for Social Network Data},
+  year    = {2024},
+  number  = {545},
+  pages   = {597--611},
+  volume  = {119},
+  doi     = {10.1080/01621459.2022.2131557},
+}
+
+@InCollection{VanderWeele2013,
+  author    = {Tyler J. VanderWeele and Weihua An},
+  booktitle = {Handbook of Causal Analysis for Social Research},
+  publisher = {Springer Science + Business Media},
+  title     = {Social Networks and Causal Inference},
+  year      = {2013},
+  address   = {Dordrecht},
+  editor    = {Stephen L. Morgan},
+  doi       = {10.1007/978-94-007-6094-3},
+}
+
+@Article{An2022,
+  author  = {Weihua An and Roberson Beauvile and Benjamin Rosche},
+  journal = {Annual Reviews of Sociology},
+  title   = {Causal Network Analysis},
+  year    = {2022},
+  pages   = {23--41},
+  volume  = {48},
+  doi     = {10.1146/annurev-soc-030320-102100},
+}
+
+@Article{Danon2011,
+  author  = {Leon Danon and Ashley P. Ford and Thomas House and Chris P. Jewell and Matt J. Keeling and Gareth O. Roberts and Joshua V. Ross and Matthew C. Vernon},
+  journal = {Interdisciplinary Perspectives on Infectious Diseases},
+  title   = {Networks and the Epidemiology of Infectious Disease},
+  year    = {2011},
+  volume  = {16},
+  doi     = {10.1155/2011/284909},
+}
+
+@Article{Masuda2018,
+  author  = {Naoki Masuda and Luis E. C. Rocha},
+  journal = {SIAM Review},
+  title   = {A Gillespie Algorithm for Non-Markovian Stochastic Processes},
+  year    = {2018},
+  number  = {1},
+  pages   = {95--115},
+  volume  = {60},
+}
+
+@Article{Anderson2007,
+  author  = {David F. Anderson},
+  journal = {The Journal of Chemical Physics},
+  title   = {A Modified Next Reaction Method for Simulating Chemical Systems with Time Dependent Propensities and Delays},
+  year    = {2007},
+  number  = {21},
+  volume  = {127},
+}
+
+@Misc{Dolgert2016,
+  author       = {Andrew J. Dolgert},
+  howpublished = {arXiv:1610.03939v1},
+  title        = {Continuous-Time, Discrete-Event Simulation from Counting Processes},
+  year         = {2016},
+}
+
+@Article{Degeling2025,
+  author  = {Koen Degeling and Jonathan Karnon and Michiel van de Ven and alan Brennan and Hendrik Koffijberg},
+  journal = {Applied Health Economics and Health Policy},
+  title   = {Discrete Event Simulation in R using the 'Simmer' Package for Health Economic Modelling: A Tutorial and Illustration in Colon Cancer},
+  year    = {2025},
+  pages   = {961--975},
+  volume  = {23},
+}
+
+@Article{Liesenborgs2019,
+  author  = {Jori Liesenborgs and Diana M. Hendrickx and Elise Kuylen and David Niyukuri and Niel Hens and Wim Delva},
+  journal = {Nature Scientific Reports},
+  title   = {SimpactCyan 1.0: An Open_Source Simulator for Individual-Based Models in HIV Epidemiology with R and Python Interfaces},
+  year    = {2019},
+  number  = {19289},
+  volume  = {9},
+}
+
+@Article{Zagatti2024,
+  author  = {Guilherne Augusto Zagatti and Samuel A. Isaacson and Christopher Rackauckas and Vasily Ilin and See-Kiong Ng and Stéphane Bressan},
+  journal = {The Proceedings of the JuliaCon Conferences},
+  title   = {Extending JumpProcesses.jl for Fast Point Process Simulation with Time-Varying Intensities},
+  year    = {2024},
+  number  = {58},
+  volume  = {6},
+}
+
+@Misc{LopezMendez2025,
+  author       = {Mauricio Lopez-Mendez and Jeremy D. Goldhaber-Fiebert and Fernando Alarid-Escudero},
+  howpublished = {medRxiv Preprint},
+  title        = {A Tutorial on Discrete Event Simulation Models in R using a Cost-Effectiveness Analysis Example},
+  year         = {2025},
+}
+
+@Article{Gillespie1977,
+  author  = {Daniel T. Gillespie},
+  journal = {The Journal of Physical Chemistry},
+  title   = {Exact Stochastic Simulation of Coupled Chemical Reactions},
+  year    = {1977},
+  number  = {25},
+  pages   = {2340--2361},
+  volume  = {81},
+}
+
+@Article{Gillespie1976,
+  author  = {Daniel T. Gillespie},
+  journal = {Journal of Computational Physics},
+  title   = {A General Method for Numerically Simulating the Stochastic Time Evolution of Coupled Chemical Reactions},
+  year    = {1976},
+  number  = {4},
+  pages   = {403--434},
+  volume  = {22},
+}
+
+@Article{Ucar2019,
+  author  = {{I\~{n}aki} Ucar and Bart Smeets and Arturo Azcorra},
+  journal = {Journal of S
