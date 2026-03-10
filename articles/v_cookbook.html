@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -293,6 +293,9 @@ using the following syntax:</p>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Outcome"</span>, type<span class="op">=</span><span class="st">"poisson"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Treatment</span><span class="op">*</span><span class="fl">4</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">Clinic</span><span class="op">)</span>,</span>
 <span>       var_corr<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Registered S3 method overwritten by 'car':</span></span>
+<span><span class="co">#&gt;   method           from</span></span>
+<span><span class="co">#&gt;   na.action.merMod lme4</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Clinic Treatment Outcome</span></span>
 <span><span class="co">#&gt;     &lt;int&gt;    &lt;lgcl&gt;   &lt;int&gt;</span></span>
@@ -639,12 +642,12 @@ continuous score of some kind.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    school female       age      score</span></span>
 <span><span class="co">#&gt;    &lt;char&gt; &lt;lgcl&gt;     &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:      I   TRUE 12.957818  3.1832933</span></span>
-<span><span class="co">#&gt; 2:      C   TRUE  7.924776  2.8786369</span></span>
-<span><span class="co">#&gt; 3:      D   TRUE 10.176482  2.8363160</span></span>
-<span><span class="co">#&gt; 4:      F  FALSE 10.180657  0.3773207</span></span>
-<span><span class="co">#&gt; 5:      I  FALSE 10.157362 -1.2590350</span></span>
-<span><span class="co">#&gt; 6:      C  FALSE 12.908317  0.8219375</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:      I   TRUE 12.957818  3.3111130</span></span>
+<span><span class="co">#&gt; 2:      C   TRUE  7.924776  2.7577452</span></span>
+<span><span class="co">#&gt; 3:      D   TRUE 10.176482  2.8479959</span></span>
+<span><span class="co">#&gt; 4:      F  FALSE 10.180657  0.6492182</span></span>
+<span><span class="co">#&gt; 5:      I  FALSE 10.157362 -1.1312153</span></span>
+<span><span class="co">#&gt; 6:      C  FALSE 12.908317  0.7010458</span></span></code></pre></div>
 <p>In this example, there is a single random effect for school, with a
 standard deviation of 0.5. This example could be expanded to include a
 random slope for age per school, by exchanging <code>(1|school)</code>

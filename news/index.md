@@ -1,6 +1,6 @@
 # Changelog
 
-## simDAG 0.5.1 (developmental version)
+## simDAG 0.5.1
 
 New Features
 

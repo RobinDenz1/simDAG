@@ -66,8 +66,8 @@ length `n`.
 library(simDAG)
 
 rcategorical(n=5, labels=c("A", "B", "C"), probs=c(0.1, 0.2, 0.7))
-#> [1] "C" "C" "C" "A" "C"
+#> [1] "C" "C" "B" "C" "C"
 
 rcategorical(n=2, probs=matrix(c(0.1, 0.2, 0.5, 0.7, 0.4, 0.1), nrow=2))
-#> [1] 1 2
+#> [1] 2 1
 ```

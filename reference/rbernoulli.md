@@ -56,13 +56,13 @@ library(simDAG)
 
 # generating 5 bernoulli random draws from an unbiased coin
 rbernoulli(n=5, p=0.5)
-#> [1] FALSE FALSE  TRUE FALSE FALSE
+#> [1]  TRUE  TRUE FALSE FALSE  TRUE
 
 # using different probabilities for each coin throw
 rbernoulli(n=5, p=c(0.1, 0.2, 0.3, 0.2, 0.7))
-#> [1] FALSE FALSE  TRUE FALSE FALSE
+#> [1] FALSE FALSE FALSE FALSE  TRUE
 
 # return as numeric instead
 rbernoulli(n=5, p=0.5, output="numeric")
-#> [1] 1 0 0 1 1
+#> [1] 0 0 1 0 0
 ```

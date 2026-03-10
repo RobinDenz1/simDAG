@@ -221,6 +221,9 @@ dag_mixed <- empty_dag() +
 sim_dat <- sim_from_dag(dag=dag_mixed, n_sim=100)
 }
 #> Loading required namespace: simr
+#> Registered S3 method overwritten by 'car':
+#>   method           from
+#>   na.action.merMod lme4
 #> Loading required package: lme4
 #> Loading required package: Matrix
 #> 

@@ -222,6 +222,9 @@ dag <- empty_dag() +
   node("Outcome", type="poisson", formula= ~ -1 + Treatment*4 + (1|Clinic),
        var_corr=0.5)
 data <- sim_from_dag(dag, n_sim=1000)
+#> Registered S3 method overwritten by 'car':
+#>   method           from
+#>   na.action.merMod lme4
 head(data)
 #>    Clinic Treatment Outcome
 #>     <int>    <lgcl>   <int>
@@ -578,12 +581,12 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>    school female       age      score
 #>    <char> <lgcl>     <num>      <num>
-#> 1:      I   TRUE 12.957818  3.1832933
-#> 2:      C   TRUE  7.924776  2.8786369
-#> 3:      D   TRUE 10.176482  2.8363160
-#> 4:      F  FALSE 10.180657  0.3773207
-#> 5:      I  FALSE 10.157362 -1.2590350
-#> 6:      C  FALSE 12.908317  0.8219375
+#> 1:      I   TRUE 12.957818  3.3111130
+#> 2:      C   TRUE  7.924776  2.7577452
+#> 3:      D   TRUE 10.176482  2.8479959
+#> 4:      F  FALSE 10.180657  0.6492182
+#> 5:      I  FALSE 10.157362 -1.1312153
+#> 6:      C  FALSE 12.908317  0.7010458
 ```
 
 In this example, there is a single random effect for school, with a

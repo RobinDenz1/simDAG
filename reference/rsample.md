@@ -78,11 +78,11 @@ data <- sim_from_dag(dag, n_sim=5)
 head(data)
 #>        A
 #>    <int>
-#> 1:     4
-#> 2:     8
-#> 3:     6
-#> 4:     9
-#> 5:     2
+#> 1:     1
+#> 2:     3
+#> 3:     2
+#> 4:     4
+#> 5:     7
 
 # with replacement and selection probabilities
 dag <- empty_dag() +
@@ -95,10 +95,10 @@ head(data)
 #>    <lgcl> <num>
 #> 1:  FALSE     4
 #> 2:  FALSE     2
-#> 3:   TRUE     2
-#> 4:   TRUE     1
-#> 5:   TRUE     2
-#> 6:  FALSE     4
+#> 3:   TRUE     4
+#> 4:   TRUE     4
+#> 5:  FALSE     2
+#> 6:   TRUE     4
 
 # sampling rows from a data.frame object
 # NOTE: The node name for the rsample() node will be ignored, because
@@ -111,10 +111,10 @@ data2 <- sim_from_dag(dag, n_sim=50)
 head(data2)
 #>         X     A      Y
 #>    <lgcl> <num> <lgcl>
-#> 1:   TRUE     2  FALSE
-#> 2:  FALSE     4  FALSE
-#> 3:  FALSE     2   TRUE
-#> 4:  FALSE     4  FALSE
-#> 5:  FALSE     1  FALSE
-#> 6:   TRUE     4  FALSE
+#> 1:   TRUE     4   TRUE
+#> 2:   TRUE     1  FALSE
+#> 3:   TRUE     2  FALSE
+#> 4:  FALSE     4   TRUE
+#> 5:   TRUE     2  FALSE
+#> 6:  FALSE     4  FALSE
 ```
