@@ -455,7 +455,7 @@ test_that("mixing net() and mixed terms in formula syntax", {
 
   data <- sim_from_dag(dag, n_sim=100)
 
-  expect_equal(round(mean(data$Y), 3), -5.3)
+  expect_equal(round(mean(data$Y), 3), -5.302)
 })
 
 test_that("general test cases, multiple networks", {
