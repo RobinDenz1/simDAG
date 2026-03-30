@@ -12,7 +12,7 @@ test_that("simple random effect", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1|E),
          var_corr=0.5, error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -1.995)
+  expect_equal(round(mean(data$Y), 3), -1.990)
 
   # binomial
   dag_bin <- dag +
@@ -43,7 +43,7 @@ test_that("simple random effect in disrete-time simulation", {
             var_corr=0.5, error=1)
   data <- sim_discrete_time(dag_gaus, n_sim=100, save_states="all", max_t=5)
   data <- sim2data(data, to="long")
-  expect_equal(round(mean(data$Y), 3), -1.864)
+  expect_equal(round(mean(data$Y), 3), -1.852)
 
   # binomial
   dag_bin <- dag +
@@ -76,7 +76,7 @@ test_that("simple random effect + categorical fixed effect", {
     node("Y", type="gaussian", formula= ~ -2 + Avar2*1.5 + Avar3*3 + (1|E),
          var_corr=0.5, error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -0.519)
+  expect_equal(round(mean(data$Y), 3), -0.513)
 
   # binomial
   dag_bin <- dag +
@@ -169,7 +169,7 @@ test_that("simple random effect + cubic terms", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + I(A^2)*0.2 + (1|E),
          var_corr=0.5, error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -1.802)
+  expect_equal(round(mean(data$Y), 3), -1.797)
 
   # binomial
   dag_bin <- dag +
@@ -199,7 +199,7 @@ test_that("simple random effect + ONLY cubic terms", {
     node("Y", type="gaussian", formula= ~ -2 + I(A^2)*0.2 + (1|E),
          var_corr=0.5, error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -1.856)
+  expect_equal(round(mean(data$Y), 3), -1.851)
 
   # binomial
   dag_bin <- dag +
@@ -230,7 +230,7 @@ test_that("multiple random effects", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1|E) + (1|F),
          var_corr=list("E"=0.5, "F"=0.8), error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -2.178)
+  expect_equal(round(mean(data$Y), 3), -2.179)
 
   # binomial
   dag_bin <- dag +
@@ -263,7 +263,7 @@ test_that("with random effects and random slopes", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (A|E),
          var_corr=var_corr, error=1)
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -1.979)
+  expect_equal(round(mean(data$Y), 3), -1.974)
 
   # binomial
   dag_bin <- dag +
@@ -291,7 +291,7 @@ test_that("mixed model term with + in it", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1 + A|E),
          var_corr=matrix(c(0.5, 0.05, 0.05, 0.1), 2), error=1)
   data <- sim_from_dag(dag, n_sim=1000)
-  expect_equal(round(mean(data$Y), 3), -2.361)
+  expect_equal(round(mean(data$Y), 3), -2.365)
 })
 
 test_that("works with function input", {
@@ -305,7 +305,7 @@ test_that("works with function input", {
     node("Y", type=node_gaussian, formula= ~ -2 + A*1.5 + (1 + A|E),
          var_corr=matrix(c(0.5, 0.05, 0.05, 0.1), 2), error=1)
   data <- sim_from_dag(dag, n_sim=1000)
-  expect_equal(round(mean(data$Y), 3), -2.361)
+  expect_equal(round(mean(data$Y), 3), -2.365)
 })
 
 test_that("at least one fixed effect needs to be there", {
@@ -360,7 +360,7 @@ test_that("random effects with net() syntax", {
            net(mean(A), na=0)*0.5 + I(B^3)*0.2 + A:B*0.1 + (1 + A|E) + C1*0.3 +
            C2*-4 + A*1.5, error=1, var_corr=var_corr)
   data <- sim_from_dag(dag2, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -5.300)
+  expect_equal(round(mean(data$Y), 3), -5.299)
 
   # does not work with missing values
   dag2 <- dag +
@@ -384,7 +384,7 @@ test_that("simple random effect with non-default link", {
     node("Y", type="gaussian", formula= ~ -2 + A*1.5 + (1|E),
          var_corr=0.5, error=1, link="inverse")
   data <- sim_from_dag(dag_gaus, n_sim=100)
-  expect_equal(round(mean(data$Y), 3), -1.995)
+  expect_equal(round(mean(data$Y), 3), -1.990)
 
   # binomial
   dag_bin <- dag +

@@ -2,7 +2,7 @@
 \alias{rtexp}
 
 \title{
-Sample values from a left-truncated exponential distribution
+Generate Data from a left-truncated exponential distribution
 }
 \description{
 This function is a simple wrapper around the \code{\link[stats]{rexp}} function, allowing users to directly sample values from a left-truncated exponential distribution.

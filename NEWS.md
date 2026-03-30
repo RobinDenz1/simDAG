@@ -1,4 +1,10 @@
 
+# simDAG 0.5.2
+
+Bug Fixes
+
+* This update was only done to fix failing tests on CRAN due to an update in the `simr` package. Nothing else changed.
+
 # simDAG 0.5.1
 
 New Features
