@@ -2,6 +2,8 @@
 
 ## simDAG 0.5.2
 
+CRAN release: 2026-03-30
+
 Bug Fixes
 
 - This update was only done to fix failing tests on CRAN due to an
