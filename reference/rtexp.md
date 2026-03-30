@@ -1,4 +1,4 @@
-# Sample values from a left-truncated exponential distribution
+# Generate Data from a left-truncated exponential distribution
 
 This function is a simple wrapper around the
 [`rexp`](https://rdrr.io/r/stats/Exponential.html) function, allowing
