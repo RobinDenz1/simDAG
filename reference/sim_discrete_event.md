@@ -23,7 +23,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
                    include_event_counts=TRUE,
-                   check_inputs=TRUE)
+                   check_inputs=TRUE, debug=NULL)
 ```
 
 ## Arguments
@@ -187,6 +187,11 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
   set to `TRUE` by default, but can be set to `FALSE` in order to speed
   things up when using this function in a simulation study or something
   similar.
+
+- debug:
+
+  Strictly used for developmental purposes. Keep at `NULL` to ignore
+  this argument.
 
 ## Details
 
