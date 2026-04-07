@@ -18,8 +18,6 @@ node_polr <- function(data, parents, formula=NULL, betas,
 
   eta <- calc_linpred(data=data, betas=betas, intercept=0)
 
-  p <- length(beta)
-
   # generate latent error depending on specified link function
   eps <- switch(link,
     logistic = stats::rlogis(nrow(data)),

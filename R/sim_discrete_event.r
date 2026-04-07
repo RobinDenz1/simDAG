@@ -23,7 +23,8 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                                censor_at_max_t=FALSE, target_event=NULL,
                                keep_only_first=FALSE,
                                remove_not_at_risk=FALSE,
-                               include_event_counts=TRUE, check_inputs=TRUE) {
+                               include_event_counts=TRUE, check_inputs=TRUE,
+                               debug=NULL) {
 
   # silence devtools check() warnings
   .id <- .time <- .trunc_time <- .time_of_next_event <-
@@ -35,6 +36,12 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
          " node_td() functions.", call.=FALSE)
+  }
+
+  # internal arguments used for debugging and similar purposes,
+  # not meant to be specified by users
+  if (is.null(debug)) {
+    debug <- list(return_full_state=FALSE, continue_state=FALSE)
   }
 
   requireNamespace("data.table", quietly=TRUE)
@@ -78,7 +85,9 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   tx_nodes <- prepare_next_time_nodes(dag$tx_nodes)
 
   # get initial data
-  if (is.null(t0_data) & length(dag$root_nodes)==0 &
+  if (debug$continue_state) {
+    data <- t0_data$data
+  } else if (is.null(t0_data) & length(dag$root_nodes)==0 &
       length(dag$child_nodes)==0) {
     data <- data.table(.id=seq(1, n_sim))
   } else if (is.null(t0_data)) {
@@ -115,13 +124,16 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     data <- do.call(t0_transform_fun, args=t0_transform_args)
   }
 
+  if (!debug$continue_state) {
+
   # set time to 0 at start
   data[, .time := 0]
   data[, .trunc_time := 0]
 
   # extract names and initialize relevant vars
   var_names <- vapply(tx_nodes, function(x){x$name}, FUN.VALUE=character(1))
-  data[, (var_names) := FALSE]
+  var_names0 <- var_names[!var_names %in% colnames(data)]
+  data[, (var_names0) := FALSE]
   cnames <- copy(colnames(data))
 
   # initialize output list (including data at t = 0)
@@ -162,7 +174,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
   has_event_counts <- sum(event_count_ind) > 0
 
   if (has_event_counts) {
-    event_count_rel <- var_names[event_count_ind]
+    event_count_rel <- var_names0[event_count_ind]
     event_count_names <- paste0(event_count_rel, "_event_count")
 
     data[, (event_count_names) := 0]
@@ -170,6 +182,19 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     if (include_event_counts) {
       cnames <- c(cnames, event_count_names)
     }
+  } else {
+    event_count_rel <- NULL
+    event_count_names <- NULL
+  }
+
+  } else {# end of continue_state if ()
+    var_names <- t0_data$var_names
+    var_names0 <- t0_data$var_names0
+    cnames <- t0_data$cnames
+    has_event_counts <- t0_data$has_event_counts
+    event_count_rel <- t0_data$event_count_rel
+    event_count_names <- t0_data$event_count_names
+    out <- list()
   }
 
   loop_count <- 0
@@ -312,7 +337,9 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     data[.time==.time_of_next_change, .time_of_next_change := Inf]
 
     # save state of the simulation
-    out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
+    if (!debug$return_full_state) {
+      out[[length(out) + 1]] <- data[!duplicated(data$.id), cnames, with=FALSE]
+    }
 
     # remove rows that no longer need to be updated
     data <- data[!(is.infinite(.event_duration) & .is_new_event==TRUE) &
@@ -322,6 +349,10 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     # subset if specified
     if (!miss_remove_if) {
       data <- data[!(eval(cond_expr))]
+    }
+
+    if (debug$return_full_state) {
+      out[[length(out) + 1]] <- copy(data)
     }
 
     # break if condition reached
@@ -338,6 +369,17 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
       break
     }
     loop_count <- loop_count + 1
+  }
+
+  if (debug$return_full_state) {
+    output <- list(states=out,
+                   var_names=var_names,
+                   var_names0=var_names0,
+                   cnames=cnames,
+                   has_event_counts=has_event_counts,
+                   event_count_rel=event_count_rel,
+                   event_count_names=event_count_names)
+    return(output)
   }
 
   # create a start-stop output dataset

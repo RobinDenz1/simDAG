@@ -17,7 +17,7 @@ sim_discrete_event(dag, n_sim=NULL, t0_sort_dag=FALSE,
                    keep_only_first=FALSE,
                    remove_not_at_risk=FALSE,
                    include_event_counts=TRUE,
-                   check_inputs=TRUE)
+                   check_inputs=TRUE, debug=NULL)
 }
 \arguments{
   \item{dag}{
@@ -70,6 +70,9 @@ Either \code{TRUE} or \code{FALSE}, specifying whether event counts of time-depe
   }
   \item{check_inputs}{
 Whether to perform plausibility checks for the user input or not. Is set to \code{TRUE} by default, but can be set to \code{FALSE} in order to speed things up when using this function in a simulation study or something similar.
+  }
+  \item{debug}{
+Strictly used for developmental purposes. Keep at \code{NULL} to ignore this argument.
   }
 }
 \details{
