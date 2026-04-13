@@ -141,3 +141,85 @@ test_that("left-truncation works", {
   out <- sim_from_dag(dag=dag, n_sim=100)
   expect_true(all(out$C_time > 15))
 })
+
+test_that("generating integers", {
+
+  set.seed(324573)
+
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=2) +
+    node("B", type="rbernoulli", p=0.5) +
+    node("C", type="cox", formula=~A*0.2 + BTRUE*1,
+         lambda=0.1, gamma=1, surv_dist="weibull", as_integer=TRUE)
+
+  # as two columns
+  out <- sim_from_dag(dag=dag, n_sim=100)
+  expect_equal(out$C_time, ceiling(out$C_time))
+
+  # as one column
+  dag <- empty_dag() +
+    node("A", type="rnorm", mean=10, sd=2) +
+    node("B", type="rbernoulli", p=0.5) +
+    node("C", type="cox", formula=~A*0.2 + BTRUE*1,
+         lambda=0.1, gamma=1, surv_dist="weibull", as_integer=TRUE,
+         as_two_cols=FALSE)
+
+  out <- sim_from_dag(dag=dag, n_sim=100)
+  expect_equal(out$C, ceiling(out$C))
+})
+
+test_that("using time-dependent baseline hazard", {
+
+  ## some arbitrary baseline hazard function
+  fbasehaz <- function(t) {
+    0.002 +
+      0.01 * exp(-((t - 200)^2) / (2 * 50^2)) +   # first hill
+      0.008 * exp(-((t - 700)^2) / (2 * 80^2))    # second hill
+  }
+
+  ## general test case
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbernoulli") +
+    node("Y", type="cox", surv_dist=fbasehaz, basehaz_grid=1:100000,
+         formula= ~ A*-0.5 + B*1.5)
+
+  set.seed(1234)
+  data <- sim_from_dag(dag, n_sim=1000)
+
+  expect_equal(round(mean(data$Y_time), 3), 168.352)
+
+  # error with non-positive baseline hazard
+  fbasehaz2 <- function(t) {
+    return(-0.1)
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbernoulli") +
+    node("Y", type="cox", surv_dist=fbasehaz2, basehaz_grid=1:100000,
+         formula= ~ A*-0.5 + B*1.5)
+
+  set.seed(1234)
+  expect_error(data <- sim_from_dag(dag, n_sim=1000))
+
+  # error with left truncation times out of bounds
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbernoulli") +
+    node("Y", type="cox", surv_dist=fbasehaz, basehaz_grid=1:100000,
+         formula= ~ A*-0.5 + B*1.5, left=1000000000)
+
+  set.seed(123344)
+  expect_error(data <- sim_from_dag(dag, n_sim=1000))
+
+  # error with extrapolation = FALSE
+  dag <- empty_dag() +
+    node("A", type="rnorm") +
+    node("B", type="rbernoulli") +
+    node("Y", type="cox", surv_dist=fbasehaz, basehaz_grid=1:100,
+         formula= ~ A*-0.5 + B*1.5)
+
+  set.seed(123344)
+  expect_error(data <- sim_from_dag(dag, n_sim=1000))
+})

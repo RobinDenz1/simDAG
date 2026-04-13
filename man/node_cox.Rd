@@ -10,7 +10,8 @@ Data from the parents is used to generate the node using cox-regression using th
 \usage{
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
          cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-         left=0)
+         left=0, basehaz_grid=NULL, extrapolate=FALSE,
+         as_integer=FALSE)
 }
 \arguments{
   \item{data}{
@@ -26,13 +27,13 @@ An optional \code{formula} object to describe how the node should be generated o
 A numeric vector with length equal to \code{parents}, specifying the causal beta coefficients used to generate the node.
   }
   \item{surv_dist}{
-A single character specifying the distribution that should be used when generating the survival times. Can be either \code{"weibull"} or \code{"exponential"}.
+A single character specifying the distribution that should be used when generating the survival times. Can be either \code{"weibull"} or \code{"exponential"}. Alternatively, a custom function with a single argument, defining the baseline hazard, may be supplied. This may be any function, as long as it is vectorized and returns strictly positive numbers for any supplied time.
   }
   \item{lambda}{
-A single number used as parameter defined by \code{surv_dist}.
+A single number used as parameter defined by \code{surv_dist}. Ignored if \code{surv_dist} is a function.
   }
   \item{gamma}{
-A single number used as parameter defined by \code{surv_dist}.
+A single number used as parameter defined by \code{surv_dist}. Ignored if \code{surv_dist} is a function.
   }
   \item{cens_dist}{
 A single character naming the distribution function that should be used to generate the censoring times or a suitable function. For example, \code{"runif"} could be used to generate uniformly distributed censoring times. Set to \code{NULL} to get no censoring (default).
@@ -48,6 +49,15 @@ Either \code{TRUE} or \code{FALSE}, specifying whether the output should be divi
   }
   \item{left}{
 Either a single number >= 0, or a numeric vector of length \code{nrow(data)} containing only numbers >= 0. When simulating the survival times, only numbers larger than these will be generated using correctly left-truncated sampling. Note that this does not affect the censoring times, only the generated survival times will be left-truncated. Set to 0 (default) to not use left-truncation.
+  }
+  \item{basehaz_grid}{
+A numeric vector specifying the time grid used to numerically approximate the cumulative baseline hazard, whenever \code{surv_dist} is a function (ignored otherwise). This grid should not include 0. Internally, it is used to first evaluate the \code{surv_dist} at each value on the grid. Then, the trapezoid rule is used to integrate the function over time to obtain the cumulative baseline hazard, which is then inverted to simulate the survival times.
+  }
+  \item{extrapolate}{
+Either \code{TRUE} or \code{FALSE}, specifying whether extrapolation of the inverted cumulative baseline hazard should be allowed when supplying a function to \code{surv_dist} (ignored otherwise). Whenever a cumulative hazard is generated that is larger than the cumulative baseline hazard at \code{max(basehaz_grid)}, extrapolation is needed. If this argument is set to \code{FALSE} (default), an error will be returned in such cases. In almost all scenarios, this argument should be kept at \code{FALSE}. Only when users are strictly interested in values lower than \code{max(basehaz_grid)}, it may be set to \code{TRUE}. In this case, all values that should be larger than \code{max(basehaz_grid)} are simply set to \code{max(basehaz_grid)} with no indicator. May be useful for discrete-event simulations conducted using \code{\link{sim_discrete_event}}.
+  \item{as_integer}{
+Either \code{TRUE} or \code{FALSE}, specifying whether the generated continuous times should be rounded up to the next integer (using \code{\link{ceiling}}).
+  }
   }
 }
 \details{
@@ -74,7 +84,7 @@ library(simDAG)
 
 set.seed(3454)
 
-# define DAG
+# using a Cox model with a Weibull baseline hazard function
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
@@ -83,4 +93,21 @@ dag <- empty_dag() +
        cens_args=list(min=0, max=1))
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=1000)
+
+## supplying a custom baseline hazard function
+
+# some arbitrary baseline hazard function with two hills
+fbasehaz <- function(t) {
+  0.002 +
+    0.01 * exp(-((t - 200)^2) / (2 * 50^2)) +   # first hill
+    0.008 * exp(-((t - 700)^2) / (2 * 80^2))    # second hill
+}
+
+# some example DAG
+dag <- empty_dag() +
+  node(c("A", "B"), type="rbernoulli") +
+  node("Y", type="cox", formula= ~ 0.5*A + -1.5*B, surv_dist=fbasehaz,
+       basehaz_grid=1:100000, extrapolate=FALSE, as_integer=TRUE)
+
+data <- sim_from_dag(dag, n_sim=100)
 }

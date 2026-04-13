@@ -1,4 +1,10 @@
 
+# simDAG 0.5.3 (developmental version)
+
+New features
+
+* Allow arbitrary baseline hazard functions in `node_cox()`. This also makes it possible to perform discrete-event simulations using `sim_discrete_event()` with variables that have continuous time-dependent baseline hazards, by using the `model` argument.
+
 # simDAG 0.5.2
 
 Bug Fixes
