@@ -1,5 +1,17 @@
 # Changelog
 
+## simDAG 0.5.3 (developmental version)
+
+New features
+
+- Allow arbitrary baseline hazard functions in
+  [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md).
+  This also makes it possible to perform discrete-event simulations
+  using
+  [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+  with variables that have continuous time-dependent baseline hazards,
+  by using the `model` argument.
+
 ## simDAG 0.5.2
 
 CRAN release: 2026-03-30

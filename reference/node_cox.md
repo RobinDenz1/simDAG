@@ -1,14 +1,16 @@
 # Generate Data from a Cox-Regression Model
 
 Data from the parents is used to generate the node using cox-regression
-using the method of Bender et al. (2005).
+using the method of Bender et al. (2005). Directly allows users to
+specify arbitrary baseline hazard functions.
 
 ## Usage
 
 ``` r
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
          cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-         left=0)
+         left=0, basehaz_grid=NULL, extrapolate=FALSE,
+         as_integer=FALSE)
 ```
 
 ## Arguments
@@ -44,15 +46,20 @@ node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
 
   A single character specifying the distribution that should be used
   when generating the survival times. Can be either `"weibull"` or
-  `"exponential"`.
+  `"exponential"`. Alternatively, a custom function with a single
+  argument, defining the baseline hazard, may be supplied. This may be
+  any function, as long as it is vectorized and returns strictly
+  positive numbers for any supplied time.
 
 - lambda:
 
-  A single number used as parameter defined by `surv_dist`.
+  A single number used as parameter defined by `surv_dist`. Ignored if
+  `surv_dist` is a function.
 
 - gamma:
 
-  A single number used as parameter defined by `surv_dist`.
+  A single number used as parameter defined by `surv_dist`. Ignored if
+  `surv_dist` is a function.
 
 - cens_dist:
 
@@ -87,6 +94,38 @@ node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
   correctly left-truncated sampling. Note that this does not affect the
   censoring times, only the generated survival times will be
   left-truncated. Set to 0 (default) to not use left-truncation.
+
+- basehaz_grid:
+
+  A numeric vector specifying the time grid used to numerically
+  approximate the cumulative baseline hazard, whenever `surv_dist` is a
+  function (ignored otherwise). This grid should not include 0.
+  Internally, it is used to first evaluate the `surv_dist` at each value
+  on the grid. Then, the trapezoid rule is used to integrate the
+  function over time to obtain the cumulative baseline hazard, which is
+  then inverted to simulate the survival times.
+
+- extrapolate:
+
+  Either `TRUE` or `FALSE`, specifying whether extrapolation of the
+  inverted cumulative baseline hazard should be allowed when supplying a
+  function to `surv_dist` (ignored otherwise). Whenever a cumulative
+  hazard is generated that is larger than the cumulative baseline hazard
+  at `max(basehaz_grid)`, extrapolation is needed. If this argument is
+  set to `FALSE` (default), an error will be returned in such cases. In
+  almost all scenarios, this argument should be kept at `FALSE`. Only
+  when users are strictly interested in values lower than
+  `max(basehaz_grid)`, it may be set to `TRUE`. In this case, all values
+  that should be larger than `max(basehaz_grid)` are simply set to
+  `max(basehaz_grid)` with no indicator. May be useful for
+  discrete-event simulations conducted using
+  [`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md).
+
+- as_integer:
+
+  Either `TRUE` or `FALSE`, specifying whether the generated continuous
+  times should be rounded up to the next integer (using
+  [`ceiling`](https://rdrr.io/r/base/Round.html)).
 
 ## Details
 
@@ -151,7 +190,7 @@ library(simDAG)
 
 set.seed(3454)
 
-# define DAG
+# using a Cox model with a Weibull baseline hazard function
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
@@ -160,4 +199,21 @@ dag <- empty_dag() +
        cens_args=list(min=0, max=1))
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=1000)
+
+## supplying a custom baseline hazard function
+
+# some arbitrary baseline hazard function with two hills
+fbasehaz <- function(t) {
+  0.002 +
+    0.01 * exp(-((t - 200)^2) / (2 * 50^2)) +   # first hill
+    0.008 * exp(-((t - 700)^2) / (2 * 80^2))    # second hill
+}
+
+# some example DAG
+dag <- empty_dag() +
+  node(c("A", "B"), type="rbernoulli") +
+  node("Y", type="cox", formula= ~ 0.5*A + -1.5*B, surv_dist=fbasehaz,
+       basehaz_grid=1:100000, extrapolate=FALSE)
+
+data <- sim_from_dag(dag, n_sim=100)
 ```
