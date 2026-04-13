@@ -5,7 +5,7 @@
 Generate Data from a Cox-Regression Model
 }
 \description{
-Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (2005).
+Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (2005). Directly allows users to specify arbitrary baseline hazard functions.
 }
 \usage{
 node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
@@ -55,9 +55,9 @@ A numeric vector specifying the time grid used to numerically approximate the cu
   }
   \item{extrapolate}{
 Either \code{TRUE} or \code{FALSE}, specifying whether extrapolation of the inverted cumulative baseline hazard should be allowed when supplying a function to \code{surv_dist} (ignored otherwise). Whenever a cumulative hazard is generated that is larger than the cumulative baseline hazard at \code{max(basehaz_grid)}, extrapolation is needed. If this argument is set to \code{FALSE} (default), an error will be returned in such cases. In almost all scenarios, this argument should be kept at \code{FALSE}. Only when users are strictly interested in values lower than \code{max(basehaz_grid)}, it may be set to \code{TRUE}. In this case, all values that should be larger than \code{max(basehaz_grid)} are simply set to \code{max(basehaz_grid)} with no indicator. May be useful for discrete-event simulations conducted using \code{\link{sim_discrete_event}}.
+  }
   \item{as_integer}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the generated continuous times should be rounded up to the next integer (using \code{\link{ceiling}}).
-  }
   }
 }
 \details{
@@ -107,7 +107,7 @@ fbasehaz <- function(t) {
 dag <- empty_dag() +
   node(c("A", "B"), type="rbernoulli") +
   node("Y", type="cox", formula= ~ 0.5*A + -1.5*B, surv_dist=fbasehaz,
-       basehaz_grid=1:100000, extrapolate=FALSE, as_integer=TRUE)
+       basehaz_grid=1:100000, extrapolate=FALSE)
 
 data <- sim_from_dag(dag, n_sim=100)
 }
