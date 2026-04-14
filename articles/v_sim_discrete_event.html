@@ -232,6 +232,7 @@ by one and repeat until we are finished. This can be done using the
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span></span>
@@ -393,17 +394,16 @@ not be an issue in practice.</p>
 <p>By default, the time until the next event is generated using a random
 draw from an exponential distribution. This approach, however, assumes
 that the probability of occurrence is independent of the time. We can
-relax this assumption by using the <code>redraw_at_t</code> argument.
-This argument allows users to specify points in time at which the time
-to the next event should be re-drawn. By additionally making the
-probability function supplied to a time-dependent node time-specific, we
-can then use a piecewise-constant probability instead. Consider the
-following code:</p>
+relax this assumption in multiple ways. The most simply way is to use
+the <code>redraw_at_t</code> argument. This argument allows users to
+specify points in time at which the time to the next event should be
+re-drawn. By additionally making the probability function supplied to a
+time-dependent node time-specific, we can then use a piecewise-constant
+baseline event probability, instead of a truly constant one. Consider
+the following code:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  </span>
 <span>  <span class="va">base_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fifelse.html" class="external-link">fifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">.time</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="fl">0.005</span>, <span class="fl">0.001</span><span class="op">)</span></span>
-<span>  </span>
 <span>  <span class="va">base_p</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">^</span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">treatment</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -473,12 +473,66 @@ directly defining the probability functions and drawing values using an
 exponential distribution. Since the Weibull distribution is not constant
 over time, this is a valid strategy if we want continuously changing
 baseline event probabilities.</p>
+<p>Since <code><a href="../reference/node_cox.html">node_cox()</a></code> (the function that is used to generate
+the times following a Cox model under the hood) allows users to specify
+arbitrary baseline hazard functions, users may use any kind of
+time-dependent probabilities. For example, lets define this arbitrary
+baseline hazard for <code>death</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fbasehaz</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fl">0.0002</span> <span class="op">+</span></span>
+<span>    <span class="fl">0.001</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="fl">200</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">50</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># first hill</span></span>
+<span>    <span class="fl">0.0008</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="fl">700</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">80</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>  <span class="co"># second hill</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>Plotted, it looks like this for the first 1000 time units:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plotdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>time<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, val<span class="op">=</span><span class="fu">fbasehaz</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plotdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time</span>, y<span class="op">=</span><span class="va">val</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="v_sim_discrete_event_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
+<p>We can use this function as a baseline hazard for <code>death</code>
+through the <code>surv_dist</code> argument of <code><a href="../reference/node_cox.html">node_cox()</a></code>
+like this:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"treatment"</span>, type<span class="op">=</span><span class="st">"next_time"</span>, prob_fun<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="fl">100</span>, immunity_duration<span class="op">=</span><span class="cn">Inf</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"next_time"</span>,</span>
+<span>          formula<span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">*</span><span class="va">treatment</span>, model<span class="op">=</span><span class="st">"cox"</span>,</span>
+<span>          surv_dist<span class="op">=</span><span class="va">fbasehaz</span>, basehaz_grid<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000000</span>,</span>
+<span>          event_duration<span class="op">=</span><span class="cn">Inf</span>, extrapolate<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_discrete_event.html">sim_discrete_event</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span>, remove_if<span class="op">=</span><span class="va">death</span><span class="op">==</span><span class="cn">TRUE</span>,</span>
+<span>                          target_event<span class="op">=</span><span class="st">"death"</span>, keep_only_first<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                          max_t<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Key: &lt;.id, start&gt;</span></span>
+<span><span class="co">#&gt;      .id     start       stop treatment  death</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;     &lt;num&gt;      &lt;num&gt;    &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     1   0.00000   10.02079     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:     1  10.02079  110.02079      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 3:     1 110.02079 1487.77199     FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 4:     2   0.00000   60.61419     FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 5:     2  60.61419  160.61419      TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 6:     2 160.61419 4432.02708     FALSE   TRUE</span></span></code></pre></div>
+<p>Internally, the time to <code>death</code> is now generated by
+following steps: (1) numerically calculating the cumulative baseline
+hazard using the trapezoid rule over the grid of time points specified
+using <code>basehaz_grid</code>, (2) interpolating the increments
+linearly to obtain a smooth function, (3) inverting the estimated
+cumulative hazard function, (4) simulating cumulative hazards from the
+defined model and (5) reading off the corresponding survival time
+through the inverted cumulative hazard function. Note that this method
+can only generate data up to <code>max(basehaz_grid)</code>.</p>
 <p>In theory, the same strategy could be used for any other
 time-to-event model, such as Aalen additive hazards models, accelerated
 failure time models etc. Users only need a function that simulates data
-from such models and directly allows left-truncation. Currently, only
-Cox and Aalen models are supported through the <code>model</code>
-argument, but we are working on further built-in options.</p>
+from such models and directly allows left-truncation. Although many of
+these models are supported through the <code>model</code> argument, only
+the Cox model currently allows completely flexible baseline hazard
+definitions.</p>
 </div>
 <div class="section level3">
 <h3 id="categorical-count-continuous-variables">Categorical / Count / Continuous variables<a class="anchor" aria-label="anchor" href="#categorical-count-continuous-variables"></a>

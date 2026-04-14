@@ -307,18 +307,15 @@ no restrictions set on time-fixed variables). Some forms of dependencies
 are harder (but not impossible) to specify using the discrete-event
 approach.
 
-For example, simulating effects of variables or overall event
-probabilities that are smooth functions of time is difficult. If the
-event probability is constant over time and only changes when some other
-variable changed, a simple left-truncated exponential distribution (see
-[`rtexp`](https://robindenz1.github.io/simDAG/reference/rtexp.md)) may
-be used. If only the general event probability should vary over time,
-times may be generated using a Weibull or some other parametric
-functions. In any case, users will have to know very clearly what
-functions to use and then have to provide a function that is able to
-generate truncated random values from this distribution. If these
-requirements cannot be met, discrete-time simulation may be the only
-alternative.
+For example, simulating time-dependent effects that are smooth functions
+of time is difficult (piecewise constant effects may be simulated easily
+using the `redraw_at_t` argument). If only the general event probability
+should vary over time, times may be generated using a Weibull or some
+other parametric functions (see associated vignette). In any case, users
+will have to know very clearly what functions to use and then have to
+provide a function that is able to generate truncated random values from
+this distribution. If these requirements cannot be met, discrete-time
+simulation may be the only alternative.
 
 ## Author
 

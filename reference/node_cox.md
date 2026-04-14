@@ -7,10 +7,12 @@ specify arbitrary baseline hazard functions.
 ## Usage
 
 ``` r
-node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
-         cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-         left=0, basehaz_grid=NULL, extrapolate=FALSE,
-         as_integer=FALSE)
+node_cox(data, parents, formula=NULL, betas,
+         surv_dist, lambda, gamma,
+         cens_dist=NULL, cens_args, name,
+         as_two_cols=TRUE, left=0,
+         basehaz_grid=NULL, extrapolate=FALSE,
+         as_integer=FALSE, ...)
 ```
 
 ## Arguments
@@ -127,15 +129,23 @@ node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
   times should be rounded up to the next integer (using
   [`ceiling`](https://rdrr.io/r/base/Round.html)).
 
+- ...:
+
+  Further arguments passed to internal functions. Should usually not be
+  used by users.
+
 ## Details
 
-The survival times are generated according to the cox
+The survival times are generated according to the Cox
 proportional-hazards regression model as defined by the user. How
 exactly the data-generation works is described in detail in Bender et
-al. (2005). To also include censoring, this function allows the user to
-supply a function that generates random censoring times. If the
-censoring time is smaller than the generated survival time, the
-individual is considered censored.
+al. (2005). Briefly, it uses the method of inverted cumulative hazards.
+When `surv_dist` is not a function, the exact equations given in Bender
+et al. (2005) are used. When a custom function is supplied to
+`surv_dist` instead, numerical approximations are used. To also include
+censoring, this function allows the user to supply a function that
+generates random censoring times. If the censoring time is smaller than
+the generated survival time, the individual is considered censored.
 
 Unlike the other
 [`node`](https://robindenz1.github.io/simDAG/reference/node.md) type
@@ -153,7 +163,9 @@ censoring is applied, this behavior can be turned off using the
 To simulate more complex time-to-event data, the user may need to use
 the
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-function instead.
+or
+[`sim_discrete_event`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
+functions instead.
 
 ## Note
 
