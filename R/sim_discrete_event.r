@@ -498,6 +498,14 @@ prepare_next_time_nodes <- function(nodes) {
     if (!is.null(nodes[[i]]$formula)) {
       nodes[[i]]$formula <- sanitize_formula(nodes[[i]]$formula)
     }
+
+    # pre-compute cumulative baseline hazard, if needed
+    if (!is.null(nodes[[i]][["model"]]) && nodes[[i]][["model"]]=="cox" &&
+        is.function(nodes[[i]]$surv_dist) &&
+        !is.null(nodes[[i]]$basehaz_grid)) {
+      nodes[[i]]$lH0 <- get_lH0(f=nodes[[i]]$surv_dist,
+                                times=nodes[[i]]$basehaz_grid)
+    }
   }
   return(nodes)
 }

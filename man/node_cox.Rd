@@ -8,10 +8,12 @@ Generate Data from a Cox-Regression Model
 Data from the parents is used to generate the node using cox-regression using the method of Bender et al. (2005). Directly allows users to specify arbitrary baseline hazard functions.
 }
 \usage{
-node_cox(data, parents, formula=NULL, betas, surv_dist, lambda, gamma,
-         cens_dist=NULL, cens_args, name, as_two_cols=TRUE,
-         left=0, basehaz_grid=NULL, extrapolate=FALSE,
-         as_integer=FALSE)
+node_cox(data, parents, formula=NULL, betas,
+         surv_dist, lambda, gamma,
+         cens_dist=NULL, cens_args, name,
+         as_two_cols=TRUE, left=0,
+         basehaz_grid=NULL, extrapolate=FALSE,
+         as_integer=FALSE, ...)
 }
 \arguments{
   \item{data}{
@@ -59,13 +61,16 @@ Either \code{TRUE} or \code{FALSE}, specifying whether extrapolation of the inve
   \item{as_integer}{
 Either \code{TRUE} or \code{FALSE}, specifying whether the generated continuous times should be rounded up to the next integer (using \code{\link{ceiling}}).
   }
+  \item{...}{
+Further arguments passed to internal functions. Should usually not be used by users.
+  }
 }
 \details{
-The survival times are generated according to the cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.
+The survival times are generated according to the Cox proportional-hazards regression model as defined by the user. How exactly the data-generation works is described in detail in Bender et al. (2005). Briefly, it uses the method of inverted cumulative hazards. When \code{surv_dist} is not a function, the exact equations given in Bender et al. (2005) are used. When a custom function is supplied to \code{surv_dist} instead, numerical approximations are used. To also include censoring, this function allows the user to supply a function that generates random censoring times. If the censoring time is smaller than the generated survival time, the individual is considered censored.
 
 Unlike the other \code{\link{node}} type functions, this function usually adds \strong{two} columns to the resulting dataset instead of one. The first column is called \code{paste0(name, "_status")} and is a logical variable, where \code{TRUE} indicates that the event has happened and \code{FALSE} indicates right-censoring. The second column is named \code{paste0(name, "_time")} and includes the survival or censoring time corresponding to the previously mentioned event indicator. This is the standard format for right-censored time-to-event data without time-varying covariates. If no censoring is applied, this behavior can be turned off using the \code{as_two_cols} argument.
 
-To simulate more complex time-to-event data, the user may need to use the \code{\link{sim_discrete_time}} function instead.
+To simulate more complex time-to-event data, the user may need to use the \code{\link{sim_discrete_time}} or \code{\link{sim_discrete_event}} functions instead.
 }
 \note{
 This function was updated internally in version 0.5.0 to make it faster and to allow the \code{left} argument. Generating data using this updated version will generally result in different results as compared to earlier versions, even when using the same random number generator seed. To replicate earlier results, please install earlier versions of this package.

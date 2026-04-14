@@ -30,7 +30,7 @@ sim_surv_time <- function(data, betas, dist, lambda, gamma=NULL, left=0) {
 node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
                      lambda, gamma, cens_dist=NULL, cens_args, name,
                      as_two_cols=TRUE, left=0, basehaz_grid=NULL,
-                     extrapolate=FALSE, as_integer=FALSE) {
+                     extrapolate=FALSE, as_integer=FALSE, ...) {
 
   if (!data.table::is.data.table(data)) {
     data.table::setDT(data)
@@ -46,7 +46,8 @@ node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
   # generate survival times
   if (is.function(surv_dist)) {
     time <- rtrunc_surv(data=data, betas=betas, fbasehaz=surv_dist,
-                        times=basehaz_grid, left=left, extrapolate=extrapolate)
+                        times=basehaz_grid, left=left, extrapolate=extrapolate,
+                        ...)
   } else {
     time <- sim_surv_time(data=data, betas=betas, dist=surv_dist, lambda=lambda,
                           gamma=gamma, left=left)
@@ -111,23 +112,37 @@ get_numeric_cum_hazard <- function(f, times) {
   return(H0)
 }
 
+## convenience function to get the approximated cumulative baseline hazard
+## and its inverse as approximate functions
+get_lH0 <- function(f, times) {
+
+  # calculate cum. baseline hazard over given time grid
+  H0 <- get_numeric_cum_hazard(f=f, times=times)
+  H0_fun <- stats::approxfun(x=times, y=H0, method="linear", rule=1)
+
+  # invert cum. hazard function
+  invH0 <- stats::approxfun(x=H0, y=times, method="linear", rule=2)
+
+  out <- list(H0=H0_fun, invH0=invH0)
+  return(out)
+}
+
 ## generate random (left-truncated) survival times from a Cox model given
 ## covariates, betas and a custom baseline hazard function
 rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
-                        extrapolate=FALSE, ...) {
+                        extrapolate=FALSE, lH0=NULL) {
   max_t <- max(times)
 
-  # calculate cum. baseline hazard over given time grid
-  H0 <- get_numeric_cum_hazard(f=fbasehaz, times=times)
-  H0_fun <- stats::approxfun(x=times, y=H0, method="linear",
-                             rule=1)
+  if (is.null(lH0)) {
+    lH0 <- get_lH0(f=fbasehaz, times=times)
+  }
 
   # get cum. baseline hazard at left truncation times
   if (anyNA(left) || any(left > max_t)) {
     stop("Left truncation times must be smaller than max(times). Adjust",
          " the 'times' argument or the 'left' argument.", call.=FALSE)
   }
-  H_l <- ifelse(left==0, 0, H0_fun(left))
+  H_l <- ifelse(left==0, 0, lH0$H0(left))
 
   # get exponentiated linear predictor
   eff <- exp(calc_linpred(data=data, betas=betas, intercept=0))
@@ -135,7 +150,7 @@ rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
   # simulate cum. hazard for each individual
   target <- H_l + -log(stats::runif(nrow(data))) / eff
 
-  if (!extrapolate && any(target > max(H0))) {
+  if (!extrapolate && any(target > lH0$H0(max(times)))) {
     stop("Some randomly generated hazards go beyond the estimated cumulative",
          " baseline hazard as defined by the 'times' argument and will",
          " therefore be equal to max(times). Adjust the 'times' argument",
@@ -143,12 +158,8 @@ rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
          " ignore this issue.", call.=FALSE)
   }
 
-  # invert cum. hazard function
-  invH0 <- stats::approxfun(x=H0, y=times, method="linear",
-                            rule=2)
-
   # identify corresponding time from target
-  times <- invH0(target)
+  times <- lH0$invH0(target)
 
   return(times)
 }

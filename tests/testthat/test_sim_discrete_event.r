@@ -776,6 +776,25 @@ test_that("debug functionality working", {
   expect_true(all(is.infinite(out$max_t)))
 })
 
+test_that("custom baseline hazard with model='cox' working", {
+
+  fbasehaz <- function(t) {
+    0.0001 + t*0.0001
+  }
+
+  dag <- empty_dag() +
+    node("A", type="rbernoulli", output="numeric") +
+    node_td("Y1", type="next_time", formula= ~ A*log(0.7), model="cox",
+            surv_dist=fbasehaz, basehaz_grid=1:1000000, event_duration=Inf) +
+    node_td("Y2", type="next_time", formula= ~ A*log(1.5), model="cox",
+            surv_dist=fbasehaz, basehaz_grid=1:1000000, event_duration=Inf)
+
+  set.seed(1234)
+  data <- sim_discrete_event(dag, n_sim=100, max_t=1000, censor_at_max_t=TRUE)
+
+  expect_equal(round(mean(data$Y2), 3), 0.537)
+})
+
 test_that("warning if max_iter reached", {
 
   set.seed(356345)
