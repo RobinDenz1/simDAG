@@ -12,6 +12,20 @@ New features
   with variables that have continuous time-dependent baseline hazards,
   by using the `model` argument.
 
+Enhancements
+
+- Added the `all_levels` argument to the
+  [`rcategorical()`](https://robindenz1.github.io/simDAG/reference/rcategorical.md)
+  function to allow users to keep all levels, even when some never occur
+  in the generated data.
+
+Bug Fixes
+
+- Fixed a bug that occurred when using
+  [`dag_from_data()`](https://robindenz1.github.io/simDAG/reference/dag_from_data.md)
+  with categorical parents in nodes based on generalized linear models
+  and negative binomial regression models.
+
 ## simDAG 0.5.2
 
 CRAN release: 2026-03-30

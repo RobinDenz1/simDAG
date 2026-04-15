@@ -47,6 +47,10 @@
 <h2 class="pkg-version" data-toc-text="0.5.3" id="simdag-053-developmental-version">simDAG 0.5.3 (developmental version)<a class="anchor" aria-label="anchor" href="#simdag-053-developmental-version"></a></h2>
 <p>New features</p>
 <ul><li>Allow arbitrary baseline hazard functions in <code><a href="../reference/node_cox.html">node_cox()</a></code>. This also makes it possible to perform discrete-event simulations using <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> with variables that have continuous time-dependent baseline hazards, by using the <code>model</code> argument.</li>
+</ul><p>Enhancements</p>
+<ul><li>Added the <code>all_levels</code> argument to the <code><a href="../reference/rcategorical.html">rcategorical()</a></code> function to allow users to keep all levels, even when some never occur in the generated data.</li>
+</ul><p>Bug Fixes</p>
+<ul><li>Fixed a bug that occurred when using <code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> with categorical parents in nodes based on generalized linear models and negative binomial regression models.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.2" id="simdag-052">simDAG 0.5.2<a class="anchor" aria-label="anchor" href="#simdag-052"></a></h2><p class="text-muted">CRAN release: 2026-03-30</p>

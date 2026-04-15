@@ -7,7 +7,7 @@ matrix with one column for each class and one row for each person.
 
 ``` r
 rcategorical(n, probs, labels=NULL, output="numeric",
-             reference=NULL)
+             reference=NULL, all_levels=FALSE)
 ```
 
 ## Arguments
@@ -42,6 +42,16 @@ rcategorical(n, probs, labels=NULL, output="numeric",
   A single character string, specifying which of the possible values
   should be considered the reference when `output="factor"` (ignored
   otherwise).
+
+- all_levels:
+
+  Either `TRUE` or `FALSE`, specifying whether the resulting factor
+  (when `output="factor"`) should retain all levels specified by
+  `labels`, even if some of these levels were never generated. For
+  example, if `labels=c("A", "B", "C")` and `"A"` was never drawn, the
+  levels of the factor would be `c("B", "C")` with `all_levels=FALSE`
+  and `c("A", "B", "C")` with `all_levels=TRUE`. Ignored if
+  `output!="factor"`.
 
 ## Details
 
