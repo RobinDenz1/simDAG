@@ -111,7 +111,9 @@ test_that("gen_node_rcategorical", {
                    type_fun=rcategorical,
                    parents=NULL,
                    time_varying=FALSE,
-                   params=list(labels=c("0", "1", "2"), probs=c(0.4, 0.2, 0.4)))
+                   params=list(labels=c("0", "1", "2"), probs=c(0.4, 0.2, 0.4),
+                               output="numeric", reference=NULL,
+                               all_levels=FALSE))
 
   out <- gen_node_rcategorical(data=data, name="y", na.rm=TRUE)
 
@@ -214,4 +216,29 @@ test_that("gen_node_negative_binomial", {
   out$model <- NULL
 
   expect_equal(out, expected, tolerance=0.0001)
+})
+
+test_that("works with categorical parents", {
+
+  dag <- empty_dag() +
+    node("cat", type="rcategorical", labels=c("A", "B", "C"),
+         probs=c(0.2, 0.2, 0.6), output="factor") +
+    node("Y", type="gaussian", formula= ~ -2 + catB*0.5 + catC*-4,
+         error=1) +
+    node("Y2", type="negative_binomial", formula= ~ -2 + catB*0.5 + catC*-4,
+         theta=2)
+
+  set.seed(134)
+  data <- sim_from_dag(dag, n_sim=1000)
+
+  dag_raw <- empty_dag() +
+    node("cat", type="rcategorical", output="factor") +
+    node("Y", type="gaussian", parents="cat")
+
+  dag_est <- dag_from_data(dag_raw, data=data)
+  data_new <- sim_from_dag(dag_est$dag, n_sim=100)
+
+  expect_equal(levels(data_new$cat), c("A", "B", "C"))
+  expect_equal(round(mean(data$Y), 3), -4.365)
+  expect_equal(round(mean(data$Y2), 3), 0.065)
 })

@@ -9,7 +9,7 @@ Allows different class probabilities for each person by supplying a matrix with 
 }
 \usage{
 rcategorical(n, probs, labels=NULL, output="numeric",
-             reference=NULL)
+             reference=NULL, all_levels=FALSE)
 }
 \arguments{
   \item{n}{
@@ -26,6 +26,9 @@ A single character string specifying the output format of the results. Must be e
   }
   \item{reference}{
 A single character string, specifying which of the possible values should be considered the reference when \code{output="factor"} (ignored otherwise).
+  }
+  \item{all_levels}{
+Either \code{TRUE} or \code{FALSE}, specifying whether the resulting factor (when \code{output="factor"}) should retain all levels specified by \code{labels}, even if some of these levels were never generated. For example, if \code{labels=c("A", "B", "C")} and \code{"A"} was never drawn, the levels of the factor would be \code{c("B", "C")} with \code{all_levels=FALSE} and \code{c("A", "B", "C")} with \code{all_levels=TRUE}. Ignored if \code{output!="factor"}.
   }
 }
 \details{

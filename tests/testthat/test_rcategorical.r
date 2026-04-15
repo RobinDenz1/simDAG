@@ -93,3 +93,13 @@ test_that("setting reference level", {
                       output="factor", reference="C")
   expect_equal(levels(out), c("B", "D"))
 })
+
+test_that("level retaining works", {
+
+  set.seed(1234)
+  out <- rcategorical(n=100, probs=c(0, 0.3, 0.3, 0.4),
+                      labels=c("A", "B", "C", "D"),
+                      output="factor", all_levels=TRUE)
+
+  expect_equal(levels(out), c("A", "B", "C", "D"))
+})

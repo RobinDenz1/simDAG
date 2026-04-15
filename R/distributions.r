@@ -22,7 +22,7 @@ rbernoulli <- function(n, p=0.5, output="logical", reference=NULL) {
 ## possibly with different probabilities for each individual
 #' @export
 rcategorical <- function(n, probs, labels=NULL, output="numeric",
-                         reference=NULL) {
+                         reference=NULL, all_levels=FALSE) {
 
   u <- stats::runif(n=n, min=0, max=1)
 
@@ -53,6 +53,10 @@ rcategorical <- function(n, probs, labels=NULL, output="numeric",
     out <- as.character(factor(out, labels=labels[observed]))
   } else if (output=="character") {
     out <- as.character(out)
+  }
+
+  if (output=="factor" && all_levels && !is.null(labels)) {
+    out <- factor(out, levels=labels)
   }
 
   if (output=="factor" && !is.null(reference) && reference %in% out) {

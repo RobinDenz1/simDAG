@@ -12,13 +12,21 @@ gen_glm_node <- function(name, parents, data, return_model, na.rm, type) {
   model <- do.call(stats::glm, args)
 
   # extract coef, intercept
+  betas <- as.vector(model$coefficients[-1])
+
   out <- list(name=name,
               type_str=type,
               type_fun=get(paste0("node_", type)),
               parents=parents,
               time_varying=FALSE,
-              betas=as.vector(model$coefficients[-1]),
+              betas=betas,
               intercept=as.vector(model$coefficients[1]))
+
+  if (length(parents) != length(betas)) {
+    out$formula <- stats::as.formula(
+      paste0("~ ", paste0(parents, collapse=" + "))
+    )
+  }
 
   if (type=="gaussian") {
     out$error <- stats::sd(model$residuals)
@@ -65,14 +73,21 @@ gen_node_negative_binomial <- function(name, parents, data, return_model,
                         na.action=ifelse(na.rm, "na.omit", "na.fail"))
 
   # extract needed information
+  betas <- as.vector(model$coefficients[-1])
   out <- list(name=name,
               type_str="negative_binomial",
               type_fun=node_negative_binomial,
               parents=parents,
               time_varying=FALSE,
-              betas=as.vector(model$coefficients[-1]),
+              betas=betas,
               intercept=as.vector(model$coefficients[1]),
               theta=model$theta)
+
+  if (length(parents) != length(betas)) {
+    out$formula <- stats::as.formula(
+      paste0("~ ", paste0(parents, collapse=" + "))
+    )
+  }
 
   if (return_model) {
     out$model <- model
@@ -133,14 +148,17 @@ gen_node_rbernoulli <- function(data, name, na.rm) {
 }
 
 ## multinomial root node from data
-gen_node_rcategorical <- function(data, name, na.rm) {
+gen_node_rcategorical <- function(data, name, output="numeric", reference=NULL,
+                                  all_levels=FALSE, na.rm) {
   tab <- prop.table(table(data[[name]]))
   out <- list(name=name,
               type_str="rcategorical",
               type_fun=rcategorical,
               parents=NULL,
               time_varying=FALSE,
-              params=list(labels=names(tab), probs=as.vector(tab)))
+              params=list(labels=names(tab), probs=as.vector(tab),
+                          output=output, reference=reference,
+                          all_levels=all_levels))
   return(out)
 }
 
@@ -175,8 +193,10 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
 
     # call associated root function
     root_fun <- get(fun_name)
+    root_args <- c(list(data=data, name=dag$root_nodes[[i]]$name,
+                        na.rm=na.rm), dag$root_nodes[[i]]$params)
+    new_node <- do.call(root_fun, args=root_args)
 
-    new_node <- root_fun(data=data, name=dag$root_nodes[[i]]$name, na.rm=na.rm)
     class(new_node) <- "DAG.node"
 
     new_dag$root_nodes[[length(new_dag$root_nodes)+1]] <- new_node
