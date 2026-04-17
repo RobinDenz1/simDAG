@@ -49,6 +49,7 @@
 <ul><li>Allow arbitrary baseline hazard functions in <code><a href="../reference/node_cox.html">node_cox()</a></code>. This also makes it possible to perform discrete-event simulations using <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> with variables that have continuous time-dependent baseline hazards, by using the <code>model</code> argument.</li>
 </ul><p>Enhancements</p>
 <ul><li>Added the <code>all_levels</code> argument to the <code><a href="../reference/rcategorical.html">rcategorical()</a></code> function to allow users to keep all levels, even when some never occur in the generated data.</li>
+<li>When defining custom node generation functions for custom nodes required for the <code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> function, additional arguments are now supported.</li>
 </ul><p>Bug Fixes</p>
 <ul><li>Fixed a bug that occurred when using <code><a href="../reference/dag_from_data.html">dag_from_data()</a></code> with categorical parents in nodes based on generalized linear models and negative binomial regression models.</li>
 </ul></div>

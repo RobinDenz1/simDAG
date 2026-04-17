@@ -18,6 +18,10 @@ Enhancements
   [`rcategorical()`](https://robindenz1.github.io/simDAG/reference/rcategorical.md)
   function to allow users to keep all levels, even when some never occur
   in the generated data.
+- When defining custom node generation functions for custom nodes
+  required for the
+  [`dag_from_data()`](https://robindenz1.github.io/simDAG/reference/dag_from_data.md)
+  function, additional arguments are now supported.
 
 Bug Fixes
 

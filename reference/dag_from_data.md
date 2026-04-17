@@ -108,19 +108,25 @@ Other types need to be implemented by the user.
 
 ***Support for custom nodes***:
 
-The `sim_from_dag` function supports custom node functions, as described
-in the associated vignette. It is impossible for us to directly support
-these custom types in this function directly. However, the user can
-extend this function easily to accommodate any of his/her custom types.
-Similar to defining a custom node type, the user simply has to write a
-function that returns a correctly specified `node.DAG` object, given the
-named arguments `name`, `parents`, `type`, `data` and `return_model`.
-The first three arguments should simply be added directly to the output.
-The `data` should be used inside your function to fit a model or obtain
-the required parameters in some other way. The `return_model` argument
-should control whether the model should be added to the output (in a
-named argument called `model`). The function name should be
-`paste0("gen_node_", YOURTYPE)`. An examples is given below.
+The
+[`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
+function supports custom node functions, as described in the associated
+vignette. It is impossible for us to directly support these custom types
+in this function directly. However, the user can extend this function
+easily to accommodate any of his/her custom types. Similar to defining a
+custom node type, the user simply has to write a function that returns a
+correctly specified `node.DAG` object, given the named arguments `name`,
+`parents`, `data`, `return_model` and `na.rm`. The first two arguments
+should simply be added directly to the output. Additionally, the user
+should include both the node type itself as a string under the name
+`type_str` and the full custom node function under `type_fun` in the
+output. The `data` should be used inside your function to fit a model or
+obtain the required parameters in some other way. The `return_model`
+argument should control whether the model should be added to the output
+(in a named argument called `model`). The function name should be
+`paste0("gen_node_", YOURTYPE)`. The `na.rm` argument should be used to
+control whether missing values should be removed or not. An examples is
+given below.
 
 ***Interactions & cubic terms***:
 
