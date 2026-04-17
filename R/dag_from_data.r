@@ -218,11 +218,15 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
     # get new node using model_node_ function
     model_fun <- get(fun_name)
 
-    args <- list(data=data,
-                 name=dag$child_nodes[[i]]$name,
-                 parents=dag$child_nodes[[i]]$parents,
-                 return_model=return_models,
-                 na.rm=na.rm)
+    args <- dag$child_nodes[[i]]
+    args$type_str <- NULL
+    args$type_fun <- NULL
+    args$time_varying <- NULL
+    args$..index.. <- NULL
+    args$data <- data
+    #args$type <- dag$child_nodes[[i]]$type_str
+    args$return_model <- return_models
+    args$na.rm <- na.rm
 
     new_node <- do.call(model_fun, args)
 

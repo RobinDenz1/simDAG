@@ -8,6 +8,7 @@ New features
 Enhancements
 
 * Added the `all_levels` argument to the `rcategorical()` function to allow users to keep all levels, even when some never occur in the generated data.
+* When defining custom node generation functions for custom nodes required for the `dag_from_data()` function, additional arguments are now supported.
 
 Bug Fixes
 

@@ -242,3 +242,40 @@ test_that("works with categorical parents", {
   expect_equal(round(mean(data$Y), 3), -4.365)
   expect_equal(round(mean(data$Y2), 3), 0.065)
 })
+
+test_that("works with a custom gen_node_ function that has arguments", {
+
+  ## some custom node function
+  node_custom <- function(data, parents, arg1, arg2=TRUE) {
+    if (arg1 & arg2) {
+      out <- rep(1, nrow(data))
+    } else {
+      out <- rep(2, nrow(data))
+    }
+    return(out)
+  }
+
+  ## some generator function for the custom node
+  gen_node_custom <- function(name, parents, data, return_model, na.rm,
+                              arg1, arg2=TRUE) {
+    out <- list(name=name, parents=parents, type_str="custom",
+                type_fun=node_custom, arg1=arg1, arg2=arg2)
+    return(out)
+  }
+
+  assign("node_custom", node_custom, envir=.GlobalEnv)
+  assign("gen_node_custom", gen_node_custom, envir=.GlobalEnv)
+
+  dag <- empty_dag() +
+    node("X", type="rnorm") +
+    node("Y", type="custom", parents="X", arg1=TRUE)
+
+  data <- sim_from_dag(dag, n_sim=100)
+
+  dag_est <- dag_from_data(dag, data=data)
+
+  data2 <- sim_from_dag(dag_est$dag, n_sim=100)
+
+  expect_true(all(data$Y==1))
+  expect_true(all(data2$Y==1))
+})

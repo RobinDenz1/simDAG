@@ -93,9 +93,9 @@ add_censoring <- function(times, cens_dist, cens_args, name) {
   return(out_data)
 }
 
-## given an arbitrary baseline probability function, calculate the
-## cumulative baseline hazard over some discretized time grid
-get_numeric_cum_hazard <- function(f, times) {
+## get cumulative baseline hazard  and its inverse as approximate functions
+## using numerical integration and linear interpolation
+get_lH0 <- function(f, times) {
 
   # evaulate f(t) at each value in grid
   f_vals <- c(0, f(times))
@@ -107,17 +107,10 @@ get_numeric_cum_hazard <- function(f, times) {
   # trapezoidal increments for each interval (t_{k-1}, t_k]
   increments <- (f_vals[-1] + f_vals[-length(f_vals)]) / 2
 
+  # calculate cum. baseline hazard over given time grid
   H0 <- cumsum(increments)
 
-  return(H0)
-}
-
-## convenience function to get the approximated cumulative baseline hazard
-## and its inverse as approximate functions
-get_lH0 <- function(f, times) {
-
-  # calculate cum. baseline hazard over given time grid
-  H0 <- get_numeric_cum_hazard(f=f, times=times)
+  # interpolate linearly
   H0_fun <- stats::approxfun(x=times, y=H0, method="linear", rule=1)
 
   # invert cum. hazard function
