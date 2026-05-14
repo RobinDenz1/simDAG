@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
 function, which can be used to simulate complex data from arbitrary
 causal directed acyclic graphs (DAGs). The simulated data may include
 continuous, binary, categorical, count or time-to-event variables (Denz
-and Timmesfeld 2025). This function is most useful if the DAG is static,
+and Timmesfeld 2026). This function is most useful if the DAG is static,
 meaning that there are no time-varying variables. It is theoretically
 possible to use this function to simulate data from DAGs with a time
 structure as well, but there are some difficulties associated with it
@@ -185,6 +185,11 @@ data as closely as possible).</p>
 initialize an empty <code>DAG</code> object like this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     %notin%</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span></span>
@@ -357,11 +362,11 @@ a continuous variable modeled using a linear regression by setting
 defined through the use of the <code>intercept</code>,
 <code>betas</code> and <code>error</code> arguments. Our specification
 for the <code>bmi</code> node corresponds to the following equation:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>m</mi><mi>i</mi><mo>=</mo><mn>12</mn><mo>+</mo><mi>s</mi><mi>e</mi><mi>x</mi><mo>⋅</mo><mn>1.1</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>m</mi><mi>i</mi><mo>=</mo><mn>12</mn><mo>+</mo><mi>s</mi><mi>e</mi><mi>x</mi><mo>⋅</mo><mn>1.1</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
 bmi = 12 + sex \cdot 1.1 + age \cdot 0.4 + N(0, 2),
 </annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N(0, 2)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(0, 2)</annotation></semantics></math>
 indicates that the error term is modelled as a normally distributed
 variable with mean 0 and a standard deviation of 2.</p>
 <p>Since <code>death</code> has only two states (alive vs. dead), we use
@@ -369,7 +374,7 @@ a logistic regression model here instead. We can do this easily by
 setting <code>type="binomial"</code>. The rest of the syntax essentially
 stays the same. The regression equation for <code>death</code> as
 described by the code above is then:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mi>e</mi><mi>a</mi><mi>t</mi><mi>h</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>15</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.1</mn><mo>+</mo><mi>b</mi><mi>m</mi><mi>i</mi><mo>⋅</mo><mn>0.3</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mi>e</mi><mi>a</mi><mi>t</mi><mi>h</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>15</mn><mo>+</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo>⋅</mo><mn>0.1</mn><mo>+</mo><mi>b</mi><mi>m</mi><mi>i</mi><mo>⋅</mo><mn>0.3</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
 logit(death) = -15 + age \cdot 0.1 + bmi \cdot 0.3.
 </annotation></semantics></math></p>
 <p>To check whether we got the causal relationships right, we can call
@@ -579,9 +584,9 @@ may be used instead.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Denz, Robin and Nina Timmesfeld (2025). Simulating Complex
-Crossectional and Longitudinal Data using the simDAG R Package. arXiv
-preprint, doi: 10.48550/arXiv.2506.01498.</p>
+<p>Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.</p>
 <p>Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd
 ed. Cambridge: Cambridge University Press</p>
 <p>Peter Spirtes, Clark Glymour, and Richard Scheines (2000) Causation,

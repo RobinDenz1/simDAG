@@ -25,6 +25,7 @@ to others, please contact the maintainer of this package via the
 supplied e-mail address or github and we might add it to this package.
 
 ``` r
+
 library(simDAG)
 
 set.seed(1234)
@@ -59,6 +60,7 @@ Using external functions that fulfill the requirements which are already
 defined by some other package can be done this way:
 
 ``` r
+
 dag <- empty_dag() +
   node("A", type="rgamma", shape=0.1, rate=2) +
   node("B", type="rbeta", shape1=2, shape2=0.3)
@@ -70,6 +72,7 @@ normally distributed random number and a uniformly distributed random
 number for each simulated individual:
 
 ``` r
+
 custom_root <- function(n, min=0, max=1, mean=0, sd=1) {
   out <- runif(n, min=min, max=max) + rnorm(n, mean=mean, sd=sd)
   return(out)
@@ -123,6 +126,7 @@ gaussian node with some (badly done) truncation, limiting the range of
 the resulting variable to be between `left` and `right`.
 
 ``` r
+
 node_gaussian_trunc <- function(data, parents, betas, intercept, error,
                                 left, right) {
   out <- node_gaussian(data=data, parents=parents, betas=betas,
@@ -140,6 +144,7 @@ is another example of a custom child node function, which simply returns
 the sum of its parents:
 
 ``` r
+
 parents_sum <- function(data, parents, betas=NULL) {
   out <- rowSums(data[, parents, with=FALSE])
   return(out)
@@ -149,6 +154,7 @@ parents_sum <- function(data, parents, betas=NULL) {
 We can use both of these functions in a DAG like this:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5) +
@@ -216,6 +222,7 @@ may be used.
 An example for a custom time-dependent root node is given below:
 
 ``` r
+
 node_custom_root_td <- function(data, n, mean=0, sd=1) {
   return(rnorm(n=n, mean=mean, sd=sd))
 }
@@ -226,6 +233,7 @@ each point in time of the simulation. A DAG using this node type could
 look like this:
 
 ``` r
+
 n_sim <- 100
 
 dag <- empty_dag() +
@@ -240,6 +248,7 @@ Equivalently, and more simply, we could use (because `n` is passed
 automatically):
 
 ``` r
+
 dag <- empty_dag() +
   node_td(name="Something", type=rnorm, mean=10, sd=5)
 ```
@@ -250,6 +259,7 @@ Below is an example for a function that can be used to define a custom
 time-dependent child node:
 
 ``` r
+
 node_custom_child <- function(data, parents) {
   out <- numeric(nrow(data))
   out[data$other_event] <- rnorm(n=sum(data$other_event), mean=10, sd=3)
@@ -273,6 +283,7 @@ following function simply returns the square of the current simulation
 time as output:
 
 ``` r
+
 node_square_sim_time <- function(data, sim_time, n_sim) {
   return(rep(sim_time^2, n=n_sim))
 }
@@ -297,6 +308,7 @@ argument, which allows users direct access to past states of the
 simulation. Below is an example of how this might be used:
 
 ``` r
+
 node_prev_state <- function(data, past_states, sim_time) {
   if (sim_time < 3) {
     return(rnorm(n=nrow(data)))
@@ -326,6 +338,7 @@ saved, so the argument should in almost all cases be set to
 `save_states="all"`, as shown below:
 
 ``` r
+
 sim <- sim_discrete_time(dag, n_sim=100, max_t=10, save_states="all")
 ```
 

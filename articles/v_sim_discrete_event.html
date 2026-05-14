@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,22 +95,22 @@ currently not supported. Only binary variables added using the
 <code>"next_time"</code> node type may be used.</p>
 <p>The goal of the <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> function is not to
 provide a general framework for DES. Multiple other R packages, such as
-<code>simmer</code> <span class="citation">(Ucar, Smeets, and Azcorra
-2019; Degeling et al. 2025)</span> and <code>DES</code> <span class="citation">(Matloff 2017)</span>, as well as software packages
-outside R have been developed for that purpose and are much more useful
-in this regard. Instead, the aim of this function is to provide a
-specific, but fairly general, DES model that may be used to generate
-data from DAG based description of the data generation process (DGP). In
-other words: if you want to perform a classic DES with interacting
-agents using a classic simulation modeling approach, this is probably
-not the right package for you. If you want to generate complex
-time-dependent data based on a stochastic model, you have come to the
-right place.</p>
+<code>simmer</code> <span class="citation">(Ucar et al. 2019; Degeling
+et al. 2025)</span> and <code>DES</code> <span class="citation">(Matloff
+2017)</span>, as well as software packages outside R have been developed
+for that purpose and are much more useful in this regard. Instead, the
+aim of this function is to provide a specific, but fairly general, DES
+model that may be used to generate data from DAG based description of
+the data generation process (DGP). In other words: if you want to
+perform a classic DES with interacting agents using a classic simulation
+modeling approach, this is probably not the right package for you. If
+you want to generate complex time-dependent data based on a stochastic
+model, you have come to the right place.</p>
 <p>Throughout the vignette, we assume that the reader is already
 familiar with the <code>simDAG</code> syntax. If this is not the case,
 we recommend consulting the introductory vignette or the main paper
 associated with this package first <span class="citation">(Denz and
-Timmesfeld 2025)</span>.</p>
+Timmesfeld 2026)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-discrete-event-simulation-and-why-use-it">What is Discrete-Event Simulation and Why Use it?<a class="anchor" aria-label="anchor" href="#what-is-discrete-event-simulation-and-why-use-it"></a>
@@ -232,6 +232,11 @@ by one and repeat until we are finished. This can be done using the
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     %notin%</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
@@ -561,7 +566,7 @@ time.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Anderson2007" class="csl-entry">
 Anderson, David F. 2007. <span>“A Modified Next Reaction Method for
 Simulating Chemical Systems with Time Dependent Propensities and
@@ -569,8 +574,8 @@ Delays.”</span> <em>The Journal of Chemical Physics</em> 127 (21).
 </div>
 <div id="ref-Banks2014" class="csl-entry">
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol.
-2014. <em>Discrete-Event System Simulation</em>. Vol. 5. Edinburgh Gate:
-Pearson Education Limited.
+2014. <em>Discrete-Event System Simulation</em>. Vol. 5. Pearson
+Education Limited.
 </div>
 <div id="ref-Degeling2025" class="csl-entry">
 Degeling, Koen, Jonathan Karnon, Michiel van de Ven, alan Brennan, and
@@ -579,10 +584,10 @@ the ’Simmer’ Package for Health Economic Modelling: A Tutorial and
 Illustration in Colon Cancer.”</span> <em>Applied Health Economics and
 Health Policy</em> 23: 961–75.
 </div>
-<div id="ref-Denz2025" class="csl-entry">
-Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.”</span>
-<em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
+<div id="ref-Denz2026" class="csl-entry">
+Denz, Robin, and Nina Timmesfeld. 2026. <span>“Simulating Complex
+Cross-Sectional and Longitudinal Data Using the <span class="nocase">simDAG</span> <span>R</span> Package.”</span> <em>Journal
+of Statistical Software</em> 116 (2): 1–40. <a href="https://doi.org/10.18637/jss.v116.i02" class="external-link">https://doi.org/10.18637/jss.v116.i02</a>.
 </div>
 <div id="ref-Gillespie1976" class="csl-entry">
 Gillespie, Daniel T. 1976. <span>“A General Method for Numerically
@@ -591,9 +596,9 @@ Reactions.”</span> <em>Journal of Computational Physics</em> 22 (4):
 403–34.
 </div>
 <div id="ref-Gillespie1977" class="csl-entry">
-———. 1977. <span>“Exact Stochastic Simulation of Coupled Chemical
-Reactions.”</span> <em>The Journal of Physical Chemistry</em> 81 (25):
-2340–61.
+Gillespie, Daniel T. 1977. <span>“Exact Stochastic Simulation of Coupled
+Chemical Reactions.”</span> <em>The Journal of Physical Chemistry</em>
+81 (25): 2340–61.
 </div>
 <div id="ref-Masuda2018" class="csl-entry">
 Masuda, Naoki, and Luis E. C. Rocha. 2018. <span>“A Gillespie Algorithm

@@ -66,6 +66,11 @@ Robin Denz
 ``` r
 library(simDAG)
 library(data.table)
+#> 
+#> Attaching package: ‘data.table’
+#> The following object is masked from ‘package:base’:
+#> 
+#>     %notin%
 
 # generate example data in long format
 long <- data.table(.id=rep(seq_len(10), each=5),

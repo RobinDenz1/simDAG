@@ -26,13 +26,14 @@ the infection status of other individuals. The individuals are said to
 simulations are one way to model such dependencies.
 
 The following vignette introduces this methodology and how it is
-implemented in the `simDAG` R package (Denz and Timmesfeld 2025). This
+implemented in the `simDAG` R package (Denz and Timmesfeld 2026). This
 is an advanced topic. We assume that the reader is already familiar with
 the general `simDAG` syntax and DAG based simulations. Please consult
 the associated paper or the numerous other vignettes first, if this is
 not the case.
 
 ``` r
+
 library(data.table)
 library(igraph)
 library(simDAG)
@@ -48,13 +49,12 @@ is used in classic DAG-based simulations, with the added possibility of
 using the network structures to define individual dependencies. For
 example, a variable could then be defined not only as a function of
 other variables, but also as a function of the neighbors of an
-individual $i$ (and their variable values), where neighbors are defined
-as any individual $j$ that share some connection with $i$ in a given
-network (although in directed networks, multiple options to define
-neighbors are possible). A more rigorous explanation, along with an
-explanation of their implementation of the methodology in the
-`simcausal` package, is given by Sofrygin, Neugebauer, and van der Laan
-(2017).
+individual $`i`$ (and their variable values), where neighbors are
+defined as any individual $`j`$ that share some connection with $`i`$ in
+a given network (although in directed networks, multiple options to
+define neighbors are possible). A more rigorous explanation, along with
+an explanation of their implementation of the methodology in the
+`simcausal` package, is given by Sofrygin, Neugebauer, et al. (2017).
 
 In network science, the points in a networks are often called *nodes* or
 *vertices*, while the connections between them are usually called
@@ -77,6 +77,7 @@ that are also constant over time.
 Consider the following simple network:
 
 ``` r
+
 set.seed(1234)
 
 data <- data.frame(from=c(1, 1, 2, 3, 4, 5, 5),
@@ -88,13 +89,14 @@ plot(g)
 
 ![](v_sim_networks_files/figure-html/unnamed-chunk-3-1.png)
 
-In this network, individual $1$ has three neighbors: $2,3$ and $4$,
-while individual $5$ only has two neighbors: $3$ and $4$. We will first
-simulate `age` and `sex` values for all of these individuals,
-irrespective of their position in the network, using the standard
-`simDAG` syntax to generate data from a `DAG`:
+In this network, individual $`1`$ has three neighbors: $`2, 3`$ and
+$`4`$, while individual $`5`$ only has two neighbors: $`3`$ and $`4`$.
+We will first simulate `age` and `sex` values for all of these
+individuals, irrespective of their position in the network, using the
+standard `simDAG` syntax to generate data from a `DAG`:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=10) +
   node("sex", type="rbernoulli", p=0.5, output="numeric")
@@ -108,6 +110,7 @@ values. If we generated the data right now, without further nodes, it
 would look like this:
 
 ``` r
+
 set.seed(5245)
 data <- sim_from_dag(dag, n_sim=5)
 print(data, row.names=TRUE)
@@ -129,6 +132,7 @@ already generated `igraph` object to it using the
 function:
 
 ``` r
+
 dag <- dag + network("network1", net=g)
 ```
 
@@ -155,6 +159,7 @@ not, as a function of the persons own `age` and `sex` *and* as a
 function of their neighbors `age` and `sex` using the following syntax:
 
 ``` r
+
 dag <- dag + node("infected", type="binomial",
                   formula= ~ 5 + age*0.1 + sex*-0.5 +
                     net(mean(age))*-0.2 + net(mean(sex))*-0.4)
@@ -167,6 +172,7 @@ a persons neighbors. If we run the simulation again with this updated
 DGP, the results looks like this:
 
 ``` r
+
 set.seed(5245)
 data <- sim_from_dag(dag, n_sim=5)
 print(data, row.names=TRUE)
@@ -187,6 +193,7 @@ instead. For example, calculating the number of infected neighbors per
 person could now be done using:
 
 ``` r
+
 dag <- dag + node("n_inf_neighbors", type="identity",
                   formula= ~ net(sum(infected)), kind="data")
 
@@ -220,6 +227,7 @@ professional networks and so on. This is also directly supported by the
 individuals) using the `igraph` package:
 
 ``` r
+
 set.seed(56356)
 g1 <- igraph::sample_gnm(n=20, m=30)
 g2 <- igraph::sample_gnm(n=20, m=30)
@@ -233,6 +241,7 @@ friends with who and the second is a “professional network”, showing who
 works with who. They look like this:
 
 ``` r
+
 par(mfrow=c(1, 2), mar=c(0, 0, 0, 0) + 1)
 
 plot(g1, main="Friends", margin=0, vertex.label.cex=0.8)
@@ -246,6 +255,7 @@ distinct networks. We now first repeat large parts of the `DAG` from
 earlier, but add both networks to it this time:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=50, sd=10) +
   node("sex", type="rbernoulli", p=0.5, output="numeric") +
@@ -257,6 +267,7 @@ We can now add a new node to this `DAG`, that utilizes both network
 dependencies at the same time:
 
 ``` r
+
 dag <- dag + node("infected", type="binomial",
                   formula= ~ 3 + age*0.1 + sex*-0.5 +
                     net(mean(age), net="friends")*-0.2 + 
@@ -269,6 +280,7 @@ is used and the proportion of females is used only for the `work`
 network. The results look like this:
 
 ``` r
+
 data <- sim_from_dag(dag, n_sim=20)
 head(data, row.names=TRUE)
 #>         age   sex infected
@@ -301,6 +313,7 @@ the network shown above. Re-plotting this network one can see that the
 edges now have different weights:
 
 ``` r
+
 E(g1)$weight <- runif(n=length(E(g1)), min=1, max=5)
 plot(g1, edge.width=E(g1)$weight)
 ```
@@ -314,6 +327,7 @@ example, if we want to re-use the DAG definition from earlier, we could
 do something like this:
 
 ``` r
+
 dag <- empty_dag() +
   network("friends", net=g1) +
   node("age", type="rnorm", mean=50, sd=10) +
@@ -345,17 +359,18 @@ the `..weight..` variable in any other way as well.
 ### Directed Networks
 
 So far we have always assumed that all connections in a graph are
-*un-directed*, e.g. that once there is an edge between vertices $1$ and
-$2$, that they have a reciprocal relationship with each other. In real
-networks it is often the case that relationships between vertices are
-not reciprocal, but directed. For example, in the professional network
-we might be interested in showing who is giving who orders. This could
-be done by using a *directed* network. These kinds of networks are also
-directly supported for simulation purposes in this package.
+*un-directed*, e.g. that once there is an edge between vertices $`1`$
+and $`2`$, that they have a reciprocal relationship with each other. In
+real networks it is often the case that relationships between vertices
+are not reciprocal, but directed. For example, in the professional
+network we might be interested in showing who is giving who orders. This
+could be done by using a *directed* network. These kinds of networks are
+also directly supported for simulation purposes in this package.
 
 Let us create a random directed network first:
 
 ``` r
+
 set.seed(123)
 
 g <- sample_gnm(n=20, m=18, directed=TRUE, loops=FALSE)
@@ -374,6 +389,7 @@ function. We again replicate the `DAG` from earlier, changing it only
 slightly:
 
 ``` r
+
 dag <- empty_dag() +
   network("work", net=g) +
   node("age", type="rnorm", mean=50, sd=10) +
@@ -429,6 +445,7 @@ section. Below is a simple example on how one could use this
 functionality:
 
 ``` r
+
 set.seed(2134)
 g <- sample_gnm(n=20, m=15)
 
@@ -475,6 +492,7 @@ in a `DAG`. Repeating the `DAG` from earlier (with some slight changes)
 we could use something like:
 
 ``` r
+
 set.seed(2134)
 g <- sample_gnm(n=20, m=15)
 
@@ -517,6 +535,7 @@ sports that are separated by sex. To simulate such an example, we first
 define some functions:
 
 ``` r
+
 is_different_sex <- function(g, x) {
   V(g)[ends(g, x)[1]]$type != V(g)[ends(g, x)[2]]$type
 }
@@ -538,6 +557,7 @@ then deletes all edges where the type (e.g. `sex`) of the vertices is
 not the same. We can incorporate this into a `DAG` using:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=25, sd=5) +
   node("sex", type="rbernoulli", p=0.5) +
@@ -548,6 +568,7 @@ dag <- empty_dag() +
 We can now simulate from this `DAG`:
 
 ``` r
+
 set.seed(1324)
 data <- sim_from_dag(dag, n_sim=20, return_networks=TRUE)
 head(data$data)
@@ -569,6 +590,7 @@ and the `networks`. Below is the generated networks, with different
 vertex colors for each `sex`:
 
 ``` r
+
 g <- data$networks$network1$net
 V(g)$color <- ifelse(V(g)$type, "salmon", "lightblue")
 plot(g)
@@ -602,6 +624,7 @@ a random graph of 18 individuals with 30 connections between them using
 the `igraph` package:
 
 ``` r
+
 set.seed(244368)
 g2 <- igraph::sample_gnm(n=18, m=30)
 
@@ -611,24 +634,28 @@ plot(g2)
 ![](v_sim_networks_files/figure-html/unnamed-chunk-27-1.png)
 
 We will assume that the probability of infection rises in a very simple
-fashion with the number of infected neighbors in the network. At $t = 1$
-all individuals have a 5% chance of becoming infected through some
-unknown external event. From then on, only individuals with infected
-neighbors can be infected. In particular, the general probability of
-infection at $t$ is defined as:
+fashion with the number of infected neighbors in the network. At
+$`t = 1`$ all individuals have a 5% chance of becoming infected through
+some unknown external event. From then on, only individuals with
+infected neighbors can be infected. In particular, the general
+probability of infection at $`t`$ is defined as:
 
-$$P(t) = \begin{cases}
-0.05 & {\text{if}\quad t = 1} \\
-0.4 & {\text{if}\quad t > 1{\mspace{6mu}\text{and}\mspace{6mu}}k \in (1,2)} \\
-0.9 & {\text{if}\quad t > 1{\mspace{6mu}\text{and}\mspace{6mu}}k > 3} \\
-0 & \text{otherwise}
-\end{cases},$$
+``` math
+    P(t) =
+    \begin{cases}
+      0.05 & \text{if} \quad t = 1 \\
+        0.4 & \text{if} \quad t > 1 \text{ and } k \in (1,2) \\
+        0.9 & \text{if} \quad t > 1 \text{ and } k > 3 \\
+        0 & \text{otherwise}
+    \end{cases},
+```
 
-with $k$ being the number of infected neighbors of the individual.
+with $`k`$ being the number of infected neighbors of the individual.
 Additionally, once infected, a person stays infected. We can simulate
 this kind of date using the following code:
 
 ``` r
+
 prob_infection <- function(data, sim_time) {
   if (sim_time==1) {
     p <- rep(0.05, nrow(data))
@@ -664,6 +691,7 @@ Now we can run the simulation and transform the output into the
 long-format for easier processing:
 
 ``` r
+
 sim <- sim_discrete_time(dag, n_sim=18, max_t=6, save_states="all")
 data <- sim2data(sim, to="long")
 head(data)
@@ -687,6 +715,7 @@ infected individuals colored in salmon and the not-infected individuals
 colored in lightblue:
 
 ``` r
+
 E(g2)$color <- "lightgray"
 
 par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
@@ -737,6 +766,7 @@ define a function that generates the network for us. Below is one
 possibility:
 
 ``` r
+
 gen_network <- function(n_sim) {
   igraph::sample_gnm(n=n_sim, m=30)
 }
@@ -752,6 +782,7 @@ now use almost the same code as we did before to generate data using
 this function:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("n_infected_neighbors", type="identity",
           formula= ~ net(sum(infected_event), na=0), kind="data") +
@@ -787,6 +818,7 @@ with the one change being that we now have one network per slide (saved
 in the `sim` object because we set `save_networks=TRUE`):
 
 ``` r
+
 par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
 
 for (i in seq_len(6)) {
@@ -810,9 +842,9 @@ for (i in seq_len(6)) {
 ![](v_sim_networks_files/figure-html/unnamed-chunk-33-1.png)
 
 Here, the simulation starts out with individuals 8 being infected, while
-being connected to individuals 3, 7, 11, 15 and 16 at $t = 1$. This
+being connected to individuals 3, 7, 11, 15 and 16 at $`t = 1`$. This
 individual then spread the infection to individuals 3 and 15, as can be
-seen at $t = 2$. However, the network has changed completely at this
+seen at $`t = 2`$. However, the network has changed completely at this
 point. Now the individuals are connected to others, spreading the
 infection even further to those they are connected with now. This
 repeats until almost everyone (except individuals 4 and 12) are
@@ -841,6 +873,7 @@ First, we have to adjust the `gen_network()` function. We will use the
 following code:
 
 ``` r
+
 gen_network <- function(n_sim, sim_time, network, data) {
   
   if (sim_time==0) {
@@ -861,14 +894,14 @@ gen_network <- function(n_sim, sim_time, network, data) {
 ```
 
 There is a few lines of obscure code here, but generally what the
-function does is really simple. At $t = 0$ it simply generates a random
-graph using
+function does is really simple. At $`t = 0`$ it simply generates a
+random graph using
 [`sample_gnm()`](https://r.igraph.org/reference/sample_gnm.html). From
-$t = 1$ on it simply checks whether any person is infected and isolates
-them, by deleting their connections and returning the adjusted network.
-By adding the time-dependent networks after the time-dependent nodes in
-the `DAG`, we ensure that it is updated only after all nodes of a day
-have been generated. Because the `time_since_last` counter of the
+$`t = 1`$ on it simply checks whether any person is infected and
+isolates them, by deleting their connections and returning the adjusted
+network. By adding the time-dependent networks after the time-dependent
+nodes in the `DAG`, we ensure that it is updated only after all nodes of
+a day have been generated. Because the `time_since_last` counter of the
 `infected` node starts at 0 using `data$infected_time_since_last > 0`
 ensures that each individual has one full day to spread the infection.
 Note that the arguments `sim_time`, `network` and `data` are
@@ -879,6 +912,7 @@ current state of the data.
 We can now re-use almost the same `DAG` definition from earlier:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("n_infected_neighbors", type="identity",
           formula= ~ net(sum(infected_event), na=0), kind="data") +
@@ -891,12 +925,13 @@ dag <- empty_dag() +
 The only difference to before is that we actively set
 `create_at_t0=TRUE` so that the network gets created before
 time-dependent processing starts (so we have a network to adjust at
-$t = 1$) and that we set `time_since_last=TRUE` in the `infected` node
+$`t = 1`$) and that we set `time_since_last=TRUE` in the `infected` node
 to track the time since the original infection, because we need that
 information in the network generating function. Lets run the simulation
 again:
 
 ``` r
+
 set.seed(13354)
 
 sim <- sim_discrete_time(dag, n_sim=18, max_t=6, save_states="all",
@@ -919,6 +954,7 @@ infected individuals does not And finally lets plot the resulting
 infection spread again:
 
 ``` r
+
 par(mfrow=c(3, 2), mar=c(0, 0, 0, 0) + 2)
 
 layout_g <- layout_nicely(sim$past_networks[[1]]$net1$net)
@@ -974,18 +1010,18 @@ lot less daunting for potential users.
 
 Despite the great flexibility offered by this approach, it is used quite
 infrequently in practice. The preprint published by Sofrygin,
-Neugebauer, and van der Laan (2017) did not gather a lot of attention,
-even though they also offered a clean and powerful implementation of the
-method through the `simcausal` (Sofrygin, van der Laan, and Neugebauer
-2017) package (which heavily inspired the presented `simDAG`
-implementation). I suspect that the main reason for this is that there
-are only few statistical models designed to actually analyze data with
-such complex DGPs. Despite recent advancements, the combination of
-network science and causal inference is still in its infancy, as has
-been pointed out by others (Ogburn et al. 2024; VanderWeele and An 2013;
-An, Beauvile, and Rosche 2022). I hope that this implementation will
-make future investigations into this subject easier or at least more
-convenient to methodological researchers.
+Neugebauer, et al. (2017) did not gather a lot of attention, even though
+they also offered a clean and powerful implementation of the method
+through the `simcausal` (Sofrygin, van der Laan, et al. 2017) package
+(which heavily inspired the presented `simDAG` implementation). I
+suspect that the main reason for this is that there are only few
+statistical models designed to actually analyze data with such complex
+DGPs. Despite recent advancements, the combination of network science
+and causal inference is still in its infancy, as has been pointed out by
+others (Ogburn et al. 2024; VanderWeele and An 2013; An et al. 2022). I
+hope that this implementation will make future investigations into this
+subject easier or at least more convenient to methodological
+researchers.
 
 ## References
 
@@ -993,15 +1029,14 @@ An, Weihua, Roberson Beauvile, and Benjamin Rosche. 2022. “Causal
 Network Analysis.” *Annual Reviews of Sociology* 48: 23–41.
 <https://doi.org/10.1146/annurev-soc-030320-102100>.
 
-Danon, Leon, Ashley P. Ford, Thomas House, Chris P. Jewell, Matt J.
-Keeling, Gareth O. Roberts, Joshua V. Ross, and Matthew C. Vernon. 2011.
-“Networks and the Epidemiology of Infectious Disease.”
-*Interdisciplinary Perspectives on Infectious Diseases* 16.
-<https://doi.org/10.1155/2011/284909>.
+Danon, Leon, Ashley P. Ford, Thomas House, et al. 2011. “Networks and
+the Epidemiology of Infectious Disease.” *Interdisciplinary Perspectives
+on Infectious Diseases* 16. <https://doi.org/10.1155/2011/284909>.
 
-Denz, Robin, and Nina Timmesfeld. 2025. “Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.” *arXiv
-Preprint*. <https://doi.org/10.48550/arXiv.2506.01498>.
+Denz, Robin, and Nina Timmesfeld. 2026. “Simulating Complex
+Cross-Sectional and Longitudinal Data Using the simDAG R Package.”
+*Journal of Statistical Software* 116 (2): 1–40.
+<https://doi.org/10.18637/jss.v116.i02>.
 
 Ogburn, Elizabeth L., Oleg Sofrygin, Iván Díaz, and Mark J. van der
 Laan. 2024. “Causal Inference for Social Network Data.” *Journal of the
@@ -1009,8 +1044,8 @@ American Statistical Association* 119 (545): 597–611.
 <https://doi.org/10.1080/01621459.2022.2131557>.
 
 Sofrygin, Oleg, Romain Neugebauer, and Mark J. van der Laan. 2017.
-“Conducting Simulations in Causal Inference with Networks-Based
-Structural Equation Models.” arXiv prepring.
+*Conducting Simulations in Causal Inference with Networks-Based
+Structural Equation Models*. arXiv prepring.
 <https://doi.org/10.48550/arXiv.1705.10376>.
 
 Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer. 2017.
@@ -1021,5 +1056,5 @@ Studies of Causal Effect Estimation with Complex Longitudinal Data.”
 
 VanderWeele, Tyler J., and Weihua An. 2013. “Social Networks and Causal
 Inference.” In *Handbook of Causal Analysis for Social Research*, edited
-by Stephen L. Morgan. Dordrecht: Springer Science + Business Media.
+by Stephen L. Morgan. Springer Science + Business Media.
 <https://doi.org/10.1007/978-94-007-6094-3>.

@@ -110,10 +110,9 @@ vignettes of this package, which can be accessed using:
 
 - [`vignette(topic="v_sim_networks", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md)
 
-A separate (already peer-reviewed) article about this package has been
-provisionally accepted in the *Journal of Statistical Software*. The
-preprint version of this article is available on arXiv (Denz and
-Timmesfeld 2025) and as a vignette in this package.
+A separate peer-reviewed article about this package has been published
+in the *Journal of Statistical Software* (Denz and Timmesfeld 2026). It
+is also available as a vignette in this package.
 
 ***I have a problem using the `sim_discrete_time` or
 `sim_discrete_event` function***
@@ -138,9 +137,9 @@ using the supplied e-mail address.
 
 ## References
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
-and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
-10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package".
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol
 (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate:

@@ -18,6 +18,6 @@
   Dependencies](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md):
 - [simDAG
   Cookbook](https://robindenz1.github.io/simDAG/articles/v_cookbook.md):
-- [Simulating Complex Crossectional and Longitudinal Data using the
+- [Simulating Complex Cross-Sectional and Longitudinal Data using the
   simDAG R
   Package](https://robindenz1.github.io/simDAG/articles/simDAG.md):

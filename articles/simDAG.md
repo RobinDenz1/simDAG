@@ -1,12 +1,11 @@
-# Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package
+# Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package
 
 Abstract
 
 This introduction to the `simDAG` `R` Package is a (slightly) modified
-version of a provisionally accepted article in the *Journal of
-Statistical Software*. If you use this package or want to cite
-information contained in this article, please cite the arXiv version
-(Denz and Timmesfeld 2025).  
+version of an article in the *Journal of Statistical Software*. If you
+use this package or want to cite information contained in this article,
+please cite the official version (Denz and Timmesfeld 2026).  
   
 Generating artificial data is a crucial step when performing Monte-Carlo
 simulation studies. Depending on the planned study, complex data
@@ -37,16 +36,16 @@ multiple real Monte-Carlo simulation studies.
 Applied researchers and statisticians frequently use Monte-Carlo
 simulation techniques in a variety of ways. They are used to estimate
 required sample sizes (Arnold et al. 2011), formally compare different
-statistical methods (Morris, White, and Crowther 2019; Denz,
-Klaaßen-Mielke, and Timmesfeld 2023), help design and plan clinical
-trials (Kimko and Duffull 2002; Nance et al. 2024) or for teaching
-purposes (Sigal and Chalmers 2016; Fox et al. 2022). The main reason for
-their broad usage is that the researcher has full control over the true
-data generation process (DGP). In general, the researcher will define a
-DGP appropriate to the situation and generate multiple datasets from it.
-Some statistical analysis technique is then applied to each dataset and
-the results are analyzed. A crucial step in every kind of Monte-Carlo
-simulation study is thus the generation of these datasets.
+statistical methods (Morris et al. 2019; Denz et al. 2023), help design
+and plan clinical trials (Kimko and Duffull 2002; Nance et al. 2024) or
+for teaching purposes (Sigal and Chalmers 2016; Fox et al. 2022). The
+main reason for their broad usage is that the researcher has full
+control over the true data generation process (DGP). In general, the
+researcher will define a DGP appropriate to the situation and generate
+multiple datasets from it. Some statistical analysis technique is then
+applied to each dataset and the results are analyzed. A crucial step in
+every kind of Monte-Carlo simulation study is thus the generation of
+these datasets.
 
 Depending on the DGP that is required by the researcher, this step may
 become very difficult and time consuming. For example, some Monte-Carlo
@@ -70,10 +69,9 @@ has to be validated extensively while it also has to be computationally
 efficient enough to allow potentially thousands of datasets to be
 generated in a reasonable amount of time. Additionally, it also has to
 be flexible enough to allow the user to easily make changes to the DGP
-to be useful in most cases (Sofrygin, van der Laan, and Neugebauer
-2017). A comprehensive software application that automates most of the
-required work would therefore be of great benefit to the scientific
-community.
+to be useful in most cases (Sofrygin et al. 2017). A comprehensive
+software application that automates most of the required work would
+therefore be of great benefit to the scientific community.
 
 In this article we present the `simDAG` `R` package, which offers an
 easy to use and consistent framework to generate arbitrarily complex
@@ -92,57 +90,59 @@ Comprehensive `R` Archive Network (CRAN) at
 
 In this package, the user is required to describe the desired DGP as a
 causal DAG. Formally, a DAG is a mathematical graph consisting of a set
-of $V$ nodes (or vertices) and a set of $E$ edges (or links) connecting
-pairs of nodes. As its’ name suggests, a DAG consists only of *directed*
-edges and is *acyclic*, meaning that there are no cycles when following
-directed paths on the DAG (Byeon and Lee 2023). A causal DAG is a
-special sort of DAG in which the nodes represent random variables and
-the edges represent directed causal relationships between these
+of $`V`$ nodes (or vertices) and a set of $`E`$ edges (or links)
+connecting pairs of nodes. As its’ name suggests, a DAG consists only of
+*directed* edges and is *acyclic*, meaning that there are no cycles when
+following directed paths on the DAG (Byeon and Lee 2023). A causal DAG
+is a special sort of DAG in which the nodes represent random variables
+and the edges represent directed causal relationships between these
 variables (Pearl 2009). A very simple example containing only three
 nodes and no time-dependencies is given in Figure 1. The DAG in this
-figure contains a directed arrow from $A$ to $C$ and from $B$ to $C$.
-This translates to the assumptions that there is a direct causal effect
-of $A$ on $C$ and of $B$ on $C$, but no direct causal relationship
-between $A$ and $B$ (due to the absence of an arrow between them).
+figure contains a directed arrow from $`A`$ to $`C`$ and from $`B`$ to
+$`C`$. This translates to the assumptions that there is a direct causal
+effect of $`A`$ on $`C`$ and of $`B`$ on $`C`$, but no direct causal
+relationship between $`A`$ and $`B`$ (due to the absence of an arrow
+between them).
 
 ![An example DAG with three nodes.](images_v_joss/example_dag.png)
 
 An example DAG with three nodes.
 
 Such DAGs are the cornerstone of the *structural approach* to causal
-inference developed by Pearl (2009) and Spirtes, Glymour, and Scheines
-(2000). They are used extensively in social research (Wouk, Bauer, and
-Gottfredson 2019), economics (Imbens 2020) and epidemiology (Byeon and
-Lee 2023) to encode causal assumptions about the real underlying DGP of
-empirical data. For empirical research such graphs are very useful
-because they give a clear overview of the causal assumptions made by the
-researchers. By using causal graphical methods such as the *backdoor*
-criterion (Pearl 2009) or the *frontdoor* criterion (Pearl 1995), it is
-also possible to use such graphs to determine which variables need to be
-adjusted for in order to get unbiased estimates of certain causal
-effects. The `daggitty` `R` package directly implements multiple tools
-for this kind of usage (Textor et al. 2016).
+inference developed by Pearl (2009) and Spirtes et al. (2000). They are
+used extensively in social research (Wouk et al. 2019), economics
+(Imbens 2020) and epidemiology (Byeon and Lee 2023) to encode causal
+assumptions about the real underlying DGP of empirical data. For
+empirical research such graphs are very useful because they give a clear
+overview of the causal assumptions made by the researchers. By using
+causal graphical methods such as the *backdoor* criterion (Pearl 2009)
+or the *frontdoor* criterion (Pearl 1995), it is also possible to use
+such graphs to determine which variables need to be adjusted for in
+order to get unbiased estimates of certain causal effects. The
+`daggitty` `R` package directly implements multiple tools for this kind
+of usage (Textor et al. 2016).
 
 These kind of DAGs can be formally described using *structural
 equations*. These equations describe how each node is distributed. For
 example, a general set of structural equations that may be used to
 describe the DAG in Figure 1 are:
 
-$$\begin{aligned}
-{A \sim} & {f_{A}\left( U_{A} \right),} \\
-{B \sim} & {f_{B}\left( U_{B} \right),} \\
-{C \sim} & {f_{C}\left( A,B,U_{C} \right).} \\
- & 
-\end{aligned}$$
+``` math
+    \begin{aligned}
+        A \sim & f_A(U_A), \\
+        B \sim & f_B(U_B), \\
+        C \sim & f_C(A, B, U_C). \\
+    \end{aligned}
+```
 
-In these equations, the unspecified functions $f_{A}$, $f_{B}$ and
-$f_{C}$ describe how exactly the nodes are distributed, possibly
-conditional on other nodes. The terms $U_{A}$, $U_{B}$ and $U_{C}$
+In these equations, the unspecified functions $`f_A`$, $`f_B`$ and
+$`f_C`$ describe how exactly the nodes are distributed, possibly
+conditional on other nodes. The terms $`U_A`$, $`U_B`$ and $`U_C`$
 denote random errors or disturbances. If the functions in these
 structural equations are not specified and some assumption on the
 probability distribution of the error terms is made, this is equivalent
-to a non-parametric structural equation model (Pearl 2009; Sofrygin, van
-der Laan, and Neugebauer 2017).
+to a non-parametric structural equation model (Pearl 2009; Sofrygin et
+al. 2017).
 
 To make the generation of data from a DAG possible, however, it is not
 enough to only specify which variables are causally related to one
@@ -154,16 +154,17 @@ theory any kind of function may be used, allowing the definition of
 arbitrarily complex DGPs. Continuing the example from above, we could
 define the structural equations of the DAG as follows:
 
-$$\begin{aligned}
-{A \sim} & {N(0,1),} \\
-{B \sim} & {N(0,1),} \\
-{C \sim} & {- 2 + A \cdot 0.3 + B \cdot - 2 + N(0,1).} \\
- & 
-\end{aligned}$$
+``` math
+    \begin{aligned}
+        A \sim & N(0, 1), \\
+        B \sim & N(0, 1), \\
+        C \sim & -2 + A\cdot0.3 + B\cdot-2 + N(0, 1). \\
+    \end{aligned}
+```
 
-This means that both $A$ and $B$ are independent standard normally
-distributed variables and that $C$ follows a simple linear regression
-model based on $A$ and $B$ with an independent normally distributed
+This means that both $`A`$ and $`B`$ are independent standard normally
+distributed variables and that $`C`$ follows a simple linear regression
+model based on $`A`$ and $`B`$ with an independent normally distributed
 error term with mean zero. Once all structural equations and
 distribution functions have been defined, data may be generated from the
 DAG using a fairly simple algorithm. This algorithm essentially
@@ -171,8 +172,8 @@ generates data for one node at a time, using only the supplied
 definitions and the data generated in previous steps. This step-wise
 method relies on the fact that every DAG can be *topologically sorted*,
 which means that there is always an ordering of the nodes such that for
-every link $\left( u_{i},u_{j} \right)$ between nodes $u_{i}$ and
-$u_{j}$, $u_{i}$ comes before $u_{j}$(Kahn 1962).
+every link $`(u_i, u_j)`$ between nodes $`u_i`$ and $`u_j`$, $`u_i`$
+comes before $`u_j`$(Kahn 1962).
 
 The generation of the data starts by ordering the nodes of the graph in
 such a topologically sorted way. This means that nodes in the DAG that
@@ -188,19 +189,23 @@ dependent on other nodes, which are called their *parent nodes* (Byeon
 and Lee 2023). For the example DAG shown earlier, the two possible
 topological sortings are:
 
-$$(A,B,C)\quad\text{and}\quad(B,A,C).$$
+``` math
+    (A, B, C) \quad \text{and} \quad (B, A, C).
+```
 
-Here, both $A$ and $B$ are root nodes because they do not have any
-parents and $C$ is a child node of both of its’ parents $A$ and $B$. To
-generate data for this example using the algorithm described above, one
-would first generate $n$ random draws from a standard normal
-distribution for both $A$ and $B$. Next, one would calculate the linear
-combination of these values as specified by the linear regression model
-in the earlier Equation and add $n$ random draws from another standard
-normal distribution to it (which represents the error term). In `R`,
-this simple example could be simulated using the following code:
+Here, both $`A`$ and $`B`$ are root nodes because they do not have any
+parents and $`C`$ is a child node of both of its’ parents $`A`$ and
+$`B`$. To generate data for this example using the algorithm described
+above, one would first generate $`n`$ random draws from a standard
+normal distribution for both $`A`$ and $`B`$. Next, one would calculate
+the linear combination of these values as specified by the linear
+regression model in the earlier Equation and add $`n`$ random draws from
+another standard normal distribution to it (which represents the error
+term). In `R`, this simple example could be simulated using the
+following code:
 
 ``` r
+
 set.seed(43)
 n <- 100
 
@@ -223,29 +228,29 @@ any DAG as well by simply adding a time-index to the time-varying nodes
 and repeating the node for each point in time that should be considered
 (Hernán and Robins 2020). The proposed package features computationally
 efficient functions to automate this process for large amounts of
-time-points using a *discrete-time simulation* approach (Tang, Leu, and
-Abbass 2020). Although this procedure relies on a discrete time scale,
-it can be used to generate data on a semi-continuous time-scale by using
-very small steps in time. This is described in more detail in a later
+time-points using a *discrete-time simulation* approach (Tang et al.
+2020). Although this procedure relies on a discrete time scale, it can
+be used to generate data on a semi-continuous time-scale by using very
+small steps in time. This is described in more detail in a later
 Section.
 
 Note also that while causal DAGs imply a specific causal structure, the
 algorithms and code described here do not necessitate that this causal
 structure has to be interpreted as such in the generated data. For
-example, the structural equations shown earlier state that $A$ and $B$
-are direct causes of $C$, but the datasets that can be generated from
-these equations could also be interpreted as $A$ and $B$ being only
-associated with $C$ for unknown reasons. As long as the desired DGP can
-be *described* as a DAG, which is almost always the case, this strategy
-may be used effectively to generate data even for Monte-Carlo studies
-*not* concerned with causal inference.
+example, the structural equations shown earlier state that $`A`$ and
+$`B`$ are direct causes of $`C`$, but the datasets that can be generated
+from these equations could also be interpreted as $`A`$ and $`B`$ being
+only associated with $`C`$ for unknown reasons. As long as the desired
+DGP can be *described* as a DAG, which is almost always the case, this
+strategy may be used effectively to generate data even for Monte-Carlo
+studies *not* concerned with causal inference.
 
 Although the data-generation algorithm described above is appropriate
 for most applications, it may not be the best choice for validating
 causal discovery methods, due to the marginal variance of each variable
-increasing along the order of the topological sorting (Reisach, Seiler,
-and Weichwald 2021). Other methods, such as the onion method proposed by
-Andrews and Kummerfeld (2024) may be preferable in this particular case.
+increasing along the order of the topological sorting (Reisach et al.
+2021). Other methods, such as the onion method proposed by Andrews and
+Kummerfeld (2024) may be preferable in this particular case.
 
 ### Comparison with existing software
 
@@ -275,39 +280,37 @@ them support arbitrary mixtures of these data types or time-varying
 covariates.
 
 Other packages, such as the `simPop` package (Templ et al. 2017) and the
-`simFrame` package (Alfons, Templ, and Filzmoser 2010) allow generation
-of more complex synthetic data structures as well, but are mostly
-focused on generating data that mimicks real datasets. Similarly, the
-`simtrial` package offers very flexible tools for the generation of
-randomized controlled trial data, but it would be difficult to use it to
-generate other data types. Software directly based on causal DAGs as
-DGPs also exists. Although it is not stated in the package documentation
-directly, the `simstudy` package (Goldfeld and Wujciak-Jens 2020) also
-relies on the DAG based algorithm described earlier. It supports the use
-of different data types and custom generation functions, but only has
-partial support for generation of longitudinal data. Alternatively, the
-`Python` library `DagSim` (Hajj, Pensar, and Sandve 2023) allows users
-to generate arbitrary forms of data, while also allowing the user to
-supply custom functions for the data generation process. The price for
-this flexibility is, however, that not many default options are
-implemented in the library.
+`simFrame` package (Alfons et al. 2010) allow generation of more complex
+synthetic data structures as well, but are mostly focused on generating
+data that mimicks real datasets. Similarly, the `simtrial` package
+offers very flexible tools for the generation of randomized controlled
+trial data, but it would be difficult to use it to generate other data
+types. Software directly based on causal DAGs as DGPs also exists.
+Although it is not stated in the package documentation directly, the
+`simstudy` package (Goldfeld and Wujciak-Jens 2020) also relies on the
+DAG based algorithm described earlier. It supports the use of different
+data types and custom generation functions, but only has partial support
+for generation of longitudinal data. Alternatively, the `Python` library
+`DagSim` (Hajj et al. 2023) allows users to generate arbitrary forms of
+data, while also allowing the user to supply custom functions for the
+data generation process. The price for this flexibility is, however,
+that not many default options are implemented in the library.
 
-Finally, the `simcausal` `R` package (Sofrygin, van der Laan, and
-Neugebauer 2017) is very similar to the `simDAG` package and was in fact
-a big inspiration for it. Like the `simDAG` package, it is also based on
-the causal DAG framework. The syntax for defining a DAG is nearly the
-same, with some differences in how formula objects can and should be
-specified. Unlike the proposed package, however, the `simcausal` package
-is focused mostly on generating data for simulation studies dealing with
-causal inference. As such, it also directly supports the generation of
-data after performing some interventions on the DAG (Pearl 2009).
-Although the proposed package lacks such functionality, it is a lot more
-flexible in terms of what data can be generated. `simDAG` supports the
-use of arbitrary data generation functions, the definition of
-interactions, non-linear relationships and mixed model syntax in its’
-formula interface and categorical input data for nodes. None of these
-features are present in `simcausal` (Sofrygin, van der Laan, and
-Neugebauer 2017).
+Finally, the `simcausal` `R` package (Sofrygin et al. 2017) is very
+similar to the `simDAG` package and was in fact a big inspiration for
+it. Like the `simDAG` package, it is also based on the causal DAG
+framework. The syntax for defining a DAG is nearly the same, with some
+differences in how formula objects can and should be specified. Unlike
+the proposed package, however, the `simcausal` package is focused mostly
+on generating data for simulation studies dealing with causal inference.
+As such, it also directly supports the generation of data after
+performing some interventions on the DAG (Pearl 2009). Although the
+proposed package lacks such functionality, it is a lot more flexible in
+terms of what data can be generated. `simDAG` supports the use of
+arbitrary data generation functions, the definition of interactions,
+non-linear relationships and mixed model syntax in its’ formula
+interface and categorical input data for nodes. None of these features
+are present in `simcausal` (Sofrygin et al. 2017).
 
 ### Organization of this article
 
@@ -331,17 +334,17 @@ the package and its potential usefulness is discussed.
 The following functions are used in a typical workflow using the
 `simDAG` `R` package.
 
-|                                                                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`empty_dag()`](https://robindenz1.github.io/simDAG/reference/empty_dag.md)                                                                | Initializes an empty `DAG` object, which should be later filled with information on relevant nodes. `DAG` objects are the most important data structure of this package. How to define and use them is illustrated in more detail below.                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|  |  |
+|----|----|
+| [`empty_dag()`](https://robindenz1.github.io/simDAG/reference/empty_dag.md) | Initializes an empty `DAG` object, which should be later filled with information on relevant nodes. `DAG` objects are the most important data structure of this package. How to define and use them is illustrated in more detail below. |
 | [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) and [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) | Can be used to define one or multiple nodes each. These functions are typically used to fill the `DAG` objects with information about how the respective node should be generated, e.g., which other nodes it depends on (if any), whether it is time-dependent or not, what kind of data type it should be and the exact structural equation that it should follow. [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) can only be used to define nodes at one specific point in time, while the [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) function should only be used to define time-varying nodes for discrete-time simulations. |
-| [`add_node()`](https://robindenz1.github.io/simDAG/reference/add_node.md) or `DAG + node`                                                  | Allows the definition made by [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) or [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) to be added to the `DAG` object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| [`plot.DAG()`](https://robindenz1.github.io/simDAG/reference/plot.DAG.md)                                                                  | Directly plots a `DAG` object using the `ggplot2` library (Wickham 2016).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `summary.DAG()`                                                                                                                            | May be used to print the underlying structural equations of all nodes in a `DAG` object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)                                                          | Is one of the two core simulation functions. Given a fully specified `DAG` object that only includes nodes defined using [`node()`](https://robindenz1.github.io/simDAG/reference/node.md), it randomly generates a `data.table` (Barrett et al. 2024) according to the DGP specified by the `DAG`.                                                                                                                                                                                                                                                                                                                                                                            |
-| [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)                                                | Is the second core simulation function. Given a fully specified `DAG` object that includes one or multiple nodes added using the [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) function, and possibly one or multiple nodes added using the [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) function, it randomly generates data according to the specified DGP using a discrete-time simulation approach. This is described in detail in a later Section.                                                                                                                                                                            |
-| [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)                                                      | Allows users to directly generate multiple datasets from a single `DAG`, possibly using parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [`sim2data()`](https://robindenz1.github.io/simDAG/reference/sim2data.md)                                                                  | May be used to transform the output produced by the [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md) function into either the *wide*, *long* or *start-stop* format to make further usage of the generated data easier.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| [`add_node()`](https://robindenz1.github.io/simDAG/reference/add_node.md) or `DAG + node` | Allows the definition made by [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) or [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) to be added to the `DAG` object. |
+| [`plot.DAG()`](https://robindenz1.github.io/simDAG/reference/plot.DAG.md) | Directly plots a `DAG` object using the `ggplot2` library (Wickham 2016). |
+| `summary.DAG()` | May be used to print the underlying structural equations of all nodes in a `DAG` object. |
+| [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md) | Is one of the two core simulation functions. Given a fully specified `DAG` object that only includes nodes defined using [`node()`](https://robindenz1.github.io/simDAG/reference/node.md), it randomly generates a `data.table` (Barrett et al. 2024) according to the DGP specified by the `DAG`. |
+| [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md) | Is the second core simulation function. Given a fully specified `DAG` object that includes one or multiple nodes added using the [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) function, and possibly one or multiple nodes added using the [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) function, it randomly generates data according to the specified DGP using a discrete-time simulation approach. This is described in detail in a later Section. |
+| [`sim_n_datasets()`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md) | Allows users to directly generate multiple datasets from a single `DAG`, possibly using parallel processing. |
+| [`sim2data()`](https://robindenz1.github.io/simDAG/reference/sim2data.md) | May be used to transform the output produced by the [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md) function into either the *wide*, *long* or *start-stop* format to make further usage of the generated data easier. |
 
 The package additionally includes multiple functions starting with
 `node_`. These functions are used to generate data of different types
@@ -384,6 +387,7 @@ function (node at a single point in time) or
 function (node that varies over time), which have the following syntax:
 
 ``` r
+
 node(name, type, parents=NULL, formula=NULL, ...)
 
 node_td(name, type, parents=NULL, formula=NULL, ...)
@@ -415,6 +419,7 @@ For example, the simple DAG that we described earlier may be created
 using the following code:
 
 ``` r
+
 library("simDAG")
 dag <- empty_dag() +
   node(c("A", "B"), type="rnorm", mean=0, sd=1) +
@@ -429,16 +434,16 @@ only the
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md)
 function is required, because all nodes only have to be defined for a
 single point in time, since this DAG is only supposed to describe
-crossectional data. Additionally, since both $A$ and $B$ have the same
-structural equation here, only one call to
+crossectional data. Additionally, since both $`A`$ and $`B`$ have the
+same structural equation here, only one call to
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) is
 needed to define both of these nodes. By setting `type="rnorm"` and
 leaving both the `parents` and the `formula` arguments at their default
 values, these nodes are specified as root nodes for which values will be
 generated using the [`rnorm()`](https://rdrr.io/r/stats/Normal.html)
-function with the additional arguments passed afterwards. Because $C$ is
-supposed to follow a linear regression model, `type="gaussian"` is used
-here and the structural equation is specified using the `formula`
+function with the additional arguments passed afterwards. Because $`C`$
+is supposed to follow a linear regression model, `type="gaussian"` is
+used here and the structural equation is specified using the `formula`
 argument.
 
 The result is a `DAG` object. To re-create Figure 1, users may use the
@@ -448,6 +453,7 @@ to put the nodes into position and the `ggplot2` package (Wickham 2016)
 and the `ggforce` (Pedersen 2022) for the actual plotting:
 
 ``` r
+
 library("igraph")
 library("ggplot2")
 library("ggforce")
@@ -463,6 +469,7 @@ equations may be printed directly using the associated S3
 [`summary()`](https://rdrr.io/r/base/summary.html) method:
 
 ``` r
+
 summary(dag)
 #> A DAG object using the following structural equations:
 #> 
@@ -511,27 +518,27 @@ types is given in the following Table. Note that when using these node
 types, the user may either pass the respective function directly to the
 `type` argument, or use a string of the name without the `node_` prefix.
 
-| Node type                                                                                                                                                                                                                                                                                                                                                                                                  | Description                                                                                                                      |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| [`rbernoulli()`](https://robindenz1.github.io/simDAG/reference/rbernoulli.md)                                                                                                                                                                                                                                                                                                                              | Samples from a Bernoulli distribution                                                                                            |
-| [`rcategorical()`](https://robindenz1.github.io/simDAG/reference/rcategorical.md)                                                                                                                                                                                                                                                                                                                          | Samples from a discrete probability distribution                                                                                 |
-| [`rconstant()`](https://robindenz1.github.io/simDAG/reference/rconstant.md)                                                                                                                                                                                                                                                                                                                                | Sets the node to a constant value                                                                                                |
-|                                                                                                                                                                                                                                                                                                                                                                                                            |                                                                                                                                  |
-| [`node_gaussian()`](https://robindenz1.github.io/simDAG/reference/node_gaussian.md)                                                                                                                                                                                                                                                                                                                        | Generates a node based on a (mixed) linear regression model                                                                      |
-| [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)                                                                                                                                                                                                                                                                                                                        | Generates a node based on a (mixed) logistic regression model                                                                    |
-| [`node_conditional_prob()`](https://robindenz1.github.io/simDAG/reference/node_conditional_prob.md)                                                                                                                                                                                                                                                                                                        | Samples from a conditional discrete probability distribution                                                                     |
-| [`node_conditional_distr()`](https://robindenz1.github.io/simDAG/reference/node_conditional_distr.md)                                                                                                                                                                                                                                                                                                      | Samples from different distributions conditional on values of other variables                                                    |
-| [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md)                                                                                                                                                                                                                                                                                                                  | Generates a node based on a multinomial regression model                                                                         |
-| [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md)                                                                                                                                                                                                                                                                                                                          | Generates a node based on a (mixed) Poisson regression model                                                                     |
-| [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md)                                                                                                                                                                                                                                                                                                      | Generates a node based on a negative binomial regression model                                                                   |
-| [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md)                                                                                                                                                                                                                                                                                                                        | Generates a node based on a zero-inflated Poisson or negative binomial regression model                                          |
-| [`node_identity()`](https://robindenz1.github.io/simDAG/reference/node_identity.md)                                                                                                                                                                                                                                                                                                                        | Generates a node based on an `R` expression that includes previously generated nodes                                             |
-| [`node_mixture()`](https://robindenz1.github.io/simDAG/reference/node_mixture.md)                                                                                                                                                                                                                                                                                                                          | Generates a node as a mixture of other node types                                                                                |
-| [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)                                                                                                                                                                                                                                                                                                                                  | Generates a node based on a Cox proportional hazards regression model, using the method of Bender, Augustin, and Blettner (2005) |
-| [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ahreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ehreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_poreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ypreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | Generates a node based on various parametric survival models as implemented in `rsurv` (Demarqui 2024)                           |
-|                                                                                                                                                                                                                                                                                                                                                                                                            |                                                                                                                                  |
-| [`node_time_to_event()`](https://robindenz1.github.io/simDAG/reference/node_time_to_event.md)                                                                                                                                                                                                                                                                                                              | A node based on repeated Bernoulli trials over time, intended to generate time-varying variables and time-to-event nodes         |
-| [`node_competing_events()`](https://robindenz1.github.io/simDAG/reference/node_competing_events.md)                                                                                                                                                                                                                                                                                                        | A node based on repeated multinomial trials over time, intended to generate time-varying variables and time-to-event nodes       |
+| Node type | Description |
+|----|----|
+| [`rbernoulli()`](https://robindenz1.github.io/simDAG/reference/rbernoulli.md) | Samples from a Bernoulli distribution |
+| [`rcategorical()`](https://robindenz1.github.io/simDAG/reference/rcategorical.md) | Samples from a discrete probability distribution |
+| [`rconstant()`](https://robindenz1.github.io/simDAG/reference/rconstant.md) | Sets the node to a constant value |
+|  |  |
+| [`node_gaussian()`](https://robindenz1.github.io/simDAG/reference/node_gaussian.md) | Generates a node based on a (mixed) linear regression model |
+| [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md) | Generates a node based on a (mixed) logistic regression model |
+| [`node_conditional_prob()`](https://robindenz1.github.io/simDAG/reference/node_conditional_prob.md) | Samples from a conditional discrete probability distribution |
+| [`node_conditional_distr()`](https://robindenz1.github.io/simDAG/reference/node_conditional_distr.md) | Samples from different distributions conditional on values of other variables |
+| [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md) | Generates a node based on a multinomial regression model |
+| [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md) | Generates a node based on a (mixed) Poisson regression model |
+| [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md) | Generates a node based on a negative binomial regression model |
+| [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md) | Generates a node based on a zero-inflated Poisson or negative binomial regression model |
+| [`node_identity()`](https://robindenz1.github.io/simDAG/reference/node_identity.md) | Generates a node based on an `R` expression that includes previously generated nodes |
+| [`node_mixture()`](https://robindenz1.github.io/simDAG/reference/node_mixture.md) | Generates a node as a mixture of other node types |
+| [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md) | Generates a node based on a Cox proportional hazards regression model, using the method of Bender et al. (2005) |
+| [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ahreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ehreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_poreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md), [`node_ypreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | Generates a node based on various parametric survival models as implemented in `rsurv` (Demarqui 2024) |
+|  |  |
+| [`node_time_to_event()`](https://robindenz1.github.io/simDAG/reference/node_time_to_event.md) | A node based on repeated Bernoulli trials over time, intended to generate time-varying variables and time-to-event nodes |
+| [`node_competing_events()`](https://robindenz1.github.io/simDAG/reference/node_competing_events.md) | A node based on repeated multinomial trials over time, intended to generate time-varying variables and time-to-event nodes |
 
 **Table 1**: A brief overview over all implemented node types. The first
 section contains functions that may only be used to generate root nodes,
@@ -547,53 +554,53 @@ used for discrete-time simulations.
 In the following Section we will illustrate how to use the `simDAG`
 package to simulate more complex crossectional data. Instead of using a
 made up artificial example, we will do this by partially replicating a
-real Monte-Carlo simulation study by Denz, Klaaßen-Mielke, and
-Timmesfeld (2023), published in the prestigious peer-reviewed journal
-*Statistics in Medicine*. Because this package strictly focuses on the
-data generation step of Monte-Carlo studies and for reasons of brevity,
-we will not reproduce the entire simulation study. Instead we will only
-replicate the DGP used to generate the data for this study.
+real Monte-Carlo simulation study by Denz et al. (2023), published in
+the prestigious peer-reviewed journal *Statistics in Medicine*. Because
+this package strictly focuses on the data generation step of Monte-Carlo
+studies and for reasons of brevity, we will not reproduce the entire
+simulation study. Instead we will only replicate the DGP used to
+generate the data for this study.
 
-Denz, Klaaßen-Mielke, and Timmesfeld (2023) recently performed a neutral
-comparison study of multiple different methods to estimate
-counterfactual survival curves from crossectional observational data. In
-this Monte-Carlo simulation study they wanted to investigate how
-different kinds of misspecifications of nuisance models, which are used
-in some methods to estimate the counterfactual survival curves, affect
-the estimates produced by the different methods. To do this, a DGP was
-required that includes multiple interrelated binary and continuous
-variables, as well as a right-censored time-to-event variable.
+Denz et al. (2023) recently performed a neutral comparison study of
+multiple different methods to estimate counterfactual survival curves
+from crossectional observational data. In this Monte-Carlo simulation
+study they wanted to investigate how different kinds of
+misspecifications of nuisance models, which are used in some methods to
+estimate the counterfactual survival curves, affect the estimates
+produced by the different methods. To do this, a DGP was required that
+includes multiple interrelated binary and continuous variables, as well
+as a right-censored time-to-event variable.
 
 In particular, the data sets they generated for each simulation run
-included six covariates, two of which were binary ($X_{1},X_{3}$) and
-four of which were continuous ($X_{2},X_{4},X_{5},X_{6}$). It
-additionally included a binary treatment variable ($Z$) and a
-right-censored time-to-event outcome ($T$). The two binary covariates
-$X_{1}$ and $X_{3}$ followed a simple Bernoulli distribution with a
-success probability of 0.5. $X_{2}$ was generated by a linear regression
-model, dependent on $X_{3}$. The two continuous covariates $X_{4}$ and
-$X_{6}$ were standard normally distributed, while $X_{5}$ was generated
-according to a linear regression model dependent on $X_{6}$. The
-treatment variable $Z$ followed a logistic regression model, dependent
-on $X_{2}$, $X_{3}$, $X_{5}$ and $X_{6}$, where $X_{2}$ was included as
-a squared term. Finally, the outcome $T$ was generated according to a
-Cox model, dependent on $X_{1}$, $X_{2}$, $X_{4}$, $X_{5}$ and $Z$,
-where $X_{5}$ was included as a squared term. Data for $T$ was generated
-using the method by (Bender, Augustin, and Blettner 2005), based on a
-Weibull distribution ($\lambda = 2,\gamma = 2.4$). The time until
-censoring was generated independently from a second Weibull distribution
-($\lambda = 1,\gamma = 2$).
+included six covariates, two of which were binary ($`X_1, X_3`$) and
+four of which were continuous ($`X_2, X_4, X_5, X_6`$). It additionally
+included a binary treatment variable ($`Z`$) and a right-censored
+time-to-event outcome ($`T`$). The two binary covariates $`X_1`$ and
+$`X_3`$ followed a simple Bernoulli distribution with a success
+probability of 0.5. $`X_2`$ was generated by a linear regression model,
+dependent on $`X_3`$. The two continuous covariates $`X_4`$ and $`X_6`$
+were standard normally distributed, while $`X_5`$ was generated
+according to a linear regression model dependent on $`X_6`$. The
+treatment variable $`Z`$ followed a logistic regression model, dependent
+on $`X_2`$, $`X_3`$, $`X_5`$ and $`X_6`$, where $`X_2`$ was included as
+a squared term. Finally, the outcome $`T`$ was generated according to a
+Cox model, dependent on $`X_1`$, $`X_2`$, $`X_4`$, $`X_5`$ and $`Z`$,
+where $`X_5`$ was included as a squared term. Data for $`T`$ was
+generated using the method by (Bender et al. 2005), based on a Weibull
+distribution ($`\lambda=2, \gamma=2.4`$). The time until censoring was
+generated independently from a second Weibull distribution
+($`\lambda=1, \gamma=2`$).
 
-This DGP was used because it includes two confounders ($X_{2}$, $X_{5}$)
-for the causal effect of $Z$ on $T$, which are correlated with other
+This DGP was used because it includes two confounders ($`X_2`$, $`X_5`$)
+for the causal effect of $`Z`$ on $`T`$, which are correlated with other
 non-confounding variables. The inclusion of non-linear relationships
-allowed Denz, Klaaßen-Mielke, and Timmesfeld (2023) to investigate
-different kinds of misspecified models. More details on the DGP and the
-simulation study itself are given in the original manuscript. To
-replicate the DGP of this study, the following `DAG` definition may be
-used:
+allowed Denz et al. (2023) to investigate different kinds of
+misspecified models. More details on the DGP and the simulation study
+itself are given in the original manuscript. To replicate the DGP of
+this study, the following `DAG` definition may be used:
 
 ``` r
+
 dag <- empty_dag() +
   node(c("X1", "X3"), type="rbernoulli", p=0.5,
        output="numeric") +
@@ -612,8 +619,8 @@ dag <- empty_dag() +
        cens_args=list(shape=1, scale=2))
 ```
 
-As before, we can define the nodes $X_{1}$ and $X_{3}$ and the nodes
-$X_{4}$ and $X_{5}$ using a single call to
+As before, we can define the nodes $`X_1`$ and $`X_3`$ and the nodes
+$`X_4`$ and $`X_5`$ using a single call to
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md),
 because they have the same definition. Since only directly supported
 regression models are required for this DGP, we were able to use the
@@ -624,6 +631,7 @@ Plotting this `DAG` using the
 the following output:
 
 ``` r
+
 plot(dag, node_size=0.3, node_fill="grey",
      node_text_fontface="italic")
 ```
@@ -633,6 +641,7 @@ plot(dag, node_size=0.3, node_fill="grey",
 The underlying structural equations are:
 
 ``` r
+
 summary(dag)
 #> A DAG object using the following structural equations:
 #> 
@@ -654,6 +663,7 @@ Finally, we can generate a single `data.table` from this `DAG` using the
 function. The first few rows of the generated data look like this:
 
 ``` r
+
 library("data.table")
 dat <- sim_from_dag(dag, n_sim=500)
 head(round(dat, 3))
@@ -678,7 +688,7 @@ user-defined node `type`s. When no censoring distribution is supplied,
 it would also be possible to return only the simulated time-to-event in
 a single column by setting `as_two_cols=FALSE` in the
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) call
-for $T$.
+for $`T`$.
 
 ## Simulating longitudinal data with few points in time
 
@@ -702,24 +712,25 @@ the required weights. Their DGP therefore required the inclusion of
 time-varying variables. Below we focus on the DGP theses authors used in
 their first simulation scenario.
 
-Their DGP consisted of four variables: a binary treatment variable $A$,
-a binary unmeasured baseline covariate $U$, a continuous confounder $L$
-and a binary outcome $Y$. Since $U$ represents a baseline variable, it
-does not vary over time. All other variables, however, were generated at
-two distinct time points. $L$ and $A$ were generated for time $0$ and
-$1$, while the time-lagged outcome $Y$ was generated for times $1$ and
-$2$. For simplicity, $A$ was affected only by present and past $L$ and
-not by previous values of $A$ itself. $L$ on the other hand was caused
-by previous values of itself and by $A$ and $U$. Finally, $Y$ is only
-caused by $U$, meaning that neither the treatment nor the confounder
-have any actual effect on the outcome. To generate continuous child
-nodes they relied on linear regression models. For binary child nodes,
-logistic regression models were used. A more detailed description of the
-data generation process is given in the original article (Gruber et al.
-2015). A `DAG` object to define this DGP in the proposed package is
-given below.
+Their DGP consisted of four variables: a binary treatment variable
+$`A`$, a binary unmeasured baseline covariate $`U`$, a continuous
+confounder $`L`$ and a binary outcome $`Y`$. Since $`U`$ represents a
+baseline variable, it does not vary over time. All other variables,
+however, were generated at two distinct time points. $`L`$ and $`A`$
+were generated for time $`0`$ and $`1`$, while the time-lagged outcome
+$`Y`$ was generated for times $`1`$ and $`2`$. For simplicity, $`A`$ was
+affected only by present and past $`L`$ and not by previous values of
+$`A`$ itself. $`L`$ on the other hand was caused by previous values of
+itself and by $`A`$ and $`U`$. Finally, $`Y`$ is only caused by $`U`$,
+meaning that neither the treatment nor the confounder have any actual
+effect on the outcome. To generate continuous child nodes they relied on
+linear regression models. For binary child nodes, logistic regression
+models were used. A more detailed description of the data generation
+process is given in the original article (Gruber et al. 2015). A `DAG`
+object to define this DGP in the proposed package is given below.
 
 ``` r
+
 dag <- empty_dag() +
   node("U", type="rbernoulli", p=0.5, output="numeric") +
   node("L0", type="gaussian", formula=~0.1 + 0.6*U,
@@ -739,6 +750,7 @@ dag <- empty_dag() +
 Shown graphically, the `DAG` looks like this:
 
 ``` r
+
 plot(dag, node_size=0.2, node_fill="grey",
      node_text_fontface="italic", layout="in_circle")
 ```
@@ -749,6 +761,7 @@ The structural equations can again be printed using the
 [`summary()`](https://rdrr.io/r/base/summary.html) function:
 
 ``` r
+
 summary(dag)
 #> A DAG object using the following structural equations:
 #> 
@@ -766,6 +779,7 @@ Finally, we can call the
 function on this `DAG` to generate some data:
 
 ``` r
+
 dat <- sim_from_dag(dag, n_sim=1000)
 head(dat)
 #>        U         L0    A0    Y1         L1    A1    Y2
@@ -778,11 +792,11 @@ head(dat)
 #> 6:     1 -0.3077301     0     0  1.1737307     0     0
 ```
 
-Because the variables $A$, $L$ and $Y$ should be generated at different
-points in time, we have to include one node definition per variable per
-point in time to get an appropriate `DAG`. Apart from that the syntax is
-exactly the same as it was when generating crossectional data. More
-points in time could be added by simply adding more calls to
+Because the variables $`A`$, $`L`$ and $`Y`$ should be generated at
+different points in time, we have to include one node definition per
+variable per point in time to get an appropriate `DAG`. Apart from that
+the syntax is exactly the same as it was when generating crossectional
+data. More points in time could be added by simply adding more calls to
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) to the
 `DAG` object, using appropriate regression models. The main advantage of
 this method is that it allows flexible changes of the DGP over time.
@@ -805,26 +819,31 @@ often possible to define the structural equations in a generic
 time-dependent fashion, so that the same equation can be applied at each
 point in time, simplifying the workflow considerably. The result is the
 description of a specific stochastic process. For example, consider a
-very simple DAG with only one time-dependent node $Y$ at three points in
-time, $t \in \{ 0,1,2\}$:
+very simple DAG with only one time-dependent node $`Y`$ at three points
+in time, $`t \in \{0, 1, 2\}`$:
 
 ![](simDAG_files/figure-html/unnamed-chunk-16-1.png)
 
-In this DAG, $Y_{t}$ is only caused by values of itself at $t - 1$.
-Suppose that $Y$ is a binary event indicator that is zero for everyone
-at $t = 0$. At every point in time $t$, $Y$ is set to 1 with a
-probability of 0.01. Once $Y$ is set to 1, it never changes back to 0.
+In this DAG, $`Y_t`$ is only caused by values of itself at $`t-1`$.
+Suppose that $`Y`$ is a binary event indicator that is zero for everyone
+at $`t = 0`$. At every point in time $`t`$, $`Y`$ is set to 1 with a
+probability of 0.01. Once $`Y`$ is set to 1, it never changes back to 0.
 The following structural equation may be used to describe this DAG:
 
-$$Y_{t} \sim Bernoulli\left( P_{Y}(t) \right),$$
+``` math
+    Y_t \sim Bernoulli(P_Y(t)),
+```
 
 where
 
-$$P_{Y}(t) = \begin{cases}
-0 & {\text{if}\quad t = 0} \\
-1 & {\text{if}\quad Y_{t - 1} = 1} \\
-{0.01,} & \text{otherwise}
-\end{cases}.$$
+``` math
+    P_Y(t) =
+    \begin{cases}
+        0 & \text{if} \quad t = 0 \\
+        1 & \text{if} \quad Y_{t-1} = 1 \\
+        0.01, & \text{otherwise}
+    \end{cases}.
+```
 
 The number of points in time could be increased by an arbitrary number
 and the same structural equation could still be used. Note that the time
@@ -836,9 +855,9 @@ at any earlier time may be used when defining a node. To generate data
 from this type of DAG, the same algorithm as described in the first
 Section may be used. Since only discrete points in time are considered,
 this type of simulation has also been called *discrete-time simulation*
-(Tang, Leu, and Abbass 2020) or *dynamic microsimulation* (Spooner et
-al. 2021) in the literature and is closely related to *discrete-event
-simulation* (Banks et al. 2014).
+(Tang et al. 2020) or *dynamic microsimulation* (Spooner et al. 2021) in
+the literature and is closely related to *discrete-event simulation*
+(Banks et al. 2014).
 
 ### A simple example
 
@@ -849,17 +868,18 @@ This can be done using the
 function with `type="time_to_event"` as shown below.
 
 ``` r
+
 dag <- empty_dag() +
   node_td("Y", type="time_to_event", prob_fun=0.01,
           event_duration=Inf)
 ```
 
 By default, the value of node defined using `type="time_to_event"` is 0
-for all individuals at $t = 0$. The `prob_fun` argument defines the
+for all individuals at $`t = 0`$. The `prob_fun` argument defines the
 function that determines the occurrence probability at each point in
 time. It is set to 0.01 here, indicating that for all individuals and
-regardless of the value of $t$ the probability of experiencing the event
-is constant. Usually this argument will be passed an appropriate
+regardless of the value of $`t`$ the probability of experiencing the
+event is constant. Usually this argument will be passed an appropriate
 function to generate the occurrence probability for each individual at
 each point in time separately, but this is not necessary yet. By setting
 the `event_duration` argument to `Inf`, we are indicating that the all
@@ -870,6 +890,7 @@ function now has to be used to generate data from this `DAG` object,
 because it contains a time-varying node:
 
 ``` r
+
 sim <- sim_discrete_time(dag, n_sim=1000, max_t=80)
 ```
 
@@ -888,6 +909,7 @@ need. This last simulation state is stored in the `$data` parameter of
 the `simDT` object:
 
 ``` r
+
 head(sim$data)
 #>      .id Y_event Y_time
 #>    <int>  <lgcl>  <int>
@@ -899,14 +921,14 @@ head(sim$data)
 #> 6:     6    TRUE     24
 ```
 
-As specified, the simulation contains only the variable $Y$, split into
-two columns. The first is called `Y_event` and is a binary indicator of
-whether the individual is currently experiencing an event. The second
-column called `Y_time` shows the time at which that event happened, or
-is set to `NA` if there is no event currently happening. Since every
-event is final, this is all information that was generated here.
-Individuals with a value of `NA` in `Y_time` can be considered
-right-censored at $t = 80$. In this trivial example, it would be a lot
+As specified, the simulation contains only the variable $`Y`$, split
+into two columns. The first is called `Y_event` and is a binary
+indicator of whether the individual is currently experiencing an event.
+The second column called `Y_time` shows the time at which that event
+happened, or is set to `NA` if there is no event currently happening.
+Since every event is final, this is all information that was generated
+here. Individuals with a value of `NA` in `Y_time` can be considered
+right-censored at $`t = 80`$. In this trivial example, it would be a lot
 easier to generate equivalent data by sampling from an appropriate
 parametric distributions. The following Section will illustrate the
 benefits of the approach using a more involved example.
@@ -915,8 +937,8 @@ benefits of the approach using a more involved example.
 
 Suppose that we want to generate data for the Covid-19 pandemic,
 containing individual level information about Covid-19 vaccinations
-denoted by $A$ and the development of an acute myocarditis denoted by
-$Y$. Different individuals get vaccinated at different times, possible
+denoted by $`A`$ and the development of an acute myocarditis denoted by
+$`Y`$. Different individuals get vaccinated at different times, possible
 multiple times. Additionally, they might experience zero or multiple
 cases of myocarditis, also at different times. Both variables are
 therefore time-dependent binary variables, which are related to one
@@ -935,50 +957,62 @@ probability of being vaccinated and the base probability of developing a
 myocarditis are constant over time and equal for all individuals. The
 only risk factor for developing a myocarditis in this example is the
 Covid-19 vaccination itself. More precisely, the structural equation for
-the myocarditis node at $t$ is given by:
+the myocarditis node at $`t`$ is given by:
 
-$$Y_{t} \sim Bernoulli\left( P_{Y}(t) \right),$$
-
-with:
-
-$$P_{Y}(t) = \begin{cases}
-{P_{Y0} \cdot RR_{A},} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{risk} \right\rbrack} \\
-{P_{Y0},} & \text{otherwise}
-\end{cases},$$
-
-where $P_{Y0}$ denotes the base probability of developing a myocarditis,
-$T_{A}(t)$ denotes the time of the last performed vaccination and
-$d_{risk}$ defines the duration after the vaccination in which the risk
-of developing a myocarditis is elevated by $RR_{A}$. In this particular
-case, each $t$ will represent a single day. Similarly, the vaccination
-node can be described formally as:
-
-$$A_{t} \sim Bernoulli\left( P_{A}(t) \right),$$
+``` math
+    Y_t \sim Bernoulli(P_{Y}(t)),
+```
 
 with:
 
-$$P_{A}(t) = \begin{cases}
-{1,} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + 20 \right\rbrack} \\
-{0,} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t) + 21,T_{A}(t) + 150 \right\rbrack} \\
-{P_{A0},} & \text{otherwise}
-\end{cases},$$
+``` math
+    P_{Y}(t) =
+    \begin{cases}
+        P_{Y0} \cdot RR_{A}, & \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{risk}\right] \\
+        P_{Y0}, & \text{otherwise}
+    \end{cases},
+```
 
-where $P_{A0}$ denotes the base probability of getting vaccinated. The
+where $`P_{Y0}`$ denotes the base probability of developing a
+myocarditis, $`T_{A}(t)`$ denotes the time of the last performed
+vaccination and $`d_{risk}`$ defines the duration after the vaccination
+in which the risk of developing a myocarditis is elevated by $`RR_{A}`$.
+In this particular case, each $`t`$ will represent a single day.
+Similarly, the vaccination node can be described formally as:
+
+``` math
+    A_t \sim Bernoulli(P_{A}(t)),
+```
+
+with:
+
+``` math
+    P_{A}(t) =
+    \begin{cases}
+        1, & \text{if } t \in  \left[T_{A}(t), T_A(t) + 20 \right] \\
+        0, & \text{if } t \in  \left[T_{A}(t) + 21, T_A(t) + 150\right] \\
+        P_{A0}, & \text{otherwise}
+    \end{cases},
+```
+
+where $`P_{A0}`$ denotes the base probability of getting vaccinated. The
 Figure below illustrates the result of applying these structural
-equations to a fictional person who gets vaccinated at $t = 100$.
+equations to a fictional person who gets vaccinated at $`t = 100`$.
 
 ![A simple graph showing \$P_A(t)\$ and \$P_Y(t)\$ for a fictional
 individual who got vaccinated once at \$t = 100\$, with \$P\_{A0} =
 0.01\$, \$P\_{Y0} = 0.005\$, \$d\_{risk} = 20\$ and \$RR_A =
 3.24\$.](images_v_joss/example_probs.png)
 
-A simple graph showing $P_{A}(t)$ and $P_{Y}(t)$ for a fictional
-individual who got vaccinated once at $t = 100$, with $P_{A0} = 0.01$,
-$P_{Y0} = 0.005$, $d_{risk} = 20$ and $RR_{A} = 3.24$.
+A simple graph showing $`P_A(t)`$ and $`P_Y(t)`$ for a fictional
+individual who got vaccinated once at $`t = 100`$, with
+$`P_{A0} = 0.01`$, $`P_{Y0} = 0.005`$, $`d_{risk} = 20`$ and
+$`RR_A = 3.24`$.
 
 The following code may be used to define this DGP:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A) {
   fifelse(data$A_event, P_0*RR_A, P_0)
 }
@@ -990,11 +1024,11 @@ dag <- empty_dag() +
           parents=c("A_event"), P_0=0.005, RR_A=3.24)
 ```
 
-First, we define a function that calculates $P_{Y}(t)$ at each simulated
+First, we define a function that calculates $`P_Y(t)`$ at each simulated
 day for all individuals, called `prob_myoc()`. This function simply
 checks whether the binary event indicator of the vaccination event,
 `"A_event"`, is currently `TRUE` and multiplies the baseline probability
-of developing a myocarditis $P_{Y0}$ with the relative risk if this is
+of developing a myocarditis $`P_{Y0}`$ with the relative risk if this is
 the case. Otherwise it just returns the baseline probability directly.
 This function is then passed directly to the `prob_fun` argument in the
 [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
@@ -1014,17 +1048,19 @@ function, which is called internally whenever `type="time_to_event"` is
 used in a time-dependent node.
 
 The base probability for the vaccination and for the myocarditis events
-are set to the arbitrary values of 0.01 and 0.005 respectively. $RR_{A}$
-is set to 3.24, which is the value used in the actual simulation study
-by Denz et al. (2025). The `immunity_duration` parameter used for the
-vaccination node additionally specifies that a person will not receive
-another vaccination in the first 150 days after a vaccination was
-performed. More specifically, these settings ensure that `"A_event"` is
-set to `FALSE` for 130 days after the `event_duration` of 20 days is
-over. This is another feature of `"time_to_event"` nodes. To run the
-simulation for two simulated years, the following code may be used:
+are set to the arbitrary values of 0.01 and 0.005 respectively.
+$`RR_{A}`$ is set to 3.24, which is the value used in the actual
+simulation study by Denz et al. (2025). The `immunity_duration`
+parameter used for the vaccination node additionally specifies that a
+person will not receive another vaccination in the first 150 days after
+a vaccination was performed. More specifically, these settings ensure
+that `"A_event"` is set to `FALSE` for 130 days after the
+`event_duration` of 20 days is over. This is another feature of
+`"time_to_event"` nodes. To run the simulation for two simulated years,
+the following code may be used:
 
 ``` r
+
 sim <- sim_discrete_time(dag, n_sim=10000, max_t=365*2)
 ```
 
@@ -1036,6 +1072,7 @@ function to obtain a useful dataset. The following code may be used to
 get a dataset in the *start-stop* format:
 
 ``` r
+
 dat <- sim2data(sim, to="start_stop", target_event="Y",
                 keep_only_first=TRUE, overlap=TRUE)
 head(dat)
@@ -1057,11 +1094,12 @@ specifies whether these intervals should be overlapping or not. By
 setting `target_event="Y"`, the function treats the `Y` node as the
 outcome instead of as another time-dependent covariate. The resulting
 data is in exactly the format needed to fit standard time-to-event
-models, such as a Cox model with time-varying covariates (Z. Zhang et
-al. 2018). Using the `survival` package (Therneau 2024), we can do this
+models, such as a Cox model with time-varying covariates (Zhang et al.
+2018). Using the `survival` package (Therneau 2024), we can do this
 using the following code:
 
 ``` r
+
 library("survival")
 mod <- coxph(Surv(start, stop, Y) ~ A, data=dat)
 summary(mod)
@@ -1100,6 +1138,7 @@ Covid-19 vaccine. We can include this into the DGP by modifying the
 `prob_fun` argument when defining the vaccination node as shown below:
 
 ``` r
+
 prob_vacc <- function(data, P_0) {
   fifelse(data$Y_event, 0, P_0)
 }
@@ -1139,7 +1178,7 @@ in the appendix.
 
 - **Non-Linear Effects**: Above, we only considered the simple scenario
   in which the probability of an event after the occurrence of another
-  event follows a simple step function, e.g., it is set to $P_{0}$ in
+  event follows a simple step function, e.g., it is set to $`P_0`$ in
   general and increased by a fixed factor in a fixed duration after an
   event. This may also be changed by using more complex definitions of
   `prob_fun` that are not based only on the `_event` column of the
@@ -1163,9 +1202,9 @@ in the appendix.
   and
   [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
   function. Data for the time-independent variables will then be
-  generated first (at $t = 0$) and the time-dependent simulation will be
-  performed as before, albeit possibly dependent on the time-independent
-  variables.
+  generated first (at $`t = 0`$) and the time-dependent simulation will
+  be performed as before, albeit possibly dependent on the
+  time-independent variables.
 
 - **Adding Categorical Time-Dependent Variables**: Sometimes it may not
   be appropriate to describe a time-varying variable using only two
@@ -1219,12 +1258,12 @@ exclusively uses the `data.table` package (Barrett et al. 2024) to
 perform most required computations. The `data.table` package is arguably
 the best choice for doing data wrangling in the `R` ecosystem in terms
 of computational efficiency and has similar performance as corresponding
-software libraries in `R` and `Julia` (Chiou, Xu, and Huang 2023). The
-proposed package additionally relies on a few tricks to keep the amount
-of memory used small. For example, when using nodes of type
-`"time_to_event"`, by default not every state of the simulation is
-saved. Only the times at which an event occurred are recorded. This
-information is then efficiently pieced together in the
+software libraries in `R` and `Julia` (Chiou et al. 2023). The proposed
+package additionally relies on a few tricks to keep the amount of memory
+used small. For example, when using nodes of type `"time_to_event"`, by
+default not every state of the simulation is saved. Only the times at
+which an event occurred are recorded. This information is then
+efficiently pieced together in the
 [`sim2data()`](https://robindenz1.github.io/simDAG/reference/sim2data.md)
 function when creating the actual dataset.
 
@@ -1254,6 +1293,7 @@ the DGP. The runtime is calculated using the `microbenchmark` package
 (Mersmann 2023).
 
 ``` r
+
 # NOTE: This part of the code is not run here, because it would take too long
 # on CRAN and would introduce another dependency on the "microbenchmark"
 # package. Results may also vary depending on the hardware this is run on.
@@ -1336,8 +1376,8 @@ In addition to the main data generation functions, the package also
 includes multiple functions to facilitate the accurate description of
 the underlying DGP. Such descriptions are of great importance to
 facilitate both understanding and reproducibility of simulation studies,
-as emphasized in the literature (Morris, White, and Crowther 2019; Cheng
-et al. 2016). Among these are the
+as emphasized in the literature (Morris et al. 2019; Cheng et al. 2016).
+Among these are the
 [`plot.DAG()`](https://robindenz1.github.io/simDAG/reference/plot.DAG.md)
 function, that was used throughout the article to graphically display
 the defined `DAG` objects. While this function is useful on its own,
@@ -1356,16 +1396,16 @@ article.
 The most distinguishing feature of the package is its capability of
 carrying out discrete-time simulations to generate longitudinal data
 with hundreds of points in time in a suitable amount of time. While
-other packages, such as the `simcausal` package (Sofrygin, van der Laan,
-and Neugebauer 2017) offer similar features to generate crossectional
-data, its’ implementation for generation of longitudinal data is very
-different from the proposed package. In `simcausal` a new node is
-defined for each point in time internally. Although the user has direct
-access to each of these nodes (and therefore to each value at any point
-in time), the provided formula interface does not naturally support the
-definition of nodes with events that occur at some point in time and
-last for a certain amount of time. This can be done with little effort
-in the `simDAG` package using the provided `"time_to_event"` node type.
+other packages, such as the `simcausal` package (Sofrygin et al. 2017)
+offer similar features to generate crossectional data, its’
+implementation for generation of longitudinal data is very different
+from the proposed package. In `simcausal` a new node is defined for each
+point in time internally. Although the user has direct access to each of
+these nodes (and therefore to each value at any point in time), the
+provided formula interface does not naturally support the definition of
+nodes with events that occur at some point in time and last for a
+certain amount of time. This can be done with little effort in the
+`simDAG` package using the provided `"time_to_event"` node type.
 
 This type of node can then be used to specify outcomes or to specify
 binary time-varying covariates, as illustrated in the main text where we
@@ -1395,12 +1435,12 @@ efficient alternative not considered in this package would be
 the next event is modeled directly instead of simulating the entire
 process over time. Performing such simulations is, however, usually a
 lot more demanding both conceptually and in terms of required software
-development (X. Zhang 2018). The burden of specifying appropriate input
-to the `prob_fun` argument in our approach is comparatively small, but
-it might still be a concern for some users. We hope that the many
-provided examples and explanations in both this article and the
-extensive documentation and multiple vignettes of the package will help
-users overcome this issue.
+development (Zhang 2018). The burden of specifying appropriate input to
+the `prob_fun` argument in our approach is comparatively small, but it
+might still be a concern for some users. We hope that the many provided
+examples and explanations in both this article and the extensive
+documentation and multiple vignettes of the package will help users
+overcome this issue.
 
 To keep this article at a reasonable length, it was necessary to omit
 some implemented features of the `simDAG` package. One of these features
@@ -1429,21 +1469,21 @@ Finally, we would like to note that the package is still under active
 development. We are currently working on multiple new features to make
 the package even more versatile for users. For example, future versions
 of the package are planned to support the definition of interventions on
-the DAG, much like the `simcausal` package (Sofrygin, van der Laan, and
-Neugebauer 2017), which would make it even easier to generate data for
-causal inference based simulations, without having to re-define the DAG
-multiple times. We also plan to extend the internal library of available
-node types, by for example including node functions to simulate
-competing events data without the use of discrete-time simulation
-(Moriña and Navarro 2017; Haller and Ulm 2014).
+the DAG, much like the `simcausal` package (Sofrygin et al. 2017), which
+would make it even easier to generate data for causal inference based
+simulations, without having to re-define the DAG multiple times. We also
+plan to extend the internal library of available node types, by for
+example including node functions to simulate competing events data
+without the use of discrete-time simulation (Moriña and Navarro 2017;
+Haller and Ulm 2014).
 
 ## Computational details
 
-The results in this paper were obtained using `R` 4.5.3 with the
-`data.table` 1.18.2.1 package, the `survival` 3.8.6 package, the
-`igraph` 2.2.3 package, the `ggplot2` 4.0.2 package and the `simDAG`
-0.5.2.9000 package. `R` itself and all packages used are available from
-the Comprehensive `R` Archive Network (CRAN) at
+The results in this paper were obtained using `R` 4.6.0 with the
+`data.table` 1.18.4 package, the `survival` 3.8.6 package, the `igraph`
+2.3.1 package, the `ggplot2` 4.0.3 package and the `simDAG` 1.0.0
+package. `R` itself and all packages used are available from the
+Comprehensive `R` Archive Network (CRAN) at
 <https://CRAN.R-project.org/>.
 
 ## Acknowledgments
@@ -1465,11 +1505,12 @@ shown in the Covid example Section will be extended.
 
 ### Time-Dependent Base Probabilities
 
-To make $P_{Y0}$ time-dependent, the `sim_time` argument may be used to
-change the definition of the function that generates the myocarditis
+To make $`P_{Y0}`$ time-dependent, the `sim_time` argument may be used
+to change the definition of the function that generates the myocarditis
 probabilities. The following code gives an example for this:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A, sim_time) {
   P_0 <- P_0 + 0.001*sim_time
   fifelse(data$A_event, P_0*RR_A, P_0)
@@ -1509,6 +1550,7 @@ on the calender time, again by using the `sim_time` argument in the
 respective `prob_fun`:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A, sim_time) {
   RR_A <- RR_A + 0.01*sim_time
   fifelse(data$A_event, P_0*RR_A, P_0)
@@ -1542,12 +1584,13 @@ time.
 In all previous examples, it was assumed that the effect of the
 vaccination on the probability of developing a myocarditis follows a
 step-function. The risk was instantly elevated by a constant factor
-($RR_{A}$) after vaccination, which lasts for a specified amount of time
+($`RR_A`$) after vaccination, which lasts for a specified amount of time
 and then instantly drops back to the baseline risk. Any other kind of
 relationship may also be simulated, by again changing the `prob_myoc()`
 function accordingly. The following code may be used:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A) {
   RR_A <- RR_A - 0.1*data$A_time_since_last
   fifelse(data$A_event, P_0*RR_A, P_0)
@@ -1574,7 +1617,7 @@ head(data)
 #> 6:     1   153   172   TRUE  FALSE
 ```
 
-In this code, $RR_{A}$ decreases with each day after a person is
+In this code, $`RR_A`$ decreases with each day after a person is
 vaccinated. In contrast to the previous example, this happens on a
 person-specific time-scale and not on a total calender time level. To do
 this properly, we set the `time_since_last` argument inside the
@@ -1584,7 +1627,7 @@ when using nodes of type `"time_to_event"`. It adds another column to
 the dataset which includes the time since the last vaccination was
 performed for each individual. This column is then also added in the
 `parents` vector, so that we can use it in `prob_myoc()` function. Here
-we simply substract 0.1 from $RR_{A}$ for each day after vaccination.
+we simply substract 0.1 from $`RR_A`$ for each day after vaccination.
 This essentially means that on the day of vaccination itself, the
 relative risk will be 3.24 as specified in the `DAG`. On the first day
 after the vaccination, however, the relative risk will only be 3.14 and
@@ -1596,49 +1639,60 @@ may also be used to model this type of non-linear effects.
 
 Another possibility to extent the DGP would be to add more
 `"time_to_event"` variables. For example, we may want to additionally
-consider the effect of a Covid-19 infection itself, denoted by $C_{t}$
+consider the effect of a Covid-19 infection itself, denoted by $`C_t`$
 here. For simplicity we will assume that Covid-19 has a constant
 probability of occurrence over time which is the same for all
 individuals.In this example we will assume that the vaccination reduces
-the risk of getting a Covid-19 infection to 0 for $d_{immune}$ days
+the risk of getting a Covid-19 infection to 0 for $`d_{immune}`$ days
 after the vaccination was performed. We may use the following structural
 equation to describe this variable:
 
-$$C_{t} \sim Bernoulli\left( P_{C}(t) \right),$$
+``` math
+    C_t \sim Bernoulli(P_{C}(t)),
+```
 
 with:
 
-$$P_{C}(t) = \begin{cases}
-{0,} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{immune} \right\rbrack} \\
-{P_{C0},} & \text{otherwise}
-\end{cases},$$
+``` math
+    P_{C}(t) =
+    \begin{cases}
+        0, & \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{immune}\right] \\
+        P_{C0}, & \text{otherwise}
+    \end{cases},
+```
 
-where $P_{C0}$ is the baseline probability of experiencing a Covid-19
-infection and $T_{A}(t)$ is still defined to be the time of the last
+where $`P_{C0}`$ is the baseline probability of experiencing a Covid-19
+infection and $`T_A(t)`$ is still defined to be the time of the last
 Covid-19 vaccination as before. In addition to this, we will also change
-the definition of the myocarditis node ($Y_{t}$). Instead of being only
-dependent on $A_{t}$, the Covid-19 Infection should now also raise the
-probability of developing a myocarditis by a constant factor $RR_{C}$ in
-the $d_{C.risk}$ days after the Covid-19 infection. The structural
+the definition of the myocarditis node ($`Y_t`$). Instead of being only
+dependent on $`A_t`$, the Covid-19 Infection should now also raise the
+probability of developing a myocarditis by a constant factor $`RR_C`$ in
+the $`d_{C.risk}`$ days after the Covid-19 infection. The structural
 equation can then be changed to be:
 
-$$Y_{t} \sim Bernoulli\left( P_{Y}(t) \right),$$
+``` math
+    Y_t \sim Bernoulli(P_{Y}(t)),
+```
 
 with:
 
-$$P_{Y}(t) = \begin{cases}
-{P_{Y0} \cdot RR_{A} \cdot RR_{C},} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{A.risk} \right\rbrack{\mspace{6mu}\text{and}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{C.risk} \right\rbrack} \\
-{P_{Y0} \cdot RR_{C},} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{C.risk} \right\rbrack} \\
-{P_{Y0} \cdot RR_{A},} & {{\text{if}\mspace{6mu}}t \in \left\lbrack T_{A}(t),T_{A}(t) + d_{A.risk} \right\rbrack} \\
-{P_{Y0},} & \text{otherwise}
-\end{cases},$$
+``` math
+    P_{Y}(t) =
+    \begin{cases}
+        P_{Y0} \cdot RR_{A} \cdot RR_{C}, & \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{A.risk}\right] \text{ and } t \in  \left[T_{A}(t), T_{A}(t) + d_{C.risk}\right] \\
+        P_{Y0} \cdot RR_{C}, & \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{C.risk}\right] \\
+        P_{Y0} \cdot RR_{A}, & \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{A.risk}\right] \\
+        P_{Y0}, & \text{otherwise}
+    \end{cases},
+```
 
-where $d_{A.risk}$ is the duration after vaccination in which the risk
-of developing a myocarditis is elevated by $RR_{A}$. The structural
-equation for $A$ are the same as defined in previous Equations. The
+where $`d_{A.risk}`$ is the duration after vaccination in which the risk
+of developing a myocarditis is elevated by $`RR_A`$. The structural
+equation for $`A`$ are the same as defined in previous Equations. The
 following code may be used to generate data from this DGP:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A, RR_C) {
   P_0 * RR_A^(data$A_event) * RR_C^(data$C_event)
 }
@@ -1692,11 +1746,12 @@ adding calls to the simple
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md)
 function to the `DAG` object it is, however, also possible to
 additionally include time-independent variables as well. Suppose that we
-want the baseline probability $P_{A0}$ of the vaccination to vary by
+want the baseline probability $`P_{A0}`$ of the vaccination to vary by
 biological sex in the first DGP described in the Covid example Section.
 We could do this using the following code:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A) {
   fifelse(data$A_event, P_0*RR_A, P_0)
 }
@@ -1731,7 +1786,7 @@ small change that we now add a call to
 adding the time-dependent variables to define the `Sex` node using a
 simple Bernoulli distribution. Additionally, we now had to define a
 function that appropriately generates the probabilities of vaccination
-per `Sex`. This was done by simply increasing $P_{0}$ by a factor of 2
+per `Sex`. This was done by simply increasing $`P_0`$ by a factor of 2
 whenever the value of `Sex` is `TRUE` (which might stand for males or
 females). It would also be possible to add child time-independent child
 nodes as well, but this is left as an exercise to the interested reader.
@@ -1747,6 +1802,7 @@ person received (if any). This may be done using the
 `"competing_events"` node `type`. Below is a simple example:
 
 ``` r
+
 prob_myoc <- function(data, P_0, RR_A) {
   fifelse(data$A_event > 0, P_0*RR_A, P_0)
 }
@@ -1815,6 +1871,7 @@ variables in the proposed package. The following code gives a very
 simple example:
 
 ``` r
+
 dag <- empty_dag() +
   node("calories", type="rnorm", mean=2500, sd=150) +
   node_td("calories", type="gaussian",
@@ -1838,9 +1895,9 @@ head(data)
 In this example, we first generate a normally distributed root node
 called `calories` using a standard
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) call.
-This represents the value of the variable at $t = 0$. If we did not
+This represents the value of the variable at $`t = 0`$. If we did not
 specify this variable, the code would return an error message at
-$t = 1$, because there would be no value of `calories` to use in the
+$`t = 1`$, because there would be no value of `calories` to use in the
 subsequently defined regression model. Next, a call to
 [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md) is
 added to the `DAG` object to specify how this variable changes with each
@@ -1860,6 +1917,7 @@ The following code gives an example on how events could be simulated so
 that a specific order of events is always respected:
 
 ``` r
+
 prob_bachelors <- function(data) {
   fifelse(data$highschool_event, 0.01, 0)
 }
@@ -1919,9 +1977,9 @@ Object-Oriented Framework for Statistical Simulation: The r Package
 simFrame.” *Journal of Statistical Software* 37 (3): 1–36.
 <https://doi.org/10.18637/jss.v037.i03>.
 
-Andrews, Bryan, and Erich Kummerfeld. 2024. “Better Simulations for
+Andrews, Bryan, and Erich Kummerfeld. 2024. *Better Simulations for
 Validating Causal Discovery with the DAG-Adaptation of the Onion
-Method.” arXiv:2405.13100v1.
+Method*. arXiv:2405.13100v1.
 
 Arnold, Benjamin F., Daniel R. Hogan, John M. Colford Jr., and Alan E.
 Hubbard. 2011. “Simulation Methods to Estimate Design Power: An Overview
@@ -1938,8 +1996,8 @@ Proportional Hazards Models with Time-Varying Covariates.” *Statistics
 in Medicine* 31 (29): 3946–58. <https://doi.org/10.1002/sim.5452>.
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol.
-2014. *Discrete-Event System Simulation*. Vol. 5. Edinburgh Gate:
-Pearson Education Limited.
+2014. *Discrete-Event System Simulation*. Vol. 5. Pearson Education
+Limited.
 
 Barrett, Tyson, Matt Dowle, Arun Srinivasan, Jan Gorecki, Michael
 Chirico, and Toby Hocking. 2024. *Data.table: Extension of
@@ -1959,42 +2017,40 @@ Clinical Research: A Tutorial.” *Journal of Minimally Invasive Surgery*
 26 (3): 97–107. <https://doi.org/10.7602/jmis.2023.26.3.97>.
 
 Carsey, Thomas M., and Jeffrey J. Harden. 2014. *Monte Carlo Simulation
-and Resampling Methods for Social Science*. Thousand Oaks: SAGE
-Publications.
+and Resampling Methods for Social Science*. SAGE Publications.
 
-Cheng, Adam, David Kessler, Ralph Mackinnon, Todd P. Chang, Vinay M.
-Nadkarni, Elizabeth A. Hunt, Jordan Duval-Arnould, et al. 2016.
-“Reporting Guidelines for Health Care Simulation Research: Extensions to
-the CONSORT and STROBE Statements.” *Advances in Simulation* 1 (25):
-1–13. <https://doi.org/10.1186/s41077-016-0025-y>.
+Cheng, Adam, David Kessler, Ralph Mackinnon, et al. 2016. “Reporting
+Guidelines for Health Care Simulation Research: Extensions to the
+CONSORT and STROBE Statements.” *Advances in Simulation* 1 (25): 1–13.
+<https://doi.org/10.1186/s41077-016-0025-y>.
 
 Chiou, Sy Han, Gongjun Xu, and Jun Yan Chiung-Yu Huang. 2023.
 “Regression Modeling for Recurrent Events Possibly with an Informative
 Terminal Event Using r Package reReg.” *Journal of Statistical Software*
 105 (5): 1–34. <https://doi.org/10.18637/jss.v105.i05>.
 
-Csárdi, Gábor, Tamás Nepusz, Vincent Traag, Szabolcs Horvát, Fabio
-Zanini, Daniel Noom, and Kirill Müller. 2024. *Igraph: Network Analysis
-and Visualization in r*. <https://doi.org/10.5281/zenodo.7682609>.
+Csárdi, Gábor, Tamás Nepusz, Vincent Traag, et al. 2024. *Igraph:
+Network Analysis and Visualization in r*.
+<https://doi.org/10.5281/zenodo.7682609>.
 
-Demarqui, Fábio N. 2024. “Survival Data Simulation with the r Package
-Rsurv.” arXiv:2406.01750v1.
+Demarqui, Fábio N. 2024. *Survival Data Simulation with the r Package
+Rsurv*. arXiv:2406.01750v1.
 
 Denz, Robin, Renate Klaaßen-Mielke, and Nina Timmesfeld. 2023. “A
 Comparison of Different Methods to Adjust Survival Curves for
 Confounders.” *Statistics in Medicine* 42 (10): 1461–79.
 <https://doi.org/10.1002/sim.9681>.
 
-Denz, Robin, Katharina Meiszl, Peter Ihle, Doris Oberle, Ursula
-Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer, and Nina Timmesfeld. 2025.
-“Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses
-Using German Health-Care Data: A Simulation Study.” *Communications in
-Statistics: Simulation and Computation* InPrint.
+Denz, Robin, Katharina Meiszl, Peter Ihle, et al. 2025. “Impact of
+Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses Using German
+Health-Care Data: A Simulation Study.” *Communications in Statistics:
+Simulation and Computation* InPrint.
 <https://doi.org/10.1080/03610918.2025.2488942>.
 
-Denz, Robin, and Nina Timmesfeld. 2025. “Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.” *arXiv
-Preprint*. <https://doi.org/10.48550/arXiv.2506.01498>.
+Denz, Robin, and Nina Timmesfeld. 2026. “Simulating Complex
+Cross-Sectional and Longitudinal Data Using the simDAG R Package.”
+*Journal of Statistical Software* 116 (2): 1–40.
+<https://doi.org/10.18637/jss.v116.i02>.
 
 Fox, Matthew P., Roch Nianogo, Jacqueline E. Rudolph, and Chanelle J.
 Howe. 2022. “Illustrating How to Simulate Data from Directed Acyclic
@@ -2055,10 +2111,10 @@ Kahn, A. B. 1962. “Topological Sorting of Large Networks.”
 
 Kimko, Hui C., and Stephen B. Duffull, eds. 2002. *Simulation for
 Designing Clinical Trials: A Pharmacokinetic-Pharmacodynamic Modeling
-Perspective*. New York: Marcel Dekker Inc.
+Perspective*. Marcel Dekker Inc.
 
 Kline, Rex B. 2023. *Principles and Practice of Structural Equation
-Modeling*. 5. New York: The Guilford Press.
+Modeling*. The Guilford Press.
 
 Mersmann, Olaf. 2023. *Microbenchmark: Accurate Timing Functions*.
 <https://CRAN.R-project.org/package=microbenchmark>.
@@ -2069,7 +2125,7 @@ Computation* 46 (7): 5712–22. <https://doi.org/10.18637/jss.v059.i02>.
 
 Morris, Tim P., Ian R. White, and Michael J. Crowther. 2019. “Using
 Simulation Studies to Evaluate Statistical Methods.” *Statistics in
-Medicine* 38 (11): 2074–2102. <https://doi.org/10.1002/sim.8086>.
+Medicine* 38 (11): 2074–102. <https://doi.org/10.1002/sim.8086>.
 
 Nance, Nerissa, Maya L. Petersen, Mark J. van der Laan, and Laura B.
 Balzer. 2024. “The Causal Roadmap and Simulations to Improve the Rigor
@@ -2085,8 +2141,8 @@ Times with Time-Varying Covariates Using the Lambert w Function.”
 Pearl, Judea. 1995. “Causal Diagrams for Empirical Research.”
 *Biometrika* 82 (4): 669–88. <https://doi.org/10.2307/2337329>.
 
-———. 2009. *Causality: Models, Reasoning and Inference*. 2nd ed.
-Cambridge: Cambridge University Press.
+Pearl, Judea. 2009. *Causality: Models, Reasoning and Inference*. 2nd
+ed. Cambridge University Press.
 
 Pedersen, Thomas Lin. 2022. *Ggforce: Accelerating Ggplot2*.
 <https://CRAN.R-project.org/package=ggforce>.
@@ -2099,8 +2155,8 @@ Pornprasertmanit, Sunthud, Patrick Miller, Alexander Schoemann, and
 Terrence D. Jorgensen. 2021. *Simsem: SIMulated Structural Equation
 Modeling*. <https://CRAN.R-project.org/package=simsem>.
 
-R Core Team. 2024. “R: A Language and Environment for Statistical
-Computing.” R Foundation for Statistical Computing, Vienna, Austria.
+R Core Team. 2024. *R: A Language and Environment for Statistical
+Computing*. R Foundation for Statistical Computing, Vienna, Austria.
 <https://www.r-project.org/>.
 
 Reisach, Alexander G., Christof Seiler, and Sebastian Weichwald. 2021.
@@ -2125,16 +2181,15 @@ Studies of Causal Effect Estimation with Complex Longitudinal Data.”
 <https://doi.org/10.18637/jss.v081.i02>.
 
 Spirtes, Peter, Clark Glymour, and Richard Scheines. 2000. *Causation,
-Prediction, and Search*. 2. Cambridge: MIT Press.
+Prediction, and Search*. MIT Press.
 
-Spooner, Fiona, Jesse F. Abrams, Karyn Morrissey, Gavin Shaddick,
-Michael Batty, Richard Milton, Adam Dennett, et al. 2021. “A Dynamic
-Microsimulation Model for Epidemics.” *Social Science & Medicine* 291
-(114461). <https://doi.org/10.1016/j.socscimed.2021.114461>.
+Spooner, Fiona, Jesse F. Abrams, Karyn Morrissey, et al. 2021. “A
+Dynamic Microsimulation Model for Epidemics.” *Social Science &
+Medicine* 291 (114461).
+<https://doi.org/10.1016/j.socscimed.2021.114461>.
 
 Tang, Jiangjun, George Leu, and Hussein A. Abbass. 2020. *Simulation and
-Computational Red Teaming for Problem Solving*. Hoboke: John Wiley &
-Sons.
+Computational Red Teaming for Problem Solving*. John Wiley & Sons.
 
 Templ, Matthias, Bernhard Meindl, Alexander Kowarik, and Olivier
 Dupriez. 2017. “Simulation of Synthetic Complex Data: The r Package
@@ -2151,8 +2206,7 @@ Therneau, Terry M. 2024. *A Package for Survival Analysis in r*.
 <https://CRAN.R-project.org/package=survival>.
 
 Tutz, Gerhard, and Matthias Schmid. 2016. *Modeling Discrete
-Time-to-Event Data*. Cham: Springer International Publishing
-Switzerland.
+Time-to-Event Data*. Springer International Publishing Switzerland.
 
 Wang, Wenjie, Haoda Fu, Sy Han, and Jun Yan. 2022. *Reda: Recurrent
 Event Data Analysis*.

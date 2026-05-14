@@ -63,7 +63,7 @@ empirical data, you may be able to derive appropriate distributions for
 the root nodes and appropriate functional forms of the relationship
 between the considered variables.
 
-### **5.)** Simulate data for $t = 0$ (if needed).
+### **5.)** Simulate data for $`t = 0`$ (if needed).
 
 After having specified suitable distributions and relationships,
 generate the initial data used in the simulation process. It is
@@ -75,9 +75,9 @@ function might be very helpful for this step.
 ### **6.)** Write functions for each time-varying node, one at a time.
 
 Each time-varying node requires a user written function that transforms
-the data at $t$ to the data at $t + 1$. It might be helpful to add one
-time-varying node at a time and proceeding to step **7.)** before adding
-other variables, if possible.
+the data at $`t`$ to the data at $`t + 1`$. It might be helpful to add
+one time-varying node at a time and proceeding to step **7.)** before
+adding other variables, if possible.
 
 ### **7.)** Inspect the resulting data for inconsistencies.
 
@@ -145,7 +145,13 @@ We start out modeling every one of these variables as completely
 independent of each other using the following DAG:
 
 ``` r
+
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(ggplot2)
 library(simDAG)
 
@@ -179,6 +185,7 @@ happening. This can be done by formulating an appropriate `prob_fun` for
 the `sickness` node:
 
 ``` r
+
 prob_sickness <- function(data, rr_covid, rr_vacc, base_p) {
 
   # multiply base probability by relevant RRs
@@ -195,6 +202,7 @@ currently happening) or `FALSE` (when no event is currently happening),
 which are interpreted as 1 and 0 by R. Let’s update our DAG:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("vaccination", type="time_to_event", prob_fun=0.001,
           event_duration=21, immunity_duration=Inf) +
@@ -225,6 +233,7 @@ by defining an appropriate `prob_fun` function, this time for the
 `covid` node:
 
 ``` r
+
 prob_covid <- function(data, base_p, vacc_duration) {
   
   p <- fifelse(data$vaccination_time_since_last < vacc_duration,
@@ -239,6 +248,7 @@ setting `time_since_last` to `TRUE`. So let’s again update our DAG
 accordingly:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("vaccination", type="time_to_event", prob_fun=0.001,
           event_duration=21, immunity_duration=Inf,
@@ -268,6 +278,7 @@ model, we once again simply have to update the probability of receiving
 a vaccination, by defining an appropriate `prob_fun`:
 
 ``` r
+
 prob_vaccination <- function(data, base_p) {
   
   p <- fifelse(data$covid_event, 0, base_p)
@@ -281,6 +292,7 @@ individual that is currently experiencing a `covid` infection is 0.
 Let’s update our DAG one more time to include these changes:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("vaccination", type="time_to_event",
           prob_fun=prob_vaccination,
@@ -301,6 +313,7 @@ Again we simply changed the `prob_fun` argument and added the correct
 `parents` to the appropriate node. Our final “DAG” looks like this:
 
 ``` r
+
 plot(dag, mark_td_nodes=FALSE)
 ```
 
@@ -319,6 +332,7 @@ calling the
 function on the specified DAG:
 
 ``` r
+
 set.seed(42)
 sim <- sim_discrete_time(dag, n_sim=1000, max_t=800)
 summary(sim)
@@ -337,6 +351,7 @@ let the simulation run for 800 days. By calling the
 a concise overview over the process we simulated:
 
 ``` r
+
 plot(sim, box_text_size=4)
 ```
 
@@ -348,6 +363,7 @@ function. For example, we could transform the output to the start-stop
 format:
 
 ``` r
+
 sim2data(sim, to="start_stop")
 #>         .id start  stop vaccination  covid sickness
 #>       <int> <int> <num>      <lgcl> <lgcl>   <lgcl>

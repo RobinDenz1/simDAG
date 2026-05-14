@@ -19,6 +19,7 @@ some data from a simple DAG with no time-varying variables. Consider the
 following DAG:
 
 ``` r
+
 library(simDAG)
 
 dag <- empty_dag() +
@@ -28,12 +29,13 @@ dag <- empty_dag() +
        output="factor", labels=c("low", "medium", "high"))
 ```
 
-This DAG contains only three root nodes of different types. $A$ is
-normally distributed, $B$ is Bernoulli distributed and $C$ is a simple
-categorical variable with the levels “low”, “medium” and “high”. If we
-generate data from this DAG alone, it would look like this:
+This DAG contains only three root nodes of different types. $`A`$ is
+normally distributed, $`B`$ is Bernoulli distributed and $`C`$ is a
+simple categorical variable with the levels “low”, “medium” and “high”.
+If we generate data from this DAG alone, it would look like this:
 
 ``` r
+
 set.seed(23143)
 
 dat <- sim_from_dag(dag, n_sim=10)
@@ -48,10 +50,12 @@ head(dat)
 #> 6:  0.8532361     1 medium
 ```
 
-Suppose we now want to generate an additional child node called $D$
+Suppose we now want to generate an additional child node called $`D`$
 which should be based on a linear regression model of the form:
 
-$$D \sim - 8 + A \cdot 0.4 + B \cdot - 2 + N(0,1.5).$$
+``` math
+D \sim -8 + A \cdot 0.4 + B \cdot -2 + N(0, 1.5).
+```
 
 We could do this using the
 [`node()`](https://robindenz1.github.io/simDAG/reference/node.md)
@@ -59,6 +63,7 @@ function, by supplying appropriate values to the `parents`, `betas`,
 `intercept` and `error` arguments. The following code could be used:
 
 ``` r
+
 dag_without_formula <- dag +
   node("D", type="gaussian", parents=c("A", "B"), betas=c(0.4, -2),
        intercept=-8, error=1.5)
@@ -69,6 +74,7 @@ the DAG in this way. Since we want to use a linear regression model, we
 could instead use the `formula` argument like this:
 
 ``` r
+
 dag_with_formula <- dag +
   node("D", type="gaussian", formula= ~ -8 + A*0.4 + B*-2, error=1.5)
 ```
@@ -77,6 +83,7 @@ Given the same random number generator seed, the same output will be
 produced from both DAGs, as shown below:
 
 ``` r
+
 set.seed(34)
 dat1 <- sim_from_dag(dag_without_formula, n_sim=100)
 
@@ -104,11 +111,13 @@ of interaction effects and cubic terms using formulas, as shown below.
 
 ## Using a Categorical Parent Variable
 
-Suppose that $D$ should additionally depend on $C$, a categorical
+Suppose that $`D`$ should additionally depend on $`C`$, a categorical
 variable. For example, suppose this is the regression model we want to
 generate data from:
 
-$$D \sim - 8 + A \cdot 0.4 + B \cdot - 2 + Cmedium \cdot - 1 + Chigh \cdot - 3 + N(0,1.5).$$
+``` math
+D \sim -8 + A \cdot 0.4 + B \cdot -2 + Cmedium \cdot -1 + Chigh \cdot -3 + N(0, 1.5).
+```
 
 In this model, the “low” category is used as a reference category. If
 this is what we want to do, using the simple `parents`, `betas`,
@@ -116,6 +125,7 @@ this is what we want to do, using the simple `parents`, `betas`,
 Fortunately, this is really simple to do using the following code:
 
 ``` r
+
 dag2 <- dag +
   node("D", type="gaussian", error=1.5,
        formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3,
@@ -134,37 +144,42 @@ two reasons:
 
 - **1.)** If `parents` is not specified, the
   [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
-  function will not know that $C$ is a parent of $D$. If `sort_dag=TRUE`
-  and/or the nodes are not specified in a correctly topologically sorted
-  order, this may lead to errors when trying to generate the data.
+  function will not know that $`C`$ is a parent of $`D`$. If
+  `sort_dag=TRUE` and/or the nodes are not specified in a correctly
+  topologically sorted order, this may lead to errors when trying to
+  generate the data.
 - **2.)** If `parents` is not specified, other functions that take DAG
   objects as input (such as the
   [`plot.DAG()`](https://robindenz1.github.io/simDAG/reference/plot.DAG.md)
   function) may produce incorrect output, because they won’t know that
-  $C$ is a parent of $D$.
+  $`C`$ is a parent of $`D`$.
 
 ## Using Interaction Effects
 
 Interactions of any sort may also be added to the DAG. Suppose we want
 to generate data from the following regression model:
 
-$$D \sim - 8 + A \cdot 0.4 + B \cdot - 2 + A*B \cdot - 5 + N(0,1.5),$$
+``` math
+D \sim -8 + A \cdot 0.4 + B \cdot -2 + A*B \cdot -5 + N(0, 1.5),
+```
 
-where $A*B$ indicates the interaction between $A$ and $B$. This can be
-specified in the `formula` argument using the `:` sign:
+where $`A*B`$ indicates the interaction between $`A`$ and $`B`$. This
+can be specified in the `formula` argument using the `:` sign:
 
 ``` r
+
 dag3 <- dag +
   node("D", type="gaussian", formula= ~ -8 + A*0.4 + B*-2 + A:B*-5, error=1.5)
 ```
 
-Since both $A$ and $B$ are coded as numeric variables here, this works
-fine. If we instead want to include an interaction which includes a
-categorical variable, we again have to use the name with the respective
-category appended to it. For example, the following DAG includes an
-interaction between $A$ and $C$:
+Since both $`A`$ and $`B`$ are coded as numeric variables here, this
+works fine. If we instead want to include an interaction which includes
+a categorical variable, we again have to use the name with the
+respective category appended to it. For example, the following DAG
+includes an interaction between $`A`$ and $`C`$:
 
 ``` r
+
 dag4 <- dag +
   node("D", type="gaussian", error=1.5,
        formula=~ -8 + A*0.4 + B*-2 + Cmedium*-1 + Chigh*-3 + A:Cmedium*0.3 + 
@@ -180,7 +195,7 @@ was used, the
 function will return a helpful error message explaining which ones
 should be used instead. For example, if we had used “Cmedium:A” instead
 of “A:Cmedium”, this would not work because internally only the latter
-is recognized as a valid column. Note that because $C$ is categorical,
+is recognized as a valid column. Note that because $`C`$ is categorical,
 we also specified the `parents` argument here just to be safe.
 
 ## Using Cubic Terms
@@ -190,11 +205,14 @@ continuous variable and the outcome in a data generation process. This
 can be done by including cubic terms of that variable in a formula.
 Suppose the regression model that we want to use has the following form:
 
-$$D \sim - 8 + A \cdot 0.4 + A^{2} \cdot 0.02 + B \cdot - 2 + N(0,1.5).$$
+``` math
+D \sim -8 + A \cdot 0.4 + A^2 \cdot 0.02 + B \cdot -2 + N(0, 1.5).
+```
 
 The following code may be used to define such as node:
 
 ``` r
+
 dag_with_formula <- dag +
   node("D", type="gaussian", formula= ~ -8 + A*0.4 + I(A^2)*0.02 + B*-2,
        error=1.5)
@@ -210,6 +228,7 @@ coefficients, which is useful to specify betas on a different scale (for
 example using Odds-Ratios instead of betas). For example:
 
 ``` r
+
 dag_with_fun <- dag +
   node("D", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2)
 ```
@@ -234,6 +253,7 @@ variable name and use that variable as a parent node in a `formula`,
 this could be done using the following code:
 
 ``` r
+
 dag_with_fun <- dag +
   node("this-var", type="binomial", formula= ~ -3 + A*log(0.5) + B*0.2) +
   node("D", type="binomial", formula= ~ 5 + `this-var`*0.3)
@@ -255,6 +275,7 @@ regular call to the [`lmer()`](https://rdrr.io/pkg/lme4/man/lmer.html)
 function. For example, consider the following `DAG`:
 
 ``` r
+
 dag_mixed <- empty_dag() +
   node("School", type="rcategorical", probs=rep(0.1, 10),
        labels=LETTERS[1:10]) +
@@ -282,6 +303,7 @@ following `DAG`, we use a random slope for `Age` per `School` in
 addition to the random effect of `School`:
 
 ``` r
+
 var_corr <- matrix(c(0.5, 0.05, 0.05, 0.1), 2)
 
 dag_mixed <- empty_dag() +
@@ -310,6 +332,7 @@ the [`eval()`](https://rdrr.io/r/base/eval.html) function as well. For
 example:
 
 ``` r
+
 beta_coef <- log(0.5)
 
 dag_with_external <- dag +
@@ -326,6 +349,7 @@ formula together as a string before passing it to
 this:
 
 ``` r
+
 beta_coef <- log(0.5)
 
 form_D <- paste("~ -3 + A*", beta_coef, "+ B*0.2")
@@ -358,6 +382,7 @@ in a way that it includes a single column for each term in `formula`.
 Consider the following example:
 
 ``` r
+
 set.seed(123)
 
 custom_fun <- function(data, parents, betas, intercept) {
@@ -382,6 +407,7 @@ root nodes and a binary root node. Here is what happens if we use
 `custom_fun` with a `formula` input:
 
 ``` r
+
 dag_custom2 <- dag_custom +
   node("Y", type=custom_fun, formula= ~ -5 + A*2 + B*-0.4)
 
@@ -410,6 +436,7 @@ work is that `custom_fun` does have these arguments. Now lets see what
 happens with special terms in `formula`:
 
 ``` r
+
 dag_custom2 <- dag_custom +
   node("Y", type=custom_fun, formula= ~ -5 + A*2 + B*-0.4 + A:B*0.1 + 
          I(A^2)*-0.1 + Clev2*0.2)
@@ -439,6 +466,7 @@ code is an example how one could re-build a linear regression using this
 interface:
 
 ``` r
+
 custom_linreg <- function(data, parents, betas, intercept) {
   intercept + rowSums(mapply("*", data, betas)) +
     rnorm(n=nrow(data), mean=0, sd=1)
@@ -470,6 +498,7 @@ longer be required in `formula` (and will be ignored if still
 specified):
 
 ``` r
+
 # same as before, but without an intercept (same as setting intercept=0)
 custom_linreg2 <- function(data, parents, betas) {
   rowSums(mapply("*", data, betas)) +

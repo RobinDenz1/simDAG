@@ -297,6 +297,12 @@ call when using `sim_from_dag`.
 Returns a `DAG.node` object which can be added to a `DAG` object
 directly.
 
+## References
+
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package".
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
+
 ## Author
 
 Robin Denz

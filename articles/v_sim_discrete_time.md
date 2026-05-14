@@ -16,7 +16,7 @@ need to define a node for each variable at each point in time. It also
 makes the generation of complex time-to-event data a lot easier.
 Features such as time-dependent effects, time-dependent covariates, any
 form of censoring, recurrent-events and competing events may be included
-in a straightforward fashion (Denz and Timmesfeld 2025).
+in a straightforward fashion (Denz and Timmesfeld 2026).
 
 ## What is Discrete-Time Simulation and Why Use it?
 
@@ -40,7 +40,7 @@ A generalized flow-chart of the discrete-time simulation approach
 
 The
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
-directly implements this workflow. A data set at $t = 0$ is either
+directly implements this workflow. A data set at $`t = 0`$ is either
 simulated using the
 [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function or supplied directly by the user (using the `t0_data`
@@ -105,7 +105,7 @@ function as usual when using the
 [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function. In fact, they are simply passed to it under the hood. Their
 role in the data generation process is only to obtain the initial data
-set we need for $t = 0$. It would be equivalent to call the
+set we need for $`t = 0`$. It would be equivalent to call the
 [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function manually and then pass the output to the `t0_data` argument. We
 therefore won’t go into more detail here. More information about how to
@@ -124,22 +124,28 @@ age](images_v_sim_discrete_time/simple_dag.png)
 
 A small DAG with time-varying age
 
-Here, $A$, which stands for `sex`, is a time-invariant variable, whereas
-$B$ (`age`) and $D$ (`death`) are not. Suppose that each tick of the
-simulation corresponds to a duration of one year. Then, naturally,
-people will age one year on every simulation tick. We assume that `sex`
-and `age` have a direct causal effect on the probability of death,
-regardless of the time. Once people are dead, they stay dead (no
+Here, $`A`$, which stands for `sex`, is a time-invariant variable,
+whereas $`B`$ (`age`) and $`D`$ (`death`) are not. Suppose that each
+tick of the simulation corresponds to a duration of one year. Then,
+naturally, people will age one year on every simulation tick. We assume
+that `sex` and `age` have a direct causal effect on the probability of
+death, regardless of the time. Once people are dead, they stay dead (no
 reincarnation allowed).
 
 If we want to use this structure in the
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function, we first have to generate an initial dataset for the state of
-the population at $t = 0$ as described above. We do this by first
+the population at $`t = 0`$ as described above. We do this by first
 specifying the `t0_root_nodes` as follows:
 
 ``` r
+
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(ggplot2)
 library(simDAG)
 
@@ -150,24 +156,26 @@ dag <- empty_dag() +
 
 We assume that `age` is normally distributed and that we have equal
 numbers of each `sex`. This information is enough to specify the data
-set at $t = 0$. Now we only need to add additional time-dependent nodes
-using the
+set at $`t = 0`$. Now we only need to add additional time-dependent
+nodes using the
 [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
 function and we are ready. First, we define a function that increases
 the age of all individuals by 1 at each step:
 
 ``` r
+
 node_advance_age <- function(data) {
   return(data$age + 1)
 }
 ```
 
 Next, we need to define a function that will return the probability of
-`death` for every individual at time $t$, given their current `age` and
-their `sex`. We use a logistic regression model, but make it explicit
-for exemplary reasons:
+`death` for every individual at time $`t`$, given their current `age`
+and their `sex`. We use a logistic regression model, but make it
+explicit for exemplary reasons:
 
 ``` r
+
 prob_death <- function(data) {
   score <- -10 + 0.15 * data$age + 0.25 * data$sex
   prob <- 1/(1 + exp(-score))
@@ -178,6 +186,7 @@ prob_death <- function(data) {
 Now we can add those nodes to the `DAG` as follows:
 
 ``` r
+
 dag <- dag +
   node_td("age", type="advance_age", parents="age") +
   node_td("death", type="time_to_event", parents=c("age", "sex"),
@@ -197,6 +206,7 @@ for the `death` node here to get equivalent results without having to
 define a `prob_fun` as:
 
 ``` r
+
 node_td("death", type="time_to_event",
         formula= ~ -10 + 0.15*age + 0.25*sex,
         event_duration=Inf, save_past_events=TRUE,
@@ -215,6 +225,7 @@ associated [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
 method:
 
 ``` r
+
 plot(dag)
 ```
 
@@ -225,6 +236,7 @@ To finally generate the desired data, we simply call the
 function:
 
 ``` r
+
 set.seed(43)
 sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50, check_inputs=FALSE)
 ```
@@ -233,6 +245,7 @@ By setting `max_t=50`, we are letting this simulation run for 50
 (simulated) years. The results look like this:
 
 ``` r
+
 head(sim_dat$data)
 #>         age    sex death_event death_time   .id
 #>       <num> <lgcl>      <lgcl>      <int> <int>
@@ -256,6 +269,7 @@ associated with the output of the
 function like this:
 
 ``` r
+
 plot(sim_dat)
 ```
 
@@ -272,6 +286,7 @@ This argument allows us to define a condition that should be met at
 which the simulation will be stopped early. For example we may use:
 
 ``` r
+
 set.seed(44)
 sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=1000000,
                              break_if=all(data$death_event==TRUE),
@@ -303,6 +318,7 @@ number of times. First, let’s redefine the nodes to get the new name
 right:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm", mean=30, sd=5) +
   node("sex", type="rbernoulli", p=0.5)
@@ -312,6 +328,7 @@ We also redefine the function that generates the required event
 probabilities:
 
 ``` r
+
 prob_cve <- function(data) {
   score <- -15 + 0.15 * data$age + 0.25 * data$sex
   prob <- 1/(1 + exp(-score))
@@ -324,6 +341,7 @@ Now, all we have to do in this case is change some arguments of the
 function:
 
 ``` r
+
 dag <- dag +
   node_td("age", type="advance_age", parents=c("age")) +
   node_td("cve", type="time_to_event", parents=c("age", "sex"),
@@ -338,6 +356,7 @@ recurrent events. Now we call the
 function as before:
 
 ``` r
+
 sim_dat <- sim_discrete_time(n_sim=10, dag=dag, max_t=50)
 head(sim_dat$data)
 #>         age    sex cve_event cve_time   .id
@@ -350,9 +369,9 @@ head(sim_dat$data)
 #> 6: 81.15802   TRUE     FALSE       NA     6
 ```
 
-In this case, the data is a little more complex. At time $t = 50$, only
-one person is currently experiencing a cardiovascular event, which is
-why the `cve_event` column is `FALSE` in almost all rows and the
+In this case, the data is a little more complex. At time $`t = 50`$,
+only one person is currently experiencing a cardiovascular event, which
+is why the `cve_event` column is `FALSE` in almost all rows and the
 `cve_time` column is `NA` in almost all rows. We need to transform this
 output data into different formats using the
 [`sim2data()`](https://robindenz1.github.io/simDAG/reference/sim2data.md)
@@ -361,6 +380,7 @@ function to gain more information.
 For example, we can transform it into the start-stop format:
 
 ``` r
+
 d_start_stop <- sim2data(sim_dat, to="start_stop")
 head(d_start_stop)
 #>      .id start  stop    cve      age    sex
@@ -381,6 +401,7 @@ the `target_event`, `overlap` and `keep_only_first` arguments of
 Another possibility is to transform it into the long-format:
 
 ``` r
+
 d_long <- sim2data(sim_dat, to="long")
 head(d_long)
 #> Key: <.id, .time>
@@ -406,9 +427,9 @@ package.
 
 ## References
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
-and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
-10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol
 (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate:

@@ -20,6 +20,7 @@ fashion and directly supports network dependencies among individuals.
 A stable version of this package can be installed from CRAN:
 
 ``` r
+
 install.packages("simDAG")
 ```
 
@@ -27,6 +28,7 @@ and the developmental version may be installed from github using the
 `remotes` R-Package:
 
 ``` r
+
 library(remotes)
 
 remotes::install_github("RobinDenz1/simDAG")
@@ -57,6 +59,7 @@ The following code can be used to generate 10000 samples from these
 specifications:
 
 ``` r
+
 library(simDAG)
 
 dag <- empty_dag() +
@@ -75,6 +78,7 @@ really does approximately conform to our specifications. First, lets
 look at the `bmi`:
 
 ``` r
+
 mod_bmi <- glm(bmi ~ age + sex, data=sim_dat, family="gaussian")
 summary(mod_bmi)
 #> 
@@ -101,6 +105,7 @@ summary(mod_bmi)
 This seems about right. Now we look at `death`:
 
 ``` r
+
 mod_death <- glm(death ~ age + bmi, data=sim_dat, family="binomial")
 summary(mod_death)
 #> 
@@ -132,13 +137,13 @@ vignettes.
 
 If you use this package, please cite the associated article:
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
-and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
-10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 ## License
 
-© 2024 Robin Denz
+© 2026 Robin Denz
 
 The contents of this repository are distributed under the GNU General
 Public License. You can find the full text of this License in this
@@ -351,6 +356,6 @@ Functions that can only be used as time-dependent nodes
   Dependencies](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md):
 - [simDAG
   Cookbook](https://robindenz1.github.io/simDAG/articles/v_cookbook.md):
-- [Simulating Complex Crossectional and Longitudinal Data using the
+- [Simulating Complex Cross-Sectional and Longitudinal Data using the
   simDAG R
   Package](https://robindenz1.github.io/simDAG/articles/simDAG.md):

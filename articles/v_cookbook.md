@@ -21,6 +21,7 @@ recommend consulting these vignettes first to get a feeling for the
 required syntax before diving into these specific examples.
 
 ``` r
+
 library(simDAG)
 library(data.table)
 library(survival)
@@ -42,6 +43,7 @@ Below is an example for an RCT with two treatment groups, a binary
 outcome and two baseline covariates (`Age` and `Sex`):
 
 ``` r
+
 dag <- empty_dag() +
   node("Age", type="rnorm", mean=55, sd=5) +
   node("Sex", type="rbernoulli", p=0.5) +
@@ -72,6 +74,7 @@ function as node type instead of the
 function.
 
 ``` r
+
 dag <- empty_dag() +
   node("Age", type="rnorm", mean=55, sd=5) +
   node("Sex", type="rbernoulli", p=0.5, output="numeric") +
@@ -115,6 +118,7 @@ function. Finally, the
 has to be called to obtain the desired output in the long-format.
 
 ``` r
+
 dag <- empty_dag() +
   node("Age", type="rnorm", mean=55, sd=5) +
   node("Sex", type="rbernoulli", p=0.5, output="numeric") +
@@ -157,6 +161,7 @@ control group start taking pills. For simplicity, the simulation is run
 without any further covariates for 5 weeks.
 
 ``` r
+
 # function to calculate the probability of taking the pill at t,
 # given the current treatment status of the person
 prob_treat <- function(data) {
@@ -191,7 +196,7 @@ of type `"time_to_event"` always split the node into two columns: status
 and time. By setting `event_count=TRUE` in the
 [`node_td()`](https://robindenz1.github.io/simDAG/reference/node.md)
 call for the `Treatment` node, a count of the amount of pills taken up
-to $t$ is directly calculated at each point in time (column
+to $`t`$ is directly calculated at each point in time (column
 `Treatment_event_count`), which can then be used directly to generate
 the `Outcome` node.
 
@@ -199,7 +204,7 @@ This simulation could be made more realistic (or just more complex), by
 for example adding either of the following things:
 
 - making the probability of switching dependent on the outcome at
-  $t - 1$
+  $`t - 1`$
 - making the probability of switching dependent on other variables
 - allowing patients to switch back to taking the pill after
   discontinuation
@@ -216,6 +221,7 @@ randomization. This may be implemented in `simDAG` using the following
 syntax:
 
 ``` r
+
 dag <- empty_dag() +
   node("Clinic", type="rcategorical", probs=rep(0.02, 50)) +
   node("Treatment", type="identity", formula= ~ Clinic >= 25) +
@@ -257,6 +263,7 @@ a categorical and a continuous variable, which both also cause the
 outcome:
 
 ``` r
+
 dag <- empty_dag() +
   node("cat", type="rcategorical", probs=c(0.4, 0.2, 0.2),
        labels=LETTERS[1:3]) +
@@ -286,14 +293,15 @@ like inverse probability of treatment weighting.
 ### Longitudinal Data
 
 Here we give a small example for a longitudinal non-randomized study in
-which the `treatment` at $t$ is dependent on past values of itself, and
-on past values of the `outcome`. Additionally, the `outcome` is
+which the `treatment` at $`t`$ is dependent on past values of itself,
+and on past values of the `outcome`. Additionally, the `outcome` is
 dependent on past values of itself and on the current `treatment`. We
 use the discrete-time simulation approach implemented in the
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function to achieve this:
 
 ``` r
+
 ## function that generates the probability of treatment at t 
 ## for all individuals, given the current state of the simulation
 prob_treat <- function(data, base_p, rr_treat, rr_outcome) {
@@ -333,12 +341,12 @@ without having experienced the `outcome`. The baseline probability to
 get the treatment is 0.05 (`base_p=0.05`). It is twice as likely that
 someone who got the `treatment` in the last period of time gets it again
 in the next period of time (`rr_treat=2`), and it is much less likely
-that someone who experienced the `outcome` at $t - 1$ will start
+that someone who experienced the `outcome` at $`t-1`$ will start
 treatment (`rr_outcome=0.5`). Similarly, the baseline probability of the
 `outcome` is `base_p=0.01`, with a much lower probability of
 experiencing it when currently receiving the `treatment`
 (`rr_treat=0.3`) and a slightly higher chance of experiencing it again
-when having it at $t - 1$ (`rr_outcome=1.2`).
+when having it at $`t-1`$ (`rr_outcome=1.2`).
 
 ### Cox Model with Time-Varying Covariates
 
@@ -348,6 +356,7 @@ In this example, there is one time-dependent covariate named `A` and a
 single time-to-event outcome called `Y`.
 
 ``` r
+
 ## function that generates the probability of the outcome at t 
 ## for all individuals, given the current state of the simulation
 prob_Y <- function(data, base_p, rr_treat) {
@@ -382,14 +391,18 @@ outcome `Y` is reduced by 50%. The time until the first occurrence of
 `Y` can be described as a Cox proportional hazards model, where `A` is a
 time-dependent variable:
 
-$$\lambda(t) = \lambda_{0}(t)\exp\left( \beta_{A}A(t) \right)$$.
+``` math
+\lambda(t) = \lambda_0(t) \exp(\beta_AA(t))
+```
+.
 
-Here, $\lambda_{0}(t)$ is the baseline hazard, which in our example is
+Here, $`\lambda_0(t)`$ is the baseline hazard, which in our example is
 constant over time and equal to 0.01. The relative risk used in the
 simulation can be recovered as the hazard ratio, e.g. it is equal to
-$\exp\left( \beta_{A} \right)$. It can be recovered as:
+$`\exp(\beta_A)`$. It can be recovered as:
 
 ``` r
+
 mod <- coxph(Surv(start, stop, Y) ~ A, data=data)
 summary(mod)
 #> Call:
@@ -419,6 +432,7 @@ If continuous time is required, a nearly equivalent discrete-event
 simulation may be used:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("A", type="next_time", prob_fun=0.01,
           event_duration=20) +
@@ -451,6 +465,7 @@ often better to use `prob_fun`.
 Again, we can check the code by fitting the corresponding Cox model:
 
 ``` r
+
 mod <- coxph(Surv(start, stop, Y) ~ A, data=data)
 summary(mod)
 #> Call:
@@ -484,7 +499,9 @@ Weibull distributed baseline hazards should be used.
 Similar to the Cox model shown above, the Aalen additive hazards model
 with a time-dependent covariate is defined as:
 
-$$\lambda(t) = \lambda_{0}(t) + \beta_{A}A(t)$$
+``` math
+\lambda(t) = \lambda_0(t) + \beta_AA(t)
+```
 
 The main difference here is that the coefficients are directly on the
 hazard difference scale and not on the log hazard ratio scale. Data from
@@ -492,6 +509,7 @@ such a model can be simulated by slightly adapting the `prob_Y()`
 function:
 
 ``` r
+
 ## function that generates the probability of the outcome at t 
 ## for all individuals, given the current state of the simulation
 prob_Y <- function(data, intercept, beta_treat) {
@@ -530,6 +548,7 @@ function instead, if we want to generate data from the same data
 generation process but with continuous time:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("A", type="next_time", prob_fun=0.01,
           event_duration=20) +
@@ -569,6 +588,7 @@ consider students that are nested in different schools. The outcome is a
 continuous score of some kind.
 
 ``` r
+
 dag <- empty_dag() +
   node("school", type="rcategorical", probs=rep(0.1, 10),
        labels=LETTERS[1:10]) +
@@ -604,6 +624,7 @@ different regression models for different individuals. This can be done
 using the `"mixture"` node type. Consider the following example:
 
 ``` r
+
 dag <- empty_dag() +
   node("strata", type="rbernoulli", p=0.5) +
   node(c("var1", "var2"), type="rnorm", mean=0, sd=1) +
@@ -642,6 +663,7 @@ if that variable exceeds some value, sample different values for it. A
 very simple example:
 
 ``` r
+
 dag <- empty_dag() +
   node(c("A", "B", "C"), type="rnorm") +
   node("Y", type="mixture", parents=c("A", "B", "C"),
@@ -672,6 +694,7 @@ variables. Below is a very simple example on how users could include
 missing values in their data:
 
 ``` r
+
 dag <- empty_dag() +
   node("A_real", type="rnorm", mean=10, sd=3) +
   node("A_missing", type="rbernoulli", p=0.5) +
@@ -703,6 +726,7 @@ simulate **missing at random** (MAR) patterns, we could use the
 following code instead:
 
 ``` r
+
 dag <- empty_dag() +
   node("A_real", type="rnorm", mean=0, sd=1) +
   node("B_real", type="rbernoulli", p=0.5) +
@@ -740,6 +764,7 @@ shown for missing values could be used to simulate such data using
 `simDAG`:
 
 ``` r
+
 probs <- list(`TRUE`=0.9, `FALSE`=0.01)
 
 dag <- empty_dag() +
@@ -766,6 +791,7 @@ argument correctly. We could similarly extend this example to make the
 probability of misclassification dependent on another variable:
 
 ``` r
+
 # first TRUE / FALSE refers to Sex = TRUE / FALSE
 # second TRUE / FALSE refers to Disease = TRUE / FALSE
 probs <- list(TRUE.TRUE=0.9, TRUE.FALSE=0.01,

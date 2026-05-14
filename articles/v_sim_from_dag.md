@@ -7,7 +7,7 @@ In this small vignette, we introduce the
 function, which can be used to simulate complex data from arbitrary
 causal directed acyclic graphs (DAGs). The simulated data may include
 continuous, binary, categorical, count or time-to-event variables (Denz
-and Timmesfeld 2025). This function is most useful if the DAG is static,
+and Timmesfeld 2026). This function is most useful if the DAG is static,
 meaning that there are no time-varying variables. It is theoretically
 possible to use this function to simulate data from DAGs with a time
 structure as well, but there are some difficulties associated with it
@@ -17,15 +17,15 @@ that will be discussed later.
 
 A causal DAG is a DAG in which all nodes correspond to variables and the
 directed edges correspond to direct causal relationships between these
-variables. A direct edge from node $A$ to node $B$ implies that there is
-direct causal effect of $A$ on $B$. On the other hand, if there is no
-edge from node $A$ to node $B$, there is no direct causal relationship
-between these variables. Using a DAG in this way makes it easy to encode
-the causal structure of a given system, which is very useful for causal
-inference. This general idea is a centerpiece of the **structural
-approach** to causality developed by Pearl (2002) and Spirtes et
-al. (1993). We strongly encourage the reader to make themselves familiar
-with some of this literature before moving on.
+variables. A direct edge from node $`A`$ to node $`B`$ implies that
+there is direct causal effect of $`A`$ on $`B`$. On the other hand, if
+there is no edge from node $`A`$ to node $`B`$, there is no direct
+causal relationship between these variables. Using a DAG in this way
+makes it easy to encode the causal structure of a given system, which is
+very useful for causal inference. This general idea is a centerpiece of
+the **structural approach** to causality developed by Pearl (2002) and
+Spirtes et al. (1993). We strongly encourage the reader to make
+themselves familiar with some of this literature before moving on.
 
 It is very simple to generate data from a defined causal DAG. To see why
 we first need to introduce the concept of **root nodes** and **child
@@ -40,11 +40,12 @@ consider the DAG in figure 1.
 
 A small DAG with four nodes
 
-Nodes $A$ and $B$ are root nodes because they do not have any directed
-edges pointing into them. Nodes $C$ and $D$ on the other hand are child
-nodes. The parents of node $C$ are both $A$ and $B$ because both of
-these nodes have directed edge towards $C$. Note that node $B$ is not a
-parent of node $D$ because there is no edge from $B$ to $D$.
+Nodes $`A`$ and $`B`$ are root nodes because they do not have any
+directed edges pointing into them. Nodes $`C`$ and $`D`$ on the other
+hand are child nodes. The parents of node $`C`$ are both $`A`$ and $`B`$
+because both of these nodes have directed edge towards $`C`$. Note that
+node $`B`$ is not a parent of node $`D`$ because there is no edge from
+$`B`$ to $`D`$.
 
 As the name implies, DAGs do not have cycles. Therefore every DAG has at
 least one root node. Generating data for these nodes is the first step
@@ -80,7 +81,13 @@ Regardless of which strategy you want to use, first you have to
 initialize an empty `DAG` object like this:
 
 ``` r
+
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(ggplot2)
 library(simDAG)
 
@@ -110,26 +117,26 @@ instead.
 The `simDAG` package implements the following types of `child_nodes`
 directly:
 
-|                                                                                                       |                                                                                     |
-|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
-| [`node_gaussian()`](https://robindenz1.github.io/simDAG/reference/node_gaussian.md)                   | A node based on (mixed) linear regression (continuous data)                         |
-| [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md)                   | A node based on (mixed) logistic regression (binary data)                           |
-| [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md)             | A node based on multinomial logistic regression (categorical data)                  |
-| [`node_polr()`](https://robindenz1.github.io/simDAG/reference/node_polr.md)                           | A node based on ordered logistic or probit regression (categorical data)            |
-| [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md)                     | A node based on (mixed) poisson regression (count data)                             |
-| [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md) | A node based on negative binomial regression (count data)                           |
-| [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md)                   | A node based on a zero-inflated poisson / negative binomial regression (count data) |
-| [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md)                             | A node based on cox regression (time-to-event data)                                 |
-| [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md)                         | A node based on an Aalen additive hazards model (time-to-event data)                |
-| [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)                        | A node based on accelerated failure time regression (time-to-event data)            |
-| [`node_ahreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)                         | A node based on accelerated hazards regression (time-to-event data)                 |
-| [`node_ehreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)                         | A node based on an extended hazards model (time-to-event data)                      |
-| [`node_poreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)                         | A node based on an proportional odds model (time-to-event data)                     |
-| [`node_ypreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md)                         | A node based on a Yang and Prentice model (time-to-event data)                      |
-| [`node_conditional_prob()`](https://robindenz1.github.io/simDAG/reference/node_conditional_prob.md)   | A node based on conditional probabilities (binary / categorical data)               |
-| [`node_conditional_distr()`](https://robindenz1.github.io/simDAG/reference/node_conditional_distr.md) | A node based on conditional distributions (any data type)                           |
-| [`node_mixture()`](https://robindenz1.github.io/simDAG/reference/node_mixture.md)                     | A node that can be defined as a mixture of any other node type (any data type)      |
-| [`node_identity()`](https://robindenz1.github.io/simDAG/reference/node_identity.md)                   | A node that is just some `R` expression of other nodes (any data type)              |
+|  |  |
+|----|----|
+| [`node_gaussian()`](https://robindenz1.github.io/simDAG/reference/node_gaussian.md) | A node based on (mixed) linear regression (continuous data) |
+| [`node_binomial()`](https://robindenz1.github.io/simDAG/reference/node_binomial.md) | A node based on (mixed) logistic regression (binary data) |
+| [`node_multinomial()`](https://robindenz1.github.io/simDAG/reference/node_multinomial.md) | A node based on multinomial logistic regression (categorical data) |
+| [`node_polr()`](https://robindenz1.github.io/simDAG/reference/node_polr.md) | A node based on ordered logistic or probit regression (categorical data) |
+| [`node_poisson()`](https://robindenz1.github.io/simDAG/reference/node_poisson.md) | A node based on (mixed) poisson regression (count data) |
+| [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md) | A node based on negative binomial regression (count data) |
+| [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md) | A node based on a zero-inflated poisson / negative binomial regression (count data) |
+| [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md) | A node based on cox regression (time-to-event data) |
+| [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md) | A node based on an Aalen additive hazards model (time-to-event data) |
+| [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on accelerated failure time regression (time-to-event data) |
+| [`node_ahreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on accelerated hazards regression (time-to-event data) |
+| [`node_ehreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on an extended hazards model (time-to-event data) |
+| [`node_poreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on an proportional odds model (time-to-event data) |
+| [`node_ypreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on a Yang and Prentice model (time-to-event data) |
+| [`node_conditional_prob()`](https://robindenz1.github.io/simDAG/reference/node_conditional_prob.md) | A node based on conditional probabilities (binary / categorical data) |
+| [`node_conditional_distr()`](https://robindenz1.github.io/simDAG/reference/node_conditional_distr.md) | A node based on conditional distributions (any data type) |
+| [`node_mixture()`](https://robindenz1.github.io/simDAG/reference/node_mixture.md) | A node that can be defined as a mixture of any other node type (any data type) |
+| [`node_identity()`](https://robindenz1.github.io/simDAG/reference/node_identity.md) | A node that is just some `R` expression of other nodes (any data type) |
 
 All of these nodes have their own documentation page containing a
 detailed description on how data is generated from them. Although this
@@ -144,12 +151,13 @@ relationship.
 
 ### Defining nodes manually
 
-Suppose that node $A$ in the figure above stands for `age`, $B$ stands
-for `sex`, $C$ stands for the Body-Mass-Index (`BMI`) and $D$ stands for
-`death`. We have to start by defining what the root nodes should look
-like. We use the following code to define `age` and `sex`:
+Suppose that node $`A`$ in the figure above stands for `age`, $`B`$
+stands for `sex`, $`C`$ stands for the Body-Mass-Index (`BMI`) and $`D`$
+stands for `death`. We have to start by defining what the root nodes
+should look like. We use the following code to define `age` and `sex`:
 
 ``` r
+
 dag <- dag + 
   node("age", type="rnorm", mean=50, sd=4) +
   node("sex", type="rbernoulli", p=0.5)
@@ -174,6 +182,7 @@ Next, we have to define what the relationship between the child nodes
 and their parents should look like. We may use the following code:
 
 ``` r
+
 dag <- dag +
   node("bmi", type="gaussian", parents=c("sex", "age"), betas=c(1.1, 0.4),
        intercept=12, error=2) +
@@ -189,10 +198,12 @@ equation is defined through the use of the `intercept`, `betas` and
 `error` arguments. Our specification for the `bmi` node corresponds to
 the following equation:
 
-$$bmi = 12 + sex \cdot 1.1 + age \cdot 0.4 + N(0,2),$$
+``` math
+bmi = 12 + sex \cdot 1.1 + age \cdot 0.4 + N(0, 2),
+```
 
-where $N(0,2)$ indicates that the error term is modelled as a normally
-distributed variable with mean 0 and a standard deviation of 2.
+where $`N(0, 2)`$ indicates that the error term is modelled as a
+normally distributed variable with mean 0 and a standard deviation of 2.
 
 Since `death` has only two states (alive vs. dead), we use a logistic
 regression model here instead. We can do this easily by setting
@@ -200,7 +211,9 @@ regression model here instead. We can do this easily by setting
 The regression equation for `death` as described by the code above is
 then:
 
-$$logit(death) = - 15 + age \cdot 0.1 + bmi \cdot 0.3.$$
+``` math
+logit(death) = -15 + age \cdot 0.1 + bmi \cdot 0.3.
+```
 
 To check whether we got the causal relationships right, we can call the
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) function on the
@@ -208,6 +221,7 @@ DAG object. The output should look very similar to the hand-drawn DAG
 above.
 
 ``` r
+
 plot(dag)
 ```
 
@@ -217,6 +231,7 @@ We can also directly print the underlying structural equations using the
 [`summary()`](https://rdrr.io/r/base/summary.html) function:
 
 ``` r
+
 summary(dag)
 #> A DAG object using the following structural equations:
 #> 
@@ -232,6 +247,7 @@ data using the
 function:
 
 ``` r
+
 set.seed(42)
 sim_dat <- sim_from_dag(dag=dag, n_sim=10000)
 ```
@@ -240,6 +256,7 @@ Setting a seed for the random number generator is necessary to obtain
 replicable results. The data generated using this code looks like this:
 
 ``` r
+
 head(sim_dat, 5)
 #>         age    sex      bmi  death
 #>       <num> <lgcl>    <num> <lgcl>
@@ -257,12 +274,14 @@ dataset to confirm that it indeed corresponds to our specified causal
 DAG. Starting with the root nodes:
 
 ``` r
+
 hist(sim_dat$age)
 ```
 
 ![](v_sim_from_dag_files/figure-html/unnamed-chunk-10-1.png)
 
 ``` r
+
 table(sim_dat$sex)
 #> 
 #> FALSE  TRUE 
@@ -276,6 +295,7 @@ child nodes were modeled correctly, we simply fit the corresponding
 models using the [`glm()`](https://rdrr.io/r/stats/glm.html) function:
 
 ``` r
+
 mod_bmi <- glm(bmi ~ age + sex, data=sim_dat, family="gaussian")
 summary(mod_bmi)
 #> 
@@ -300,6 +320,7 @@ summary(mod_bmi)
 ```
 
 ``` r
+
 mod_death <- glm(death ~ age + bmi, data=sim_dat, family="binomial")
 summary(mod_death)
 #> 
@@ -347,6 +368,7 @@ node type). Now all we have to do is create a partially specified `DAG`
 in accordance to these assumptions first:
 
 ``` r
+
 dag <- empty_dag() +
   node("age", type="rnorm") +
   node("sex", type="rbernoulli") +
@@ -361,6 +383,7 @@ causal structure and the node types. Now we can call the
 function:
 
 ``` r
+
 est_dag <- dag_from_data(dag=dag, data=sim_dat)
 ```
 
@@ -370,6 +393,7 @@ used directly in the
 function:
 
 ``` r
+
 sim_dat2 <- sim_from_dag(dag=est_dag$dag, n_sim=10000)
 ```
 
@@ -397,11 +421,11 @@ time:
 
 A small DAG with four nodes
 
-Here, nodes $A$ and $B$ are time-constant variables that only have a
-causal effect on the initial state of $C$ and $D$, while nodes $C$ and
-$D$ change over time interdependently, where the subscript identifies
-the discrete point in time. If we want to simulate data from a DAG that
-looks like this using the
+Here, nodes $`A`$ and $`B`$ are time-constant variables that only have a
+causal effect on the initial state of $`C`$ and $`D`$, while nodes $`C`$
+and $`D`$ change over time interdependently, where the subscript
+identifies the discrete point in time. If we want to simulate data from
+a DAG that looks like this using the
 [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function, we have to add a node to the for every point in time that we
 want to consider.
@@ -410,6 +434,7 @@ We will quickly go through a this example, considering only 2 points in
 time. We define our nodes in the following way:
 
 ``` r
+
 dag <- empty_dag() +
   node("A", type="rnorm", mean=50, sd=4) +
   node("B", type="rbernoulli", p=0.5) +
@@ -438,9 +463,9 @@ function also included in this package may be used instead.
 
 ## References
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
-and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
-10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd
 ed. Cambridge: Cambridge University Press

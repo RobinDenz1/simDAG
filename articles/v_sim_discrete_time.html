@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@ each point in time. It also makes the generation of complex
 time-to-event data a lot easier. Features such as time-dependent
 effects, time-dependent covariates, any form of censoring,
 recurrent-events and competing events may be included in a
-straightforward fashion (Denz and Timmesfeld 2025).</p>
+straightforward fashion (Denz and Timmesfeld 2026).</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-discrete-time-simulation-and-why-use-it">What is Discrete-Time Simulation and Why Use it?<a class="anchor" aria-label="anchor" href="#what-is-discrete-time-simulation-and-why-use-it"></a>
@@ -215,6 +215,11 @@ as described above. We do this by first specifying the
 <code>t0_root_nodes</code> as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     %notin%</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span></span>
@@ -433,9 +438,9 @@ can be found in the third vignette of this package.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Denz, Robin and Nina Timmesfeld (2025). Simulating Complex
-Crossectional and Longitudinal Data using the simDAG R Package. arXiv
-preprint, doi: 10.48550/arXiv.2506.01498.</p>
+<p>Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.</p>
 <p>Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol
 (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate:
 Pearson Education Limited.</p>

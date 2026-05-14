@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,7 +103,7 @@ individual influences the infection status of other individuals. The
 individuals are said to “interfere” with each other <span class="citation">(VanderWeele and An 2013)</span>. Networks-based
 simulations are one way to model such dependencies.</p>
 <p>The following vignette introduces this methodology and how it is
-implemented in the <code>simDAG</code> R package <span class="citation">(Denz and Timmesfeld 2025)</span>. This is an advanced
+implemented in the <code>simDAG</code> R package <span class="citation">(Denz and Timmesfeld 2026)</span>. This is an advanced
 topic. We assume that the reader is already familiar with the general
 <code>simDAG</code> syntax and DAG based simulations. Please consult the
 associated paper or the numerous other vignettes first, if this is not
@@ -134,8 +134,7 @@ that share some connection with
 in a given network (although in directed networks, multiple options to
 define neighbors are possible). A more rigorous explanation, along with
 an explanation of their implementation of the methodology in the
-<code>simcausal</code> package, is given by <span class="citation">Sofrygin, Neugebauer, and van der Laan
-(2017)</span>.</p>
+<code>simcausal</code> package, is given by <span class="citation"><span class="nocase">Sofrygin, Neugebauer, et al.</span> (2017)</span>.</p>
 <p>In network science, the points in a networks are often called
 <em>nodes</em> or <em>vertices</em>, while the connections between them
 are usually called <em>edges</em> or, in directed networks,
@@ -636,7 +635,7 @@ neighbors can be infected. In particular, the general probability of
 infection at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 is defined as:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0.05</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.4</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>&gt;</mo><mn>1</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>k</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.9</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>&gt;</mo><mn>1</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>k</mi><mo>&gt;</mo><mn>3</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0.05</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.4</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>&gt;</mo><mn>1</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.9</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>&gt;</mo><mn>1</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>k</mi><mo>&gt;</mo><mn>3</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
     P(t) =
     \begin{cases}
       0.05 &amp; \text{if} \quad t = 1 \\
@@ -964,62 +963,62 @@ simulations. Network dependencies are fully integrated into the enhanced
 which hopefully makes the barrier to use this methodology a lot less
 daunting for potential users.</p>
 <p>Despite the great flexibility offered by this approach, it is used
-quite infrequently in practice. The preprint published by <span class="citation">Sofrygin, Neugebauer, and van der Laan (2017)</span>
-did not gather a lot of attention, even though they also offered a clean
-and powerful implementation of the method through the
-<code>simcausal</code> <span class="citation">(Sofrygin, van der Laan,
-and Neugebauer 2017)</span> package (which heavily inspired the
-presented <code>simDAG</code> implementation). I suspect that the main
-reason for this is that there are only few statistical models designed
-to actually analyze data with such complex DGPs. Despite recent
-advancements, the combination of network science and causal inference is
-still in its infancy, as has been pointed out by others <span class="citation">(Ogburn et al. 2024; VanderWeele and An 2013; An,
-Beauvile, and Rosche 2022)</span>. I hope that this implementation will
-make future investigations into this subject easier or at least more
-convenient to methodological researchers.</p>
+quite infrequently in practice. The preprint published by <span class="citation"><span class="nocase">Sofrygin, Neugebauer, et
+al.</span> (2017)</span> did not gather a lot of attention, even though
+they also offered a clean and powerful implementation of the method
+through the <code>simcausal</code> <span class="citation">(<span class="nocase">Sofrygin, van der Laan, et al.</span> 2017)</span>
+package (which heavily inspired the presented <code>simDAG</code>
+implementation). I suspect that the main reason for this is that there
+are only few statistical models designed to actually analyze data with
+such complex DGPs. Despite recent advancements, the combination of
+network science and causal inference is still in its infancy, as has
+been pointed out by others <span class="citation">(<span class="nocase">Ogburn et al.</span> 2024; VanderWeele and An 2013; An et
+al. 2022)</span>. I hope that this implementation will make future
+investigations into this subject easier or at least more convenient to
+methodological researchers.</p>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-An2022" class="csl-entry">
 An, Weihua, Roberson Beauvile, and Benjamin Rosche. 2022. <span>“Causal
 Network Analysis.”</span> <em>Annual Reviews of Sociology</em> 48:
 23–41. <a href="https://doi.org/10.1146/annurev-soc-030320-102100" class="external-link">https://doi.org/10.1146/annurev-soc-030320-102100</a>.
 </div>
 <div id="ref-Danon2011" class="csl-entry">
-Danon, Leon, Ashley P. Ford, Thomas House, Chris P. Jewell, Matt J.
-Keeling, Gareth O. Roberts, Joshua V. Ross, and Matthew C. Vernon. 2011.
-<span>“Networks and the Epidemiology of Infectious Disease.”</span>
+Danon, Leon, Ashley P. Ford, Thomas House, et al. 2011. <span>“Networks
+and the Epidemiology of Infectious Disease.”</span>
 <em>Interdisciplinary Perspectives on Infectious Diseases</em> 16. <a href="https://doi.org/10.1155/2011/284909" class="external-link">https://doi.org/10.1155/2011/284909</a>.
 </div>
-<div id="ref-Denz2025" class="csl-entry">
-Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.”</span>
-<em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
+<div id="ref-Denz2026" class="csl-entry">
+Denz, Robin, and Nina Timmesfeld. 2026. <span>“Simulating Complex
+Cross-Sectional and Longitudinal Data Using the <span class="nocase">simDAG</span> <span>R</span> Package.”</span> <em>Journal
+of Statistical Software</em> 116 (2): 1–40. <a href="https://doi.org/10.18637/jss.v116.i02" class="external-link">https://doi.org/10.18637/jss.v116.i02</a>.
 </div>
 <div id="ref-Ogburn2024" class="csl-entry">
-Ogburn, Elizabeth L., Oleg Sofrygin, Iván Díaz, and Mark J. van der
-Laan. 2024. <span>“Causal Inference for Social Network Data.”</span>
-<em>Journal of the American Statistical Association</em> 119 (545):
-597–611. <a href="https://doi.org/10.1080/01621459.2022.2131557" class="external-link">https://doi.org/10.1080/01621459.2022.2131557</a>.
+<span class="nocase">Ogburn, Elizabeth L., Oleg Sofrygin, Iván Díaz, and
+Mark J. van der Laan</span>. 2024. <span>“Causal Inference for Social
+Network Data.”</span> <em>Journal of the American Statistical
+Association</em> 119 (545): 597–611. <a href="https://doi.org/10.1080/01621459.2022.2131557" class="external-link">https://doi.org/10.1080/01621459.2022.2131557</a>.
 </div>
 <div id="ref-Sofrygin2017a" class="csl-entry">
-Sofrygin, Oleg, Romain Neugebauer, and Mark J. van der Laan. 2017.
-<span>“Conducting Simulations in Causal Inference with Networks-Based
-Structural Equation Models.”</span> arXiv prepring. <a href="https://doi.org/10.48550/arXiv.1705.10376" class="external-link">https://doi.org/10.48550/arXiv.1705.10376</a>.
+<span class="nocase">Sofrygin, Oleg, Romain Neugebauer, and Mark J. van
+der Laan</span>. 2017. <em>Conducting Simulations in Causal Inference
+with Networks-Based Structural Equation Models</em>. arXiv prepring. <a href="https://doi.org/10.48550/arXiv.1705.10376" class="external-link">https://doi.org/10.48550/arXiv.1705.10376</a>.
 </div>
 <div id="ref-Sofrygin2017" class="csl-entry">
-Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer. 2017.
-<span>“Simcausal r Package: Conducting Transparent and Reproducible
-Simulation Studies of Causal Effect Estimation with Complex Longitudinal
-Data.”</span> <em>Journal of Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
+<span class="nocase">Sofrygin, Oleg, Mark J. van der Laan, and Romain
+Neugebauer</span>. 2017. <span>“Simcausal r Package: Conducting
+Transparent and Reproducible Simulation Studies of Causal Effect
+Estimation with Complex Longitudinal Data.”</span> <em>Journal of
+Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
 </div>
 <div id="ref-VanderWeele2013" class="csl-entry">
 VanderWeele, Tyler J., and Weihua An. 2013. <span>“Social Networks and
 Causal Inference.”</span> In <em>Handbook of Causal Analysis for Social
-Research</em>, edited by Stephen L. Morgan. Dordrecht: Springer Science
-+ Business Media. <a href="https://doi.org/10.1007/978-94-007-6094-3" class="external-link">https://doi.org/10.1007/978-94-007-6094-3</a>.
+Research</em>, edited by Stephen L. Morgan. Springer Science + Business
+Media. <a href="https://doi.org/10.1007/978-94-007-6094-3" class="external-link">https://doi.org/10.1007/978-94-007-6094-3</a>.
 </div>
 </div>
 </div>

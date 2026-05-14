@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,7 +129,7 @@ this:</p>
 <p>Suppose we now want to generate an additional child node called
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
 which should be based on a linear regression model of the form:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mo>−</mo><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + N(0, 1.5).</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mi>−</mi><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>2</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + N(0, 1.5).</annotation></semantics></math></p>
 <p>We could do this using the <code><a href="../reference/node.html">node()</a></code> function, by supplying
 appropriate values to the <code>parents</code>, <code>betas</code>,
 <code>intercept</code> and <code>error</code> arguments. The following
@@ -181,7 +181,7 @@ should additionally depend on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>,
 a categorical variable. For example, suppose this is the regression
 model we want to generate data from:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mo>−</mo><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>C</mi><mi>m</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>u</mi><mi>m</mi><mo>⋅</mo><mo>−</mo><mn>1</mn><mo>+</mo><mi>C</mi><mi>h</mi><mi>i</mi><mi>g</mi><mi>h</mi><mo>⋅</mo><mo>−</mo><mn>3</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + Cmedium \cdot -1 + Chigh \cdot -3 + N(0, 1.5).</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mi>−</mi><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>2</mn><mo>+</mo><mi>C</mi><mi>m</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>u</mi><mi>m</mi><mo>⋅</mo><mi>−</mi><mn>1</mn><mo>+</mo><mi>C</mi><mi>h</mi><mi>i</mi><mi>g</mi><mi>h</mi><mo>⋅</mo><mi>−</mi><mn>3</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + Cmedium \cdot -1 + Chigh \cdot -3 + N(0, 1.5).</annotation></semantics></math></p>
 <p>In this model, the “low” category is used as a reference category. If
 this is what we want to do, using the simple <code>parents</code>,
 <code>betas</code>, <code>intercept</code> approach no longer works. We
@@ -225,7 +225,7 @@ is a parent of
 </h2>
 <p>Interactions of any sort may also be added to the DAG. Suppose we
 want to generate data from the following regression model:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mo>−</mo><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>A</mi><mo>*</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>5</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + A*B \cdot -5 + N(0, 1.5),</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mi>−</mi><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>2</mn><mo>+</mo><mi>A</mi><mo>*</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>5</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + B \cdot -2 + A*B \cdot -5 + N(0, 1.5),</annotation></semantics></math></p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>*</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A*B</annotation></semantics></math>
 indicates the interaction between
@@ -274,7 +274,7 @@ continuous variable and the outcome in a data generation process. This
 can be done by including cubic terms of that variable in a formula.
 Suppose the regression model that we want to use has the following
 form:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mo>−</mo><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><msup><mi>A</mi><mn>2</mn></msup><mo>⋅</mo><mn>0.02</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + A^2 \cdot 0.02 + B \cdot -2 + N(0, 1.5).</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∼</mo><mi>−</mi><mn>8</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.4</mn><mo>+</mo><msup><mi>A</mi><mn>2</mn></msup><mo>⋅</mo><mn>0.02</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>2</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1.5</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">D \sim -8 + A \cdot 0.4 + A^2 \cdot 0.02 + B \cdot -2 + N(0, 1.5).</annotation></semantics></math></p>
 <p>The following code may be used to define such as node:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag_with_formula</span> <span class="op">&lt;-</span> <span class="va">dag</span> <span class="op">+</span></span>

@@ -20,29 +20,29 @@ currently not supported. Only binary variables added using the
 The goal of the
 [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
 function is not to provide a general framework for DES. Multiple other R
-packages, such as `simmer` (Ucar, Smeets, and Azcorra 2019; Degeling et
-al. 2025) and `DES` (Matloff 2017), as well as software packages outside
-R have been developed for that purpose and are much more useful in this
-regard. Instead, the aim of this function is to provide a specific, but
-fairly general, DES model that may be used to generate data from DAG
-based description of the data generation process (DGP). In other words:
-if you want to perform a classic DES with interacting agents using a
-classic simulation modeling approach, this is probably not the right
-package for you. If you want to generate complex time-dependent data
-based on a stochastic model, you have come to the right place.
+packages, such as `simmer` (Ucar et al. 2019; Degeling et al. 2025) and
+`DES` (Matloff 2017), as well as software packages outside R have been
+developed for that purpose and are much more useful in this regard.
+Instead, the aim of this function is to provide a specific, but fairly
+general, DES model that may be used to generate data from DAG based
+description of the data generation process (DGP). In other words: if you
+want to perform a classic DES with interacting agents using a classic
+simulation modeling approach, this is probably not the right package for
+you. If you want to generate complex time-dependent data based on a
+stochastic model, you have come to the right place.
 
 Throughout the vignette, we assume that the reader is already familiar
 with the `simDAG` syntax. If this is not the case, we recommend
 consulting the introductory vignette or the main paper associated with
-this package first (Denz and Timmesfeld 2025).
+this package first (Denz and Timmesfeld 2026).
 
 ## What is Discrete-Event Simulation and Why Use it?
 
 In a discrete-event simulation (DES), the data is generated according to
 a statistical model, which describes a system as a sequence of distinct
 (or discrete) events that happen in continuous time and may influence
-each other. Any DES starts with the generation of $n$ individuals at
-$t = 0$ that have some characteristics, such as values of multiple
+each other. Any DES starts with the generation of $`n`$ individuals at
+$`t = 0`$ that have some characteristics, such as values of multiple
 covariates. The full description of all individuals is considered to be
 the *state* of the simulation here. This *state* only ever changes when
 some *event* occurs. A simple example for an *event* would be a variable
@@ -71,12 +71,12 @@ implemented in
 [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
 is as follows for every individual:
 
-- 1.  At $t = 0$, initialize the baseline covariate values and set all
-      $m$ time-dependent covariates to `FALSE`.
-- 2.  For each of the $m$ considered time-dependent variables, generate
-      the time until the next change based on some distributional
-      assumptions (possibly dependent on any variables contained in the
-      current state)
+- 1.  At $`t = 0`$, initialize the baseline covariate values and set all
+      $`m`$ time-dependent covariates to `FALSE`.
+- 2.  For each of the $`m`$ considered time-dependent variables,
+      generate the time until the next change based on some
+      distributional assumptions (possibly dependent on any variables
+      contained in the current state)
 - 3.  Advance the simulation to the minimum of the values drawn in step
       (2).
 - 4.  Update the value of the time-dependent variable that generated
@@ -88,8 +88,8 @@ is as follows for every individual:
 The
 [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
 directly implements this workflow, assuming that individuals (rows in
-the `data`) do not influence each other. A data set at $t = 0$ is either
-simulated using the
+the `data`) do not influence each other. A data set at $`t = 0`$ is
+either simulated using the
 [`sim_from_dag()`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md)
 function or supplied directly by the user (using the `t0_data`
 argument). This data set is then updated according to the time-dependent
@@ -121,22 +121,28 @@ the other vignettes and documentation pages of this package.
 For illustrative purposes, we will start with a small comparison of the
 discrete-time simulation approach and the discrete-event approach.
 Consider that we are interested in simulating the time until `death` for
-$n$ individuals. Lets ignore the influence of any other variables for
+$`n`$ individuals. Lets ignore the influence of any other variables for
 the moment and just consider `death` by itself. Suppose that `death` has
 a fixed probability of 0.01 to occur during each time-unit.
 
 ### Discrete-Time approach
 
 In a discrete-time simulation, we would simply draw Bernoulli trials
-with a probability of 0.01 at $t$. If the trial returns a 1, we are done
-and save the time. If it returns a 0, we increase $t$ by one and repeat
-until we are finished. This can be done using the
+with a probability of 0.01 at $`t`$. If the trial returns a 1, we are
+done and save the time. If it returns a 0, we increase $`t`$ by one and
+repeat until we are finished. This can be done using the
 [`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 function using the following code:
 
 ``` r
+
 library(simDAG)
 library(data.table)
+#> 
+#> Attaching package: 'data.table'
+#> The following object is masked from 'package:base':
+#> 
+#>     %notin%
 library(ggplot2)
 
 set.seed(1234)
@@ -174,6 +180,7 @@ needed potentially hundreds or thousands in the discrete-time approach.
 The following code may be used to implement this:
 
 ``` r
+
 dag_des <- empty_dag() +
   node_td("death", type="next_time", prob_fun=0.01, event_duration=Inf)
 
@@ -213,6 +220,7 @@ time-dependent variable which directly influences the probability of
 death. Consider the following code:
 
 ``` r
+
 prob_death <- function(data) {
   0.001 * 0.8^(data$treatment)
 }
@@ -253,6 +261,7 @@ argument is only used to make the output a little prettier.
 The generated data for the first individual look like this:
 
 ``` r
+
 head(sim, 9)
 #> Key: <.id, start>
 #>      .id     start      stop treatment  death
@@ -282,6 +291,7 @@ approach is more clear. Alternatively, we could also use the much more
 convenient `formula` interface:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("treatment", type="next_time", prob_fun=0.01,
           event_duration=100) +
@@ -316,6 +326,7 @@ baseline event probability, instead of a truly constant one. Consider
 the following code:
 
 ``` r
+
 prob_death <- function(data) {
   base_p <- fifelse(data$.time > 300, 0.005, 0.001)
   base_p * 0.8^(data$treatment)
@@ -342,16 +353,16 @@ head(sim)
 #> 6:     1 540.08265 648.71324     FALSE  FALSE
 ```
 
-In this code, the baseline probability is 0.001 until $t = 300$ and then
-increases to 0.005. It is not sufficient to only define the probability
-function this way, because then there would be no way for the simulation
-itself to know that the event durations have to be re-drawn. For
-example, lets say the `death` time drawn at $t = 0$ for some person is
-678 and assume that `treatment` has no effect for this individual. This
-time was generated using a rate of 0.001, so only the time until 300 is
-valid. At $t = 300$, we therefore have to re-draw another time from a
-truncated exponential distribution with the new rate of 0.005 (truncated
-at 300).
+In this code, the baseline probability is 0.001 until $`t = 300`$ and
+then increases to 0.005. It is not sufficient to only define the
+probability function this way, because then there would be no way for
+the simulation itself to know that the event durations have to be
+re-drawn. For example, lets say the `death` time drawn at $`t = 0`$ for
+some person is 678 and assume that `treatment` has no effect for this
+individual. This time was generated using a rate of 0.001, so only the
+time until 300 is valid. At $`t = 300`$, we therefore have to re-draw
+another time from a truncated exponential distribution with the new rate
+of 0.005 (truncated at 300).
 
 The same strategy could be used to define piecewise-constant
 time-dependent effects as well. One would only need to adjust the
@@ -362,6 +373,7 @@ easiest way to do this is by using the `model` argument. Consider the
 code below:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("treatment", type="next_time", prob_fun=0.01,
           event_duration=100) +
@@ -399,6 +411,7 @@ functions, users may use any kind of time-dependent probabilities. For
 example, lets define this arbitrary baseline hazard for `death`:
 
 ``` r
+
 fbasehaz <- function(t) {
   0.0002 +
     0.001 * exp(-((t - 200)^2) / (2 * 50^2)) + # first hill
@@ -409,6 +422,7 @@ fbasehaz <- function(t) {
 Plotted, it looks like this for the first 1000 time units:
 
 ``` r
+
 plotdata <- data.frame(time=1:1000, val=fbasehaz(1:1000))
 
 ggplot(plotdata, aes(x=time, y=val)) +
@@ -424,6 +438,7 @@ We can use this function as a baseline hazard for `death` through the
 like this:
 
 ``` r
+
 dag <- empty_dag() +
   node_td("treatment", type="next_time", prob_fun=0.01,
           event_duration=100, immunity_duration=Inf) +
@@ -496,8 +511,8 @@ Chemical Systems with Time Dependent Propensities and Delays.” *The
 Journal of Chemical Physics* 127 (21).
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol.
-2014. *Discrete-Event System Simulation*. Vol. 5. Edinburgh Gate:
-Pearson Education Limited.
+2014. *Discrete-Event System Simulation*. Vol. 5. Pearson Education
+Limited.
 
 Degeling, Koen, Jonathan Karnon, Michiel van de Ven, alan Brennan, and
 Hendrik Koffijberg. 2025. “Discrete Event Simulation in r Using the
@@ -505,16 +520,18 @@ Hendrik Koffijberg. 2025. “Discrete Event Simulation in r Using the
 Illustration in Colon Cancer.” *Applied Health Economics and Health
 Policy* 23: 961–75.
 
-Denz, Robin, and Nina Timmesfeld. 2025. “Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.” *arXiv
-Preprint*. <https://doi.org/10.48550/arXiv.2506.01498>.
+Denz, Robin, and Nina Timmesfeld. 2026. “Simulating Complex
+Cross-Sectional and Longitudinal Data Using the simDAG R Package.”
+*Journal of Statistical Software* 116 (2): 1–40.
+<https://doi.org/10.18637/jss.v116.i02>.
 
 Gillespie, Daniel T. 1976. “A General Method for Numerically Simulating
 the Stochastic Time Evolution of Coupled Chemical Reactions.” *Journal
 of Computational Physics* 22 (4): 403–34.
 
-———. 1977. “Exact Stochastic Simulation of Coupled Chemical Reactions.”
-*The Journal of Physical Chemistry* 81 (25): 2340–61.
+Gillespie, Daniel T. 1977. “Exact Stochastic Simulation of Coupled
+Chemical Reactions.” *The Journal of Physical Chemistry* 81 (25):
+2340–61.
 
 Masuda, Naoki, and Luis E. C. Rocha. 2018. “A Gillespie Algorithm for
 Non-Markovian Stochastic Processes.” *SIAM Review* 60 (1): 95–115.

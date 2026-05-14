@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package • simDAG</title>
+<title>Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package • simDAG</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package</h1>
                         <h4 data-toc-skip class="author">Robin Denz and
 Nina Timmesfeld</h4>
             
@@ -81,32 +81,33 @@ Nina Timmesfeld</h4>
         <div class="abstract">
       <p class="abstract">Abstract</p>
       This introduction to the <code>simDAG</code> <code>R</code>
-      Package is a (slightly) modified version of a provisionally
-      accepted article in the <em>Journal of Statistical Software</em>.
-      If you use this package or want to cite information contained in
-      this article, please cite the arXiv version <span class="citation">(Denz and Timmesfeld 2025)</span>. <br><br>
-      Generating artificial data is a crucial step when performing
-      Monte-Carlo simulation studies. Depending on the planned study,
-      complex data generation processes (DGP) containing multiple,
-      possibly time-varying, variables with various forms of
-      dependencies and data types may be required. Simulating data from
-      such DGP may therefore become a difficult and time-consuming
-      endeavor. The <code>simDAG</code> <code>R</code> package offers a
-      standardized approach to generate data from simple and complex DGP
-      based on the definition of structural equations in directed
-      acyclic graphs using arbitrary functions or regression models. The
-      package offers a clear syntax with an enhanced formula interface
-      and directly supports generating binary, categorical, count and
-      time-to-event data with arbitrary dependencies, possibly
-      non-linear relationships and interactions. It additionally
-      includes a framework to conduct discrete-time based simulations
-      which allows the generation of longitudinal data on a
-      semi-continuous time-scale. This approach may be used to generate
-      time-to-event data with both recurrent or competing events and
-      possibly multiple time-varying covariates, which may themselves
-      have arbitrary data types. In this article we demonstrate the vast
-      amount of features included in <code>simDAG</code> by replicating
-      the DGP of multiple real Monte-Carlo simulation studies. <br><br>
+      Package is a (slightly) modified version of an article in the
+      <em>Journal of Statistical Software</em>. If you use this package
+      or want to cite information contained in this article, please cite
+      the official version <span class="citation">(Denz and Timmesfeld
+      2026)</span>. <br><br> Generating artificial data is a crucial
+      step when performing Monte-Carlo simulation studies. Depending on
+      the planned study, complex data generation processes (DGP)
+      containing multiple, possibly time-varying, variables with various
+      forms of dependencies and data types may be required. Simulating
+      data from such DGP may therefore become a difficult and
+      time-consuming endeavor. The <code>simDAG</code> <code>R</code>
+      package offers a standardized approach to generate data from
+      simple and complex DGP based on the definition of structural
+      equations in directed acyclic graphs using arbitrary functions or
+      regression models. The package offers a clear syntax with an
+      enhanced formula interface and directly supports generating
+      binary, categorical, count and time-to-event data with arbitrary
+      dependencies, possibly non-linear relationships and interactions.
+      It additionally includes a framework to conduct discrete-time
+      based simulations which allows the generation of longitudinal data
+      on a semi-continuous time-scale. This approach may be used to
+      generate time-to-event data with both recurrent or competing
+      events and possibly multiple time-varying covariates, which may
+      themselves have arbitrary data types. In this article we
+      demonstrate the vast amount of features included in
+      <code>simDAG</code> by replicating the DGP of multiple real
+      Monte-Carlo simulation studies. <br><br>
 </div>
     
 <div class="section level2">
@@ -118,17 +119,17 @@ Nina Timmesfeld</h4>
 <p>Applied researchers and statisticians frequently use Monte-Carlo
 simulation techniques in a variety of ways. They are used to estimate
 required sample sizes <span class="citation">(Arnold et al.
-2011)</span>, formally compare different statistical methods <span class="citation">(Morris, White, and Crowther 2019; Denz,
-Klaaßen-Mielke, and Timmesfeld 2023)</span>, help design and plan
-clinical trials <span class="citation">(Kimko and Duffull 2002; Nance et
-al. 2024)</span> or for teaching purposes <span class="citation">(Sigal
-and Chalmers 2016; Fox et al. 2022)</span>. The main reason for their
-broad usage is that the researcher has full control over the true data
-generation process (DGP). In general, the researcher will define a DGP
-appropriate to the situation and generate multiple datasets from it.
-Some statistical analysis technique is then applied to each dataset and
-the results are analyzed. A crucial step in every kind of Monte-Carlo
-simulation study is thus the generation of these datasets.</p>
+2011)</span>, formally compare different statistical methods <span class="citation">(Morris et al. 2019; Denz et al. 2023)</span>, help
+design and plan clinical trials <span class="citation">(Kimko and
+Duffull 2002; <span class="nocase">Nance et al.</span> 2024)</span> or
+for teaching purposes <span class="citation">(Sigal and Chalmers 2016;
+Fox et al. 2022)</span>. The main reason for their broad usage is that
+the researcher has full control over the true data generation process
+(DGP). In general, the researcher will define a DGP appropriate to the
+situation and generate multiple datasets from it. Some statistical
+analysis technique is then applied to each dataset and the results are
+analyzed. A crucial step in every kind of Monte-Carlo simulation study
+is thus the generation of these datasets.</p>
 <p>Depending on the DGP that is required by the researcher, this step
 may become very difficult and time consuming. For example, some
 Monte-Carlo simulations require the generation of complex longitudinal
@@ -151,10 +152,10 @@ program has to be validated extensively while it also has to be
 computationally efficient enough to allow potentially thousands of
 datasets to be generated in a reasonable amount of time. Additionally,
 it also has to be flexible enough to allow the user to easily make
-changes to the DGP to be useful in most cases <span class="citation">(Sofrygin, van der Laan, and Neugebauer 2017)</span>. A
-comprehensive software application that automates most of the required
-work would therefore be of great benefit to the scientific
-community.</p>
+changes to the DGP to be useful in most cases <span class="citation">(<span class="nocase">Sofrygin et al.</span>
+2017)</span>. A comprehensive software application that automates most
+of the required work would therefore be of great benefit to the
+scientific community.</p>
 <p>In this article we present the <code>simDAG</code> <code>R</code>
 package, which offers an easy to use and consistent framework to
 generate arbitrarily complex crossectional and longitudinal data. The
@@ -214,24 +215,26 @@ An example DAG with three nodes.
 </div>
 <p>Such DAGs are the cornerstone of the <em>structural approach</em> to
 causal inference developed by <span class="citation">Pearl (2009)</span>
-and <span class="citation">Spirtes, Glymour, and Scheines (2000)</span>.
-They are used extensively in social research <span class="citation">(Wouk, Bauer, and Gottfredson 2019)</span>, economics
-<span class="citation">(Imbens 2020)</span> and epidemiology <span class="citation">(Byeon and Lee 2023)</span> to encode causal
-assumptions about the real underlying DGP of empirical data. For
-empirical research such graphs are very useful because they give a clear
-overview of the causal assumptions made by the researchers. By using
-causal graphical methods such as the <em>backdoor</em> criterion <span class="citation">(Pearl 2009)</span> or the <em>frontdoor</em> criterion
-<span class="citation">(Pearl 1995)</span>, it is also possible to use
-such graphs to determine which variables need to be adjusted for in
-order to get unbiased estimates of certain causal effects. The
-<code>daggitty</code> <code>R</code> package directly implements
-multiple tools for this kind of usage <span class="citation">(Textor et
-al. 2016)</span>.</p>
+and <span class="citation">Spirtes et al. (2000)</span>. They are used
+extensively in social research <span class="citation">(Wouk et al.
+2019)</span>, economics <span class="citation">(Imbens 2020)</span> and
+epidemiology <span class="citation">(Byeon and Lee 2023)</span> to
+encode causal assumptions about the real underlying DGP of empirical
+data. For empirical research such graphs are very useful because they
+give a clear overview of the causal assumptions made by the researchers.
+By using causal graphical methods such as the <em>backdoor</em>
+criterion <span class="citation">(Pearl 2009)</span> or the
+<em>frontdoor</em> criterion <span class="citation">(Pearl 1995)</span>,
+it is also possible to use such graphs to determine which variables need
+to be adjusted for in order to get unbiased estimates of certain causal
+effects. The <code>daggitty</code> <code>R</code> package directly
+implements multiple tools for this kind of usage <span class="citation">(<span class="nocase">Textor et al.</span>
+2016)</span>.</p>
 <p>These kind of DAGs can be formally described using <em>structural
 equations</em>. These equations describe how each node is distributed.
 For example, a general set of structural equations that may be used to
 describe the DAG in Figure 1 are:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>A</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>f</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>U</mi><mi>A</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>B</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>f</mi><mi>B</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>U</mi><mi>B</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>C</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>f</mi><mi>C</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>,</mo><msub><mi>U</mi><mi>C</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>A</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>f</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>U</mi><mi>A</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>B</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>f</mi><mi>B</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>U</mi><mi>B</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>C</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>f</mi><mi>C</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>,</mo><msub><mi>U</mi><mi>C</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd></mtr></mtable><annotation encoding="application/x-tex">
     \begin{aligned}
         A \sim &amp; f_A(U_A), \\
         B \sim &amp; f_B(U_B), \\
@@ -252,8 +255,8 @@ and
 denote random errors or disturbances. If the functions in these
 structural equations are not specified and some assumption on the
 probability distribution of the error terms is made, this is equivalent
-to a non-parametric structural equation model <span class="citation">(Pearl 2009; Sofrygin, van der Laan, and Neugebauer
-2017)</span>.</p>
+to a non-parametric structural equation model <span class="citation">(Pearl 2009; <span class="nocase">Sofrygin et
+al.</span> 2017)</span>.</p>
 <p>To make the generation of data from a DAG possible, however, it is
 not enough to only specify which variables are causally related to one
 another. The structural equations now also have to be fully specified.
@@ -263,7 +266,7 @@ regression models and parametric distributions <span class="citation">(Kline 202
 may be used, allowing the definition of arbitrarily complex DGPs.
 Continuing the example from above, we could define the structural
 equations of the DAG as follows:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>A</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>B</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>C</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left"><mo>−</mo><mn>2</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.3</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mo>−</mo><mn>2</mn><mo>+</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>A</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>B</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>C</mi><mo>∼</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mi>−</mi><mn>2</mn><mo>+</mo><mi>A</mi><mo>⋅</mo><mn>0.3</mn><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>−</mi><mn>2</mn><mo>+</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd></mtr></mtable><annotation encoding="application/x-tex">
     \begin{aligned}
         A \sim &amp; N(0, 1), \\
         B \sim &amp; N(0, 1), \\
@@ -288,7 +291,7 @@ the supplied definitions and the data generated in previous steps. This
 step-wise method relies on the fact that every DAG can be
 <em>topologically sorted</em>, which means that there is always an
 ordering of the nodes such that for every link
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>u</mi><mi>i</mi></msub><mo>,</mo><msub><mi>u</mi><mi>j</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(u_i, u_j)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>u</mi><mi>i</mi></msub><mo>,</mo><msub><mi>u</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(u_i, u_j)</annotation></semantics></math>
 between nodes
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>u</mi><mi>i</mi></msub><annotation encoding="application/x-tex">u_i</annotation></semantics></math>
 and
@@ -308,7 +311,7 @@ order will be generated, based on the already generated data. These
 nodes are called <em>child nodes</em>, because they are dependent on
 other nodes, which are called their <em>parent nodes</em> <span class="citation">(Byeon and Lee 2023)</span>. For the example DAG shown
 earlier, the two possible topological sortings are:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>,</mo><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="1.0em"></mspace><mtext mathvariant="normal">and</mtext><mspace width="1.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo>,</mo><mi>A</mi><mo>,</mo><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>,</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mspace width="1.0em"></mspace><mtext mathvariant="normal">and</mtext><mspace width="1.0em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>,</mo><mi>A</mi><mo>,</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
     (A, B, C) \quad \text{and} \quad (B, A, C).
 </annotation></semantics></math></p>
 <p>Here, both
@@ -355,7 +358,7 @@ and repeating the node for each point in time that should be considered
 <span class="citation">(Hernán and Robins 2020)</span>. The proposed
 package features computationally efficient functions to automate this
 process for large amounts of time-points using a <em>discrete-time
-simulation</em> approach <span class="citation">(Tang, Leu, and Abbass
+simulation</em> approach <span class="citation">(Tang et al.
 2020)</span>. Although this procedure relies on a discrete time scale,
 it can be used to generate data on a semi-continuous time-scale by using
 very small steps in time. This is described in more detail in a later
@@ -383,9 +386,9 @@ studies <em>not</em> concerned with causal inference.</p>
 <p>Although the data-generation algorithm described above is appropriate
 for most applications, it may not be the best choice for validating
 causal discovery methods, due to the marginal variance of each variable
-increasing along the order of the topological sorting <span class="citation">(Reisach, Seiler, and Weichwald 2021)</span>. Other
-methods, such as the onion method proposed by <span class="citation">Andrews and Kummerfeld (2024)</span> may be preferable
-in this particular case.</p>
+increasing along the order of the topological sorting <span class="citation">(Reisach et al. 2021)</span>. Other methods, such as
+the onion method proposed by <span class="citation">Andrews and
+Kummerfeld (2024)</span> may be preferable in this particular case.</p>
 </div>
 <div class="section level3">
 <h3 id="comparison-with-existing-software">Comparison with existing software<a class="anchor" aria-label="anchor" href="#comparison-with-existing-software"></a>
@@ -418,30 +421,30 @@ competing events and general multi-state time-to-event data, unlike the
 <code>simDAG</code> package, none of them support arbitrary mixtures of
 these data types or time-varying covariates.</p>
 <p>Other packages, such as the <code>simPop</code> package <span class="citation">(Templ et al. 2017)</span> and the
-<code>simFrame</code> package <span class="citation">(Alfons, Templ, and
-Filzmoser 2010)</span> allow generation of more complex synthetic data
-structures as well, but are mostly focused on generating data that
-mimicks real datasets. Similarly, the <code>simtrial</code> package
-offers very flexible tools for the generation of randomized controlled
-trial data, but it would be difficult to use it to generate other data
-types. Software directly based on causal DAGs as DGPs also exists.
-Although it is not stated in the package documentation directly, the
+<code>simFrame</code> package <span class="citation">(Alfons et al.
+2010)</span> allow generation of more complex synthetic data structures
+as well, but are mostly focused on generating data that mimicks real
+datasets. Similarly, the <code>simtrial</code> package offers very
+flexible tools for the generation of randomized controlled trial data,
+but it would be difficult to use it to generate other data types.
+Software directly based on causal DAGs as DGPs also exists. Although it
+is not stated in the package documentation directly, the
 <code>simstudy</code> package <span class="citation">(Goldfeld and
 Wujciak-Jens 2020)</span> also relies on the DAG based algorithm
 described earlier. It supports the use of different data types and
 custom generation functions, but only has partial support for generation
 of longitudinal data. Alternatively, the <code>Python</code> library
-<code>DagSim</code> <span class="citation">(Hajj, Pensar, and Sandve
-2023)</span> allows users to generate arbitrary forms of data, while
-also allowing the user to supply custom functions for the data
-generation process. The price for this flexibility is, however, that not
-many default options are implemented in the library.</p>
-<p>Finally, the <code>simcausal</code> <code>R</code> package <span class="citation">(Sofrygin, van der Laan, and Neugebauer 2017)</span> is
-very similar to the <code>simDAG</code> package and was in fact a big
-inspiration for it. Like the <code>simDAG</code> package, it is also
-based on the causal DAG framework. The syntax for defining a DAG is
-nearly the same, with some differences in how formula objects can and
-should be specified. Unlike the proposed package, however, the
+<code>DagSim</code> <span class="citation">(Hajj et al. 2023)</span>
+allows users to generate arbitrary forms of data, while also allowing
+the user to supply custom functions for the data generation process. The
+price for this flexibility is, however, that not many default options
+are implemented in the library.</p>
+<p>Finally, the <code>simcausal</code> <code>R</code> package <span class="citation">(<span class="nocase">Sofrygin et al.</span>
+2017)</span> is very similar to the <code>simDAG</code> package and was
+in fact a big inspiration for it. Like the <code>simDAG</code> package,
+it is also based on the causal DAG framework. The syntax for defining a
+DAG is nearly the same, with some differences in how formula objects can
+and should be specified. Unlike the proposed package, however, the
 <code>simcausal</code> package is focused mostly on generating data for
 simulation studies dealing with causal inference. As such, it also
 directly supports the generation of data after performing some
@@ -451,7 +454,7 @@ flexible in terms of what data can be generated. <code>simDAG</code>
 supports the use of arbitrary data generation functions, the definition
 of interactions, non-linear relationships and mixed model syntax in its’
 formula interface and categorical input data for nodes. None of these
-features are present in <code>simcausal</code> <span class="citation">(Sofrygin, van der Laan, and Neugebauer
+features are present in <code>simcausal</code> <span class="citation">(<span class="nocase">Sofrygin et al.</span>
 2017)</span>.</p>
 </div>
 <div class="section level3">
@@ -786,8 +789,8 @@ previously generated nodes</td>
 <tr class="odd">
 <td><code><a href="../reference/node_cox.html">node_cox()</a></code></td>
 <td>Generates a node based on a Cox proportional hazards regression
-model, using the method of <span class="citation">Bender, Augustin, and
-Blettner (2005)</span>
+model, using the method of <span class="citation">Bender et al.
+(2005)</span>
 </td>
 </tr>
 <tr class="even">
@@ -832,22 +835,21 @@ are only meant to be used for discrete-time simulations.</p>
 <p>In the following Section we will illustrate how to use the
 <code>simDAG</code> package to simulate more complex crossectional data.
 Instead of using a made up artificial example, we will do this by
-partially replicating a real Monte-Carlo simulation study by <span class="citation">Denz, Klaaßen-Mielke, and Timmesfeld (2023)</span>,
-published in the prestigious peer-reviewed journal <em>Statistics in
-Medicine</em>. Because this package strictly focuses on the data
-generation step of Monte-Carlo studies and for reasons of brevity, we
-will not reproduce the entire simulation study. Instead we will only
-replicate the DGP used to generate the data for this study.</p>
-<p><span class="citation">Denz, Klaaßen-Mielke, and Timmesfeld
-(2023)</span> recently performed a neutral comparison study of multiple
-different methods to estimate counterfactual survival curves from
-crossectional observational data. In this Monte-Carlo simulation study
-they wanted to investigate how different kinds of misspecifications of
-nuisance models, which are used in some methods to estimate the
-counterfactual survival curves, affect the estimates produced by the
-different methods. To do this, a DGP was required that includes multiple
-interrelated binary and continuous variables, as well as a
-right-censored time-to-event variable.</p>
+partially replicating a real Monte-Carlo simulation study by <span class="citation">Denz et al. (2023)</span>, published in the prestigious
+peer-reviewed journal <em>Statistics in Medicine</em>. Because this
+package strictly focuses on the data generation step of Monte-Carlo
+studies and for reasons of brevity, we will not reproduce the entire
+simulation study. Instead we will only replicate the DGP used to
+generate the data for this study.</p>
+<p><span class="citation">Denz et al. (2023)</span> recently performed a
+neutral comparison study of multiple different methods to estimate
+counterfactual survival curves from crossectional observational data. In
+this Monte-Carlo simulation study they wanted to investigate how
+different kinds of misspecifications of nuisance models, which are used
+in some methods to estimate the counterfactual survival curves, affect
+the estimates produced by the different methods. To do this, a DGP was
+required that includes multiple interrelated binary and continuous
+variables, as well as a right-censored time-to-event variable.</p>
 <p>In particular, the data sets they generated for each simulation run
 included six covariates, two of which were binary
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mn>1</mn></msub><mo>,</mo><msub><mi>X</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">X_1, X_3</annotation></semantics></math>)
@@ -897,8 +899,8 @@ where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mn>5</mn></msub><annotation encoding="application/x-tex">X_5</annotation></semantics></math>
 was included as a squared term. Data for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>
-was generated using the method by <span class="citation">(Bender,
-Augustin, and Blettner 2005)</span>, based on a Weibull distribution
+was generated using the method by <span class="citation">(Bender et al.
+2005)</span>, based on a Weibull distribution
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>γ</mi><mo>=</mo><mn>2.4</mn></mrow><annotation encoding="application/x-tex">\lambda=2, \gamma=2.4</annotation></semantics></math>).
 The time until censoring was generated independently from a second
 Weibull distribution
@@ -911,12 +913,11 @@ for the causal effect of
 on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>,
 which are correlated with other non-confounding variables. The inclusion
-of non-linear relationships allowed <span class="citation">Denz,
-Klaaßen-Mielke, and Timmesfeld (2023)</span> to investigate different
-kinds of misspecified models. More details on the DGP and the simulation
-study itself are given in the original manuscript. To replicate the DGP
-of this study, the following <code>DAG</code> definition may be
-used:</p>
+of non-linear relationships allowed <span class="citation">Denz et al.
+(2023)</span> to investigate different kinds of misspecified models.
+More details on the DGP and the simulation study itself are given in the
+original manuscript. To replicate the DGP of this study, the following
+<code>DAG</code> definition may be used:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X1"</span>, <span class="st">"X3"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span>,</span>
@@ -1164,11 +1165,11 @@ is set to 1 with a probability of 0.01. Once
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
 is set to 1, it never changes back to 0. The following structural
 equation may be used to describe this DAG:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
     Y_t \sim Bernoulli(P_Y(t)),
 </annotation></semantics></math></p>
 <p>where</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>=</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><msub><mi>Y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.01</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><mi>t</mi><mo>=</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">if</mtext><mspace width="1.0em"></mspace><msub><mi>Y</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0.01</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
     P_Y(t) =
     \begin{cases}
         0 &amp; \text{if} \quad t = 0 \\
@@ -1186,8 +1187,8 @@ time or at any earlier time may be used when defining a node. To
 generate data from this type of DAG, the same algorithm as described in
 the first Section may be used. Since only discrete points in time are
 considered, this type of simulation has also been called
-<em>discrete-time simulation</em> <span class="citation">(Tang, Leu, and
-Abbass 2020)</span> or <em>dynamic microsimulation</em> <span class="citation">(Spooner et al. 2021)</span> in the literature and is
+<em>discrete-time simulation</em> <span class="citation">(Tang et al.
+2020)</span> or <em>dynamic microsimulation</em> <span class="citation">(Spooner et al. 2021)</span> in the literature and is
 closely related to <em>discrete-event simulation</em> <span class="citation">(Banks et al. 2014)</span>.</p>
 </div>
 <div class="section level3">
@@ -1288,11 +1289,11 @@ example is the Covid-19 vaccination itself. More precisely, the
 structural equation for the myocarditis node at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 is given by:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
     Y_t \sim Bernoulli(P_{Y}(t)),
 </annotation></semantics></math></p>
 <p>with:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
     P_{Y}(t) =
     \begin{cases}
         P_{Y0} \cdot RR_{A}, &amp; \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{risk}\right] \\
@@ -1302,7 +1303,7 @@ is given by:</p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><annotation encoding="application/x-tex">P_{Y0}</annotation></semantics></math>
 denotes the base probability of developing a myocarditis,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T_{A}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T_{A}(t)</annotation></semantics></math>
 denotes the time of the last performed vaccination and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mrow><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">d_{risk}</annotation></semantics></math>
 defines the duration after the vaccination in which the risk of
@@ -1312,11 +1313,11 @@ In this particular case, each
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 will represent a single day. Similarly, the vaccination node can be
 described formally as:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>P</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
     A_t \sim Bernoulli(P_{A}(t)),
 </annotation></semantics></math></p>
 <p>with:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>20</mn><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>21</mn><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>150</mn><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>A</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>20</mn><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>21</mn><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>150</mn><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>A</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
     P_{A}(t) =
     \begin{cases}
         1, &amp; \text{if } t \in  \left[T_{A}(t), T_A(t) + 20 \right] \\
@@ -1333,9 +1334,9 @@ fictional person who gets vaccinated at
 <div class="figure" style="text-align: center">
 <img src="images_v_joss/example_probs.png" class="r-plt" alt="A simple graph showing $P_A(t)$ and $P_Y(t)$ for a fictional individual who got vaccinated once at $t = 100$, with $P_{A0} = 0.01$, $P_{Y0} = 0.005$, $d_{risk} = 20$ and $RR_A = 3.24$." width="600"><p class="caption">
 A simple graph showing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P_A(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P_A(t)</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P_Y(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P_Y(t)</annotation></semantics></math>
 for a fictional individual who got vaccinated once at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">t = 100</annotation></semantics></math>,
 with
@@ -1358,7 +1359,7 @@ and
 <span>  <span class="fu"><a href="../reference/node.html">node_td</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="st">"time_to_event"</span>, prob_fun<span class="op">=</span><span class="va">prob_myoc</span>,</span>
 <span>          parents<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A_event"</span><span class="op">)</span>, P_0<span class="op">=</span><span class="fl">0.005</span>, RR_A<span class="op">=</span><span class="fl">3.24</span><span class="op">)</span></span></code></pre></div>
 <p>First, we define a function that calculates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P_Y(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P_Y(t)</annotation></semantics></math>
 at each simulated day for all individuals, called
 <code>prob_myoc()</code>. This function simply checks whether the binary
 event indicator of the vaccination event, <code>"A_event"</code>, is
@@ -1423,7 +1424,7 @@ should be overlapping or not. By setting <code>target_event="Y"</code>,
 the function treats the <code>Y</code> node as the outcome instead of as
 another time-dependent covariate. The resulting data is in exactly the
 format needed to fit standard time-to-event models, such as a Cox model
-with time-varying covariates <span class="citation">(Z. Zhang et al.
+with time-varying covariates <span class="citation">(Zhang et al.
 2018)</span>. Using the <code>survival</code> package <span class="citation">(Therneau 2024)</span>, we can do this using the
 following code:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -1573,9 +1574,9 @@ exclusively uses the <code>data.table</code> package <span class="citation">(Bar
 computations. The <code>data.table</code> package is arguably the best
 choice for doing data wrangling in the <code>R</code> ecosystem in terms
 of computational efficiency and has similar performance as corresponding
-software libraries in <code>R</code> and <code>Julia</code> <span class="citation">(Chiou, Xu, and Huang 2023)</span>. The proposed
-package additionally relies on a few tricks to keep the amount of memory
-used small. For example, when using nodes of type
+software libraries in <code>R</code> and <code>Julia</code> <span class="citation">(Chiou et al. 2023)</span>. The proposed package
+additionally relies on a few tricks to keep the amount of memory used
+small. For example, when using nodes of type
 <code>"time_to_event"</code>, by default not every state of the
 simulation is saved. Only the times at which an event occurred are
 recorded. This information is then efficiently pieced together in the
@@ -1684,8 +1685,8 @@ last Section of the article.</p>
 includes multiple functions to facilitate the accurate description of
 the underlying DGP. Such descriptions are of great importance to
 facilitate both understanding and reproducibility of simulation studies,
-as emphasized in the literature <span class="citation">(Morris, White,
-and Crowther 2019; Cheng et al. 2016)</span>. Among these are the
+as emphasized in the literature <span class="citation">(Morris et al.
+2019; Cheng et al. 2016)</span>. Among these are the
 <code><a href="../reference/plot.DAG.html">plot.DAG()</a></code> function, that was used throughout the article
 to graphically display the defined <code>DAG</code> objects. While this
 function is useful on its own, some users may prefer to use one of the
@@ -1699,8 +1700,8 @@ structural equations, as shown throughout the article.</p>
 <p>The most distinguishing feature of the package is its capability of
 carrying out discrete-time simulations to generate longitudinal data
 with hundreds of points in time in a suitable amount of time. While
-other packages, such as the <code>simcausal</code> package <span class="citation">(Sofrygin, van der Laan, and Neugebauer 2017)</span>
-offer similar features to generate crossectional data, its’
+other packages, such as the <code>simcausal</code> package <span class="citation">(<span class="nocase">Sofrygin et al.</span>
+2017)</span> offer similar features to generate crossectional data, its’
 implementation for generation of longitudinal data is very different
 from the proposed package. In <code>simcausal</code> a new node is
 defined for each point in time internally. Although the user has direct
@@ -1738,7 +1739,7 @@ simulation</em> <span class="citation">(Banks et al. 2014)</span>, in
 which the time until the next event is modeled directly instead of
 simulating the entire process over time. Performing such simulations is,
 however, usually a lot more demanding both conceptually and in terms of
-required software development <span class="citation">(X. Zhang
+required software development <span class="citation">(Zhang
 2018)</span>. The burden of specifying appropriate input to the
 <code>prob_fun</code> argument in our approach is comparatively small,
 but it might still be a concern for some users. We hope that the many
@@ -1772,22 +1773,22 @@ preferable.</p>
 development. We are currently working on multiple new features to make
 the package even more versatile for users. For example, future versions
 of the package are planned to support the definition of interventions on
-the DAG, much like the <code>simcausal</code> package <span class="citation">(Sofrygin, van der Laan, and Neugebauer 2017)</span>,
-which would make it even easier to generate data for causal inference
-based simulations, without having to re-define the DAG multiple times.
-We also plan to extend the internal library of available node types, by
-for example including node functions to simulate competing events data
-without the use of discrete-time simulation <span class="citation">(Moriña and Navarro 2017; Haller and Ulm
+the DAG, much like the <code>simcausal</code> package <span class="citation">(<span class="nocase">Sofrygin et al.</span>
+2017)</span>, which would make it even easier to generate data for
+causal inference based simulations, without having to re-define the DAG
+multiple times. We also plan to extend the internal library of available
+node types, by for example including node functions to simulate
+competing events data without the use of discrete-time simulation <span class="citation">(Moriña and Navarro 2017; Haller and Ulm
 2014)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="computational-details">Computational details<a class="anchor" aria-label="anchor" href="#computational-details"></a>
 </h2>
-<p>The results in this paper were obtained using <code>R</code> 4.5.3
-with the <code>data.table</code> 1.18.2.1 package, the
-<code>survival</code> 3.8.6 package, the <code>igraph</code> 2.2.3
-package, the <code>ggplot2</code> 4.0.2 package and the
-<code>simDAG</code> 0.5.2.9000 package. <code>R</code> itself and all
+<p>The results in this paper were obtained using <code>R</code> 4.6.0
+with the <code>data.table</code> 1.18.4 package, the
+<code>survival</code> 3.8.6 package, the <code>igraph</code> 2.3.1
+package, the <code>ggplot2</code> 4.0.3 package and the
+<code>simDAG</code> 1.0.0 package. <code>R</code> itself and all
 packages used are available from the Comprehensive <code>R</code>
 Archive Network (CRAN) at <a href="https://CRAN.R-project.org/" class="external-link uri">https://CRAN.R-project.org/</a>.</p>
 </div>
@@ -1955,11 +1956,11 @@ the risk of getting a Covid-19 infection to 0 for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mrow><mi>i</mi><mi>m</mi><mi>m</mi><mi>u</mi><mi>n</mi><mi>e</mi></mrow></msub><annotation encoding="application/x-tex">d_{immune}</annotation></semantics></math>
 days after the vaccination was performed. We may use the following
 structural equation to describe this variable:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>P</mi><mi>C</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>C</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
     C_t \sim Bernoulli(P_{C}(t)),
 </annotation></semantics></math></p>
 <p>with:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>C</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>m</mi><mi>m</mi><mi>u</mi><mi>n</mi><mi>e</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>C</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>C</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>m</mi><mi>m</mi><mi>u</mi><mi>n</mi><mi>e</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>C</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
     P_{C}(t) =
     \begin{cases}
         0, &amp; \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{immune}\right] \\
@@ -1969,7 +1970,7 @@ structural equation to describe this variable:</p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>P</mi><mrow><mi>C</mi><mn>0</mn></mrow></msub><annotation encoding="application/x-tex">P_{C0}</annotation></semantics></math>
 is the baseline probability of experiencing a Covid-19 infection and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T_A(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T_A(t)</annotation></semantics></math>
 is still defined to be the time of the last Covid-19 vaccination as
 before. In addition to this, we will also change the definition of the
 myocarditis node
@@ -1983,11 +1984,11 @@ in the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mrow><mi>C</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">d_{C.risk}</annotation></semantics></math>
 days after the Covid-19 infection. The structural equation can then be
 changed to be:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∼</mo><mi>B</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>o</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>i</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
     Y_t \sim Bernoulli(P_{Y}(t)),
 </annotation></semantics></math></p>
 <p>with:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>C</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>A</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>C</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>C</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>C</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>d</mi><mrow><mi>A</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>Y</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>C</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>A</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>C</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>C</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>C</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>⋅</mo><mi>R</mi><msub><mi>R</mi><mi>A</mi></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>T</mi><mi>A</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>d</mi><mrow><mi>A</mi><mi>.</mi><mi>r</mi><mi>i</mi><mi>s</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>P</mi><mrow><mi>Y</mi><mn>0</mn></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
     P_{Y}(t) =
     \begin{cases}
         P_{Y0} \cdot RR_{A} \cdot RR_{C}, &amp; \text{if } t \in  \left[T_{A}(t), T_{A}(t) + d_{A.risk}\right] \text{ and } t \in  \left[T_{A}(t), T_{A}(t) + d_{C.risk}\right] \\
@@ -2277,7 +2278,7 @@ probability functions, as discussed earlier.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="literature">Literature<a class="anchor" aria-label="anchor" href="#literature"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Alfons2010" class="csl-entry">
 Alfons, Andreas, Matthias Templ, and Peter Filzmoser. 2010. <span>“An
 Object-Oriented Framework for Statistical Simulation: The r Package
@@ -2285,9 +2286,9 @@ simFrame.”</span> <em>Journal of Statistical Software</em> 37 (3): 1–36.
 <a href="https://doi.org/10.18637/jss.v037.i03" class="external-link">https://doi.org/10.18637/jss.v037.i03</a>.
 </div>
 <div id="ref-Andrews2024" class="csl-entry">
-Andrews, Bryan, and Erich Kummerfeld. 2024. <span>“Better Simulations
-for Validating Causal Discovery with the DAG-Adaptation of the Onion
-Method.”</span> arXiv:2405.13100v1.
+Andrews, Bryan, and Erich Kummerfeld. 2024. <em>Better Simulations for
+Validating Causal Discovery with the DAG-Adaptation of the Onion
+Method</em>. arXiv:2405.13100v1.
 </div>
 <div id="ref-Arnold2011" class="csl-entry">
 Arnold, Benjamin F., Daniel R. Hogan, John M. Colford Jr., and Alan E.
@@ -2307,8 +2308,8 @@ Proportional Hazards Models with Time-Varying Covariates.”</span>
 </div>
 <div id="ref-Banks2014" class="csl-entry">
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol.
-2014. <em>Discrete-Event System Simulation</em>. Vol. 5. Edinburgh Gate:
-Pearson Education Limited.
+2014. <em>Discrete-Event System Simulation</em>. Vol. 5. Pearson
+Education Limited.
 </div>
 <div id="ref-Barrett2024" class="csl-entry">
 Barrett, Tyson, Matt Dowle, Arun Srinivasan, Jan Gorecki, Michael
@@ -2332,12 +2333,11 @@ Surgery</em> 26 (3): 97–107. <a href="https://doi.org/10.7602/jmis.2023.26.3.9
 </div>
 <div id="ref-Carsey2014" class="csl-entry">
 Carsey, Thomas M., and Jeffrey J. Harden. 2014. <em>Monte Carlo
-Simulation and Resampling Methods for Social Science</em>. Thousand
-Oaks: SAGE Publications.
+Simulation and Resampling Methods for Social Science</em>. SAGE
+Publications.
 </div>
 <div id="ref-Cheng2016" class="csl-entry">
-Cheng, Adam, David Kessler, Ralph Mackinnon, Todd P. Chang, Vinay M.
-Nadkarni, Elizabeth A. Hunt, Jordan Duval-Arnould, et al. 2016.
+Cheng, Adam, David Kessler, Ralph Mackinnon, et al. 2016.
 <span>“Reporting Guidelines for Health Care Simulation Research:
 Extensions to the CONSORT and STROBE Statements.”</span> <em>Advances in
 Simulation</em> 1 (25): 1–13. <a href="https://doi.org/10.1186/s41077-016-0025-y" class="external-link">https://doi.org/10.1186/s41077-016-0025-y</a>.
@@ -2349,13 +2349,12 @@ Informative Terminal Event Using r Package reReg.”</span> <em>Journal of
 Statistical Software</em> 105 (5): 1–34. <a href="https://doi.org/10.18637/jss.v105.i05" class="external-link">https://doi.org/10.18637/jss.v105.i05</a>.
 </div>
 <div id="ref-Csardi2024" class="csl-entry">
-Csárdi, Gábor, Tamás Nepusz, Vincent Traag, Szabolcs Horvát, Fabio
-Zanini, Daniel Noom, and Kirill Müller. 2024. <em>Igraph: Network
-Analysis and Visualization in r</em>. <a href="https://doi.org/10.5281/zenodo.7682609" class="external-link">https://doi.org/10.5281/zenodo.7682609</a>.
+Csárdi, Gábor, Tamás Nepusz, Vincent Traag, et al. 2024. <em>Igraph:
+Network Analysis and Visualization in r</em>. <a href="https://doi.org/10.5281/zenodo.7682609" class="external-link">https://doi.org/10.5281/zenodo.7682609</a>.
 </div>
 <div id="ref-Demarqui2024" class="csl-entry">
-Demarqui, Fábio N. 2024. <span>“Survival Data Simulation with the r
-Package Rsurv.”</span> arXiv:2406.01750v1.
+Demarqui, Fábio N. 2024. <em>Survival Data Simulation with the r Package
+Rsurv</em>. arXiv:2406.01750v1.
 </div>
 <div id="ref-Denz2023" class="csl-entry">
 Denz, Robin, Renate Klaaßen-Mielke, and Nina Timmesfeld. 2023. <span>“A
@@ -2364,17 +2363,15 @@ Confounders.”</span> <em>Statistics in Medicine</em> 42 (10): 1461–79.
 <a href="https://doi.org/10.1002/sim.9681" class="external-link">https://doi.org/10.1002/sim.9681</a>.
 </div>
 <div id="ref-Denz2023a" class="csl-entry">
-Denz, Robin, Katharina Meiszl, Peter Ihle, Doris Oberle, Ursula
-Drechsel-Bäuerle, Katrin Scholz, Ingo Meyer, and Nina Timmesfeld. 2025.
-<span>“Impact of Record-Linkage Errors in Covid-19 Vaccine-Safety
-Analyses Using German Health-Care Data: A Simulation Study.”</span>
-<em>Communications in Statistics: Simulation and Computation</em>
-InPrint. <a href="https://doi.org/10.1080/03610918.2025.2488942" class="external-link">https://doi.org/10.1080/03610918.2025.2488942</a>.
+Denz, Robin, Katharina Meiszl, Peter Ihle, et al. 2025. <span>“Impact of
+Record-Linkage Errors in Covid-19 Vaccine-Safety Analyses Using German
+Health-Care Data: A Simulation Study.”</span> <em>Communications in
+Statistics: Simulation and Computation</em> InPrint. <a href="https://doi.org/10.1080/03610918.2025.2488942" class="external-link">https://doi.org/10.1080/03610918.2025.2488942</a>.
 </div>
-<div id="ref-Denz2025" class="csl-entry">
-Denz, Robin, and Nina Timmesfeld. 2025. <span>“Simulating Complex
-Crossectional and Longitudinal Data Using the simDAG r Package.”</span>
-<em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2506.01498" class="external-link">https://doi.org/10.48550/arXiv.2506.01498</a>.
+<div id="ref-Denz2026" class="csl-entry">
+Denz, Robin, and Nina Timmesfeld. 2026. <span>“Simulating Complex
+Cross-Sectional and Longitudinal Data Using the <span class="nocase">simDAG</span> <span>R</span> Package.”</span> <em>Journal
+of Statistical Software</em> 116 (2): 1–40. <a href="https://doi.org/10.18637/jss.v116.i02" class="external-link">https://doi.org/10.18637/jss.v116.i02</a>.
 </div>
 <div id="ref-Fox2022" class="csl-entry">
 Fox, Matthew P., Roch Nianogo, Jacqueline E. Rudolph, and Chanelle J.
@@ -2444,11 +2441,11 @@ Kahn, A. B. 1962. <span>“Topological Sorting of Large Networks.”</span>
 <div id="ref-Kimko2002" class="csl-entry">
 Kimko, Hui C., and Stephen B. Duffull, eds. 2002. <em>Simulation for
 Designing Clinical Trials: A Pharmacokinetic-Pharmacodynamic Modeling
-Perspective</em>. New York: Marcel Dekker Inc.
+Perspective</em>. Marcel Dekker Inc.
 </div>
 <div id="ref-Kline2023" class="csl-entry">
 Kline, Rex B. 2023. <em>Principles and Practice of Structural Equation
-Modeling</em>. 5. New York: The Guilford Press.
+Modeling</em>. The Guilford Press.
 </div>
 <div id="ref-Mersmann2023" class="csl-entry">
 Mersmann, Olaf. 2023. <em>Microbenchmark: Accurate Timing
@@ -2462,13 +2459,13 @@ Simulation and Computation</em> 46 (7): 5712–22. <a href="https://doi.org/10.1
 <div id="ref-Morris2019" class="csl-entry">
 Morris, Tim P., Ian R. White, and Michael J. Crowther. 2019.
 <span>“Using Simulation Studies to Evaluate Statistical Methods.”</span>
-<em>Statistics in Medicine</em> 38 (11): 2074–2102. <a href="https://doi.org/10.1002/sim.8086" class="external-link">https://doi.org/10.1002/sim.8086</a>.
+<em>Statistics in Medicine</em> 38 (11): 2074–102. <a href="https://doi.org/10.1002/sim.8086" class="external-link">https://doi.org/10.1002/sim.8086</a>.
 </div>
 <div id="ref-Nance2024" class="csl-entry">
-Nance, Nerissa, Maya L. Petersen, Mark J. van der Laan, and Laura B.
-Balzer. 2024. <span>“The Causal Roadmap and Simulations to Improve the
-Rigor and Reproducibility of Real-Data Applications.”</span>
-<em>Epidemiology</em> 35 (6): 791–800. <a href="https://doi.org/10.1097/EDE.0000000000001773" class="external-link">https://doi.org/10.1097/EDE.0000000000001773</a>.
+<span class="nocase">Nance, Nerissa, Maya L. Petersen, Mark J. van der
+Laan, and Laura B. Balzer</span>. 2024. <span>“The Causal Roadmap and
+Simulations to Improve the Rigor and Reproducibility of Real-Data
+Applications.”</span> <em>Epidemiology</em> 35 (6): 791–800. <a href="https://doi.org/10.1097/EDE.0000000000001773" class="external-link">https://doi.org/10.1097/EDE.0000000000001773</a>.
 </div>
 <div id="ref-Ngwa2022" class="csl-entry">
 Ngwa, Julius S., Howard J. Cabral, Debbie M. Cheng, David R. Gagnon,
@@ -2482,8 +2479,8 @@ Pearl, Judea. 1995. <span>“Causal Diagrams for Empirical
 Research.”</span> <em>Biometrika</em> 82 (4): 669–88. <a href="https://doi.org/10.2307/2337329" class="external-link">https://doi.org/10.2307/2337329</a>.
 </div>
 <div id="ref-Pearl2009" class="csl-entry">
-———. 2009. <em>Causality: Models, Reasoning and Inference</em>. 2nd ed.
-Cambridge: Cambridge University Press.
+Pearl, Judea. 2009. <em>Causality: Models, Reasoning and Inference</em>.
+2nd ed. Cambridge University Press.
 </div>
 <div id="ref-Pedersen2022" class="csl-entry">
 Pedersen, Thomas Lin. 2022. <em>Ggforce: Accelerating Ggplot2</em>. <a href="https://CRAN.R-project.org/package=ggforce" class="external-link">https://CRAN.R-project.org/package=ggforce</a>.
@@ -2499,9 +2496,9 @@ Terrence D. Jorgensen. 2021. <em>Simsem: SIMulated Structural Equation
 Modeling</em>. <a href="https://CRAN.R-project.org/package=simsem" class="external-link">https://CRAN.R-project.org/package=simsem</a>.
 </div>
 <div id="ref-RCT2024" class="csl-entry">
-R Core Team. 2024. <span>“R: A Language and Environment for Statistical
-Computing.”</span> R Foundation for Statistical Computing, Vienna,
-Austria. <a href="https://www.r-project.org/" class="external-link">https://www.r-project.org/</a>.
+R Core Team. 2024. <em>R: A Language and Environment for Statistical
+Computing</em>. R Foundation for Statistical Computing, Vienna, Austria.
+<a href="https://www.r-project.org/" class="external-link">https://www.r-project.org/</a>.
 </div>
 <div id="ref-Reisach2021" class="csl-entry">
 Reisach, Alexander G., Christof Seiler, and Sebastian Weichwald. 2021.
@@ -2522,25 +2519,25 @@ Teaching Statistics with Monte Carlo Simulation.”</span> <em>Journal of
 Statistics Education</em> 24 (3): 136–56. <a href="https://doi.org/10.1080/10691898.2016.1246953" class="external-link">https://doi.org/10.1080/10691898.2016.1246953</a>.
 </div>
 <div id="ref-Sofrygin2017" class="csl-entry">
-Sofrygin, Oleg, Mark J. van der Laan, and Romain Neugebauer. 2017.
-<span>“Simcausal r Package: Conducting Transparent and Reproducible
-Simulation Studies of Causal Effect Estimation with Complex Longitudinal
-Data.”</span> <em>Journal of Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
+<span class="nocase">Sofrygin, Oleg, Mark J. van der Laan, and Romain
+Neugebauer</span>. 2017. <span>“Simcausal r Package: Conducting
+Transparent and Reproducible Simulation Studies of Causal Effect
+Estimation with Complex Longitudinal Data.”</span> <em>Journal of
+Statistical Software</em> 81 (2): 1–47. <a href="https://doi.org/10.18637/jss.v081.i02" class="external-link">https://doi.org/10.18637/jss.v081.i02</a>.
 </div>
 <div id="ref-Spirtes2000" class="csl-entry">
 Spirtes, Peter, Clark Glymour, and Richard Scheines. 2000.
-<em>Causation, Prediction, and Search</em>. 2. Cambridge: MIT Press.
+<em>Causation, Prediction, and Search</em>. MIT Press.
 </div>
 <div id="ref-Spooner2021" class="csl-entry">
-Spooner, Fiona, Jesse F. Abrams, Karyn Morrissey, Gavin Shaddick,
-Michael Batty, Richard Milton, Adam Dennett, et al. 2021. <span>“A
+Spooner, Fiona, Jesse F. Abrams, Karyn Morrissey, et al. 2021. <span>“A
 Dynamic Microsimulation Model for Epidemics.”</span> <em>Social Science
 &amp; Medicine</em> 291 (114461). <a href="https://doi.org/10.1016/j.socscimed.2021.114461" class="external-link">https://doi.org/10.1016/j.socscimed.2021.114461</a>.
 </div>
 <div id="ref-Tang2020" class="csl-entry">
 Tang, Jiangjun, George Leu, and Hussein A. Abbass. 2020. <em>Simulation
-and Computational Red Teaming for Problem Solving</em>. Hoboke: John
-Wiley &amp; Sons.
+and Computational Red Teaming for Problem Solving</em>. John Wiley &amp;
+Sons.
 </div>
 <div id="ref-Templ2017" class="csl-entry">
 Templ, Matthias, Bernhard Meindl, Alexander Kowarik, and Olivier
@@ -2549,10 +2546,11 @@ Package simPop.”</span> <em>Journal of Statistical Software</em> 79
 (10): 1–38. <a href="https://doi.org/10.18637/jss.v079.i10" class="external-link">https://doi.org/10.18637/jss.v079.i10</a>.
 </div>
 <div id="ref-Textor2016" class="csl-entry">
-Textor, Johannes, Benito van der Zander, Mark S. Gilthorpe, Maciej
-Liśkiewicz, and George T. H. Ellison. 2016. <span>“Robust Causal
-Inference Using Directed Acyclic Graphs: The r Package Daggity.”</span>
-<em>International Journal of Epidemiology</em> 45 (6): 1887–94. <a href="https://doi.org/10.1093/ije/dyw341" class="external-link">https://doi.org/10.1093/ije/dyw341</a>.
+<span class="nocase">Textor, Johannes, Benito van der Zander, Mark S.
+Gilthorpe, Maciej Liśkiewicz, and George T. H. Ellison</span>. 2016.
+<span>“Robust Causal Inference Using Directed Acyclic Graphs: The r
+Package Daggity.”</span> <em>International Journal of Epidemiology</em>
+45 (6): 1887–94. <a href="https://doi.org/10.1093/ije/dyw341" class="external-link">https://doi.org/10.1093/ije/dyw341</a>.
 </div>
 <div id="ref-Therneau2024" class="csl-entry">
 Therneau, Terry M. 2024. <em>A Package for Survival Analysis in r</em>.
@@ -2560,8 +2558,7 @@ Therneau, Terry M. 2024. <em>A Package for Survival Analysis in r</em>.
 </div>
 <div id="ref-Tutz2016" class="csl-entry">
 Tutz, Gerhard, and Matthias Schmid. 2016. <em>Modeling Discrete
-Time-to-Event Data</em>. Cham: Springer International Publishing
-Switzerland.
+Time-to-Event Data</em>. Springer International Publishing Switzerland.
 </div>
 <div id="ref-Wang2022" class="csl-entry">
 Wang, Wenjie, Haoda Fu, Sy Han, and Jun Yan. 2022. <em>Reda: Recurrent

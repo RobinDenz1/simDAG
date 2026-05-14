@@ -232,6 +232,7 @@ as it always returns `NULL`.
 ## Examples
 
 ``` r
+
 library(simDAG)
 
 ## a simple terminal time-to-event node, with a constant probability of
