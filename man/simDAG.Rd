@@ -51,7 +51,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_sim_networks", package="simDAG")}}
 }
 
-A separate (already peer-reviewed) article about this package has been provisionally accepted in the \emph{Journal of Statistical Software}. The preprint version of this article is available on arXiv (Denz and Timmesfeld 2025) and as a vignette in this package.
+A separate peer-reviewed article about this package has been published in the \emph{Journal of Statistical Software} (Denz and Timmesfeld 2026). It is also available as a vignette in this package.
 
 \strong{\emph{I have a problem using the \code{sim_discrete_time} or \code{sim_discrete_event} function}}
 
@@ -62,7 +62,7 @@ The \code{\link{sim_discrete_time}} and \code{\link{sim_discrete_event}} functio
 Bug reports, suggestions and feature requests are highly welcome. Please file an issue on the official github page or contact the author directly using the supplied e-mail address.
 }
 \references{
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package". Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Banks, Jerry, John S. Carson II, Barry L. Nelson, and David M. Nicol (2014). Discrete-Event System Simulation. Vol. 5. Edinburgh Gate: Pearson Education Limited.
 }

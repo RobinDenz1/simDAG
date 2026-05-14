@@ -61,7 +61,7 @@ If \code{return_networks=FALSE}, returns a single \code{data.table} including th
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{network}}, \code{\link{plot.DAG}}, \code{\link{sim_discrete_time}}
 }
 \references{
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package". Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 }
 \examples{
 library(simDAG)

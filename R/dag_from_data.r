@@ -224,7 +224,6 @@ dag_from_data <- function(dag, data, return_models=FALSE, na.rm=FALSE) {
     args$time_varying <- NULL
     args$..index.. <- NULL
     args$data <- data
-    #args$type <- dag$child_nodes[[i]]$type_str
     args$return_model <- return_models
     args$na.rm <- na.rm
 

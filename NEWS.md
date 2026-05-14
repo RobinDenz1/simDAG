@@ -1,5 +1,5 @@
 
-# simDAG 0.5.3 (developmental version)
+# simDAG 1.0.0
 
 New features
 
@@ -13,6 +13,10 @@ Enhancements
 Bug Fixes
 
 * Fixed a bug that occurred when using `dag_from_data()` with categorical parents in nodes based on generalized linear models and negative binomial regression models.
+
+Documentation
+
+* Added the official citation information for the newly published Journal of Statistical Software paper.
 
 # simDAG 0.5.2
 

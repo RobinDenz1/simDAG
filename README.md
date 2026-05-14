@@ -149,13 +149,13 @@ vignettes.
 
 If you use this package, please cite the associated article:
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional
-and Longitudinal Data using the simDAG R Package. arXiv preprint, doi:
-10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
+Cross-Sectional and Longitudinal Data using the simDAG R Package”.
+Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 ## License
 
-© 2024 Robin Denz
+© 2026 Robin Denz
 
 The contents of this repository are distributed under the GNU General
 Public License. You can find the full text of this License in this

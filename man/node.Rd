@@ -118,6 +118,9 @@ Contrary to the R standard, this function does \bold{NOT} support partial matchi
 \value{
 Returns a \code{DAG.node} object which can be added to a \code{DAG} object directly.
 }
+\references{
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package". Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
+}
 \author{
 Robin Denz
 }

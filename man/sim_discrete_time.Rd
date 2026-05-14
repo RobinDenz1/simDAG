@@ -138,7 +138,7 @@ To obtain a single dataset from this function that can be processed further, ple
 \code{\link{empty_dag}}, \code{\link{node}}, \code{\link{node_td}}, \code{\link{sim2data}}, \code{\link{plot.simDT}}
 }
 \references{
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package". Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Tang, Jiangjun, George Leu, und Hussein A. Abbass. 2020. Simulation and Computational Red Teaming for Problem Solving. Hoboken: IEEE Press.
 

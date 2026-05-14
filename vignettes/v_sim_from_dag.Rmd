@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this small vignette, we introduce the `sim_from_dag()` function, which can be used to simulate complex data from arbitrary causal directed acyclic graphs (DAGs). The simulated data may include continuous, binary, categorical, count or time-to-event variables (Denz and Timmesfeld 2025). This function is most useful if the DAG is static, meaning that there are no time-varying variables. It is theoretically possible to use this function to simulate data from DAGs with a time structure as well, but there are some difficulties associated with it that will be discussed later.
+In this small vignette, we introduce the `sim_from_dag()` function, which can be used to simulate complex data from arbitrary causal directed acyclic graphs (DAGs). The simulated data may include continuous, binary, categorical, count or time-to-event variables (Denz and Timmesfeld 2026). This function is most useful if the DAG is static, meaning that there are no time-varying variables. It is theoretically possible to use this function to simulate data from DAGs with a time structure as well, but there are some difficulties associated with it that will be discussed later.
 
 # What are causal DAGs and why use them?
 
@@ -228,7 +228,7 @@ In this example, `C_1` is a function of both `A` and `B`, but `C_2` is only a fu
 
 # References
 
-Denz, Robin and Nina Timmesfeld (2025). Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package. arXiv preprint, doi: 10.48550/arXiv.2506.01498.
+Denz, Robin and Nina Timmesfeld (2026). "Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package". Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
 
 Judea Pearl (2009). Causality: Models, Reasoning and Inference. 2nd ed. Cambridge: Cambridge University Press
 

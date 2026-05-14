@@ -25,7 +25,7 @@ In this small vignette, we introduce the `sim_discrete_event()` function, which 
 
 The goal of the `sim_discrete_event()` function is not to provide a general framework for DES. Multiple other R packages, such as `simmer` [@Ucar2019; @Degeling2025] and `DES` [@Matloff2017], as well as software packages outside R have been developed for that purpose and are much more useful in this regard. Instead, the aim of this function is to provide a specific, but fairly general, DES model that may be used to generate data from DAG based description of the data generation process (DGP). In other words: if you want to perform a classic DES with interacting agents using a classic simulation modeling approach, this is probably not the right package for you. If you want to generate complex time-dependent data based on a stochastic model, you have come to the right place. 
 
-Throughout the vignette, we assume that the reader is already familiar with the `simDAG` syntax. If this is not the case, we recommend consulting the introductory vignette or the main paper associated with this package first [@Denz2025].
+Throughout the vignette, we assume that the reader is already familiar with the `simDAG` syntax. If this is not the case, we recommend consulting the introductory vignette or the main paper associated with this package first [@Denz2026].
 
 # What is Discrete-Event Simulation and Why Use it?
 

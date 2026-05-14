@@ -1,9 +1,16 @@
 
-bibentry(
-  bibtype    = "misc",
-  title    = "Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package",
-  author   = "Robin Denz, Nina Timmesfeld",
-  year     = "2025",
-  doi      = "10.48550/arXiv.2506.01498",
-  textVersion = "Robin Denz and Nina Timmesfeld (2025): Simulating Complex Crossectional and Longitudinal Data using the simDAG R Package, arXiv preprint, doi: 10.48550/arXiv.2506.01498"
+bibentry(bibtype = "Article",
+  title        = "Simulating Complex Cross-Sectional and Longitudinal Data Using the {simDAG} {R} Package",
+  author       = c(person(given = "Robin",
+                          family = "Denz",
+                          email = "robin.denz@rub.de"),
+                   person(given = "Nina",
+                          family = "Timmesfeld")),
+  journal      = "Journal of Statistical Software",
+  year         = "2026",
+  volume       = "116",
+  number       = "2",
+  pages        = "1--40",
+  doi          = "10.18637/jss.v116.i02",
+  header       = "To cite simDAG in publications use:"
 )
