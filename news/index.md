@@ -2,6 +2,8 @@
 
 ## simDAG 1.0.0
 
+CRAN release: 2026-05-14
+
 New features
 
 - Allow arbitrary baseline hazard functions in
