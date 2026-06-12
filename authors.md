@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/RobinDenz1/siMDAG/blob/v1.0.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/RobinDenz1/siMDAG/blob/main/inst/CITATION)
 
 Denz R, Timmesfeld N (2026). “Simulating Complex Cross-Sectional and
 Longitudinal Data Using the simDAG R Package.” *Journal of Statistical
