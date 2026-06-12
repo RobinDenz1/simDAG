@@ -10,7 +10,6 @@ sim_discrete_time:
 	- either allow root nodes with supplied t0_data, or throw warning if still supplied
 
 node_next_time:
-	- allow parametric survival models in "model" if rsurv package is updated
 	- maybe allow "delays"?
 
 dag_from_data:

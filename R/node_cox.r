@@ -71,6 +71,8 @@ node_cox <- function(data, parents, formula=NULL, betas, surv_dist,
 }
 
 ## add censoring to a survival time, if specified
+#' @importFrom data.table fifelse
+#' @importFrom data.table data.table
 add_censoring <- function(times, cens_dist, cens_args, name) {
 
   if (!is.null(cens_dist)) {
@@ -80,14 +82,14 @@ add_censoring <- function(times, cens_dist, cens_args, name) {
     }
 
     cens_time <- do.call(cens_dist, c(n=length(times), cens_args))
-    status <- ifelse(times < cens_time, 1, 0)
-    times <- ifelse(times < cens_time, times, cens_time)
+    status <- fifelse(times < cens_time, 1, 0)
+    times <- fifelse(times < cens_time, times, cens_time)
   } else {
     status <- 1
   }
 
   # put together in two columns
-  out_data <- data.table::data.table(time=times, status=status)
+  out_data <- data.table(time=times, status=status)
   colnames(out_data) <- c(paste0(name, "_time"), paste0(name, "_status"))
 
   return(out_data)
@@ -122,6 +124,7 @@ get_lH0 <- function(f, times) {
 
 ## generate random (left-truncated) survival times from a Cox model given
 ## covariates, betas and a custom baseline hazard function
+#' @importFrom data.table fifelse
 rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
                         extrapolate=FALSE, lH0=NULL) {
   max_t <- max(times)
@@ -135,7 +138,7 @@ rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
     stop("Left truncation times must be smaller than max(times). Adjust",
          " the 'times' argument or the 'left' argument.", call.=FALSE)
   }
-  H_l <- ifelse(left==0, 0, lH0$H0(left))
+  H_l <- fifelse(left==0, 0, lH0$H0(left))
 
   # get exponentiated linear predictor
   eff <- exp(calc_linpred(data=data, betas=betas, intercept=0))
