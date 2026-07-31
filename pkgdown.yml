@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   simDAG: simDAG.html
@@ -11,7 +11,7 @@ articles:
   v_sim_from_dag: v_sim_from_dag.html
   v_sim_networks: v_sim_networks.html
   v_using_formulas: v_using_formulas.html
-last_built: 2026-06-12T16:51Z
+last_built: 2026-07-31T06:45Z
 urls:
   reference: https://robindenz1.github.io/simDAG/reference
   article: https://robindenz1.github.io/simDAG/articles

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1638,7 +1638,7 @@ runtime is calculated using the <code>microbenchmark</code> package
 <span>  <span class="va">n_i</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">n</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span>  <span class="va">max_t_i</span> <span class="op">&lt;-</span> <span class="va">params</span><span class="op">$</span><span class="va">max_t</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span></span>
-<span>  <span class="va">bench</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu">run_example</span><span class="op">(</span>n<span class="op">=</span><span class="va">n_i</span>, max_t<span class="op">=</span><span class="va">max_t_i</span><span class="op">)</span>,</span>
+<span>  <span class="va">bench</span> <span class="op">&lt;-</span> <span class="fu">microbenchmark</span><span class="op">(</span><span class="fu">run_example</span><span class="op">(</span>n<span class="op">=</span><span class="va">n_i</span>, max_t<span class="op">=</span><span class="va">max_t_i</span><span class="op">)</span>,</span>
 <span>                          times<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
 <span>  <span class="va">params</span><span class="op">$</span><span class="va">time</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">bench</span><span class="op">$</span><span class="va">time</span> <span class="op">/</span> <span class="fl">1000000000</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -1784,11 +1784,11 @@ competing events data without the use of discrete-time simulation <span class="c
 <div class="section level2">
 <h2 id="computational-details">Computational details<a class="anchor" aria-label="anchor" href="#computational-details"></a>
 </h2>
-<p>The results in this paper were obtained using <code>R</code> 4.6.0
+<p>The results in this paper were obtained using <code>R</code> 4.6.1
 with the <code>data.table</code> 1.18.4 package, the
-<code>survival</code> 3.8.6 package, the <code>igraph</code> 2.3.2
+<code>survival</code> 3.8.6 package, the <code>igraph</code> 2.3.3
 package, the <code>ggplot2</code> 4.0.3 package and the
-<code>simDAG</code> 1.0.0 package. <code>R</code> itself and all
+<code>simDAG</code> 1.0.1 package. <code>R</code> itself and all
 packages used are available from the Comprehensive <code>R</code>
 Archive Network (CRAN) at <a href="https://CRAN.R-project.org/" class="external-link uri">https://CRAN.R-project.org/</a>.</p>
 </div>
@@ -2598,7 +2598,7 @@ Models.”</span> <em>Annals of Translational Medicine</em> 6 (7): 1–10.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

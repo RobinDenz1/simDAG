@@ -228,18 +228,7 @@ dag <- empty_dag() +
   node("Outcome", type="poisson", formula= ~ -1 + Treatment*4 + (1|Clinic),
        var_corr=0.5)
 data <- sim_from_dag(dag, n_sim=1000)
-#> Registered S3 method overwritten by 'car':
-#>   method           from
-#>   na.action.merMod lme4
 head(data)
-#>    Clinic Treatment Outcome
-#>     <int>    <lgcl>   <int>
-#> 1:     16     FALSE       0
-#> 2:     11     FALSE       0
-#> 3:     41      TRUE      26
-#> 4:     36      TRUE      61
-#> 5:     30      TRUE      12
-#> 6:     13     FALSE       0
 ```
 
 In this DGP, each individual is randomly assigned to one of 50 Clinics
@@ -277,12 +266,12 @@ data <- sim_from_dag(dag, n_sim=100)
 head(data)
 #>       cat         cont treatment  outcome
 #>    <char>        <num>    <lgcl>    <num>
-#> 1:      B 0.0485645707      TRUE 3.862287
-#> 2:      C 0.4544629918      TRUE 3.426110
-#> 3:      B 0.0007678235     FALSE 4.866626
-#> 4:      C 0.2277772334      TRUE 3.601459
-#> 5:      B 0.4191175999     FALSE 2.892944
-#> 6:      B 0.1157079692      TRUE 4.361019
+#> 1:      A 6.078812e-04     FALSE 6.443257
+#> 2:      A 6.648436e-05     FALSE 2.192244
+#> 3:      C 9.047984e-02     FALSE 2.782274
+#> 4:      A 8.126966e-01      TRUE 2.468310
+#> 5:      C 5.697252e-01     FALSE 4.765564
+#> 6:      A 3.728337e-01      TRUE 3.594558
 ```
 
 If the goal was to estimate the causal effect of the treatment on the
@@ -328,12 +317,12 @@ data <- sim2data(sim, to="start_stop", overlap=TRUE)
 head(data)
 #>      .id start  stop treatment outcome
 #>    <int> <int> <num>    <lgcl>  <lgcl>
-#> 1:     1     1     2      TRUE   FALSE
-#> 2:     1     2     9     FALSE   FALSE
-#> 3:     1     9    10      TRUE   FALSE
-#> 4:     1    10    26     FALSE   FALSE
-#> 5:     1    26    27      TRUE   FALSE
-#> 6:     1    27    28     FALSE   FALSE
+#> 1:     1     1    16     FALSE   FALSE
+#> 2:     1    16    17      TRUE   FALSE
+#> 3:     1    17    42     FALSE   FALSE
+#> 4:     1    42    43      TRUE   FALSE
+#> 5:     1    43    77     FALSE   FALSE
+#> 6:     1    77    78      TRUE   FALSE
 ```
 
 In this simulation, all individuals start out with no `treatment` and
@@ -376,12 +365,12 @@ data <- sim2data(sim, to="start_stop", overlap=TRUE, target_event="Y",
 head(data)
 #>      .id start  stop      A      Y
 #>    <int> <int> <num> <lgcl> <lgcl>
-#> 1:     1     1    86  FALSE   TRUE
-#> 2:     2     1    14  FALSE  FALSE
-#> 3:     2    14    34   TRUE  FALSE
-#> 4:     2    34   120  FALSE   TRUE
-#> 5:     3     1    27  FALSE  FALSE
-#> 6:     3    27    47   TRUE  FALSE
+#> 1:     1     1    19  FALSE   TRUE
+#> 2:     2     1   114  FALSE   TRUE
+#> 3:     3     1    13  FALSE   TRUE
+#> 4:     4     1    11  FALSE  FALSE
+#> 5:     4    11    31   TRUE  FALSE
+#> 6:     4    31    37  FALSE  FALSE
 ```
 
 More specifically, the treatment `A` has no causes but only a general
@@ -408,20 +397,20 @@ summary(mod)
 #> Call:
 #> coxph(formula = Surv(start, stop, Y) ~ A, data = data)
 #> 
-#>   n= 1351, number of events= 495 
+#>   n= 1379, number of events= 491 
 #> 
-#>          coef exp(coef) se(coef)      z Pr(>|z|)    
-#> ATRUE -0.9235    0.3971   0.1740 -5.308 1.11e-07 ***
+#>          coef exp(coef) se(coef)    z Pr(>|z|)    
+#> ATRUE -1.0964    0.3341   0.1890 -5.8 6.62e-09 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #>       exp(coef) exp(-coef) lower .95 upper .95
-#> ATRUE    0.3971      2.518    0.2824    0.5585
+#> ATRUE    0.3341      2.993    0.2306    0.4839
 #> 
-#> Concordance= 0.541  (se = 0.007 )
-#> Likelihood ratio test= 36.56  on 1 df,   p=1e-09
-#> Wald test            = 28.17  on 1 df,   p=1e-07
-#> Score (logrank) test = 30.19  on 1 df,   p=4e-08
+#> Concordance= 0.548  (se = 0.007 )
+#> Likelihood ratio test= 46.5  on 1 df,   p=9e-12
+#> Wald test            = 33.64  on 1 df,   p=7e-09
+#> Score (logrank) test = 37.12  on 1 df,   p=1e-09
 ```
 
 Note that the estimate above will not show an exact hazard ratio of 0.5,
@@ -444,14 +433,14 @@ data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
                            keep_only_first=TRUE)
 head(data)
 #> Key: <.id, start>
-#>      .id     start      stop      A      Y
-#>    <int>     <num>     <num> <lgcl> <lgcl>
-#> 1:     1   0.00000  77.60547  FALSE  FALSE
-#> 2:     1  77.60547  97.60547   TRUE  FALSE
-#> 3:     1  97.60547 121.82781  FALSE  FALSE
-#> 4:     1 121.82781 141.82781   TRUE  FALSE
-#> 5:     1 141.82781 197.83302  FALSE  FALSE
-#> 6:     1 197.83302 217.83302   TRUE  FALSE
+#>      .id    start     stop      A      Y
+#>    <int>    <num>    <num> <lgcl> <lgcl>
+#> 1:     1  0.00000 11.11725  FALSE   TRUE
+#> 2:     2  0.00000 18.24538  FALSE   TRUE
+#> 3:     3  0.00000 48.11793  FALSE   TRUE
+#> 4:     4  0.00000 13.18786  FALSE  FALSE
+#> 5:     4 13.18786 33.18786   TRUE  FALSE
+#> 6:     4 33.18786 57.18220  FALSE   TRUE
 ```
 
 Here, we used nodes of type `"next_time"` instead, as required for
@@ -471,20 +460,20 @@ summary(mod)
 #> Call:
 #> coxph(formula = Surv(start, stop, Y) ~ A, data = data)
 #> 
-#>   n= 1396, number of events= 497 
+#>   n= 1302, number of events= 496 
 #> 
 #>          coef exp(coef) se(coef)      z Pr(>|z|)    
-#> ATRUE -1.0892    0.3365   0.1863 -5.848 4.98e-09 ***
+#> ATRUE -0.6603    0.5167   0.1639 -4.029  5.6e-05 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #>       exp(coef) exp(-coef) lower .95 upper .95
-#> ATRUE    0.3365      2.972    0.2336    0.4847
+#> ATRUE    0.5167      1.935    0.3748    0.7124
 #> 
-#> Concordance= 0.543  (se = 0.007 )
-#> Likelihood ratio test= 47.01  on 1 df,   p=7e-12
-#> Wald test            = 34.2  on 1 df,   p=5e-09
-#> Score (logrank) test = 37.68  on 1 df,   p=8e-10
+#> Concordance= 0.529  (se = 0.007 )
+#> Likelihood ratio test= 19.45  on 1 df,   p=1e-05
+#> Wald test            = 16.23  on 1 df,   p=6e-05
+#> Score (logrank) test = 16.82  on 1 df,   p=4e-05
 ```
 
 Which again shows a hazard ratio for `A` that is fairly close to 0.5, as
@@ -530,12 +519,12 @@ data <- sim2data(sim, to="start_stop", overlap=TRUE, target_event="Y",
 head(data)
 #>      .id start  stop      A      Y
 #>    <int> <int> <num> <lgcl> <lgcl>
-#> 1:     1     1   133  FALSE  FALSE
-#> 2:     1   133   153   TRUE  FALSE
-#> 3:     1   153   476  FALSE  FALSE
-#> 4:     1   476   490   TRUE   TRUE
-#> 5:     2     1   148  FALSE  FALSE
-#> 6:     2   148   168   TRUE  FALSE
+#> 1:     1     1    58  FALSE  FALSE
+#> 2:     1    58    77   TRUE   TRUE
+#> 3:     2     1   126  FALSE   TRUE
+#> 4:     3     1    50  FALSE  FALSE
+#> 5:     3    50    65   TRUE   TRUE
+#> 6:     4     1     3  FALSE  FALSE
 ```
 
 The coefficients could be recovered using an `aalen()` model from the
@@ -560,14 +549,14 @@ data <- sim_discrete_event(dag, n_sim=500, max_t=500, target_event="Y",
                            keep_only_first=TRUE)
 head(data)
 #> Key: <.id, start>
-#>      .id     start      stop      A      Y
-#>    <int>     <num>     <num> <lgcl> <lgcl>
-#> 1:     1   0.00000  27.46853  FALSE  FALSE
-#> 2:     1  27.46853  40.18321   TRUE   TRUE
-#> 3:     2   0.00000  14.72661  FALSE  FALSE
-#> 4:     2  14.72661  34.39991   TRUE   TRUE
-#> 5:     3   0.00000 274.71466  FALSE  FALSE
-#> 6:     3 274.71466 288.78126   TRUE   TRUE
+#>      .id      start       stop      A      Y
+#>    <int>      <num>      <num> <lgcl> <lgcl>
+#> 1:     1   0.000000  21.758861  FALSE  FALSE
+#> 2:     1  21.758861  22.604300   TRUE   TRUE
+#> 3:     2   0.000000 502.518107  FALSE  FALSE
+#> 4:     2 502.518107        Inf   TRUE  FALSE
+#> 5:     3   0.000000   5.272344  FALSE  FALSE
+#> 6:     3   5.272344   8.761735   TRUE   TRUE
 ```
 
 This specification uses the `model` argument to specify that an Aalen
@@ -599,14 +588,6 @@ dag <- empty_dag() +
        var_corr=0.5, error=1)
 data <- sim_from_dag(dag, n_sim=10)
 head(data)
-#>    school female       age      score
-#>    <char> <lgcl>     <num>      <num>
-#> 1:      I   TRUE 12.957818  3.1832933
-#> 2:      C   TRUE  7.924776  2.8786369
-#> 3:      D   TRUE 10.176482  2.8363160
-#> 4:      F  FALSE 10.180657  0.3773207
-#> 5:      I  FALSE 10.157362 -1.2590350
-#> 6:      C  FALSE 12.908317  0.8219375
 ```
 
 In this example, there is a single random effect for school, with a
@@ -637,14 +618,14 @@ dag <- empty_dag() +
        ))
 data <- sim_from_dag(dag, n_sim=10)
 head(data)
-#>    strata        var1        var2          Y
-#>    <lgcl>       <num>       <num>      <num>
-#> 1:  FALSE -0.92575296  0.63422389 -3.7713404
-#> 2:   TRUE  0.13016410 -0.08978755  5.8966310
-#> 3:  FALSE -0.04944792 -0.47909778 -1.4346367
-#> 4:  FALSE -1.33428562  0.08187681 -5.0422909
-#> 5:  FALSE  0.20001205  0.03793749 -2.5544498
-#> 6:  FALSE  0.82301745  1.84891790  0.3152809
+#>    strata       var1        var2         Y
+#>    <lgcl>      <num>       <num>     <num>
+#> 1:  FALSE -0.2231731  0.16677409 -3.349029
+#> 2:  FALSE -0.2644296 -0.50250646 -2.848772
+#> 3:   TRUE -0.8855721 -0.34046921  6.309530
+#> 4:   TRUE -1.5316940 -0.08086063  9.154129
+#> 5:  FALSE -1.0979483 -0.57333007 -2.026162
+#> 6:   TRUE  0.5033894 -0.93577651 -1.618785
 ```
 
 Using the `distr` argument, we can easily define to which simulated
@@ -705,12 +686,12 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>       A_real A_missing A_observed
 #>        <num>    <lgcl>      <num>
-#> 1:  8.990730      TRUE         NA
-#> 2:  8.742281     FALSE   8.742281
-#> 3: 11.689047      TRUE         NA
-#> 4: 10.882558     FALSE  10.882558
-#> 5: 11.637514     FALSE  11.637514
-#> 6:  5.727022     FALSE   5.727022
+#> 1:  9.114287     FALSE   9.114287
+#> 2: 11.071280      TRUE         NA
+#> 3:  9.494138      TRUE         NA
+#> 4:  8.523397      TRUE         NA
+#> 5: 10.691295      TRUE         NA
+#> 6:  9.818598     FALSE   9.818598
 ```
 
 In this DAG, the real values of node `A` are generated first.
@@ -739,14 +720,14 @@ dag <- empty_dag() +
 
 data <- sim_from_dag(dag, n_sim=10)
 head(data)
-#>        A_real B_real A_missing B_missing A_observed B_observed
-#>         <num> <lgcl>    <lgcl>    <lgcl>      <num>     <lgcl>
-#> 1:  0.5992828   TRUE     FALSE     FALSE  0.5992828       TRUE
-#> 2:  0.2296464  FALSE     FALSE     FALSE  0.2296464      FALSE
-#> 3: -1.1221036   TRUE     FALSE     FALSE -1.1221036       TRUE
-#> 4: -0.5055837  FALSE     FALSE     FALSE -0.5055837      FALSE
-#> 5:  0.2642537   TRUE     FALSE     FALSE  0.2642537       TRUE
-#> 6:  0.7590262   TRUE     FALSE     FALSE  0.7590262       TRUE
+#>         A_real B_real A_missing B_missing  A_observed B_observed
+#>          <num> <lgcl>    <lgcl>    <lgcl>       <num>     <lgcl>
+#> 1: -0.05736983   TRUE     FALSE     FALSE -0.05736983       TRUE
+#> 2: -0.92413005   TRUE     FALSE     FALSE -0.92413005       TRUE
+#> 3:  0.47541296  FALSE     FALSE     FALSE  0.47541296      FALSE
+#> 4: -0.69098014  FALSE     FALSE     FALSE -0.69098014      FALSE
+#> 5: -0.16757826  FALSE     FALSE     FALSE -0.16757826      FALSE
+#> 6:  0.69335659   TRUE     FALSE     FALSE  0.69335659       TRUE
 ```
 
 Here, the missingness in `A_observed` is again MCAR, because it is
@@ -776,12 +757,12 @@ data <- sim_from_dag(dag, n_sim=10)
 head(data)
 #>    Disease_real Disease_observed
 #>          <lgcl>           <lgcl>
-#> 1:        FALSE            FALSE
+#> 1:         TRUE            FALSE
 #> 2:        FALSE            FALSE
 #> 3:         TRUE             TRUE
-#> 4:         TRUE             TRUE
+#> 4:        FALSE            FALSE
 #> 5:        FALSE            FALSE
-#> 6:        FALSE            FALSE
+#> 6:         TRUE             TRUE
 ```
 
 In this example, the disease is present in 50% of all individuals. By
@@ -809,9 +790,9 @@ head(data)
 #>    <lgcl>       <lgcl>           <lgcl>
 #> 1:  FALSE        FALSE            FALSE
 #> 2:  FALSE         TRUE             TRUE
-#> 3:  FALSE        FALSE            FALSE
-#> 4:  FALSE        FALSE            FALSE
-#> 5:  FALSE         TRUE            FALSE
+#> 3:  FALSE         TRUE            FALSE
+#> 4:  FALSE         TRUE             TRUE
+#> 5:   TRUE        FALSE            FALSE
 #> 6:   TRUE         TRUE             TRUE
 ```
 

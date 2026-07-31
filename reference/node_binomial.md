@@ -207,7 +207,7 @@ dag <- empty_dag() +
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 
 ## an example using a random effect
-if (requireNamespace("simr")) {
+if (requireNamespace("simr") & interactive()) {
 
 library(simr)
 
@@ -224,14 +224,4 @@ sim_dat <- sim_from_dag(dag=dag_mixed, n_sim=100)
 #> Registered S3 method overwritten by 'car':
 #>   method           from
 #>   na.action.merMod lme4
-#> Loading required package: lme4
-#> Loading required package: Matrix
-#> 
-#> Attaching package: ‘simr’
-#> The following object is masked from ‘package:lme4’:
-#> 
-#>     getData
-#> The following object is masked from ‘package:igraph’:
-#> 
-#>     compare
 ```

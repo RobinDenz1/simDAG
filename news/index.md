@@ -1,5 +1,14 @@
 # Changelog
 
+## simDAG 1.0.1
+
+Bug Fixes
+
+- Temporary fix for a bug caused by changes in `lme4`, which in turn
+  caused a bug in the `simr` package. Installing `simr` from github
+  already fixes the issue, so this update was made solely to retain
+  `simDAG` on CRAN.
+
 ## simDAG 1.0.0
 
 CRAN release: 2026-05-14

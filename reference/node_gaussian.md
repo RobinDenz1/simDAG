@@ -185,4 +185,14 @@ dag_mixed <- empty_dag() +
 
 sim_dat <- sim_from_dag(dag=dag_mixed, n_sim=20)
 }
+#> Loading required package: lme4
+#> Loading required package: Matrix
+#> 
+#> Attaching package: ‘simr’
+#> The following object is masked from ‘package:lme4’:
+#> 
+#>     getData
+#> The following object is masked from ‘package:igraph’:
+#> 
+#>     compare
 ```
