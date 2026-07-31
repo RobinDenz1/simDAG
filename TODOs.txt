@@ -1,6 +1,10 @@
 
 ###### Bugs & TODOS ######
 
+# once simr is fixed on CRAN
+- remove skip() from respective tests
+- remove eval=FALSE in v_cookbook.rmd
+- interactive() from respective documentation pages
 
 ####### New Features: #######
 

@@ -98,6 +98,8 @@ test_that("zero-inflated negative-binomial regression", {
 
 test_that("with random effects", {
 
+  skip()
+
   set.seed(234)
 
   dag <- empty_dag() +

@@ -135,8 +135,8 @@ rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
 
   # get cum. baseline hazard at left truncation times
   if (anyNA(left) || any(left > max_t)) {
-    stop("Left truncation times must be smaller than max(times). Adjust",
-         " the 'times' argument or the 'left' argument.", call.=FALSE)
+    stop("Left truncation times must be smaller than max(basehaz_grid). Adjust",
+         " the 'basehaz_grid' argument or the 'left' argument.", call.=FALSE)
   }
   H_l <- fifelse(left==0, 0, lH0$H0(left))
 
@@ -148,9 +148,9 @@ rtrunc_surv <- function(data, betas, fbasehaz, times, left=0,
 
   if (!extrapolate && any(target > lH0$H0(max(times)))) {
     stop("Some randomly generated hazards go beyond the estimated cumulative",
-         " baseline hazard as defined by the 'times' argument and will",
-         " therefore be equal to max(times). Adjust the 'times' argument",
-         " to include a longer time grid or set 'extrapolate=TRUE' to",
+         " baseline hazard as defined by the 'basehaz_grid' argument and will",
+         " therefore be equal to max(basehaz_grid). Adjust the 'basehaz_grid'",
+         " argument to include a longer time grid or set 'extrapolate=TRUE' to",
          " ignore this issue.", call.=FALSE)
   }
 

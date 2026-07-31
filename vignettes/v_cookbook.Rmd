@@ -129,7 +129,7 @@ These additions are left as an exercise to the user.
 
 Instead of randomly assigning *individuals* to the treatment, many trials actually randomly assign the treatment at the level of clinics or other forms of *clusters*, which is fittingly called cluster randomization. This may be implemented in `simDAG` using the following syntax:
 
-```{r}
+```{r, eval=FALSE}
 dag <- empty_dag() +
   node("Clinic", type="rcategorical", probs=rep(0.02, 50)) +
   node("Treatment", type="identity", formula= ~ Clinic >= 25) +
@@ -316,7 +316,7 @@ This specification uses the `model` argument to specify that an Aalen additive h
 
 The `simDAG` package directly supports the inclusion of arbitrary mixed model syntax in the `formula` interface of nodes of type `"gaussian"`, `"binomial"` and `"poisson"`, which makes it relatively straightforward to simulate multi-level data as well. In the following example, we consider students that are nested in different schools. The outcome is a continuous score of some kind.
 
-```{r}
+```{r, eval=FALSE}
 dag <- empty_dag() +
   node("school", type="rcategorical", probs=rep(0.1, 10),
        labels=LETTERS[1:10]) +

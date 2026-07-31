@@ -1,4 +1,6 @@
 
+skip()
+
 test_that("simple random effect", {
 
   set.seed(324)
