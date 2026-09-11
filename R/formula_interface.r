@@ -201,7 +201,8 @@ args_from_formula <- function(args, formula, node_type) {
 ## create a fitting dataset for special formula based nodes
 #' @importFrom data.table as.data.table
 #' @importFrom data.table setnames
-data_for_formula <- function(data, args, networks=list(), net_allowed=TRUE) {
+data_for_formula <- function(data, args, networks=list(), net_allowed=TRUE,
+                             ignore_vars=NULL) {
 
   name <- term <- NULL
 
@@ -227,7 +228,11 @@ data_for_formula <- function(data, args, networks=list(), net_allowed=TRUE) {
   }
 
   # add all variables to model matrix
-  form_dat <- paste0("~ `", paste0(colnames(data), collapse="` + `"), "`")
+  all_vars <- colnames(data)
+  if (!is.null(ignore_vars)) {
+    all_vars <- all_vars[!all_vars %in% ignore_vars]
+  }
+  form_dat <- paste0("~ `", paste0(all_vars, collapse="` + `"), "`")
 
   # identify interactions
   form_int <- args$parents[grepl(":", args$parents, fixed=TRUE)]
@@ -345,6 +350,8 @@ get_cat_col_levs <- function(data) {
     # extract possible category names
     if (col_types[cat_cols[i]]=="factor") {
       levs <- levels(data[[cat_cols[i]]])
+    } else if (col_types[cat_cols[i]]=="logical") {
+      levs <- c("TRUE", "FALSE")
     } else {
       levs <- unique(data[[cat_cols[i]]])
     }

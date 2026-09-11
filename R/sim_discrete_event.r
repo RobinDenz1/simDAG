@@ -222,13 +222,20 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
         } else {
           node_type <- tx_nodes[[i]][["model"]]
         }
+
         args_p <- args_from_formula(args=args_p,
                                     formula=tx_nodes[[i]]$formula,
                                     node_type=node_type)
 
+        # some variables to ignore while parsing the formula
+        ignore_vars <- c(".id", ".kind", var_names[i], ".time_of_next_event",
+                         ".time_of_next_change", ".event_duration",
+                         ".immunity_duration", ".trunc_time")
+
         args_p$data <- tryCatch({
           data_for_formula(data=data[rel_row==TRUE], args=args_p,
-                           networks=list(), net_allowed=FALSE)},
+                           networks=list(), net_allowed=FALSE,
+                           ignore_vars=ignore_vars)},
           error=function(e){
             stop("An error occured when interpreting the formula of node '",
                  tx_nodes[[i]]$name, "'. The message was:\n", e,
@@ -440,7 +447,7 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
 ## node type for the sim_discrete_event() function
 # NOTE: this function obviously doesn't really do anything, since the
 #       sim_discrete_event() function does it all internally, but it
-#       needs to be defined anyways so it is correctly processed in node()
+#       needs to be defined anyways so it is correctly processed in node_td()
 #' @export
 node_next_time <- function(data, formula, prob_fun, ..., distr_fun=rtexp,
                            distr_fun_args=list(), model=NULL,

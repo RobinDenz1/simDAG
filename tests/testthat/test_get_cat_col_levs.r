@@ -19,3 +19,14 @@ test_that("general test case", {
   expect_equal(d_combs, expected)
 })
 
+test_that("always returns both TRUE and FALSE for logical variables", {
+
+  data <- data.table(A=c(TRUE, TRUE, TRUE), B=c(FALSE, FALSE, FALSE))
+
+  expected <- data.table(name=c("A", "A", "B", "B"),
+                         categories=c("TRUE", "FALSE", "TRUE", "FALSE"),
+                         levs=c("ATRUE", "AFALSE", "BTRUE", "BFALSE"))
+  out <- get_cat_col_levs(data)
+
+  expect_equal(out, expected)
+})

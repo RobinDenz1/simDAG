@@ -1,4 +1,11 @@
 
+# simDAG 1.0.2 (developmental version)
+
+Bug Fixes
+
+* Fixed unneeded error messages that occurred when using complex terms in a `formula` when using `sim_discrete_event()`.
+* Fixed a faulty error that occurred when trying to specify a `formula` with things like `varTRUE`, when the level `TRUE` was not present in `var`. Logical variables now always allow specification of both levels.
+
 # simDAG 1.0.1
 
 Bug Fixes

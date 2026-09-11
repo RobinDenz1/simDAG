@@ -52,6 +52,19 @@ test_that("with interaction between two categorical variable", {
   expect_equal(colnames(out), c("A", "C", "test1", "test2", "BTRUE:test1"))
 })
 
+test_that("with interaction between logical and continuos variable", {
+
+  # no main effect for logical variable
+  args <- list(parents=c("A", "C", "BTRUE:C"))
+  out <- data_for_formula(data, args)
+  expect_equal(colnames(out), c("A", "C", "BTRUE:C"))
+
+  # with main effect for logical variable
+  args <- list(parents=c("A", "C", "BTRUE", "BTRUE:C"))
+  out <- data_for_formula(data, args)
+  expect_equal(colnames(out), c("A", "C", "BTRUE", "BTRUE:C"))
+})
+
 test_that("with cubic term", {
   args <- list(parents=c("A", "I(A^14)"))
 
@@ -73,6 +86,14 @@ test_that("with everything", {
 
   out <- data_for_formula(data, args)
   expect_equal(colnames(out), args$parents)
+})
+
+test_that("ignore_vars works", {
+
+  args <- list(parents=c("A", "BTRUE", "BTRUE:test1"))
+
+  # error because A is not found
+  expect_error(data_for_formula(data, args, ignore_vars="A"))
 })
 
 test_that("useful error message", {
