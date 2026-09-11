@@ -156,7 +156,7 @@ dag <- empty_dag() +
 sim_dat <- sim_from_dag(dag=dag, n_sim=100)
 
 ## an example using a random effect
-if (requireNamespace("simr") & interactive()) {
+if (requireNamespace("simr")) {
 
 library(simr)
 

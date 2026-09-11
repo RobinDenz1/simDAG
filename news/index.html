@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,11 +40,17 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/v1.0.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/RobinDenz1/siMDAG/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.1" id="simdag-101">simDAG 1.0.1<a class="anchor" aria-label="anchor" href="#simdag-101"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.2" id="simdag-102-developmental-version">simDAG 1.0.2 (developmental version)<a class="anchor" aria-label="anchor" href="#simdag-102-developmental-version"></a></h2>
+<p>Bug Fixes</p>
+<ul><li>Fixed unneeded error messages that occurred when using complex terms in a <code>formula</code> when using <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code>.</li>
+<li>Fixed a faulty error that occurred when trying to specify a <code>formula</code> with things like <code>varTRUE</code>, when the level <code>TRUE</code> was not present in <code>var</code>. Logical variables now always allow specification of both levels.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="simdag-101">simDAG 1.0.1<a class="anchor" aria-label="anchor" href="#simdag-101"></a></h2><p class="text-muted">CRAN release: 2026-07-31</p>
 <p>Bug Fixes</p>
 <ul><li>Temporary fix for a bug caused by changes in <code>lme4</code>, which in turn caused a bug in the <code>simr</code> package. Installing <code>simr</code> from github already fixes the issue, so this update was made solely to retain <code>simDAG</code> on CRAN.</li>
 </ul></div>
