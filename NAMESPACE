@@ -7,20 +7,24 @@ S3method(as.data.table,simDT)
 S3method(as.igraph,DAG)
 S3method(as_tidy_dagitty,DAG)
 S3method(plot,DAG)
+S3method(plot,lazy_DAG)
 S3method(plot,simDT)
 S3method(print,DAG)
 S3method(print,DAG.network)
 S3method(print,DAG.node)
+S3method(print,lazy_DAG)
 S3method(print,simDT)
 S3method(summary,DAG)
 S3method(summary,DAG.network)
 S3method(summary,DAG.node)
+S3method(summary,lazy_DAG)
 S3method(summary,simDT)
 export(add_node)
 export(dag2matrix)
 export(dag_from_data)
 export(do)
 export(empty_dag)
+export(lazy_dag)
 export(long2start_stop)
 export(matrix2dag)
 export(net)
@@ -54,38 +58,43 @@ export(rcategorical)
 export(rconstant)
 export(rsample)
 export(rtexp)
+export(set_lazy_dag)
 export(sim2data)
 export(sim_discrete_event)
 export(sim_discrete_time)
 export(sim_from_dag)
 export(sim_n_datasets)
 importFrom(dagitty,as.dagitty)
-importFrom(data.table,":=")
-importFrom(data.table,.I)
-importFrom(data.table,.N)
-importFrom(data.table,.SD)
-importFrom(data.table,as.data.table)
-importFrom(data.table,copy)
-importFrom(data.table,data.table)
-importFrom(data.table,dcast)
-importFrom(data.table,fcase)
-importFrom(data.table,fifelse)
-importFrom(data.table,is.data.table)
-importFrom(data.table,melt.data.table)
-importFrom(data.table,merge.data.table)
-importFrom(data.table,rbindlist)
-importFrom(data.table,rleid)
-importFrom(data.table,set)
-importFrom(data.table,setDT)
-importFrom(data.table,setDTthreads)
-importFrom(data.table,setcolorder)
-importFrom(data.table,setkey)
-importFrom(data.table,setkeyv)
-importFrom(data.table,setnafill)
-importFrom(data.table,setnames)
-importFrom(data.table,shift)
-importFrom(data.table,uniqueN)
+importFrom(data.table,
+  ":=",
+  .I,
+  .N,
+  .SD,
+  as.data.table,
+  copy,
+  data.table,
+  dcast,
+  fcase,
+  fifelse,
+  is.data.table,
+  melt.data.table,
+  merge.data.table,
+  rbindlist,
+  rleid,
+  set,
+  setDT,
+  setDTthreads,
+  setcolorder,
+  setkey,
+  setkeyv,
+  setnafill,
+  setnames,
+  shift,
+  uniqueN
+)
 importFrom(ggdag,as_tidy_dagitty)
-importFrom(igraph,as.igraph)
-importFrom(igraph,neighborhood)
+importFrom(igraph,
+  as.igraph,
+  neighborhood
+)
 importFrom(rlang,.data)

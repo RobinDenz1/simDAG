@@ -109,7 +109,13 @@ add_node <- function(dag, node) {
 
 ## S3 print method for DAG objects
 #' @export
-print.DAG <- function(x, ...) {
+print.DAG <- function(x, lazy=FALSE, n_unspecified=0, ...) {
+
+  if (lazy) {
+    dag <- "lazy DAG"
+  } else {
+    dag <- "DAG"
+  }
 
   root_names <- names_DAG_level(x, "root")
   child_names <- names_DAG_level(x, "child")
@@ -126,23 +132,33 @@ print.DAG <- function(x, ...) {
   n_networks <- length(x$networks)
 
   if (is_empty_dag(x)) {
-    cat("An empty DAG object without any nodes.\n")
+    cat("An empty", dag, "object without any nodes.\n")
   } else {
-    cat("A DAG object with:\n")
+    cat("A", dag, "object with:\n")
     cat("  - ", n_total_nodes, " nodes in total\n")
     cat("  - ", n_root_nodes, " of which are root nodes\n")
     cat("  - ", n_child_nodes, " of which are child nodes\n")
     cat("  - ", n_tx_nodes, " of which are time-varying nodes\n")
     cat("  - ", n_networks, " imposed network structure(s)\n")
   }
+
+  if (lazy) {
+    cat("  - ", n_unspecified, " unspecified parameter(s)\n")
+  }
 }
 
 ## S3 summary method for DAG objects
 #' @export
-summary.DAG <- function(object, char_max=60, ...) {
+summary.DAG <- function(object, char_max=60, lazy=FALSE, ...) {
+
+  if (lazy) {
+    dag <- "lazy DAG"
+  } else {
+    dag <- "DAG"
+  }
 
   if (is_empty_dag(object)) {
-    cat("An empty DAG object without any nodes.\n")
+    cat("An empty", dag, "object without any nodes.\n")
     return(invisible(character(0)))
   } else {
     # setup output vector
@@ -171,8 +187,12 @@ summary.DAG <- function(object, char_max=60, ...) {
                                   FUN.VALUE=character(1),
                                   char_max=char_max)
 
-    cat("A DAG object using the following structural equations:\n\n")
+    cat("A", dag, "object using the following structural equations:\n\n")
     cat(str_equations_print, sep="\n")
+
+    if (lazy) {
+      cat("\nUnspecified parameters are denoted as Inf.\n")
+    }
 
     return(invisible(str_equations))
   }

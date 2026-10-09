@@ -12,7 +12,11 @@ sim_discrete_time <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
                               save_networks=FALSE,
                               verbose=FALSE, check_inputs=TRUE) {
 
-  if (!inherits(dag, "DAG")) {
+  if (inherits(dag, "lazy_DAG")) {
+    stop("'lazy_DAG' objects cannot be used directly to simulate data. Please",
+         " run set_lazy_dag() first, see ?lazy_dag for more information.",
+         call.=FALSE)
+  } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
          " node_td() functions.", call.=FALSE)
   }

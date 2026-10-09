@@ -1,5 +1,9 @@
 
-# simDAG 1.0.2 (developmental version)
+# simDAG 1.1.0 (developmental version)
+
+New features
+
+* Added the `lazy_dag()` and `set_lazy_dag()` functions to allow a more flexible definition of the same `DAG` with different parameter values.
 
 Bug Fixes
 

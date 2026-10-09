@@ -23,6 +23,8 @@ reference:
       - network
       - net
       - add_node
+      - lazy_dag
+      - set_lazy_dag
       - plot.DAG
       - as.igraph.DAG
       - as.dagitty.DAG

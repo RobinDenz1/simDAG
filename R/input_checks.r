@@ -218,6 +218,10 @@ check_inputs_sim_from_dag <- function(dag, n_sim, sort_dag) {
     stop("'n_sim' must be a single integer > 0.", call.=FALSE)
   } else if (!(length(sort_dag)==1 && is.logical(sort_dag))) {
     stop("'sort_dag' must be either TRUE or FALSE.", call.=FALSE)
+  } else if (inherits(dag, "lazy_DAG")) {
+    stop("'lazy_DAG' objects cannot be used directly to simulate data. Please",
+         " run set_lazy_dag() first, see ?lazy_dag for more information.",
+         call.=FALSE)
   } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object creates using empty_dag() and",
          " node() function calls. See documentation.", call.=FALSE)

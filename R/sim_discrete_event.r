@@ -33,7 +33,11 @@ sim_discrete_event <- function(dag, n_sim=NULL, t0_sort_dag=FALSE,
     .kind <- .change <- .event_count <- . <- start <- .col <-
     .time_cuts <- .is_new_event <- .is_new_change <- NULL
 
-  if (!inherits(dag, "DAG")) {
+  if (inherits(dag, "lazy_DAG")) {
+    stop("'lazy_DAG' objects cannot be used directly to simulate data. Please",
+         " run set_lazy_dag() first, see ?lazy_dag for more information.",
+         call.=FALSE)
+  } else if (!inherits(dag, "DAG")) {
     stop("'dag' must be a DAG object created using the empty_dag() and",
          " node_td() functions.", call.=FALSE)
   }
