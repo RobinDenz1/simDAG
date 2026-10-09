@@ -234,6 +234,4 @@ sim_dat <- sim_from_dag(dag=dag_mixed, n_sim=100)
 #> The following object is masked from ‘package:igraph’:
 #> 
 #>     compare
-#> Error: An error occured when processing node 'Grade'. The message was:
-#> Error in lhs[[1]]: object of type 'symbol' is not subsettable
 ```

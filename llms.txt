@@ -181,6 +181,16 @@ Create, manipulate and inspect DAGs
 
   Add a `DAG.node` or a `DAG.network` object to a `DAG` object
 
+- [`lazy_dag()`](https://robindenz1.github.io/simDAG/reference/lazy_dag.md)
+  :
+
+  Define a partial `DAG` object without evaluating it
+
+- [`set_lazy_dag()`](https://robindenz1.github.io/simDAG/reference/set_lazy_dag.md)
+  :
+
+  Create a fully defined `DAG` object from a `lazy_DAG` object
+
 - [`plot(`*`<DAG>`*`)`](https://robindenz1.github.io/simDAG/reference/plot.DAG.md)
   :
 
