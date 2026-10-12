@@ -1,14 +1,15 @@
 # Define a partial `DAG` object without evaluating it
 
 This function should be used as a wrapper around an expression that aims
-to generate a `DAG` object, but with some parameters left un-specified.
+to generate a `DAG` object, but with some parameters left unspecified.
 Those parameters should be defined using the `param()` syntax, as shown
 below. The `DAG` is then not instantly evaluated. Instead, it will only
 be evaluated later using a
 [`set_lazy_dag`](https://robindenz1.github.io/simDAG/reference/set_lazy_dag.md)
-call, which then sets the still un-specified parameters. This may be
+call, which then sets the still unspecified parameters. This may be
 useful to create flexible functions that generate `DAG` objects during
-simulations, and is also used in `calibrate_dag`.
+simulations, and is also used in
+[`calibrate_dag`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md).
 
 ## Usage
 

@@ -225,6 +225,15 @@ Create, manipulate and inspect DAGs
 
   Obtain a `DAG` object from a Adjacency Matrix and a List of Node Types
 
+## Select DAG Parameters
+
+Automatically select suitable parameters in DAGs
+
+- [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+  :
+
+  Calibrate a partially specified `DAG` to match target values
+
 - [`dag_from_data()`](https://robindenz1.github.io/simDAG/reference/dag_from_data.md)
   :
 
@@ -362,6 +371,8 @@ Functions that can only be used as time-dependent nodes
   Approach](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.md):
 - [Simulating Covid-19 Vaccine Data using a Discrete-Time
   Simulation](https://robindenz1.github.io/simDAG/articles/v_covid_example.md):
+- [Calibrating a DAG to Match Target
+  Characteristics](https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.md):
 - [Simulating Data from a DAG with Network
   Dependencies](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md):
 - [simDAG

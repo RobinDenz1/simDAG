@@ -110,6 +110,8 @@ vignettes of this package, which can be accessed using:
 
 - [`vignette(topic="v_sim_networks", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md)
 
+- [`vignette(topic="v_calibrate_dag", package="simDAG")`](https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.md)
+
 A separate peer-reviewed article about this package has been published
 in the *Journal of Statistical Software* (Denz and Timmesfeld 2026). It
 is also available as a vignette in this package.

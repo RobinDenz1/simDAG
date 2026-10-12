@@ -5,6 +5,13 @@
 New features
 
 - Added the
+  [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+  function, which allows users to automatically determine conditional
+  parameters in a `DAG`, such as regression coefficients etc., so that
+  some user-defined (usually marginal) targets are met. This would, for
+  example, make it possible to directly specify true marginal causal
+  effects in a `DAG`.
+- Added the
   [`lazy_dag()`](https://robindenz1.github.io/simDAG/reference/lazy_dag.md)
   and
   [`set_lazy_dag()`](https://robindenz1.github.io/simDAG/reference/set_lazy_dag.md)
@@ -20,6 +27,12 @@ Bug Fixes
   with things like `varTRUE`, when the level `TRUE` was not present in
   `var`. Logical variables now always allow specification of both
   levels.
+
+Documentation
+
+- Added a new vignette showcasing the
+  [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+  function.
 
 ## simDAG 1.0.1
 

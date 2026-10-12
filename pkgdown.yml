@@ -3,6 +3,7 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   simDAG: simDAG.html
+  v_calibrate_dag: v_calibrate_dag.html
   v_cookbook: v_cookbook.html
   v_covid_example: v_covid_example.html
   v_custom_nodes: v_custom_nodes.html
@@ -11,7 +12,7 @@ articles:
   v_sim_from_dag: v_sim_from_dag.html
   v_sim_networks: v_sim_networks.html
   v_using_formulas: v_using_formulas.html
-last_built: 2026-10-09T18:30Z
+last_built: 2026-10-12T10:29Z
 urls:
   reference: https://robindenz1.github.io/simDAG/reference
   article: https://robindenz1.github.io/simDAG/articles

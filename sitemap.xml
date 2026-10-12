@@ -3,6 +3,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/LICENSE.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/index.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/simDAG.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_cookbook.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_covid_example.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/articles/v_custom_nodes.html</loc></url>
@@ -18,6 +19,7 @@
 <url><loc>https://robindenz1.github.io/simDAG/reference/as.dagitty.DAG.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/as.igraph.DAG.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/as_tidy_dagitty.DAG.html</loc></url>
+<url><loc>https://robindenz1.github.io/simDAG/reference/calibrate_dag.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/dag2matrix.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/dag_from_data.html</loc></url>
 <url><loc>https://robindenz1.github.io/simDAG/reference/do.html</loc></url>

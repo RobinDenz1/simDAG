@@ -14,6 +14,8 @@
   Approach](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.md):
 - [Simulating Covid-19 Vaccine Data using a Discrete-Time
   Simulation](https://robindenz1.github.io/simDAG/articles/v_covid_example.md):
+- [Calibrating a DAG to Match Target
+  Characteristics](https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.md):
 - [Simulating Data from a DAG with Network
   Dependencies](https://robindenz1.github.io/simDAG/articles/v_sim_networks.md):
 - [simDAG

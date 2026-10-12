@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_time.html">Simulating Data using a Discrete-Time Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_discrete_event.html">Simulating Data using a Discrete-Event Approach</a></li>
     <li><a class="dropdown-item" href="../articles/v_covid_example.html">Simulating Covid-19 Vaccine Data using a Discrete-Time Simulation</a></li>
+    <li><a class="dropdown-item" href="../articles/v_calibrate_dag.html">Calibrating a DAG to Match Target Characteristics</a></li>
     <li><a class="dropdown-item" href="../articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></li>
     <li><a class="dropdown-item" href="../articles/v_cookbook.html">simDAG Cookbook</a></li>
   </ul></li>
@@ -46,10 +47,13 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="simdag-110-developmental-version">simDAG 1.1.0 (developmental version)<a class="anchor" aria-label="anchor" href="#simdag-110-developmental-version"></a></h2>
 <p>New features</p>
-<ul><li>Added the <code><a href="../reference/lazy_dag.html">lazy_dag()</a></code> and <code><a href="../reference/set_lazy_dag.html">set_lazy_dag()</a></code> functions to allow a more flexible definition of the same <code>DAG</code> with different parameter values.</li>
+<ul><li>Added the <code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> function, which allows users to automatically determine conditional parameters in a <code>DAG</code>, such as regression coefficients etc., so that some user-defined (usually marginal) targets are met. This would, for example, make it possible to directly specify true marginal causal effects in a <code>DAG</code>.</li>
+<li>Added the <code><a href="../reference/lazy_dag.html">lazy_dag()</a></code> and <code><a href="../reference/set_lazy_dag.html">set_lazy_dag()</a></code> functions to allow a more flexible definition of the same <code>DAG</code> with different parameter values.</li>
 </ul><p>Bug Fixes</p>
 <ul><li>Fixed unneeded error messages that occurred when using complex terms in a <code>formula</code> when using <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code>.</li>
 <li>Fixed a faulty error that occurred when trying to specify a <code>formula</code> with things like <code>varTRUE</code>, when the level <code>TRUE</code> was not present in <code>var</code>. Logical variables now always allow specification of both levels.</li>
+</ul><p>Documentation</p>
+<ul><li>Added a new vignette showcasing the <code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> function.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="simdag-101">simDAG 1.0.1<a class="anchor" aria-label="anchor" href="#simdag-101"></a></h2><p class="text-muted">CRAN release: 2026-07-31</p>

@@ -74,6 +74,15 @@ Create, manipulate and inspect DAGs
 
   Obtain a `DAG` object from a Adjacency Matrix and a List of Node Types
 
+## Select DAG Parameters
+
+Automatically select suitable parameters in DAGs
+
+- [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+  :
+
+  Calibrate a partially specified `DAG` to match target values
+
 - [`dag_from_data()`](https://robindenz1.github.io/simDAG/reference/dag_from_data.md)
   :
 
