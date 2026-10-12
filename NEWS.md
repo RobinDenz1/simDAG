@@ -3,12 +3,17 @@
 
 New features
 
+* Added the `calibrate_dag()` function, which allows users to automatically determine conditional parameters in a `DAG`, such as regression coefficients etc., so that some user-defined (usually marginal) targets are met. This would, for example, make it possible to directly specify true marginal causal effects in a `DAG`.
 * Added the `lazy_dag()` and `set_lazy_dag()` functions to allow a more flexible definition of the same `DAG` with different parameter values.
 
 Bug Fixes
 
 * Fixed unneeded error messages that occurred when using complex terms in a `formula` when using `sim_discrete_event()`.
 * Fixed a faulty error that occurred when trying to specify a `formula` with things like `varTRUE`, when the level `TRUE` was not present in `var`. Logical variables now always allow specification of both levels.
+
+Documentation
+
+* Added a new vignette showcasing the `calibrate_dag()` function.
 
 # simDAG 1.0.1
 

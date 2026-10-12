@@ -5,7 +5,7 @@
 Define a partial \code{DAG} object without evaluating it
 }
 \description{
-This function should be used as a wrapper around an expression that aims to generate a \code{DAG} object, but with some parameters left un-specified. Those parameters should be defined using the \code{param()} syntax, as shown below. The \code{DAG} is then not instantly evaluated. Instead, it will only be evaluated later using a \code{\link{set_lazy_dag}} call, which then sets the still un-specified parameters. This may be useful to create flexible functions that generate \code{DAG} objects during simulations, and is also used in \code{calibrate_dag}.
+This function should be used as a wrapper around an expression that aims to generate a \code{DAG} object, but with some parameters left unspecified. Those parameters should be defined using the \code{param()} syntax, as shown below. The \code{DAG} is then not instantly evaluated. Instead, it will only be evaluated later using a \code{\link{set_lazy_dag}} call, which then sets the still unspecified parameters. This may be useful to create flexible functions that generate \code{DAG} objects during simulations, and is also used in \code{\link{calibrate_dag}}.
 }
 \usage{
 lazy_dag(expr)

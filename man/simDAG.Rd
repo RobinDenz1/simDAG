@@ -49,6 +49,7 @@ The documentation pages contain a lot of information, relevant examples and some
   \item{\code{vignette(topic="v_custom_nodes", package="simDAG")}}
   \item{\code{vignette(topic="v_cookbook", package="simDAG")}}
   \item{\code{vignette(topic="v_sim_networks", package="simDAG")}}
+  \item{\code{vignette(topic="v_calibrate_dag", package="simDAG")}}
 }
 
 A separate peer-reviewed article about this package has been published in the \emph{Journal of Statistical Software} (Denz and Timmesfeld 2026). It is also available as a vignette in this package.

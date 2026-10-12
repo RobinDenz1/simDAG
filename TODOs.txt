@@ -1,6 +1,10 @@
 
 ###### Bugs & TODOS ######
 
+calibrate_dag()
+	- allow more flexibility in estimate_targets(), e.g. dag input
+	- add marginal effect specification with longitudinal data in v_calibrate_dag vignette
+	- allow simpler input for "targets" argument
 
 ####### New Features: #######
 

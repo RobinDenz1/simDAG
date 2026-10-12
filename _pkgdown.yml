@@ -11,6 +11,7 @@ articles:
       - v_sim_discrete_time
       - v_sim_discrete_event
       - v_covid_example
+      - v_calibrate_dag
       - v_sim_networks
       - v_cookbook
       - simDAG
@@ -32,6 +33,11 @@ reference:
       - do
       - dag2matrix
       - matrix2dag
+      
+    - title: Select DAG Parameters
+      desc: Automatically select suitable parameters in DAGs
+    - contents:
+      - calibrate_dag
       - dag_from_data
       
     - title: Simulation

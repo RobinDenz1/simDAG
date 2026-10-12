@@ -1,0 +1,498 @@
+---
+title: "Calibrating a DAG to Match Target Characteristics"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+author: "Robin Denz"
+bibliography: ./images_v_joss/disc_time_sim.bib
+vignette: >
+  %\VignetteIndexEntry{Calibrating a DAG to Match Target Characteristics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse=TRUE,
+  comment="#>",
+  fig.align="center"
+)
+```
+
+# Introduction
+
+The `simDAG` package allows users to define very complex data generation processes (DGP) on the basis of DAGs, where each `node()` is generated using its own model [@Denz2026]. This is convenient computationally, but might not always meet user needs. For example, if users are interested in simulating data with specific marginal effects, it is not directly clear what values for the coefficients, intercepts and other parameters should be used. Since only the *conditional* models and distributions can be directly specified, the only way to get specific *marginal* effects is by setting the conditional parameters to specific values via trial and error, which gets more and more complicated if multiple parameters and target quantities are involved.
+
+Since version 1.1.0, `simDAG` contains the `calibrate_dag()` function, which aims to (at least partially) solve this issue. Instead of putting the burden of picking the right conditional parameter values into the hands of the user, this function allows users to specify arbitrary marginal effects and parameters instead and automatically tries to figure out suitable conditional parameters. This vignette introduces this function in depth. We assume that the reader is already familiar with the general `simDAG` syntax. If not, we recommend consulting other vignettes or the official publication [@Denz2026] first.
+
+# Related Work
+
+The problem itself has been pointed out by multiple authors [@Austin2023; @Evans2024; @Lin2025], who proposed different approaches to fix it. The method implemented here is very similar to the methods described by @Austin2008, @Austin2010 and @Austin2023. The main difference is that in that literature, the authors focused on a single marginal target quantity and a single flexible parameter, whereas the implementation given here is much more flexible. It allows any amount of targets and any amount of parameters in principle. But, there is of course, no guarantee that it always works!
+
+# The `calibrate_dag()` Method
+
+## How It Works
+
+In a nutshell, the method works by fixing some arbitrary target parameter (usually a marginal quantity, such as an average treatment effect or prevalence) while letting one or more parameters of the DGP vary freely. Internally, the method generates a single dataset with `n_sim_run` individuals given initial values for the parameter(s) and evaluates the observed target quantitie(s). For example, one may leave an intercept $\beta_0$ of a logistic regression model as a free parameter and fix the outcome prevalence. We may then start at $\beta_0 = 0$, generate a dataset and observe an outcome prevalence of 10%.
+
+We then check how well the observed targets correspond to the desired targets. The free parameters are then updated and the process is repeated until convergence is reached. With just one free parameter and one target, a classic one dimensional root finding algorithm (e.g. `uniroot()`) is used. In more complex situations, the general purpose numerical optimizer `optim()` is used instead. To describe this method formally, we will introduce some notation.
+
+Let $\boldsymbol{\theta} = (\theta_1,\ldots,\theta_p)^\top$ denote the free parameters of the DAG, and let $t_j$ denote the desired value of target $j=1,\ldots,m$. For a given $\boldsymbol{\theta}$, we simulate `n_sim_run` observations from the corresponding data-generating process (DGP) and evaluate the user-defined target functions to obtain
+
+$$
+\widehat{\mathbf{g}}(\boldsymbol{\theta}) = \left( \widehat{g}_1(\boldsymbol{\theta}),\ldots, \widehat{g}_m(\boldsymbol{\theta}) \right)^\top.
+$$
+
+Each target is assigned a positive scale $s_j$, which defaults to $1$. The standardized residual for target $j$ is defined as:
+
+$$
+r_j(\boldsymbol{\theta}) = \frac{\widehat{g}_j(\boldsymbol{\theta})-t_j}{s_j}.
+$$
+
+The default objective function is the sum of squared standardized residuals,
+
+$$
+L(\boldsymbol{\theta}) = \sum_{j=1}^{m} r_j(\boldsymbol{\theta})^2 = \sum_{j=1}^{m} \left[ \frac{\widehat{g}_j(\boldsymbol{\theta})-t_j}{s_j} \right]^2,
+$$
+
+but users may use any other objective if needed, by supplying a suitable custom function through the `objective_fun` argument. Parameter-specific scales $q_k > 0$ are used to improve the numerical conditioning of the optimization. These are supplied by the user or determined automatically according to
+
+$$
+q_k = \begin{cases} q_k^{\mathrm{user}}, & \text{if a scale is specified},\\[4pt]
+(U_k-L_k)/2, & \text{if both parameter bounds are finite},\\[4pt]
+\max(1,|\theta_{k,0}|), & \text{otherwise},
+\end{cases}
+$$
+
+where $\theta_{k,0}$ denotes the starting value and $[L_k, U_k]$ denotes the parameter range. Parameter scaling affects the numerical optimization but does not change the underlying calibration objective. For multiple parameters and/or targets, the estimated parameter vector is obtained by minimizing the objective function using `optim()`,
+
+$$
+\widehat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}\in\Theta}{\operatorname{arg\,min}} \;L(\boldsymbol{\theta}),
+$$
+
+where $\Theta$ denotes the parameter space defined by the supplied bounds. The default optimization method (`optim_method`) is L-BFGS-B, although alternative methods and custom objective functions can be specified. A custom objective function receives the vector of standardized residuals.
+
+For the special case of a single free parameter and a single target, with finite parameter bounds and no custom objective function, the procedure instead uses `uniroot()` to solve
+
+$$
+\frac{\widehat{g}_1(\theta)-t_1}{s_1}=0.
+$$
+
+Finally, the calibrated DGP is evaluated using `n_sim_eval` simulated observations to assess the agreement between the achieved and desired target values. The resulting target discrepancies provide a measure of calibration accuracy; convergence of the numerical optimizer alone does not guarantee that all targets have been adequately matched.
+
+## Is this an exact method?
+
+Theoretically, this method does not allow specifying *exact* target quantities, since the simulation parameters are only determined through Monte-Carlo simulation. Therefore it would be wrong to claim that "we specified quantity $X$ to be *exactly* $x$". However, in practice this is not a substantive issue. By increasing the sample size used during the optimization process (`n_sim_run`) and by tuning the optimization procedure (for example using `optim_control`), there is no limit to the precision users may obtain. This precision can be checked numerically using further Monte-Carlo simulations.
+
+Suppose one wants to fix the marginal relative risk to be 0.5. Lets say we use `calibrate_dag()` with very large `n_sim_run`, `n_sim_eval` and well tuned optimization controls and arrive at some parameter values. We then use these parameter values to generate a dataset with 10 million individuals and calculate the marginal relative risk, which turns out to be 0.50001 with a 99% confidence interval of [0.499, 0.5001]. The desired value of 0.5 is well within the interval. So while we may not say that the true effect is *exactly* 0.5, we *can* say that it is very very close with high probability. See @Naimi2025 for a related discussion on calculating target estimands using the Monte-Carlo method.
+
+## Advantages and Disadvantages
+
+The `calibrate_dag()` method has all the downsides and all the upsides of classic numeric optimization. It is incredibly flexible, allowing any kind of target with any kind of definable `DAG`. There is also no limit on the amount of free parameters or the amount of targets. The only exception being, that the number of free parameters usually has to be at least as large as the number of `targets`. On the other hand, it is only approximate, may take a long time to compute (depending on the DGP and targets) and there is of course no guarantee that a solution exists or that one can be found by the optimizer. Nevertheless, it has proven to be very useful in the work of the authors and definitely beats manual trial and error.
+
+## Tips for Convergence
+
+If convergence fails or is not satisfactory, multiple strategies may be tried. We give some suggestions in no particular order below:
+
+(1) Try increasing `n_sim_run`. Small values are computationally fast, but may lead to unstable estimates.
+(2) Try different `start` values for the `params`. In particular, it is often helpful to use the final parameters of a failed `calibrate_dag()` run in a new call. This could also be combined with the previous point: run `calibrate_dag()` once with a more manageable `n_sim_run`. If this does not succeed, run it again with larger `n_sim_run`, but use the final values of the failed run as `start` values in the new one.
+(3) Try different `seed` values.
+(4) Try changing the `optim_method` argument or start tinkering with the `optim_control` argument. In particular, decreasing tolerances and increasing the maximum number of iterations often helps.
+(5) Whenever possible, try calibrating targets sequentially instead of simultaneously.
+(6) If different `targets` are on widely different scales, it may be helpful to scale them manually using the `scale` option, which may be defined separately for each target.
+
+Although not perfect, this procedure is substantially less cumbersome than dealing with regular convergence problems, because in this case the solution is known, e.g. we can directly tell whether the algorithm found a suitable solution or not. If neither of these things work, it may be possible that (1) there is no solution given the parameters, DGP and `targets` or (2) the problem is too complex for simple numerical optimization.
+
+# A Worked Example
+
+## Setup
+
+Suppose that our goal is to simulate data from a simple DAG with only three variables: $A$ being a binary treatment, $X$ a continuous normally distributed confounder and $Y$ a binary outcome. Using `simDAG`, we could easily simulate some data using the following syntax:
+
+```{r, warning=FALSE, message=FALSE}
+library(simDAG)
+library(data.table)
+
+dag <- empty_dag() +
+  node("X", type="rnorm", mean=0, sd=1) +
+  node("A", type="binomial", formula= ~ -2 + X*1.1) +
+  node("Y", type="binomial", formula= ~ -1.2 + A*0.7 + X*0.4)
+
+set.seed(1234)
+data <- sim_from_dag(dag, n_sim=10000)
+head(data)
+```
+
+Here we simply model $A$ and $Y$ as logistic regression models and sample directly from a standard normal distribution for $X$. We can check if the simulation worked by simply fitting two logistic regression models on the observed data. Here is the model for $A$:
+
+```{r}
+mod_A <- glm(A ~ X, data=data, family="binomial")
+summary(mod_A)
+```
+
+and here is the model for $Y$:
+
+```{r}
+mod_Y <- glm(Y ~ A + X, data=data, family="binomial")
+summary(mod_Y)
+```
+
+Although this works well, the coefficients and intercepts we used here were completely arbitrary. Consider the resulting prevalence of $A$:
+
+```{r}
+mean(data$A)
+```
+
+and the prevalence of $Y$:
+
+```{r}
+mean(data$Y)
+```
+
+We were not able to specify these values directly; they do not appear anywhere in the `DAG` definition. For a real simulation study, we may be interested in keeping the prevalence of $A$ and $Y$ at specific values.
+
+## Specifying One Marginal Target
+
+First, as a simple example, suppose we want to keep the outcome prevalence at 30%. Theoretically, all we need to do here is tweak the intercept of the outcome model appropriately, but by how much? This is where the `calibrate_dag()` function may help. Instead of trying to manually figure out an appropriate value, we can simply leave it unspecified and let `calibrate_dag()` do the work for us. First, we define a *lazy DAG*:
+
+```{r}
+ldag <- lazy_dag(
+  dag <- empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1.5) +
+    node("A", type="binomial", formula= ~ -2 + X*1.1) +
+    node("Y", type="binomial", formula= ~ param(intercept_Y) + A*0.7 + X*0.4)
+)
+```
+
+Note that this `DAG` is nearly equivalent to the one we used before. The only difference is that the entire expression creating it is wrapped in a `lazy_dag()` function call, and that we have replaced the arbitrary intercept with `param(intercept_Y)`, leaving it unspecified.
+
+Now we need to define our `targets` precisely, so that `calibrate_dag()` knows what we are looking for. In this example we could use the following syntax:
+
+```{r}
+targets <- list(
+  prevalence_Y = list(target = 0.3, eval_fun = function(data) {mean(data$Y)})
+)
+```
+
+The `targets` list should contain one list per target property that we want to impose on the `DAG`. Each of these lists should contain a named element called `target`, which defines the precise value we are looking for, and a named element called `eval_fun`. The latter should be a function that can be called on a simulated dataset and then returns the observed value of the target. In this example, the `eval_fun` is simply calculating the prevalence of $Y$, as shown earlier.
+
+Next, we need to define `start`ing values and (optionally) broad search ranges for all unspecified paramaters. Here we could simply use:
+
+```{r}
+params <- list(
+  intercept_Y = list(start = 0, range=c(-5, 5))
+)
+```
+
+Just from the one example, we can guess that -5 is likely way too low and 5 way too high, but this if completely fine. We merely want to give the optimization algorithm some direction. When defining `params`, the most important thing is to name each element of the list exactly the same way as the corresponding parameter in the `lazy_dag()` call (there we used `param(intercept_Y)`). Now all that is left is to call the main function:
+
+```{r}
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 42
+)
+
+summary(cdag)
+```
+
+From the `summary()` output, we can directly see the final estimates the method arrived at and more importantly, the actual performance reached as compared to the targets. In this case, the optimization seems to have worked quite well. For actual applications, it might not be precise enough yet. One could of course increase `n_sim_run` or try some of the "convergence tips" listed earlier. To keep this vignette at a short runtime for CRAN, we choose to omit this here.
+
+Note that because we were only interested in a single target quantity, left only a single parameter unspecified and specified a `range` for the parameter, one dimensional root finding (`uniroot()`) was used internally. Such root finding is often easier and more reliable than numerical optimization, which is needed for more complex scenarios. Finally, if we want to simulate data using the `DAG` with the identified parameters, we can simply use the `cdag$dag` object also returned by the function as follows:
+
+```{r}
+data <- sim_from_dag(cdag$dag, n_sim=100)
+head(data)
+```
+
+## Specifying Two Marginal Targets
+
+We could go a step further and demand that not only the prevalence of $Y$, but also the prevalence of $A$ should be fixed at some specific value. For exemplary purposes, lets say we want those prevalences to be 40% and 20% now. In this particular example, the prevalence of $A$ is not influenced by the prevalence of $Y$, so the best solution would be to call `calibrate_dag()` once to determine an appropriate intercept for the $A$ `node()` and afterwards use the results in another `calibrate_dag()` call to determine the intercept for $Y$.
+
+The following syntax may be used to find a suitable intercept for the $A$ model:
+
+```{r}
+ldag <- lazy_dag(
+  dag <- empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1.5) +
+    node("A", type="binomial", formula= ~ param(intercept_A) + X*1.1) +
+    node("Y", type="binomial", formula= ~ -1 + A*0.7 + X*0.4)
+)
+
+targets <- list(
+  prevalence_A = list(target = 0.2, eval_fun = function(data) {mean(data$A)})
+)
+
+params <- list(
+  intercept_A = list(start = 0, range=c(-5, 5))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 42
+)
+
+summary(cdag)
+```
+
+Again, this seems to have worked well, with very little bias on the final evaluation, which might just be random error. The final estimated value is given as roughly `r round(cdag$est_params, 3)`. Now lets move on to $Y$:
+
+```{r}
+ldag <- lazy_dag(
+  dag <- empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1.5) +
+    node("A", type="binomial", formula= ~ -2.023 + X*1.1) +
+    node("Y", type="binomial", formula= ~ param(intercept_Y) + A*0.7 + X*0.4)
+)
+
+targets <- list(
+  prevalence_Y = list(target = 0.4, eval_fun = function(data) {mean(data$Y)})
+)
+
+params <- list(
+  intercept_Y = list(start = 0, range=c(-5, 5))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 42
+)
+
+summary(cdag)
+```
+
+Again, no issues here. And since the intercept of the model for $Y$ does not have any downstream effects on the model for $A$, both targets were reached easily. However, we might not always be so lucky. Lets ignore the nice separability of these two parameters for a second and suppose that there might be some interaction between them. We would then need to estimate them jointly. This is supported by `calibrate_dag()`, but it often makes convergence harder to obtain.
+
+We could use the following syntax:
+
+```{r}
+ldag <- lazy_dag(
+  dag <- empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1.5) +
+    node("A", type="binomial", formula= ~ param(intercept_A) + X*1.1) +
+    node("Y", type="binomial", formula= ~ param(intercept_Y) + A*0.7 + X*0.4)
+)
+
+targets <- list(
+  prevalence_A = list(target = 0.2, eval_fun = function(data) {mean(data$A)}),
+  prevalence_Y = list(target = 0.4, eval_fun = function(data) {mean(data$Y)})
+)
+
+params <- list(
+  intercept_A = list(start = 0, range=c(-5, 5)),
+  intercept_Y = list(start = 0, range=c(-5, 5))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 42
+)
+
+summary(cdag)
+```
+
+First, note that the syntax has changed very little. All we had to do was use multiple `param()` calls in the `lazy_dag()` definition and then define one element per parameter and target in the respective arguments. Note however, that the results are much worse with the default settings. The bias between the desired and achieved values is substantial. The reason is that we now have to use `optim()` on a more complicated problem.
+
+But there is no reason to despair yet. First, since we can easily check whether the optimization worked or not using `summary()`, there is no risk here. After all, we know this solution is not what we want. Secondly, we can still tweak the optimization to make it better. Consider the following syntax:
+
+```{r}
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  optim_control = list(
+    maxit = 1000,
+    ndeps = c(0.05, 0.05),
+    factr = 100
+  ),
+  seed = 42
+)
+
+summary(cdag)
+```
+
+Now it works nearly perfectly, all we had to do was play around with the `optim_control` a little. Nevertheless, if you have the chance, it probably makes sense to separate the optimizations whenever possible.
+
+# Further Examples
+
+Below we give a few more examples on how the `calibrate_dag()` function may be used in different scenarios. Some of the examples highlight some subtleties that may occur when using this function.
+
+## Specifying Conditional Bias
+
+We re-use the same DAG from earlier, this time leaving only one beta-coefficient unspecified:
+
+```{r}
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial", formula= ~ 0.005 + X*log(3)) +
+    node("Y", type="binomial", formula= ~ -1.2 + A*0.7 + X*param(betaYX))
+)
+```
+
+Again, because $X$ causes both $A$ and $Y$, it is a confounder for the relationship between $A$ and $Y$. The conditional causal effect of this relationship is defined to be 0.7 (on the $\log(OR)$ scale). Using a large sample size and a correctly specified model, e.g. a logistic regression model for $Y$ including both $X$ and $A$ as independent variables, one would on average recover this true effect. In contrast, a model omitting $X$ would result in biased estimates of the conditional effect. Suppose that we want to simulate data from this DAG, but we want to specify the size of that bias.
+
+First, we define the `targets` and required function:
+
+```{r}
+# a function that evaluates the bias in a given dataset
+eval_bias <- function(data) {
+  fit_unadjusted <- glm(Y ~ A, family="binomial", data=data)
+  fit_adjusted <- glm(Y ~ A + X, family="binomial", data=data)
+  bias <- coef(fit_unadjusted)[["ATRUE"]] - coef(fit_adjusted)[["ATRUE"]]
+  return(bias)
+}
+
+targets <- list(
+  bias = list(target = 0.6, eval_fun = eval_bias)
+)
+```
+
+The function simply fits both models and returns the difference in the coefficients. Next, we define the `params`:
+
+```{r}
+params <- list(start = 0, range=c(-5, 5))
+```
+
+We can now call the `calibrate_dag()` function:
+
+```{r}
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 11
+)
+
+summary(cdag)
+```
+
+The results show that this worked fairly well. Note that if we also left the coefficient for $X$ in the model for $A$ unspecified, we could obtain a multitude of solutions. Consider:
+
+```{r}
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial", formula= ~ 0.005 + X*param(betaAX)) +
+    node("Y", type="binomial", formula= ~ -1.2 + A*0.7 + X*param(betaYX))
+)
+
+targets <- list(
+  bias = list(target = 0.6, eval_fun = eval_bias)
+)
+
+params <- list(
+  betaAX = list(start = 0, range=c(-5, 5)),
+  betaYX = list(start = 0, range=c(-5, 5))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 43
+)
+
+summary(cdag)
+```
+
+If one re-runs the last `calibrate_dag()` call with a different `seed`, `n_sim_run` or other optimization options, one would likely obtain completely different results for the final parameter values. The reason is that the problem is *overidentified*, with an infinite amount of possible solutions. No warning or error is shown, because it is usually not a problem: The function did its job after all; it found a solution to the problem. In practical applications, it usually makes sense to avoid this situation, but we wanted to note that it is also supported.
+
+## Specifying Censoring Rates
+
+Suppose that instead of a binary outcome, we are interested in generating a time-to-event outcome. We want to use a Cox model to simulate this data, which can be done using `node_cox()`. However, we also want to fix the proportion of right-censored individuals at a specific value. Using `claibrate_dag()`, we could use the following syntax:
+
+```{r}
+ldag <- lazy_dag(
+  empty_dag() +
+    node(c("X1", "X2"), type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial", formula= ~ 0.005 + X1*log(3) + X2*log(1.3)) +
+    node("Y", type="cox", formula= ~ A*log(0.6) + X1*log(2) + X2*log(3),
+         surv_dist="exponential", lambda=0.01,
+         cens_dist="rexp", cens_args=list(rate=param(cens)))
+)
+
+eval_cens_prop <- function(data) {
+  1 - mean(data$Y_status)
+}
+
+targets <- list(
+  cens_prop = list(target = 0.65, eval_fun = eval_cens_prop)
+)
+params <- list(start = 0.1, range=c(0.0000001, 5))
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 10000,
+  seed = 12
+)
+
+summary(cdag)
+```
+
+## Specifying the Average Number of Events
+
+Previously, we only considered simple `DAG`s without time-varying variables, which could be added using the `node_td()` syntax. This was purely done for illustrative purposes, any kind of definable `DAG` may be used in `calibrate_dag()`, including ones with such time-varying covariates. Below we give a simple example, using a simple DGP with a recurrent event:
+
+```{r}
+ldag <- lazy_dag(
+  empty_dag() +
+    node("U", type="rnorm") +
+    node_td("Y", type="next_time", formula= ~ param(intercept) + U*log(1.5),
+            event_duration=1)
+)
+```
+
+Here, we specified a `DAG` with two variables: $U$ (some standard normally distributed baseline covariate) and $Y$ (a recurrent event process in continuous time). In this DGP, $Y$ is caused by $U$ and our goal is to fix the average number of events per person in the time interval $[0, 50]$. The following code could be used:
+
+```{r}
+targets <- list(
+  mean_events = list(target = 5, eval_fun = function(x) {
+    n_id <- x[, .(n_events = sum(Y)), by=.id]
+    mean(n_id$n_events)
+  })
+)
+
+params <- list(start = 1, range = c(-3, 2))
+
+fit <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 1000,
+  n_sim_eval = 10000,
+  seed = 132,
+  max_t = 50,
+  censor_at_max_t = TRUE,
+  target_event = "Y"
+)
+
+summary(fit)
+```
+
+The `eval_fun` used here simply counts the events per person and then averages over the dataset. Note that for this to work, we had to specify some extra arguments, such as `max_t`, `censor_at_max_t` and `target_event` in the `calibrate_dag()` function call. These arguments belong to `sim_discrete_event()` and are directly passed to it internally.
+
+# Discussion
+
+Summing up, the `calibrate_dag()` function is a versatile tool to determine which parameters one should use in simulation studies, when the goal is to specify quantities beyond conditional parameters. This includes, but is not limited to, marginal effects and population parameters.
+
+In our own experience, it often feels much more natural to define DGPs on the basis of conditional models, as opposed to specialized methods that directly offer specification of marginal effects [@Evans2024, @Lin2025]. Note that we are somewhat biased here, since we spend a lot of time developing this package. Nevertheless, it is impossible to deny that this approach has shortcomings. One, if not the most, serious problem is that marginal effects are only indirectly specified, despite their often pivotal role in causal inference simulation studies. The `calibrate_dag()` function is an attempt to fix this problem. Given the multiple successful examples shown in this vignette and related papers [@Austin2008; @Austin2010; @Austin2023], we are optimistic that this feature will be useful to some people.
+
+# Literature
