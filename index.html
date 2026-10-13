@@ -73,108 +73,201 @@
 <img src="logo.png" class="logo" alt=""><h1 id="simdag-">simDAG <a class="anchor" aria-label="anchor" href="#simdag-"></a>
 </h1>
 </div>
-<p>Author: Robin Denz</p>
-<div class="section level2">
-<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
-</h2>
-<p><code>simDAG</code> is an R-Package which can be used to generate data from a known directed acyclic graph (DAG) with associated information on distributions and causal coefficients. The root nodes are sampled first and each subsequent child node is generated according to a regression model (linear, logistic, multinomial, cox, …) or other function. The result is a dataset that has the same causal structure as the specified DAG and by expectation the same distributions and coefficients as initially specified. It also implements a comprehensive framework for conducting discrete-time and discrete-event simulations in a similar fashion and directly supports network dependencies among individuals.</p>
-</div>
+<p><strong>Simulate complex data from explicit data-generating processes in R.</strong></p>
+<p><code>simDAG</code> is an R package for generating synthetic data from directed acyclic graphs (DAGs). Specify how variables are generated and how they depend on one another, then simulate datasets from the resulting data-generating process (DGP).</p>
+<p>Beyond ordinary cross-sectional data, <code>simDAG</code> supports complex longitudinal processes, time-to-event outcomes, censoring, recurrent and competing events, and dependencies between individuals through networks. It additionally implements an enhanced <code>formula</code> interface, allowing specifications of arbitrary interactions, non-linear effects, dependencies on categorical variables and random effects. The development version also supports calibrating conditional model parameters to achieve user-defined target characteristics, including marginal effects.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>A stable version of this package can be installed from CRAN:</p>
+<p>Install the current CRAN release:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"simDAG"</span><span class="op">)</span></span></code></pre></div>
-<p>and the developmental version may be installed from github using the <code>remotes</code> R-Package:</p>
+<p>To install the development version from GitHub, including the new <code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code> functionality:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"RobinDenz1/simDAG"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="bug-reports-and-feature-requests">Bug Reports and Feature Requests<a class="anchor" aria-label="anchor" href="#bug-reports-and-feature-requests"></a>
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>If you encounter any bugs or have any specific feature requests, please file an <a href="https://github.com/RobinDenz1/simDAG/issues" class="external-link">Issue</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
-</h2>
-<p>Suppose we want to generate data with the following causal structure:</p>
-<p align="center">
-<img src="reference/figures/example_DAG.png" width="450"></p>
-<p>where <code>age</code> is normally distributed with a mean of 50 and a standard deviation of 4 and <code>sex</code> is bernoulli distributed with <code>p = 0.5</code> (equal number of men and women). Both of these “root nodes” (meaning they have no parents - no arrows pointing into them) have a direct causal effect on the <code>bmi</code>. The causal coefficients are 1.1 and 0.4 respectively, with an intercept of 12 and a sigma standard deviation of 2. <code>death</code> is modeled as a bernoulli variable, which is caused by both <code>age</code> and <code>bmi</code> with causal coefficients of 0.1 and 0.3 respectively. As intercept we use -15.</p>
-<p>The following code can be used to generate 10000 samples from these specifications:</p>
+<p>Suppose we want to generate data with a continuous covariate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>, a binary treatment <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>, and a binary outcome <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>. Both treatment and outcome depend on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>, and the outcome also depends on treatment.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"age"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">50</span>, sd<span class="op">=</span><span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"sex"</span>, type<span class="op">=</span><span class="st">"rbernoulli"</span>, p<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"bmi"</span>, type<span class="op">=</span><span class="st">"gaussian"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">12</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">1.1</span> <span class="op">+</span> <span class="va">sex</span><span class="op">*</span><span class="fl">0.4</span>, error<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"death"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">15</span> <span class="op">+</span> <span class="va">age</span><span class="op">*</span><span class="fl">0.1</span> <span class="op">+</span> <span class="va">bmi</span><span class="op">*</span><span class="fl">0.3</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type <span class="op">=</span> <span class="st">"rnorm"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>       formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>       formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">A</span> <span class="op">*</span> <span class="fl">0.7</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">100000</span><span class="op">)</span></span></code></pre></div>
-<p>By fitting appropriate regression models, we can check if the data really does approximately conform to our specifications. First, lets look at the <code>bmi</code>:</p>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              X      A      Y</span></span>
+<span><span class="co">#&gt;          &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1: -0.03751376  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 2: -1.57460441  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 3: -0.48596752   TRUE  FALSE</span></span>
+<span><span class="co">#&gt; 4:  0.46518623   TRUE   TRUE</span></span>
+<span><span class="co">#&gt; 5: -0.90409807  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 6: -0.27743280   TRUE  FALSE</span></span></code></pre></div>
+<p>The DAG below represents the data-generating process: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math> influences both treatment (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>) and outcome (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>), while <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math> also influences <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>.</p>
+<p><img src="reference/figures/README-dag-plot-1.png" width="65%" style="display: block; margin: auto;"></p>
+<p>Each node is generated according to its specified distribution or conditional model. The order of the nodes and their dependencies define the data-generating process. The same approach extends to much more complex DGPs, including custom generation functions and longitudinal processes.</p>
+</div>
+<div class="section level2">
+<h2 id="what-can-you-simulate">What can you simulate?<a class="anchor" aria-label="anchor" href="#what-can-you-simulate"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="52%">
+<col width="47%">
+</colgroup>
+<thead><tr>
+<th>Use case</th>
+<th>Main functionality</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Cross-sectional data from a DAG</td>
+<td><code><a href="reference/sim_from_DAG.html">sim_from_dag()</a></code></td>
+</tr>
+<tr>
+<td>Longitudinal data with time-varying variables</td>
+<td><code><a href="reference/sim_discrete_time.html">sim_discrete_time()</a></code></td>
+</tr>
+<tr>
+<td>Continuous-time event-driven data</td>
+<td><code><a href="reference/sim_discrete_event.html">sim_discrete_event()</a></code></td>
+</tr>
+<tr>
+<td>Data with dependencies between individuals</td>
+<td>Network functionality</td>
+</tr>
+<tr>
+<td>Data with custom conditional models</td>
+<td>Custom node types and generation functions</td>
+</tr>
+<tr>
+<td>Data with prespecified marginal characteristics</td>
+<td>
+<code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code> (development version)</td>
+</tr>
+</tbody>
+</table>
+<div class="section level3">
+<h3 id="cross-sectional-data">Cross-sectional data<a class="anchor" aria-label="anchor" href="#cross-sectional-data"></a>
+</h3>
+<p>Generate data from static DAGs containing continuous, binary, categorical, count, and time-to-event variables. Nodes can be specified using conditional distributions, regression models or custom functions.</p>
+<p><strong>Learn more:</strong> <a href="https://robindenz1.github.io/simDAG/articles/v_sim_from_dag.html">Simulating Data from a Known DAG</a></p>
+</div>
+<div class="section level3">
+<h3 id="longitudinal-data-and-survival-processes">Longitudinal data and survival processes<a class="anchor" aria-label="anchor" href="#longitudinal-data-and-survival-processes"></a>
+</h3>
+<p>Use <code><a href="reference/sim_discrete_time.html">sim_discrete_time()</a></code> to generate complex longitudinal data with time-varying covariates, time-dependent effects, censoring, recurrent events, and competing events.</p>
+<p>For suitable models, <code><a href="reference/sim_discrete_event.html">sim_discrete_event()</a></code> offers an alternative based on event-driven simulation in continuous time. It can be considerably faster than discrete-time simulation, although it supports a narrower range of time-dependent processes.</p>
+<p><strong>Learn more:</strong> <a href="https://robindenz1.github.io/simDAG/articles/v_sim_discrete_time.html">Discrete-time simulation</a> · <a href="https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.html">Discrete-event simulation</a></p>
+</div>
+<div class="section level3">
+<h3 id="network-dependent-data">Network-dependent data<a class="anchor" aria-label="anchor" href="#network-dependent-data"></a>
+</h3>
+<p><code>simDAG</code> also supports dependencies between individuals through static and dynamic network structures, allowing the generated data to incorporate network-based relationships.</p>
+<p><strong>Learn more:</strong> <a href="https://robindenz1.github.io/simDAG/articles/v_sim_networks.html">Simulating Data from a DAG with Network Dependencies</a></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="specify-marginal-targets-instead-of-manually-tuning-coefficients">Specify marginal targets instead of manually tuning coefficients<a class="anchor" aria-label="anchor" href="#specify-marginal-targets-instead-of-manually-tuning-coefficients"></a>
+</h2>
+<p>When defining a DGP through conditional models, the resulting marginal characteristics are not always obvious. For example, specifying the coefficients of a logistic regression model does not directly specify the marginal prevalence of its outcome or the marginal causal effect of treatment.</p>
+<p>The <code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code> function addresses this problem by allowing users to leave selected parameters unspecified and determine them numerically so that user-defined targets are achieved as closely as possible.</p>
+<p>For example, suppose we want an outcome prevalence of 30%, while retaining the specified relationships between treatment, a confounder, and the outcome.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mod_bmi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">bmi</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">sex</span>, data<span class="op">=</span><span class="va">sim_dat</span>, family<span class="op">=</span><span class="st">"gaussian"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod_bmi</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type <span class="op">=</span> <span class="st">"rnorm"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>         formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>         formula <span class="op">=</span> <span class="op">~</span> <span class="fu">param</span><span class="op">(</span><span class="va">intercept_Y</span><span class="op">)</span> <span class="op">+</span></span>
+<span>           <span class="va">A</span> <span class="op">*</span> <span class="fl">0.7</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  prevalence_Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    target <span class="op">=</span> <span class="fl">0.30</span>,</span>
+<span>    eval_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  intercept_Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    start <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calibrate_dag.html">calibrate_dag</a></span><span class="op">(</span></span>
+<span>  lazy_dag <span class="op">=</span> <span class="va">ldag</span>,</span>
+<span>  targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  params <span class="op">=</span> <span class="va">params</span>,</span>
+<span>  n_sim_run <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  n_sim_eval <span class="op">=</span> <span class="fl">20000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Calibrated DAG</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Parameters (1)</span></span>
+<span><span class="co">#&gt;    parameter estimate start lower upper parscale</span></span>
+<span><span class="co">#&gt;  intercept_Y   -1.135     0    -5     5       NA</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; glm(formula = bmi ~ age + sex, family = "gaussian", data = sim_dat)</span></span>
+<span><span class="co">#&gt; Targets (1)</span></span>
+<span><span class="co">#&gt;        target desired achieved   error scaled_error</span></span>
+<span><span class="co">#&gt;  prevalence_Y     0.3   0.3069 0.00685      0.00685</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Coefficients:</span></span>
-<span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; (Intercept) 11.89194    0.07954  149.51   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; age          1.10220    0.00158  697.41   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; sexTRUE      0.40447    0.01268   31.89   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; ---</span></span>
-<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; (Dispersion parameter for gaussian family taken to be 4.022026)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     Null deviance: 2361465  on 99999  degrees of freedom</span></span>
-<span><span class="co">#&gt; Residual deviance:  402190  on 99997  degrees of freedom</span></span>
-<span><span class="co">#&gt; AIC: 422971</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of Fisher Scoring iterations: 2</span></span></code></pre></div>
-<p>This seems about right. Now we look at <code>death</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mod_death</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">death</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">bmi</span>, data<span class="op">=</span><span class="va">sim_dat</span>, family<span class="op">=</span><span class="st">"binomial"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod_death</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; glm(formula = death ~ age + bmi, family = "binomial", data = sim_dat)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Coefficients:</span></span>
-<span><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">#&gt; (Intercept) -14.6833     3.5538  -4.132  3.6e-05 ***</span></span>
-<span><span class="co">#&gt; age           0.2607     0.1698   1.535    0.125    </span></span>
-<span><span class="co">#&gt; bmi           0.1842     0.1402   1.314    0.189    </span></span>
-<span><span class="co">#&gt; ---</span></span>
-<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; (Dispersion parameter for binomial family taken to be 1)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     Null deviance: 258.65  on 99999  degrees of freedom</span></span>
-<span><span class="co">#&gt; Residual deviance: 214.03  on 99997  degrees of freedom</span></span>
-<span><span class="co">#&gt; AIC: 220.03</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of Fisher Scoring iterations: 13</span></span></code></pre></div>
-<p>The estimated coefficients are also very close to the ones we specified. More examples can be found in the documentation and the multiple vignettes.</p>
+<span><span class="co">#&gt; Optimization</span></span>
+<span><span class="co">#&gt;   Method:       uniroot</span></span>
+<span><span class="co">#&gt;   Convergence:  successful</span></span>
+<span><span class="co">#&gt;   Root residual: 0</span></span>
+<span><span class="co">#&gt;   Iterations:   8</span></span>
+<span><span class="co">#&gt;   Simulations:  5,000 optimization; 20,000 final evaluation</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>The result includes the calibrated parameters, the achieved target values, and optimization diagnostics. The resulting fully specified DAG is available as <code>fit$dag</code> and can be used with the usual simulation functions.</p>
+<p>Calibration is numerical and approximate. Inspect the achieved target values rather than relying solely on optimizer convergence.</p>
+<p><strong>Learn more:</strong> <a href="https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.html">Calibrating a DAG to Match Target Characteristics</a></p>
+</div>
+<div class="section level2">
+<h2 id="documentation-and-examples">Documentation and examples<a class="anchor" aria-label="anchor" href="#documentation-and-examples"></a>
+</h2>
+<ul>
+<li><a href="https://robindenz1.github.io/simDAG/articles/simDAG.html">Package introduction and JSS paper</a></li>
+<li><a href="https://robindenz1.github.io/simDAG/articles/v_cookbook.html">Cookbook: examples of different DGPs</a></li>
+<li><a href="https://robindenz1.github.io/simDAG/articles/v_using_formulas.html">Specifying formulas in a DAG</a></li>
+<li><a href="https://robindenz1.github.io/simDAG/articles/v_custom_nodes.html">Defining custom node types</a></li>
+<li><a href="https://robindenz1.github.io/simDAG/reference/index.html">Function reference</a></li>
+</ul>
+<p>If you are unsure which simulation approach fits your problem, the introductory vignette and cookbook are good places to start.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>If you use this package, please cite the associated article:</p>
-<p>Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package”. Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.</p>
+<p>If you use <code>simDAG</code> in your research, please cite:</p>
+<p>Denz, R. and Timmesfeld, N. (2026). Simulating Complex Cross-Sectional and Longitudinal Data using the simDAG R Package. <em>Journal of Statistical Software</em>, 116(2). <a href="https://doi.org/10.18637/jss.v116.i02" class="external-link uri">https://doi.org/10.18637/jss.v116.i02</a></p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Bug reports, questions about unexpected behavior, and feature requests are highly welcome. Please open an <a href="https://github.com/RobinDenz1/simDAG/issues" class="external-link">issue on GitHub</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>© 2026 Robin Denz</p>
-<p>The contents of this repository are distributed under the GNU General Public License. You can find the full text of this License in this github repository. Alternatively, see <a href="http://www.gnu.org/licenses/" class="external-link uri">http://www.gnu.org/licenses/</a>.</p>
+<p><code>simDAG</code> is released under the GNU General Public License, version 3 or later (GPL-3).</p>
 </div>
 </div>
 

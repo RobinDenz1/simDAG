@@ -280,10 +280,10 @@ succeed, run it again with larger <code>n_sim_run</code>, but use the
 final values of the failed run as <code>start</code> values in the new
 one.</li>
 <li>Try different <code>seed</code> values.</li>
-<li>Try changing the <code>optim_method</code> argument or start
-tinkering with the <code>optim_control</code> argument. In particular,
-decreasing tolerances and increasing the maximum number of iterations
-often helps.</li>
+<li>Try changing the <code>optimizer</code> or <code>optim_method</code>
+arguments or start tinkering with the <code>optim_control</code>
+argument. In particular, decreasing tolerances and increasing the
+maximum number of iterations often helps.</li>
 <li>Whenever possible, try calibrating targets sequentially instead of
 simultaneously.</li>
 <li>If different <code>targets</code> are on widely different scales, it
@@ -481,7 +481,7 @@ main function:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;        target desired achieved     error scaled_error</span></span>
-<span><span class="co">#&gt;  prevalence_Y     0.3    0.298 -0.002042    -0.002042</span></span>
+<span><span class="co">#&gt;  prevalence_Y     0.3   0.2976 -0.002358    -0.002358</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -512,12 +512,12 @@ follows:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             X      A      Y</span></span>
 <span><span class="co">#&gt;         &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:  0.2496670  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 2:  0.9290574  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 3: -0.9277840  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 4:  4.1375859   TRUE   TRUE</span></span>
-<span><span class="co">#&gt; 5:  0.4832318  FALSE  FALSE</span></span>
-<span><span class="co">#&gt; 6: -2.5533765  FALSE  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:  0.4171810  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 2:  0.1136737  FALSE  FALSE</span></span>
+<span><span class="co">#&gt; 3: -2.2799896  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 4:  1.7765846  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 5:  0.2358583  FALSE   TRUE</span></span>
+<span><span class="co">#&gt; 6: -1.2001947  FALSE  FALSE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specifying-two-marginal-targets">Specifying Two Marginal Targets<a class="anchor" aria-label="anchor" href="#specifying-two-marginal-targets"></a>
@@ -574,7 +574,7 @@ model:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;        target desired achieved    error scaled_error</span></span>
-<span><span class="co">#&gt;  prevalence_A     0.2   0.2041 0.004086     0.004086</span></span>
+<span><span class="co">#&gt;  prevalence_A     0.2    0.203 0.003028     0.003028</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -621,7 +621,7 @@ value is given as roughly -1.974. Now lets move on to
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;        target desired achieved     error scaled_error</span></span>
-<span><span class="co">#&gt;  prevalence_Y     0.4   0.3989 -0.001097    -0.001097</span></span>
+<span><span class="co">#&gt;  prevalence_Y     0.4   0.3982 -0.001751    -0.001751</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -678,10 +678,11 @@ obtain.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (2)</span></span>
 <span><span class="co">#&gt;        target desired achieved     error scaled_error</span></span>
-<span><span class="co">#&gt;  prevalence_A     0.2   0.2040  0.003985     0.003985</span></span>
-<span><span class="co">#&gt;  prevalence_Y     0.4   0.3985 -0.001468    -0.001468</span></span>
+<span><span class="co">#&gt;  prevalence_A     0.2   0.2029  0.002921     0.002921</span></span>
+<span><span class="co">#&gt;  prevalence_Y     0.4   0.3980 -0.002040    -0.002040</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
+<span><span class="co">#&gt;   Optimizer:    optim()</span></span>
 <span><span class="co">#&gt;   Method:       L-BFGS-B</span></span>
 <span><span class="co">#&gt;   Convergence:  unsuccessful (code 52)</span></span>
 <span><span class="co">#&gt;   Objective:    1e-08</span></span>
@@ -692,54 +693,12 @@ obtain.</p>
 <p>First, note that the syntax has changed very little. All we had to do
 was use multiple <code>param()</code> calls in the
 <code><a href="../reference/lazy_dag.html">lazy_dag()</a></code> definition and then define one element per
-parameter and target in the respective arguments. Note however, that the
-results are much worse with the default settings. The bias between the
-desired and achieved values is substantial. The reason is that we now
-have to use <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim()</a></code> on a more complicated problem.</p>
-<p>But there is no reason to despair yet. First, since we can easily
-check whether the optimization worked or not using
-<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, there is no risk here. After all, we know this
-solution is not what we want. Secondly, we can still tweak the
-optimization to make it better. Consider the following syntax:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_dag.html">calibrate_dag</a></span><span class="op">(</span></span>
-<span>  lazy_dag <span class="op">=</span> <span class="va">ldag</span>,</span>
-<span>  targets <span class="op">=</span> <span class="va">targets</span>,</span>
-<span>  params <span class="op">=</span> <span class="va">params</span>,</span>
-<span>  n_sim_run <span class="op">=</span> <span class="fl">10000</span>,</span>
-<span>  optim_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    maxit <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>    ndeps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
-<span>    factr <span class="op">=</span> <span class="fl">100</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">42</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cdag</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Calibrated DAG</span></span>
-<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Parameters (2)</span></span>
-<span><span class="co">#&gt;    parameter estimate start lower upper parscale</span></span>
-<span><span class="co">#&gt;  intercept_A  -1.9923     0    -5     5        5</span></span>
-<span><span class="co">#&gt;  intercept_Y  -0.5984     0    -5     5        5</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Targets (2)</span></span>
-<span><span class="co">#&gt;        target desired achieved     error scaled_error</span></span>
-<span><span class="co">#&gt;  prevalence_A     0.2   0.2020  0.001971     0.001971</span></span>
-<span><span class="co">#&gt;  prevalence_Y     0.4   0.3979 -0.002066    -0.002066</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Optimization</span></span>
-<span><span class="co">#&gt;   Method:       L-BFGS-B</span></span>
-<span><span class="co">#&gt;   Convergence:  unsuccessful (code 52)</span></span>
-<span><span class="co">#&gt;   Objective:    3.73e-06</span></span>
-<span><span class="co">#&gt;   Evaluations:  function 48, gradient 48</span></span>
-<span><span class="co">#&gt;   Message:      ERROR: ABNORMAL_TERMINATION_IN_LNSRCH</span></span>
-<span><span class="co">#&gt;   Simulations:  10,000 optimization; 1e+06 final evaluation</span></span>
-<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span></code></pre></div>
-<p>Now it works nearly perfectly, all we had to do was play around with
-the <code>optim_control</code> a little. Nevertheless, if you have the
-chance, it probably makes sense to separate the optimizations whenever
+parameter and target in the respective arguments. Secondly, in this
+case, it seems to have worked fairly well, despite the optimization not
+converging properly. This nicely illustrates that convergence is not
+really that important here; what matters is whether the targets are met,
+which can be easily checked. Nevertheless, if you have the chance, it
+probably makes sense to separate the optimizations whenever
 possible.</p>
 </div>
 </div>
@@ -755,7 +714,7 @@ when using this function.</p>
 </h3>
 <p>We re-use the same DAG from earlier, this time leaving only one
 beta-coefficient unspecified:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
@@ -789,7 +748,7 @@ would result in biased estimates of the conditional effect. Suppose that
 we want to simulate data from this DAG, but we want to specify the size
 of that bias.</p>
 <p>First, we define the <code>targets</code> and required function:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># a function that evaluates the bias in a given dataset</span></span>
 <span><span class="va">eval_bias</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">fit_unadjusted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">A</span>, family<span class="op">=</span><span class="st">"binomial"</span>, data<span class="op">=</span><span class="va">data</span><span class="op">)</span></span>
@@ -803,10 +762,10 @@ of that bias.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The function simply fits both models and returns the difference in
 the coefficients. Next, we define the <code>params</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">0</span>, range<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can now call the <code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> function:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_dag.html">calibrate_dag</a></span><span class="op">(</span></span>
 <span>  lazy_dag <span class="op">=</span> <span class="va">ldag</span>,</span>
 <span>  targets <span class="op">=</span> <span class="va">targets</span>,</span>
@@ -825,7 +784,7 @@ the coefficients. Next, we define the <code>params</code>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;  target desired achieved    error scaled_error</span></span>
-<span><span class="co">#&gt;    bias     0.6   0.5736 -0.02637     -0.02637</span></span>
+<span><span class="co">#&gt;    bias     0.6    0.576 -0.02396     -0.02396</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -840,7 +799,7 @@ left the coefficient for
 in the model for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
 unspecified, we could obtain a multitude of solutions. Consider:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
@@ -876,9 +835,10 @@ unspecified, we could obtain a multitude of solutions. Consider:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;  target desired achieved     error scaled_error</span></span>
-<span><span class="co">#&gt;    bias     0.6   0.5982 -0.001788    -0.001788</span></span>
+<span><span class="co">#&gt;    bias     0.6   0.5961 -0.003875    -0.003875</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
+<span><span class="co">#&gt;   Optimizer:    optim()</span></span>
 <span><span class="co">#&gt;   Method:       L-BFGS-B</span></span>
 <span><span class="co">#&gt;   Convergence:  unsuccessful (code 52)</span></span>
 <span><span class="co">#&gt;   Objective:    5.352e-10</span></span>
@@ -890,7 +850,7 @@ unspecified, we could obtain a multitude of solutions. Consider:</p>
 different <code>seed</code>, <code>n_sim_run</code> or other
 optimization options, one would likely obtain completely different
 results for the final parameter values. The reason is that the problem
-is <em>overidentified</em>, with an infinite amount of possible
+is <em>underidentified</em>, with an infinite amount of possible
 solutions. No warning or error is shown, because it is usually not a
 problem: The function did its job after all; it found a solution to the
 problem. In practical applications, it usually makes sense to avoid this
@@ -905,7 +865,7 @@ simulate this data, which can be done using <code><a href="../reference/node_cox
 However, we also want to fix the proportion of right-censored
 individuals at a specific value. Using <code>claibrate_dag()</code>, we
 could use the following syntax:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X1"</span>, <span class="st">"X2"</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
@@ -941,8 +901,8 @@ could use the following syntax:</p>
 <span><span class="co">#&gt;       cens  0.01745   0.1 1e-07     5       NA</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
-<span><span class="co">#&gt;     target desired achieved  error scaled_error</span></span>
-<span><span class="co">#&gt;  cens_prop    0.65   0.6522 0.0022       0.0022</span></span>
+<span><span class="co">#&gt;     target desired achieved    error scaled_error</span></span>
+<span><span class="co">#&gt;  cens_prop    0.65   0.6519 0.001877     0.001877</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -962,7 +922,7 @@ purposes, any kind of definable <code>DAG</code> may be used in
 <code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code>, including ones with such time-varying
 covariates. Below we give a simple example, using a simple DGP with a
 recurrent event:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"U"</span>, type<span class="op">=</span><span class="st">"rnorm"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -981,7 +941,7 @@ and our goal is to fix the average number of events per person in the
 time interval
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>50</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 50]</annotation></semantics></math>.
 The following code could be used:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  mean_events <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>target <span class="op">=</span> <span class="fl">5</span>, eval_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">n_id</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>n_events <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>, by<span class="op">=</span><span class="va">.id</span><span class="op">]</span></span>
@@ -1013,7 +973,7 @@ The following code could be used:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Targets (1)</span></span>
 <span><span class="co">#&gt;       target desired achieved   error scaled_error</span></span>
-<span><span class="co">#&gt;  mean_events       5    4.898 -0.1016      -0.1016</span></span>
+<span><span class="co">#&gt;  mean_events       5    4.935 -0.0646      -0.0646</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Optimization</span></span>
 <span><span class="co">#&gt;   Method:       uniroot</span></span>
@@ -1029,6 +989,166 @@ we had to specify some extra arguments, such as <code>max_t</code>,
 <code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> function call. These arguments belong to
 <code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code> and are directly passed to it
 internally.</p>
+</div>
+<div class="section level3">
+<h3 id="specifying-marginal-causal-effects">Specifying Marginal Causal Effects<a class="anchor" aria-label="anchor" href="#specifying-marginal-causal-effects"></a>
+</h3>
+<p>Suppose we want to specify a certain marginal causal effect, but
+still want to use the DGP we used earlier, containing only three
+variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>
+(continuous confounder),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+(binary treatment) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
+(binary outcome). Importantly, it is well known that the logistic
+regression model is <em>non-collapsible</em>, meaning that the
+conditional odds ratio (e.g. the exponentiated beta-coefficient)
+associated with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+is not generally equal to the marginal causal odds ratio if other
+variables also influence the outcome.</p>
+<p>To obtain a specific marginal causal odds ratio, we therefore may use
+<code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> again. We may use the following syntax:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="fl">0.005</span> <span class="op">+</span> <span class="va">X</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span><span class="st">"binomial"</span>, formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1.2</span> <span class="op">+</span> <span class="va">A</span><span class="op">*</span><span class="fu">param</span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="op">+</span> <span class="va">X</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">eval_marginal_OR</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># fit conditional model</span></span>
+<span>  <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">A</span> <span class="op">+</span> <span class="va">X</span>, data<span class="op">=</span><span class="va">data</span>, family<span class="op">=</span><span class="st">"binomial"</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># use g-computation to get marginal probabilities</span></span>
+<span>  <span class="va">data</span><span class="op">$</span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span>  <span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model</span>, newdata<span class="op">=</span><span class="va">data</span>, type<span class="op">=</span><span class="st">"response"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">data</span><span class="op">$</span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model</span>, newdata<span class="op">=</span><span class="va">data</span>, type<span class="op">=</span><span class="st">"response"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># calculate marginal OR</span></span>
+<span>  <span class="va">odds_treated</span> <span class="op">&lt;-</span> <span class="va">p1</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p1</span><span class="op">)</span></span>
+<span>  <span class="va">odds_control</span> <span class="op">&lt;-</span> <span class="va">p0</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p0</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">marginal_or</span>  <span class="op">&lt;-</span> <span class="va">odds_treated</span> <span class="op">/</span> <span class="va">odds_control</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">marginal_or</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  marginal_OR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>target <span class="op">=</span> <span class="fl">0.6</span>, eval_fun <span class="op">=</span> <span class="va">eval_marginal_OR</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>start <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, range<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cdag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_dag.html">calibrate_dag</a></span><span class="op">(</span></span>
+<span>  lazy_dag <span class="op">=</span> <span class="va">ldag</span>,</span>
+<span>  targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  params <span class="op">=</span> <span class="va">params</span>,</span>
+<span>  n_sim_run <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  n_sim_eval <span class="op">=</span> <span class="fl">3000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">47</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cdag</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Calibrated DAG</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Parameters (1)</span></span>
+<span><span class="co">#&gt;  parameter estimate start lower upper parscale</span></span>
+<span><span class="co">#&gt;       beta  -0.5089  -0.5    -1     0       NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Targets (1)</span></span>
+<span><span class="co">#&gt;       target desired achieved    error scaled_error</span></span>
+<span><span class="co">#&gt;  marginal_OR     0.6   0.5871 -0.01291     -0.01291</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Optimization</span></span>
+<span><span class="co">#&gt;   Method:       uniroot</span></span>
+<span><span class="co">#&gt;   Convergence:  successful</span></span>
+<span><span class="co">#&gt;   Root residual: -0.00223</span></span>
+<span><span class="co">#&gt;   Iterations:   11</span></span>
+<span><span class="co">#&gt;   Simulations:  1,000 optimization; 3,000 final evaluation</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>Here, we used g-computation to estimate the actual marginal OR given
+the simulated data in the <code>eval_marginal_OR()</code> function. Note
+that the resulting coefficient is not equal to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>β</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">log(\beta)</annotation></semantics></math>,
+because of non-collapsibility.</p>
+<p>When specifying marginal effects with no easy way to estimate them,
+or users do not want to rely on estimation methods for the
+specification, one may use the <code>use_dag</code> argument when
+defining targets. By setting <code>use_dag = TRUE</code>, the
+<code><a href="../reference/calibrate_dag.html">calibrate_dag()</a></code> function automatically passes the current
+version of the <code>DAG</code> to the <code>eval_fun</code> instead of
+simulated data. Therefore, we then must use a different
+<code>eval_fun</code> function. Re-doing the example from above using
+this approach gives:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">eval_marginal_OR2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dag</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># use the do() function to set A to 0 or 1 respectively</span></span>
+<span>  <span class="va">dag0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do.html">do</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"A"</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="va">dag1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do.html">do</a></span><span class="op">(</span><span class="va">dag</span>, <span class="st">"A"</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># simulate data under both counterfactual regimes</span></span>
+<span>  <span class="va">data0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag0</span>, n_sim<span class="op">=</span><span class="fl">100000</span><span class="op">)</span></span>
+<span>  <span class="va">data1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag1</span>, n_sim<span class="op">=</span><span class="fl">100000</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># take the observed proportions as marginal probabilities</span></span>
+<span>  <span class="va">p0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data0</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></span>
+<span>  <span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data1</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># calculate marginal OR</span></span>
+<span>  <span class="va">odds_treated</span> <span class="op">&lt;-</span> <span class="va">p1</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p1</span><span class="op">)</span></span>
+<span>  <span class="va">odds_control</span> <span class="op">&lt;-</span> <span class="va">p0</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p0</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">marginal_or</span>  <span class="op">&lt;-</span> <span class="va">odds_treated</span> <span class="op">/</span> <span class="va">odds_control</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">marginal_or</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># same as before, but with different function and use_dag = TRUE</span></span>
+<span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  marginal_OR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>target <span class="op">=</span> <span class="fl">0.6</span>, eval_fun <span class="op">=</span> <span class="va">eval_marginal_OR2</span>,</span>
+<span>                     use_dag <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cdag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_dag.html">calibrate_dag</a></span><span class="op">(</span></span>
+<span>  lazy_dag <span class="op">=</span> <span class="va">ldag</span>,</span>
+<span>  targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  params <span class="op">=</span> <span class="va">params</span>,</span>
+<span>  n_sim_run <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  n_sim_eval <span class="op">=</span> <span class="fl">3000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">43</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cdag</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Calibrated DAG</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Parameters (1)</span></span>
+<span><span class="co">#&gt;  parameter estimate start lower upper parscale</span></span>
+<span><span class="co">#&gt;       beta  -0.5445  -0.5    -1     0       NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Targets (1)</span></span>
+<span><span class="co">#&gt;       target desired achieved      error scaled_error</span></span>
+<span><span class="co">#&gt;  marginal_OR     0.6   0.5997 -0.0003447   -0.0003447</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Optimization</span></span>
+<span><span class="co">#&gt;   Method:       uniroot</span></span>
+<span><span class="co">#&gt;   Convergence:  successful</span></span>
+<span><span class="co">#&gt;   Root residual: -7.366e-06</span></span>
+<span><span class="co">#&gt;   Iterations:   5</span></span>
+<span><span class="co">#&gt;   Simulations:  1,000 optimization; 3,000 final evaluation</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>We get fairly similar results in this case. The latter approach may
+be most useful when considering complex treatment strategies or
+longitudinal data, created using <code><a href="../reference/sim_discrete_time.html">sim_discrete_time()</a></code> or
+<code><a href="../reference/sim_discrete_event.html">sim_discrete_event()</a></code>.</p>
 </div>
 </div>
 <div class="section level2">

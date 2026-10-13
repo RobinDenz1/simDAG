@@ -191,9 +191,10 @@ tried. We give some suggestions in no particular order below:
     run it again with larger `n_sim_run`, but use the final values of
     the failed run as `start` values in the new one.
 3.  Try different `seed` values.
-4.  Try changing the `optim_method` argument or start tinkering with the
-    `optim_control` argument. In particular, decreasing tolerances and
-    increasing the maximum number of iterations often helps.
+4.  Try changing the `optimizer` or `optim_method` arguments or start
+    tinkering with the `optim_control` argument. In particular,
+    decreasing tolerances and increasing the maximum number of
+    iterations often helps.
 5.  Whenever possible, try calibrating targets sequentially instead of
     simultaneously.
 6.  If different `targets` are on widely different scales, it may be
@@ -406,7 +407,7 @@ summary(cdag)
 #> 
 #> Targets (1)
 #>        target desired achieved     error scaled_error
-#>  prevalence_Y     0.3    0.298 -0.002042    -0.002042
+#>  prevalence_Y     0.3   0.2976 -0.002358    -0.002358
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -442,12 +443,12 @@ data <- sim_from_dag(cdag$dag, n_sim=100)
 head(data)
 #>             X      A      Y
 #>         <num> <lgcl> <lgcl>
-#> 1:  0.2496670  FALSE  FALSE
-#> 2:  0.9290574  FALSE  FALSE
-#> 3: -0.9277840  FALSE  FALSE
-#> 4:  4.1375859   TRUE   TRUE
-#> 5:  0.4832318  FALSE  FALSE
-#> 6: -2.5533765  FALSE  FALSE
+#> 1:  0.4171810  FALSE  FALSE
+#> 2:  0.1136737  FALSE  FALSE
+#> 3: -2.2799896  FALSE   TRUE
+#> 4:  1.7765846  FALSE   TRUE
+#> 5:  0.2358583  FALSE   TRUE
+#> 6: -1.2001947  FALSE  FALSE
 ```
 
 ### Specifying Two Marginal Targets
@@ -503,7 +504,7 @@ summary(cdag)
 #> 
 #> Targets (1)
 #>        target desired achieved    error scaled_error
-#>  prevalence_A     0.2   0.2041 0.004086     0.004086
+#>  prevalence_A     0.2    0.203 0.003028     0.003028
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -553,7 +554,7 @@ summary(cdag)
 #> 
 #> Targets (1)
 #>        target desired achieved     error scaled_error
-#>  prevalence_Y     0.4   0.3989 -0.001097    -0.001097
+#>  prevalence_Y     0.4   0.3982 -0.001751    -0.001751
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -613,10 +614,11 @@ summary(cdag)
 #> 
 #> Targets (2)
 #>        target desired achieved     error scaled_error
-#>  prevalence_A     0.2   0.2040  0.003985     0.003985
-#>  prevalence_Y     0.4   0.3985 -0.001468    -0.001468
+#>  prevalence_A     0.2   0.2029  0.002921     0.002921
+#>  prevalence_Y     0.4   0.3980 -0.002040    -0.002040
 #> 
 #> Optimization
+#>   Optimizer:    optim()
 #>   Method:       L-BFGS-B
 #>   Convergence:  unsuccessful (code 52)
 #>   Objective:    1e-08
@@ -630,61 +632,12 @@ First, note that the syntax has changed very little. All we had to do
 was use multiple `param()` calls in the
 [`lazy_dag()`](https://robindenz1.github.io/simDAG/reference/lazy_dag.md)
 definition and then define one element per parameter and target in the
-respective arguments. Note however, that the results are much worse with
-the default settings. The bias between the desired and achieved values
-is substantial. The reason is that we now have to use
-[`optim()`](https://rdrr.io/r/stats/optim.html) on a more complicated
-problem.
-
-But there is no reason to despair yet. First, since we can easily check
-whether the optimization worked or not using
-[`summary()`](https://rdrr.io/r/base/summary.html), there is no risk
-here. After all, we know this solution is not what we want. Secondly, we
-can still tweak the optimization to make it better. Consider the
-following syntax:
-
-``` r
-
-cdag <- calibrate_dag(
-  lazy_dag = ldag,
-  targets = targets,
-  params = params,
-  n_sim_run = 10000,
-  optim_control = list(
-    maxit = 1000,
-    ndeps = c(0.05, 0.05),
-    factr = 100
-  ),
-  seed = 42
-)
-
-summary(cdag)
-#> ────────────────────────────────────────────────────────────
-#> Calibrated DAG
-#> ────────────────────────────────────────────────────────────
-#> Parameters (2)
-#>    parameter estimate start lower upper parscale
-#>  intercept_A  -1.9923     0    -5     5        5
-#>  intercept_Y  -0.5984     0    -5     5        5
-#> 
-#> Targets (2)
-#>        target desired achieved     error scaled_error
-#>  prevalence_A     0.2   0.2020  0.001971     0.001971
-#>  prevalence_Y     0.4   0.3979 -0.002066    -0.002066
-#> 
-#> Optimization
-#>   Method:       L-BFGS-B
-#>   Convergence:  unsuccessful (code 52)
-#>   Objective:    3.73e-06
-#>   Evaluations:  function 48, gradient 48
-#>   Message:      ERROR: ABNORMAL_TERMINATION_IN_LNSRCH
-#>   Simulations:  10,000 optimization; 1e+06 final evaluation
-#> ────────────────────────────────────────────────────────────
-```
-
-Now it works nearly perfectly, all we had to do was play around with the
-`optim_control` a little. Nevertheless, if you have the chance, it
-probably makes sense to separate the optimizations whenever possible.
+respective arguments. Secondly, in this case, it seems to have worked
+fairly well, despite the optimization not converging properly. This
+nicely illustrates that convergence is not really that important here;
+what matters is whether the targets are met, which can be easily
+checked. Nevertheless, if you have the chance, it probably makes sense
+to separate the optimizations whenever possible.
 
 ## Further Examples
 
@@ -767,7 +720,7 @@ summary(cdag)
 #> 
 #> Targets (1)
 #>  target desired achieved    error scaled_error
-#>    bias     0.6   0.5736 -0.02637     -0.02637
+#>    bias     0.6    0.576 -0.02396     -0.02396
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -819,9 +772,10 @@ summary(cdag)
 #> 
 #> Targets (1)
 #>  target desired achieved     error scaled_error
-#>    bias     0.6   0.5982 -0.001788    -0.001788
+#>    bias     0.6   0.5961 -0.003875    -0.003875
 #> 
 #> Optimization
+#>   Optimizer:    optim()
 #>   Method:       L-BFGS-B
 #>   Convergence:  unsuccessful (code 52)
 #>   Objective:    5.352e-10
@@ -835,7 +789,7 @@ If one re-runs the last
 [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
 call with a different `seed`, `n_sim_run` or other optimization options,
 one would likely obtain completely different results for the final
-parameter values. The reason is that the problem is *overidentified*,
+parameter values. The reason is that the problem is *underidentified*,
 with an infinite amount of possible solutions. No warning or error is
 shown, because it is usually not a problem: The function did its job
 after all; it found a solution to the problem. In practical
@@ -889,8 +843,8 @@ summary(cdag)
 #>       cens  0.01745   0.1 1e-07     5       NA
 #> 
 #> Targets (1)
-#>     target desired achieved  error scaled_error
-#>  cens_prop    0.65   0.6522 0.0022       0.0022
+#>     target desired achieved    error scaled_error
+#>  cens_prop    0.65   0.6519 0.001877     0.001877
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -961,7 +915,7 @@ summary(fit)
 #> 
 #> Targets (1)
 #>       target desired achieved   error scaled_error
-#>  mean_events       5    4.898 -0.1016      -0.1016
+#>  mean_events       5    4.935 -0.0646      -0.0646
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -980,6 +934,170 @@ some extra arguments, such as `max_t`, `censor_at_max_t` and
 function call. These arguments belong to
 [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md)
 and are directly passed to it internally.
+
+### Specifying Marginal Causal Effects
+
+Suppose we want to specify a certain marginal causal effect, but still
+want to use the DGP we used earlier, containing only three variables
+$`X`$ (continuous confounder), $`A`$ (binary treatment) and $`Y`$
+(binary outcome). Importantly, it is well known that the logistic
+regression model is *non-collapsible*, meaning that the conditional odds
+ratio (e.g. the exponentiated beta-coefficient) associated with $`A`$ is
+not generally equal to the marginal causal odds ratio if other variables
+also influence the outcome.
+
+To obtain a specific marginal causal odds ratio, we therefore may use
+[`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+again. We may use the following syntax:
+
+``` r
+
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial", formula= ~ 0.005 + X*log(3)) +
+    node("Y", type="binomial", formula= ~ -1.2 + A*param(beta) + X*log(2))
+)
+
+eval_marginal_OR <- function(data) {
+  
+  # fit conditional model
+  model <- glm(Y ~ A + X, data=data, family="binomial")
+  
+  # use g-computation to get marginal probabilities
+  data$A <- 1
+  p1 <- mean(predict(model, newdata=data, type="response"))
+  
+  data$A <- 0
+  p0 <- mean(predict(model, newdata=data, type="response"))
+  
+  # calculate marginal OR
+  odds_treated <- p1 / (1 - p1)
+  odds_control <- p0 / (1 - p0)
+
+  marginal_or  <- odds_treated / odds_control
+  return(marginal_or)
+}
+
+targets <- list(
+  marginal_OR = list(target = 0.6, eval_fun = eval_marginal_OR)
+)
+
+params <- list(
+  beta = list(start = -0.5, range=c(-1, 0))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 1000,
+  n_sim_eval = 3000,
+  seed = 47
+)
+
+summary(cdag)
+#> ────────────────────────────────────────────────────────────
+#> Calibrated DAG
+#> ────────────────────────────────────────────────────────────
+#> Parameters (1)
+#>  parameter estimate start lower upper parscale
+#>       beta  -0.5089  -0.5    -1     0       NA
+#> 
+#> Targets (1)
+#>       target desired achieved    error scaled_error
+#>  marginal_OR     0.6   0.5871 -0.01291     -0.01291
+#> 
+#> Optimization
+#>   Method:       uniroot
+#>   Convergence:  successful
+#>   Root residual: -0.00223
+#>   Iterations:   11
+#>   Simulations:  1,000 optimization; 3,000 final evaluation
+#> ────────────────────────────────────────────────────────────
+```
+
+Here, we used g-computation to estimate the actual marginal OR given the
+simulated data in the `eval_marginal_OR()` function. Note that the
+resulting coefficient is not equal to $`log(\beta)`$, because of
+non-collapsibility.
+
+When specifying marginal effects with no easy way to estimate them, or
+users do not want to rely on estimation methods for the specification,
+one may use the `use_dag` argument when defining targets. By setting
+`use_dag = TRUE`, the
+[`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
+function automatically passes the current version of the `DAG` to the
+`eval_fun` instead of simulated data. Therefore, we then must use a
+different `eval_fun` function. Re-doing the example from above using
+this approach gives:
+
+``` r
+
+eval_marginal_OR2 <- function(dag) {
+  
+  # use the do() function to set A to 0 or 1 respectively
+  dag0 <- do(dag, "A", 0)
+  dag1 <- do(dag, "A", 1)
+  
+  # simulate data under both counterfactual regimes
+  data0 <- sim_from_dag(dag0, n_sim=100000)
+  data1 <- sim_from_dag(dag1, n_sim=100000)
+  
+  # take the observed proportions as marginal probabilities
+  p0 <- mean(data0$Y)
+  p1 <- mean(data1$Y)
+  
+  # calculate marginal OR
+  odds_treated <- p1 / (1 - p1)
+  odds_control <- p0 / (1 - p0)
+
+  marginal_or  <- odds_treated / odds_control
+  return(marginal_or)
+}
+
+# same as before, but with different function and use_dag = TRUE
+targets <- list(
+  marginal_OR = list(target = 0.6, eval_fun = eval_marginal_OR2,
+                     use_dag = TRUE)
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 1000,
+  n_sim_eval = 3000,
+  seed = 43
+)
+
+summary(cdag)
+#> ────────────────────────────────────────────────────────────
+#> Calibrated DAG
+#> ────────────────────────────────────────────────────────────
+#> Parameters (1)
+#>  parameter estimate start lower upper parscale
+#>       beta  -0.5445  -0.5    -1     0       NA
+#> 
+#> Targets (1)
+#>       target desired achieved      error scaled_error
+#>  marginal_OR     0.6   0.5997 -0.0003447   -0.0003447
+#> 
+#> Optimization
+#>   Method:       uniroot
+#>   Convergence:  successful
+#>   Root residual: -7.366e-06
+#>   Iterations:   5
+#>   Simulations:  1,000 optimization; 3,000 final evaluation
+#> ────────────────────────────────────────────────────────────
+```
+
+We get fairly similar results in this case. The latter approach may be
+most useful when considering complex treatment strategies or
+longitudinal data, created using
+[`sim_discrete_time()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
+or
+[`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md).
 
 ## Discussion
 

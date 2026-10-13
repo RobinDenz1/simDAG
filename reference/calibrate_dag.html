@@ -53,8 +53,9 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calibrate_dag</span><span class="op">(</span><span class="va">lazy_dag</span>, <span class="va">targets</span>, <span class="va">params</span>, n_sim_run<span class="op">=</span><span class="fl">100000</span>,</span>
 <span>              n_sim_eval<span class="op">=</span><span class="fl">1000000</span>, seed<span class="op">=</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>,</span>
-<span>              optim_control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxit<span class="op">=</span><span class="fl">200</span>, trace<span class="op">=</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>              optim_method<span class="op">=</span><span class="cn">NULL</span>, objective_fun<span class="op">=</span><span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span>              optimizer<span class="op">=</span><span class="st">"auto"</span>, optim_method<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>              optim_control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxit<span class="op">=</span><span class="fl">200</span><span class="op">)</span>, objective_fun<span class="op">=</span><span class="cn">NULL</span>,</span>
+<span>              <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,7 +65,7 @@
 <dd><p>An unevaluated, partially specified <code>lazy_DAG</code> object created using the <code><a href="lazy_dag.html">lazy_dag</a></code> function. See <code><a href="lazy_dag.html">?lazy_dag</a></code> for more information on lazy DAGs and the associated <code>param()</code> syntax. See <code><a href="node.html">?node</a></code> for general information on how to define DAGs.</p></dd>
 
   <dt id="arg-targets">targets<a class="anchor" aria-label="anchor" href="#arg-targets"></a></dt>
-<dd><p>A <code>list</code> containing one <code>list</code> per desired target. These sub-lists need to contain at least two named elements: <code>target</code>, a numeric value specifying the exact desired value of the target and <code>eval_fun</code>, a function to evaluate the target value given the simulated data. The <code>eval_fun</code> should only have one argument, which is the simulated data, and return exactly one numeric value relating to the target. Additionally, users may include a <code>scale</code> element, which should be a single numeric value specifying a scaling factor included during optimization. If not supplied, it defaults to 1. May be useful when targets are on widely different scales. This argument may specify any number of targets. See details, examples and the associated vignette.</p></dd>
+<dd><p>A <code>list</code> containing one <code>list</code> per desired target. These sub-lists need to contain at least two named elements: <code>target</code>, a numeric value specifying the exact desired value of the target and <code>eval_fun</code>, a function to evaluate the target value given simulated data with <code>n_sim_run</code> individuals or the current version of the <code>DAG</code> (if an additional <code>use_dag=TRUE</code> element is included). The <code>eval_fun</code> should only have one argument, which is the simulated data or DAG, and return exactly one numeric value relating to the target. Additionally, users may include a <code>scale</code> element, which should be a single numeric value specifying a scaling factor included during optimization. If not supplied, it defaults to 1. May be useful when targets are on widely different scales. This argument may specify any number of targets. See details, examples and the associated vignette.</p></dd>
 
   <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
 <dd><p>A named <code>list</code> specifying the free parameters of the partially specified DAG. The names must correspond to the parameter placeholders introduced by <code>param()</code> in the <code>lazy_dag</code>. Each parameter specification must contain a finite numeric start value and may optionally contain the following elements:</p>
@@ -79,19 +80,22 @@
 <dd><p>A single positive number, specifying the sample size used when evaluating the <code>targets</code> after optimization has finished. This is primarily done to estimate how well the optimization worked and should thus always be a fairly large number for precise results.</p></dd>
 
   <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>A random number generator seed. If not <code>NULL</code>, this seed is used on every single evaluation of the underlying changing <code>DAG</code>, eliminating some random sampling variation.</p></dd>
+<dd><p>A random number generator seed. If not <code>NULL</code>, this seed is used on every single evaluation of the underlying changing <code>DAG</code>, eliminating some random sampling variation. The only exception is the final evaluation using a sample of size <code>n_sim_eval</code>, which instead uses <code>seed + 1</code> (if possible), to make the evaluation independent of the optimization.</p></dd>
 
-  <dt id="arg-optim-control">optim_control<a class="anchor" aria-label="anchor" href="#arg-optim-control"></a></dt>
-<dd><p>This argument is directly passed to the <code>control</code> argument of the <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code> function.</p></dd>
+  <dt id="arg-optimizer">optimizer<a class="anchor" aria-label="anchor" href="#arg-optimizer"></a></dt>
+<dd><p>A single character string, specifying which optimizer should be used. Allowed values are: <code>"uniroot"</code> to use <code><a href="https://rdrr.io/r/stats/uniroot.html" class="external-link">uniroot</a></code>, <code>"optim"</code> to use <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code>, <code>"optim2"</code> to use the <code><a href="https://roliveros-ramos.github.io/calibrar/reference/optim2.html" class="external-link">optim2</a></code> function from the <span class="pkg">calibrar</span> package, <code>"optimh"</code> to use the <code><a href="https://roliveros-ramos.github.io/calibrar/reference/optimh.html" class="external-link">optimh</a></code> function from the <span class="pkg">calibrar</span> package and <code>"auto"</code> (default), which is equal to <code>"uniroot"</code> whenever possible (e.g. whenever there is one target, one free parameter and defined bounds on that parameter) and equal to <code>"optim"</code> otherwise.</p></dd>
 
   <dt id="arg-optim-method">optim_method<a class="anchor" aria-label="anchor" href="#arg-optim-method"></a></dt>
-<dd><p>A single character string, specifying which <code>method</code> should be used in the underlying <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code> function call.</p></dd>
+<dd><p>A single character string, specifying which <code>method</code> should be used in the underlying <code>optimizer</code> function call. Ignored if <code>"uniroot"</code> is used as an <code>optimizer</code>.</p></dd>
+
+  <dt id="arg-optim-control">optim_control<a class="anchor" aria-label="anchor" href="#arg-optim-control"></a></dt>
+<dd><p>This argument is directly passed to the <code>control</code> argument of the respective <code>optimiter</code> function. Ignored if <code>"uniroot"</code> is used as an <code>optimizer</code>.</p></dd>
 
   <dt id="arg-objective-fun">objective_fun<a class="anchor" aria-label="anchor" href="#arg-objective-fun"></a></dt>
-<dd><p>A custom function that should be used in the underlying <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code> function call to evaluate how close the current value of the <code>targets</code> are to the desired results. Any function that takes a numeric vector of (scaled) differences between the desired and estimated value and returns a scalar number that can be minimized may be used.</p></dd>
+<dd><p>A custom function that should be used in the underlying <code>optimizer</code> function call to evaluate how close the current value of the <code>targets</code> are to the desired results. Any function that takes a numeric vector of (scaled) differences between the desired and estimated value and returns a scalar number that can be minimized may be used. Ignored if <code>"uniroot"</code> is used as an <code>optimizer</code>.</p></dd>
 
   <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further arguments passed to the <code><a href="sim_n_datasets.html">sim_n_datasets</a></code> function, which is used internally to generate one dataset (using <code>n_repeats = 1</code>).</p></dd>
+<dd><p>Further arguments passed to the <code>optimizer</code> and the <code><a href="sim_n_datasets.html">sim_n_datasets</a></code> function, which is used internally to generate one dataset (using <code>n_repeats = 1</code>). All named arguments are first passed through the <code>optimizer</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -118,7 +122,7 @@
 <li><p><code>dag</code>: A fully specified <code>DAG</code>, using the best sets of parameter values found to satisfy the user targets. This <code>DAG</code> may be directly used for simulation purposes.</p></li>
 <li><p><code>est_params</code>: The final parameter values after optimization.</p></li>
 <li><p><code>target_eval</code>: A final estimate of the <code>targets</code>, evaluated on the final <code>DAG</code>. If the function call was successful, these should be very close to the desired target parameters.</p></li>
-<li><p><code>optim_obj</code>: If <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code> was used, the resulting object from that function call.</p></li>
+<li><p><code>optim_obj</code>: If <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code>, <code><a href="https://roliveros-ramos.github.io/calibrar/reference/optim2.html" class="external-link">optim2</a></code> or <code><a href="https://roliveros-ramos.github.io/calibrar/reference/optimh.html" class="external-link">optimh</a></code> was used, the resulting object from that function call.</p></li>
 <li><p><code>uniroot</code>: If <code><a href="https://rdrr.io/r/stats/uniroot.html" class="external-link">uniroot</a></code> was used, the resulting object from that function call.</p></li>
 </ul></div>
     <div class="section level2">
@@ -182,7 +186,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Targets (1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        target desired achieved  error scaled_error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_A     0.4   0.4066 0.0066       0.0066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_A     0.4   0.4186 0.0186       0.0186</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Optimization</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Method:       uniroot</span>
@@ -195,14 +199,14 @@
 <span class="r-in"><span><span class="co"># use final DAG to simulate data</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             X      A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;num&gt; &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  0.3500025  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  0.8144417  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: -0.5166661  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: -2.6922644  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: -1.0969546   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: -1.2554751  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              X      A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;num&gt; &lt;lgcl&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -0.39968354  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: -1.08779926   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: -1.09722672  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: -1.15883079   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: -0.03121757  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: -0.40738889   TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: Jointly calibrate treatment and outcome prevalence.</span></span></span>
 <span class="r-in"><span><span class="co"># The DAG contains two free parameters and two targets.</span></span></span>
@@ -258,10 +262,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Targets (2)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        target desired achieved  error scaled_error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_A     0.4   0.4076 0.0076       0.0076</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_Y     0.3   0.3020 0.0020       0.0020</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_A     0.4   0.4204 0.0204       0.0204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence_Y     0.3   0.3118 0.0118       0.0118</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Optimization</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Optimizer:    optim()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Method:       L-BFGS-B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Convergence:  unsuccessful (code 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Objective:    5e-07</span>
@@ -275,12 +280,12 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             X      A      Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  2.3707252   TRUE   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: -0.1668120  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  0.9269614   TRUE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: -0.5681517  FALSE  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  0.2250901   TRUE   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  1.1319859   TRUE   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: -1.9845624  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  0.5216279   TRUE   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: -0.5202400  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  0.5802165  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: -0.4531919  FALSE  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: -1.4561329   TRUE  FALSE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

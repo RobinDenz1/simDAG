@@ -11,8 +11,9 @@ as represented by beta coefficients. See details.
 ``` r
 calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
               n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
-              optim_control=list(maxit=200, trace=0),
-              optim_method=NULL, objective_fun=NULL, ...)
+              optimizer="auto", optim_method=NULL,
+              optim_control=list(maxit=200), objective_fun=NULL,
+              ...)
 ```
 
 ## Arguments
@@ -33,14 +34,16 @@ calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
   A `list` containing one `list` per desired target. These sub-lists
   need to contain at least two named elements: `target`, a numeric value
   specifying the exact desired value of the target and `eval_fun`, a
-  function to evaluate the target value given the simulated data. The
-  `eval_fun` should only have one argument, which is the simulated data,
-  and return exactly one numeric value relating to the target.
-  Additionally, users may include a `scale` element, which should be a
-  single numeric value specifying a scaling factor included during
-  optimization. If not supplied, it defaults to 1. May be useful when
-  targets are on widely different scales. This argument may specify any
-  number of targets. See details, examples and the associated vignette.
+  function to evaluate the target value given simulated data with
+  `n_sim_run` individuals or the current version of the `DAG` (if an
+  additional `use_dag=TRUE` element is included). The `eval_fun` should
+  only have one argument, which is the simulated data or DAG, and return
+  exactly one numeric value relating to the target. Additionally, users
+  may include a `scale` element, which should be a single numeric value
+  specifying a scaling factor included during optimization. If not
+  supplied, it defaults to 1. May be useful when targets are on widely
+  different scales. This argument may specify any number of targets. See
+  details, examples and the associated vignette.
 
 - params:
 
@@ -91,34 +94,53 @@ calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
 
   A random number generator seed. If not `NULL`, this seed is used on
   every single evaluation of the underlying changing `DAG`, eliminating
-  some random sampling variation.
+  some random sampling variation. The only exception is the final
+  evaluation using a sample of size `n_sim_eval`, which instead uses
+  `seed + 1` (if possible), to make the evaluation independent of the
+  optimization.
 
-- optim_control:
+- optimizer:
 
-  This argument is directly passed to the `control` argument of the
-  [`optim`](https://rdrr.io/r/stats/optim.html) function.
+  A single character string, specifying which optimizer should be used.
+  Allowed values are: `"uniroot"` to use
+  [`uniroot`](https://rdrr.io/r/stats/uniroot.html), `"optim"` to use
+  [`optim`](https://rdrr.io/r/stats/optim.html), `"optim2"` to use the
+  [`optim2`](https://roliveros-ramos.github.io/calibrar/reference/optim2.html)
+  function from the calibrar package, `"optimh"` to use the
+  [`optimh`](https://roliveros-ramos.github.io/calibrar/reference/optimh.html)
+  function from the calibrar package and `"auto"` (default), which is
+  equal to `"uniroot"` whenever possible (e.g. whenever there is one
+  target, one free parameter and defined bounds on that parameter) and
+  equal to `"optim"` otherwise.
 
 - optim_method:
 
   A single character string, specifying which `method` should be used in
-  the underlying [`optim`](https://rdrr.io/r/stats/optim.html) function
-  call.
+  the underlying `optimizer` function call. Ignored if `"uniroot"` is
+  used as an `optimizer`.
+
+- optim_control:
+
+  This argument is directly passed to the `control` argument of the
+  respective `optimiter` function. Ignored if `"uniroot"` is used as an
+  `optimizer`.
 
 - objective_fun:
 
-  A custom function that should be used in the underlying
-  [`optim`](https://rdrr.io/r/stats/optim.html) function call to
-  evaluate how close the current value of the `targets` are to the
-  desired results. Any function that takes a numeric vector of (scaled)
-  differences between the desired and estimated value and returns a
-  scalar number that can be minimized may be used.
+  A custom function that should be used in the underlying `optimizer`
+  function call to evaluate how close the current value of the `targets`
+  are to the desired results. Any function that takes a numeric vector
+  of (scaled) differences between the desired and estimated value and
+  returns a scalar number that can be minimized may be used. Ignored if
+  `"uniroot"` is used as an `optimizer`.
 
 - ...:
 
-  Further arguments passed to the
+  Further arguments passed to the `optimizer` and the
   [`sim_n_datasets`](https://robindenz1.github.io/simDAG/reference/sim_n_datasets.md)
   function, which is used internally to generate one dataset (using
-  `n_repeats = 1`).
+  `n_repeats = 1`). All named arguments are first passed through the
+  `optimizer`.
 
 ## Details
 
@@ -220,8 +242,11 @@ Returns a `calibrated_DAG` object. This object is basically just a
   final `DAG`. If the function call was successful, these should be very
   close to the desired target parameters.
 
-- `optim_obj`: If [`optim`](https://rdrr.io/r/stats/optim.html) was
-  used, the resulting object from that function call.
+- `optim_obj`: If [`optim`](https://rdrr.io/r/stats/optim.html),
+  [`optim2`](https://roliveros-ramos.github.io/calibrar/reference/optim2.html)
+  or
+  [`optimh`](https://roliveros-ramos.github.io/calibrar/reference/optimh.html)
+  was used, the resulting object from that function call.
 
 - `uniroot`: If [`uniroot`](https://rdrr.io/r/stats/uniroot.html) was
   used, the resulting object from that function call.
@@ -296,7 +321,7 @@ summary(fit)
 #> 
 #> Targets (1)
 #>        target desired achieved  error scaled_error
-#>  prevalence_A     0.4   0.4066 0.0066       0.0066
+#>  prevalence_A     0.4   0.4186 0.0186       0.0186
 #> 
 #> Optimization
 #>   Method:       uniroot
@@ -309,14 +334,14 @@ summary(fit)
 # use final DAG to simulate data
 data <- sim_from_dag(fit$dag, n_sim=10)
 head(data)
-#>             X      A
-#>         <num> <lgcl>
-#> 1:  0.3500025  FALSE
-#> 2:  0.8144417  FALSE
-#> 3: -0.5166661  FALSE
-#> 4: -2.6922644  FALSE
-#> 5: -1.0969546   TRUE
-#> 6: -1.2554751  FALSE
+#>              X      A
+#>          <num> <lgcl>
+#> 1: -0.39968354  FALSE
+#> 2: -1.08779926   TRUE
+#> 3: -1.09722672  FALSE
+#> 4: -1.15883079   TRUE
+#> 5: -0.03121757  FALSE
+#> 6: -0.40738889   TRUE
 
 # Example 2: Jointly calibrate treatment and outcome prevalence.
 # The DAG contains two free parameters and two targets.
@@ -372,10 +397,11 @@ summary(fit)
 #> 
 #> Targets (2)
 #>        target desired achieved  error scaled_error
-#>  prevalence_A     0.4   0.4076 0.0076       0.0076
-#>  prevalence_Y     0.3   0.3020 0.0020       0.0020
+#>  prevalence_A     0.4   0.4204 0.0204       0.0204
+#>  prevalence_Y     0.3   0.3118 0.0118       0.0118
 #> 
 #> Optimization
+#>   Optimizer:    optim()
 #>   Method:       L-BFGS-B
 #>   Convergence:  unsuccessful (code 52)
 #>   Objective:    5e-07
@@ -389,10 +415,10 @@ data <- sim_from_dag(fit$dag, n_sim=10)
 head(data)
 #>             X      A      Y
 #>         <num> <lgcl> <lgcl>
-#> 1:  2.3707252   TRUE   TRUE
-#> 2: -0.1668120  FALSE  FALSE
-#> 3:  0.9269614   TRUE  FALSE
-#> 4: -0.5681517  FALSE  FALSE
-#> 5:  0.2250901   TRUE   TRUE
-#> 6:  1.1319859   TRUE   TRUE
+#> 1: -1.9845624  FALSE  FALSE
+#> 2:  0.5216279   TRUE   TRUE
+#> 3: -0.5202400  FALSE  FALSE
+#> 4:  0.5802165  FALSE  FALSE
+#> 5: -0.4531919  FALSE  FALSE
+#> 6: -1.4561329   TRUE  FALSE
 ```
