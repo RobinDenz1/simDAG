@@ -1,7 +1,7 @@
 
 ## S3 summary method for calibrated_DAG objects
 #' @export
-summary.calibrated_DAG <- function(object, ...) {
+summary.calibrated_DAG <- function(object, print=TRUE, ...) {
 
   inputs <- object$inputs
   params <- inputs$params
@@ -104,6 +104,7 @@ summary.calibrated_DAG <- function(object, ...) {
     opt <- object$uniroot_obj
 
     optimization <- list(
+      optimizer = "uniroot",
       method = "uniroot",
       converged = TRUE,
       code = NA_integer_,
@@ -118,6 +119,7 @@ summary.calibrated_DAG <- function(object, ...) {
     opt <- object$optim_obj
 
     optimization <- list(
+      optimizer = inputs$optimizer,
       method = method,
       converged = opt$convergence == 0,
       code = opt$convergence,
@@ -140,7 +142,12 @@ summary.calibrated_DAG <- function(object, ...) {
   )
 
   class(out) <- "summary_calibrated_DAG"
-  print.summary_calibrated_DAG(out)
+
+  if (print) {
+    print.summary_calibrated_DAG(out)
+  } else {
+    out
+  }
 }
 
 ## S3 print method for summary_calibrated_DAG objects
@@ -164,6 +171,11 @@ print.summary_calibrated_DAG <- function(x, digits=4, ...) {
   opt <- x$optimization
 
   cat("\nOptimization\n")
+
+  if (opt$optimizer != "uniroot") {
+    cat("  Optimizer:    ", opt$optimizer, "()\n", sep = "")
+  }
+
   cat("  Method:       ", opt$method, "\n", sep = "")
 
   if (opt$converged) {
@@ -207,7 +219,7 @@ print.summary_calibrated_DAG <- function(x, digits=4, ...) {
 #' @export
 print.calibrated_DAG <- function(x, ...) {
 
-  s <- summary(x)
+  s <- summary(x, print=FALSE)
   opt <- s$optimization
 
   cat("\nCalibrated DAG object\n")
@@ -221,6 +233,10 @@ print.calibrated_DAG <- function(x, ...) {
     status <- "converged"
   } else {
     status <- paste0("not converged (code ", opt$code, ")")
+  }
+
+  if (opt$optimizer != "uniroot") {
+    cat("  Optimizer:  ", opt$optimizer, "()\n", sep = "")
   }
 
   cat("  Method:     ", opt$method, " (", status, ")\n", sep="")

@@ -1,13 +1,15 @@
 
 ## automatically find suitable parameters that result in some user-defined
 ## target quantities to be satisfied in the resulting data
+#' @importFrom data.table fcase
 #' @export
 calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
                           n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
-                          optim_control=list(maxit=200, trace=0),
-                          optim_method=NULL, objective_fun=NULL, ...) {
+                          optimizer="auto", optim_method=NULL,
+                          optim_control=list(maxit=200), objective_fun=NULL,
+                          ...) {
 
-  # some preliminary checks
+  # should be a lazy DAG, not a regular DAG
   if (inherits(lazy_dag, "DAG")) {
     stop("'lazy_dag' should be a `lazy_DAG` object, created using lazy_dag()",
          ", not a regular `DAG` object.", call.=FALSE)
@@ -16,6 +18,7 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
          " lazy_dag() function.", call.=FALSE)
   }
 
+  # warn if estimation is likely impossible
   if (length(targets) > length(params)) {
     warning("There are ", length(targets), " specified target values",
             " but only ", length(params), " free parameter(s). ",
@@ -42,19 +45,36 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
 
   has_finite_bounds <- any(is.finite(lower) | is.finite(upper))
 
+  # automatically use uniroot() for the simple, bounded,
+  # single-parameter/single-target case under optimizer = "auto"
+  uniroot_possible <- length(targets) == 1L && length(params) == 1L &&
+    !is.null(params[[1]]$range) && all(is.finite(params[[1]]$range))
+
+  # determine which optimizer to use
+  if (optimizer=="auto" && uniroot_possible && is.null(optim_method) &&
+      is.null(objective_fun)) {
+    optimizer <- "uniroot"
+  } else if (optimizer=="auto") {
+    optimizer <- "optim"
+  }
+
+  # warn if uniroot() specified but not possible
+  if (optimizer=="uniroot" && !uniroot_possible) {
+    warning("optimizer = 'uniroot' was used but uniroot() cannot be applied",
+            " here (> 1 targets, > 1 params or no supplied range).",
+            " Using optimizer = 'optim' instead.", call.=FALSE)
+    optimizer <- "optim"
+  }
+
   # infer parameter scaling if not explicitly supplied
-  if (is.null(optim_control$parscale)) {
+  if (is.null(optim_control$parscale) &&
+      optimizer %in% c("optim", "optim2", "optimh")) {
     optim_control$parscale <- vapply(X=params, FUN=parscale_default,
                                      numeric(1))
   }
 
-  # automatically use uniroot() for the simple, bounded,
-  # single-parameter/single-target case.
-  use_uniroot <- is.null(optim_method) && is.null(objective_fun) &&
-    length(targets) == 1L && length(params) == 1L &&
-    !is.null(params[[1]]$range) && all(is.finite(params[[1]]$range))
-
-  if (use_uniroot) {
+  # apply chosen optimizer
+  if (optimizer=="uniroot") {
 
     uniroot_obj <- stats::uniroot(
       f = get_objective,
@@ -71,19 +91,26 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     optim_obj <- NULL
     method <- "uniroot"
 
-  } else {
+  } else if (optimizer %in% c("optim", "optim2", "optimh")) {
+
+    if (optimizer %in% c("optim2", "optimh")) {
+      requireNamespace("calibrar", quietly=TRUE)
+    }
 
     # default to L-BFGS-B, but permit other optim() methods.
-    if (is.null(optim_method)) {
+    if (is.null(optim_method) && optimizer %in% c("optim", "optim2")) {
       method <- "L-BFGS-B"
+    } else if (is.null(optim_method) && optimizer=="optimh") {
+      method <- "Nelder-Mead"
     } else {
       method <- optim_method
     }
 
     # methods other than L-BFGS-B and Brent cannot enforce bounds.
-    if (has_finite_bounds && !method %in% c("L-BFGS-B", "Brent")) {
+    if (has_finite_bounds && !method %in% c("L-BFGS-B", "Brent") &&
+        optimizer=="optim") {
       stop("The selected method `", method, "` does not support parameter ",
-           "bounds. Use L-BFGS-B, or remove the ranges.", call.=FALSE)
+           "bounds.", call.=FALSE)
     }
 
     if (method == "Brent" &&
@@ -112,7 +139,14 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
 
     # forward extra simulation arguments
     opt_args <- c(opt_args, list(...))
-    optim_obj <- do.call(stats::optim, opt_args)
+
+    if (optimizer=="optim") {
+      optim_obj <- do.call(stats::optim, opt_args)
+    } else if (optimizer=="optim2") {
+      optim_obj <- do.call(calibrar::optim2, opt_args)
+    } else if (optimizer=="optimh") {
+      optim_obj <- do.call(calibrar::optimh, opt_args)
+    }
 
     est_params <- optim_obj$par
     uniroot_obj <- NULL
@@ -123,12 +157,18 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
   }
 
   # independent, higher-precision target evaluation
+  if (!is.null(seed)) {
+    seed_eval <- seed + 1
+  } else {
+    seed_eval <- NULL
+  }
+
   target_eval <- estimate_targets(
     lazy_dag = lazy_dag,
     params = est_params,
     targets = targets,
     n_sim = n_sim_eval,
-    seed = seed,
+    seed = seed_eval,
     ...
   )
 
@@ -143,6 +183,7 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     n_sim_run = n_sim_run,
     n_sim_eval = n_sim_eval,
     seed = seed,
+    optimizer = optimizer,
     optim_control = optim_control,
     optim_method = method
   )
@@ -191,7 +232,11 @@ estimate_targets <- function(lazy_dag, params, targets, n_sim, seed, ...) {
   # evaluate all target functions
   out <- numeric(length(targets))
   for (i in seq_len(length(targets))) {
-    out[i] <- targets[[i]]$eval_fun(data)
+    if (!is.null(targets[[i]]$use_dag) && targets[[i]]$use_dag) {
+      out[i] <- targets[[i]]$eval_fun(real_dag)
+    } else {
+      out[i] <- targets[[i]]$eval_fun(data)
+    }
   }
 
   return(out)

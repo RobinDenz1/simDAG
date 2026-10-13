@@ -30,6 +30,7 @@
         inputs = list(
           params = params,
           targets = targets,
+          optimizer = "uniroot",
           optim_control = list(parscale = NULL),
           optim_method = NULL,
           n_sim_run = 10000,
@@ -102,6 +103,7 @@
       inputs = list(
         params = params,
         targets = targets,
+        optimizer = "optim",
         optim_control = list(parscale = parscale),
         optim_method = optim_method,
         n_sim_run = 10000,

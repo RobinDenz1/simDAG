@@ -39,7 +39,8 @@ Suggests:
 	utils,
 	simr,
 	rsurv,
-	survival
+	survival,
+	calibrar
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

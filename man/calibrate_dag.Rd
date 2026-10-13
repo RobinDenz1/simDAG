@@ -10,15 +10,16 @@ This function may be used to calibrate certain parameters in a partially specifi
 \usage{
 calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
               n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
-              optim_control=list(maxit=200, trace=0),
-              optim_method=NULL, objective_fun=NULL, ...)
+              optimizer="auto", optim_method=NULL,
+              optim_control=list(maxit=200), objective_fun=NULL,
+              ...)
 }
 \arguments{
   \item{lazy_dag}{
 An unevaluated, partially specified \code{lazy_DAG} object created using the \code{\link{lazy_dag}} function. See \code{?lazy_dag} for more information on lazy DAGs and the associated \code{param()} syntax. See \code{?node} for general information on how to define DAGs.
   }
   \item{targets}{
-A \code{list} containing one \code{list} per desired target. These sub-lists need to contain at least two named elements: \code{target}, a numeric value specifying the exact desired value of the target and \code{eval_fun}, a function to evaluate the target value given the simulated data. The \code{eval_fun} should only have one argument, which is the simulated data, and return exactly one numeric value relating to the target. Additionally, users may include a \code{scale} element, which should be a single numeric value specifying a scaling factor included during optimization. If not supplied, it defaults to 1. May be useful when targets are on widely different scales. This argument may specify any number of targets. See details, examples and the associated vignette.
+A \code{list} containing one \code{list} per desired target. These sub-lists need to contain at least two named elements: \code{target}, a numeric value specifying the exact desired value of the target and \code{eval_fun}, a function to evaluate the target value given simulated data with \code{n_sim_run} individuals or the current version of the \code{DAG} (if an additional \code{use_dag=TRUE} element is included). The \code{eval_fun} should only have one argument, which is the simulated data or DAG, and return exactly one numeric value relating to the target. Additionally, users may include a \code{scale} element, which should be a single numeric value specifying a scaling factor included during optimization. If not supplied, it defaults to 1. May be useful when targets are on widely different scales. This argument may specify any number of targets. See details, examples and the associated vignette.
   }
   \item{params}{
 A named \code{list} specifying the free parameters of the partially specified DAG. The names must correspond to the parameter placeholders introduced by \code{param()} in the \code{lazy_dag}. Each parameter specification must contain a finite numeric start value and may optionally contain the following elements:
@@ -36,19 +37,22 @@ A single positive number, specifying the sample size that should be used when ev
 A single positive number, specifying the sample size used when evaluating the \code{targets} after optimization has finished. This is primarily done to estimate how well the optimization worked and should thus always be a fairly large number for precise results.
   }
   \item{seed}{
-A random number generator seed. If not \code{NULL}, this seed is used on every single evaluation of the underlying changing \code{DAG}, eliminating some random sampling variation.
+A random number generator seed. If not \code{NULL}, this seed is used on every single evaluation of the underlying changing \code{DAG}, eliminating some random sampling variation. The only exception is the final evaluation using a sample of size \code{n_sim_eval}, which instead uses \code{seed + 1} (if possible), to make the evaluation independent of the optimization.
   }
-  \item{optim_control}{
-This argument is directly passed to the \code{control} argument of the \code{\link[stats]{optim}} function.
+  \item{optimizer}{
+A single character string, specifying which optimizer should be used. Allowed values are: \code{"uniroot"} to use \code{\link[stats]{uniroot}}, \code{"optim"} to use \code{\link[stats]{optim}}, \code{"optim2"} to use the \code{\link[calibrar]{optim2}} function from the \pkg{calibrar} package, \code{"optimh"} to use the \code{\link[calibrar]{optimh}} function from the \pkg{calibrar} package and \code{"auto"} (default), which is equal to \code{"uniroot"} whenever possible (e.g. whenever there is one target, one free parameter and defined bounds on that parameter) and equal to \code{"optim"} otherwise.
   }
   \item{optim_method}{
-A single character string, specifying which \code{method} should be used in the underlying \code{\link[stats]{optim}} function call.
+A single character string, specifying which \code{method} should be used in the underlying \code{optimizer} function call. Ignored if \code{"uniroot"} is used as an \code{optimizer}.
+  }
+  \item{optim_control}{
+This argument is directly passed to the \code{control} argument of the respective \code{optimiter} function. Ignored if \code{"uniroot"} is used as an \code{optimizer}.
   }
   \item{objective_fun}{
-A custom function that should be used in the underlying \code{\link[stats]{optim}} function call to evaluate how close the current value of the \code{targets} are to the desired results. Any function that takes a numeric vector of (scaled) differences between the desired and estimated value and returns a scalar number that can be minimized may be used.
+A custom function that should be used in the underlying \code{optimizer} function call to evaluate how close the current value of the \code{targets} are to the desired results. Any function that takes a numeric vector of (scaled) differences between the desired and estimated value and returns a scalar number that can be minimized may be used. Ignored if \code{"uniroot"} is used as an \code{optimizer}.
   }
   \item{...}{
-Further arguments passed to the \code{\link{sim_n_datasets}} function, which is used internally to generate one dataset (using \code{n_repeats = 1}).
+Further arguments passed to the \code{optimizer} and the \code{\link{sim_n_datasets}} function, which is used internally to generate one dataset (using \code{n_repeats = 1}). All named arguments are first passed through the \code{optimizer}.
   }
 }
 \details{
@@ -86,7 +90,7 @@ Returns a \code{calibrated_DAG} object. This object is basically just a \code{li
   \item{\code{dag}: A fully specified \code{DAG}, using the best sets of parameter values found to satisfy the user targets. This \code{DAG} may be directly used for simulation purposes.}
   \item{\code{est_params}: The final parameter values after optimization.}
   \item{\code{target_eval}: A final estimate of the \code{targets}, evaluated on the final \code{DAG}. If the function call was successful, these should be very close to the desired target parameters.}
-  \item{\code{optim_obj}: If \code{\link[stats]{optim}} was used, the resulting object from that function call.}
+  \item{\code{optim_obj}: If \code{\link[stats]{optim}}, \code{\link[calibrar]{optim2}} or \code{\link[calibrar]{optimh}} was used, the resulting object from that function call.}
   \item{\code{uniroot}: If \code{\link[stats]{uniroot}} was used, the resulting object from that function call.}
 }
 

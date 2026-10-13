@@ -15,148 +15,239 @@ coverage](https://codecov.io/gh/RobinDenz1/simDAG/graph/badge.svg)](https://app.
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />
 
-Author: Robin Denz
+**Simulate complex data from explicit data-generating processes in R.**
 
-## Description
+`simDAG` is an R package for generating synthetic data from directed
+acyclic graphs (DAGs). Specify how variables are generated and how they
+depend on one another, then simulate datasets from the resulting
+data-generating process (DGP).
 
-`simDAG` is an R-Package which can be used to generate data from a known
-directed acyclic graph (DAG) with associated information on
-distributions and causal coefficients. The root nodes are sampled first
-and each subsequent child node is generated according to a regression
-model (linear, logistic, multinomial, cox, …) or other function. The
-result is a dataset that has the same causal structure as the specified
-DAG and by expectation the same distributions and coefficients as
-initially specified. It also implements a comprehensive framework for
-conducting discrete-time and discrete-event simulations in a similar
-fashion and directly supports network dependencies among individuals.
+Beyond ordinary cross-sectional data, `simDAG` supports complex
+longitudinal processes, time-to-event outcomes, censoring, recurrent and
+competing events, and dependencies between individuals through networks.
+It additionally implements an enhanced `formula` interface, allowing
+specifications of arbitrary interactions, non-linear effects,
+dependencies on categorical variables and random effects. The
+development version also supports calibrating conditional model
+parameters to achieve user-defined target characteristics, including
+marginal effects.
 
 ## Installation
 
-A stable version of this package can be installed from CRAN:
+Install the current CRAN release:
 
 ``` r
 install.packages("simDAG")
 ```
 
-and the developmental version may be installed from github using the
-`remotes` R-Package:
+To install the development version from GitHub, including the new
+`calibrate_dag()` functionality:
 
 ``` r
-library(remotes)
-
+install.packages("remotes")
 remotes::install_github("RobinDenz1/simDAG")
 ```
 
-## Bug Reports and Feature Requests
+## Quick start
 
-If you encounter any bugs or have any specific feature requests, please
-file an [Issue](https://github.com/RobinDenz1/simDAG/issues).
-
-## Examples
-
-Suppose we want to generate data with the following causal structure:
-
-<p align="center">
-<img src="man/figures/example_DAG.png" width="450" />
-</p>
-
-where `age` is normally distributed with a mean of 50 and a standard
-deviation of 4 and `sex` is bernoulli distributed with `p = 0.5` (equal
-number of men and women). Both of these “root nodes” (meaning they have
-no parents - no arrows pointing into them) have a direct causal effect
-on the `bmi`. The causal coefficients are 1.1 and 0.4 respectively, with
-an intercept of 12 and a sigma standard deviation of 2. `death` is
-modeled as a bernoulli variable, which is caused by both `age` and `bmi`
-with causal coefficients of 0.1 and 0.3 respectively. As intercept we
-use -15.
-
-The following code can be used to generate 10000 samples from these
-specifications:
+Suppose we want to generate data with a continuous covariate $X$, a
+binary treatment $A$, and a binary outcome $Y$. Both treatment and
+outcome depend on $X$, and the outcome also depends on treatment.
 
 ``` r
 library(simDAG)
 
 dag <- empty_dag() +
-  node("age", type="rnorm", mean=50, sd=4) +
-  node("sex", type="rbernoulli", p=0.5) +
-  node("bmi", type="gaussian", formula= ~ 12 + age*1.1 + sex*0.4, error=2) +
-  node("death", type="binomial", formula= ~ -15 + age*0.1 + bmi*0.3)
+  node("X", type = "rnorm", mean = 0, sd = 1) +
+  node("A", type = "binomial",
+       formula = ~ -0.5 + X * 0.6) +
+  node("Y", type = "binomial",
+       formula = ~ -1 + A * 0.7 + X * 0.4)
 
-set.seed(42)
+set.seed(43)
 
-sim_dat <- sim_from_dag(dag, n_sim=100000)
+data <- sim_from_dag(dag, n_sim = 10000)
+
+head(data)
+#>              X      A      Y
+#>          <num> <lgcl> <lgcl>
+#> 1: -0.03751376  FALSE   TRUE
+#> 2: -1.57460441  FALSE  FALSE
+#> 3: -0.48596752   TRUE  FALSE
+#> 4:  0.46518623   TRUE   TRUE
+#> 5: -0.90409807  FALSE   TRUE
+#> 6: -0.27743280   TRUE  FALSE
 ```
 
-By fitting appropriate regression models, we can check if the data
-really does approximately conform to our specifications. First, lets
-look at the `bmi`:
+The DAG below represents the data-generating process: $X$ influences
+both treatment ($A$) and outcome ($Y$), while $A$ also influences $Y$.
+
+<img src="man/figures/README-dag-plot-1.png" width="65%" style="display: block; margin: auto;" />
+
+Each node is generated according to its specified distribution or
+conditional model. The order of the nodes and their dependencies define
+the data-generating process. The same approach extends to much more
+complex DGPs, including custom generation functions and longitudinal
+processes.
+
+## What can you simulate?
+
+| Use case                                        | Main functionality                         |
+|-------------------------------------------------|--------------------------------------------|
+| Cross-sectional data from a DAG                 | `sim_from_dag()`                           |
+| Longitudinal data with time-varying variables   | `sim_discrete_time()`                      |
+| Continuous-time event-driven data               | `sim_discrete_event()`                     |
+| Data with dependencies between individuals      | Network functionality                      |
+| Data with custom conditional models             | Custom node types and generation functions |
+| Data with prespecified marginal characteristics | `calibrate_dag()` (development version)    |
+
+### Cross-sectional data
+
+Generate data from static DAGs containing continuous, binary,
+categorical, count, and time-to-event variables. Nodes can be specified
+using conditional distributions, regression models or custom functions.
+
+**Learn more:** [Simulating Data from a Known
+DAG](https://robindenz1.github.io/simDAG/articles/v_sim_from_dag.html)
+
+### Longitudinal data and survival processes
+
+Use `sim_discrete_time()` to generate complex longitudinal data with
+time-varying covariates, time-dependent effects, censoring, recurrent
+events, and competing events.
+
+For suitable models, `sim_discrete_event()` offers an alternative based
+on event-driven simulation in continuous time. It can be considerably
+faster than discrete-time simulation, although it supports a narrower
+range of time-dependent processes.
+
+**Learn more:** [Discrete-time
+simulation](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_time.html)
+· [Discrete-event
+simulation](https://robindenz1.github.io/simDAG/articles/v_sim_discrete_event.html)
+
+### Network-dependent data
+
+`simDAG` also supports dependencies between individuals through static
+and dynamic network structures, allowing the generated data to
+incorporate network-based relationships.
+
+**Learn more:** [Simulating Data from a DAG with Network
+Dependencies](https://robindenz1.github.io/simDAG/articles/v_sim_networks.html)
+
+## Specify marginal targets instead of manually tuning coefficients
+
+When defining a DGP through conditional models, the resulting marginal
+characteristics are not always obvious. For example, specifying the
+coefficients of a logistic regression model does not directly specify
+the marginal prevalence of its outcome or the marginal causal effect of
+treatment.
+
+The `calibrate_dag()` function addresses this problem by allowing users
+to leave selected parameters unspecified and determine them numerically
+so that user-defined targets are achieved as closely as possible.
+
+For example, suppose we want an outcome prevalence of 30%, while
+retaining the specified relationships between treatment, a confounder,
+and the outcome.
 
 ``` r
-mod_bmi <- glm(bmi ~ age + sex, data=sim_dat, family="gaussian")
-summary(mod_bmi)
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type = "rnorm", mean = 0, sd = 1) +
+    node("A", type = "binomial",
+         formula = ~ -0.5 + X * 0.8) +
+    node("Y", type = "binomial",
+         formula = ~ param(intercept_Y) +
+           A * 0.7 + X * 0.4)
+)
+
+targets <- list(
+  prevalence_Y = list(
+    target = 0.30,
+    eval_fun = function(data) mean(data$Y)
+  )
+)
+
+params <- list(
+  intercept_Y = list(
+    start = 0,
+    range = c(-5, 5)
+  )
+)
+
+fit <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 5000,
+  n_sim_eval = 20000,
+  seed = 42
+)
+
+summary(fit)
+#> ────────────────────────────────────────────────────────────
+#> Calibrated DAG
+#> ────────────────────────────────────────────────────────────
+#> Parameters (1)
+#>    parameter estimate start lower upper parscale
+#>  intercept_Y   -1.135     0    -5     5       NA
 #> 
-#> Call:
-#> glm(formula = bmi ~ age + sex, family = "gaussian", data = sim_dat)
+#> Targets (1)
+#>        target desired achieved   error scaled_error
+#>  prevalence_Y     0.3   0.3069 0.00685      0.00685
 #> 
-#> Coefficients:
-#>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 11.89194    0.07954  149.51   <2e-16 ***
-#> age          1.10220    0.00158  697.41   <2e-16 ***
-#> sexTRUE      0.40447    0.01268   31.89   <2e-16 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> (Dispersion parameter for gaussian family taken to be 4.022026)
-#> 
-#>     Null deviance: 2361465  on 99999  degrees of freedom
-#> Residual deviance:  402190  on 99997  degrees of freedom
-#> AIC: 422971
-#> 
-#> Number of Fisher Scoring iterations: 2
+#> Optimization
+#>   Method:       uniroot
+#>   Convergence:  successful
+#>   Root residual: 0
+#>   Iterations:   8
+#>   Simulations:  5,000 optimization; 20,000 final evaluation
+#> ────────────────────────────────────────────────────────────
 ```
 
-This seems about right. Now we look at `death`:
+The result includes the calibrated parameters, the achieved target
+values, and optimization diagnostics. The resulting fully specified DAG
+is available as `fit$dag` and can be used with the usual simulation
+functions.
 
-``` r
-mod_death <- glm(death ~ age + bmi, data=sim_dat, family="binomial")
-summary(mod_death)
-#> 
-#> Call:
-#> glm(formula = death ~ age + bmi, family = "binomial", data = sim_dat)
-#> 
-#> Coefficients:
-#>             Estimate Std. Error z value Pr(>|z|)    
-#> (Intercept) -14.6833     3.5538  -4.132  3.6e-05 ***
-#> age           0.2607     0.1698   1.535    0.125    
-#> bmi           0.1842     0.1402   1.314    0.189    
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> (Dispersion parameter for binomial family taken to be 1)
-#> 
-#>     Null deviance: 258.65  on 99999  degrees of freedom
-#> Residual deviance: 214.03  on 99997  degrees of freedom
-#> AIC: 220.03
-#> 
-#> Number of Fisher Scoring iterations: 13
-```
+Calibration is numerical and approximate. Inspect the achieved target
+values rather than relying solely on optimizer convergence.
 
-The estimated coefficients are also very close to the ones we specified.
-More examples can be found in the documentation and the multiple
-vignettes.
+**Learn more:** [Calibrating a DAG to Match Target
+Characteristics](https://robindenz1.github.io/simDAG/articles/v_calibrate_dag.html)
+
+## Documentation and examples
+
+- [Package introduction and JSS
+  paper](https://robindenz1.github.io/simDAG/articles/simDAG.html)
+- [Cookbook: examples of different
+  DGPs](https://robindenz1.github.io/simDAG/articles/v_cookbook.html)
+- [Specifying formulas in a
+  DAG](https://robindenz1.github.io/simDAG/articles/v_using_formulas.html)
+- [Defining custom node
+  types](https://robindenz1.github.io/simDAG/articles/v_custom_nodes.html)
+- [Function
+  reference](https://robindenz1.github.io/simDAG/reference/index.html)
+
+If you are unsure which simulation approach fits your problem, the
+introductory vignette and cookbook are good places to start.
 
 ## Citation
 
-If you use this package, please cite the associated article:
+If you use `simDAG` in your research, please cite:
 
-Denz, Robin and Nina Timmesfeld (2026). “Simulating Complex
-Cross-Sectional and Longitudinal Data using the simDAG R Package”.
-Journal of Statistical Software 116 (2), doi: 10.18637/jss.v116.i02.
+Denz, R. and Timmesfeld, N. (2026). Simulating Complex Cross-Sectional
+and Longitudinal Data using the simDAG R Package. *Journal of
+Statistical Software*, 116(2). <https://doi.org/10.18637/jss.v116.i02>
+
+## Contributing
+
+Bug reports, questions about unexpected behavior, and feature requests
+are highly welcome. Please open an [issue on
+GitHub](https://github.com/RobinDenz1/simDAG/issues).
 
 ## License
 
-© 2026 Robin Denz
-
-The contents of this repository are distributed under the GNU General
-Public License. You can find the full text of this License in this
-github repository. Alternatively, see <http://www.gnu.org/licenses/>.
+`simDAG` is released under the GNU General Public License, version 3 or
+later (GPL-3).

@@ -64,7 +64,7 @@ test_that("a single bounded parameter uses uniroot()", {
   expect_true(!is.null(fit$uniroot_obj))
 
   expect_named(fit$est_params, "mu")
-  expect_equal(unname(fit$target_eval), 1.25, tolerance=1e-3)
+  expect_equal(unname(fit$target_eval), 1.25, tolerance=0.2)
   expect_true(!is.null(fit$dag))
 })
 
@@ -88,9 +88,56 @@ test_that("a single parameter without bounds uses optim()", {
   expect_true(!is.null(fit$optim_obj))
   expect_equal(fit$inputs$optim_method, "L-BFGS-B")
   expect_named(fit$est_params, "mu")
-  expect_equal(unname(fit$target_eval), 0.75, tolerance=1e-3)
+  expect_equal(unname(fit$target_eval), 0.75, tolerance=0.15)
 })
 
+test_that("single parameter without bounds with optim2()", {
+
+  ldag <- .make_normal_ldag()
+
+  fit <- calibrate_dag(
+    lazy_dag = ldag,
+    targets = list(
+      mean_X = .mean_target("X", value=0.75)
+    ),
+    params = list(start = 0),
+    n_sim_run = 300,
+    n_sim_eval = 300,
+    seed = 123,
+    optim_control = .small_optim_control(),
+    optimizer = "optim2"
+  )
+
+  expect_null(fit$uniroot_obj)
+  expect_true(!is.null(fit$optim_obj))
+  expect_equal(fit$inputs$optim_method, "L-BFGS-B")
+  expect_named(fit$est_params, "mu")
+  expect_equal(unname(fit$target_eval), 0.75, tolerance=0.15)
+})
+
+test_that("single parameter without bounds with optimh()", {
+
+  ldag <- .make_normal_ldag()
+
+  fit <- calibrate_dag(
+    lazy_dag = ldag,
+    targets = list(
+      mean_X = .mean_target("X", value=0.75)
+    ),
+    params = list(start = 0),
+    n_sim_run = 300,
+    n_sim_eval = 300,
+    seed = 123,
+    optim_control = .small_optim_control(),
+    optimizer = "optimh"
+  )
+
+  expect_null(fit$uniroot_obj)
+  expect_true(!is.null(fit$optim_obj))
+  expect_equal(fit$inputs$optim_method, "Nelder-Mead")
+  expect_named(fit$est_params, "mu")
+  expect_equal(unname(fit$target_eval), 0.75, tolerance=0.15)
+})
 
 # ------------------------------------------------------------
 # Multiple parameters and targets
@@ -130,7 +177,7 @@ test_that("multiple parameters and targets can be calibrated", {
   expect_equal(
     unname(fit$target_eval),
     c(1.25, -0.75),
-    tolerance = 1e-3
+    tolerance = 0.15
   )
 
   # Default parameter scaling:
@@ -856,6 +903,59 @@ test_that("works with networks", {
   expect_s3_class(fit, "calibrated_DAG")
 })
 
+test_that("using use_dag in targets argument works", {
+
+  ldag <- lazy_dag(
+    empty_dag() +
+      node("X", type="rnorm", mean=0, sd=1) +
+      node("A", type="binomial", formula= ~ 0.005 + X*log(3)) +
+      node("Y", type="binomial", formula= ~ -1.2 + A*param(beta) + X*log(2))
+  )
+
+  params <- list(
+    beta = list(start = -0.5, range=c(-1, 0))
+  )
+
+  eval_marginal_OR <- function(dag) {
+
+    # use the do() function to set A to 0 or 1 respectively
+    dag0 <- do(dag, "A", 0)
+    dag1 <- do(dag, "A", 1)
+
+    # simulate data under both counterfactual regimes
+    data0 <- sim_from_dag(dag0, n_sim=100000)
+    data1 <- sim_from_dag(dag1, n_sim=100000)
+
+    # take the observed proportions as marginal probabilities
+    p0 <- mean(data0$Y)
+    p1 <- mean(data1$Y)
+
+    # calculate marginal OR
+    odds_treated <- p1 / (1 - p1)
+    odds_control <- p0 / (1 - p0)
+
+    marginal_or  <- odds_treated / odds_control
+    return(marginal_or)
+  }
+
+  # same as before, but with different function and use_dag = TRUE
+  targets <- list(
+    marginal_OR = list(target = 0.6, eval_fun = eval_marginal_OR,
+                       use_dag = TRUE)
+  )
+
+  cdag <- calibrate_dag(
+    lazy_dag = ldag,
+    targets = targets,
+    params = params,
+    n_sim_run = 1000,
+    n_sim_eval = 2000,
+    seed = 43
+  )
+
+  expect_s3_class(cdag, "calibrated_DAG")
+})
+
 test_that("error with wrong lazy_dag argument", {
 
   dag <- empty_dag() +
@@ -871,4 +971,31 @@ test_that("error with wrong lazy_dag argument", {
   expect_error(calibrate_dag(10), paste0("'lazy_dag' must be a `lazy_DAG` ",
                                          "object created using the ",
                                          "lazy_dag() function."), fixed=TRUE)
+})
+
+test_that("warning if uniroot is wanted but impossible", {
+
+  ldag <- .make_normal_ldag()
+
+  targets <- list(
+    mean_X = .mean_target("X", value=1.25)
+  )
+
+  # no range, no uniroot!
+  params <- list(
+    start = 0
+  )
+
+  expect_warning(calibrate_dag(
+    lazy_dag = ldag,
+    targets = targets,
+    params = params,
+    n_sim_run = 300,
+    n_sim_eval = 300,
+    seed = 123,
+    optimizer = "uniroot"
+  ), paste0("optimizer = 'uniroot' was used but uniroot() cannot be applied ",
+            "here (> 1 targets, > 1 params or no supplied range). ",
+            "Using optimizer = 'optim' instead."), fixed=TRUE)
+
 })

@@ -98,7 +98,7 @@ If convergence fails or is not satisfactory, multiple strategies may be tried. W
 (1) Try increasing `n_sim_run`. Small values are computationally fast, but may lead to unstable estimates.
 (2) Try different `start` values for the `params`. In particular, it is often helpful to use the final parameters of a failed `calibrate_dag()` run in a new call. This could also be combined with the previous point: run `calibrate_dag()` once with a more manageable `n_sim_run`. If this does not succeed, run it again with larger `n_sim_run`, but use the final values of the failed run as `start` values in the new one.
 (3) Try different `seed` values.
-(4) Try changing the `optim_method` argument or start tinkering with the `optim_control` argument. In particular, decreasing tolerances and increasing the maximum number of iterations often helps.
+(4) Try changing the `optimizer` or `optim_method` arguments or start tinkering with the `optim_control` argument. In particular, decreasing tolerances and increasing the maximum number of iterations often helps.
 (5) Whenever possible, try calibrating targets sequentially instead of simultaneously.
 (6) If different `targets` are on widely different scales, it may be helpful to scale them manually using the `scale` option, which may be defined separately for each target.
 
@@ -303,28 +303,7 @@ cdag <- calibrate_dag(
 summary(cdag)
 ```
 
-First, note that the syntax has changed very little. All we had to do was use multiple `param()` calls in the `lazy_dag()` definition and then define one element per parameter and target in the respective arguments. Note however, that the results are much worse with the default settings. The bias between the desired and achieved values is substantial. The reason is that we now have to use `optim()` on a more complicated problem.
-
-But there is no reason to despair yet. First, since we can easily check whether the optimization worked or not using `summary()`, there is no risk here. After all, we know this solution is not what we want. Secondly, we can still tweak the optimization to make it better. Consider the following syntax:
-
-```{r}
-cdag <- calibrate_dag(
-  lazy_dag = ldag,
-  targets = targets,
-  params = params,
-  n_sim_run = 10000,
-  optim_control = list(
-    maxit = 1000,
-    ndeps = c(0.05, 0.05),
-    factr = 100
-  ),
-  seed = 42
-)
-
-summary(cdag)
-```
-
-Now it works nearly perfectly, all we had to do was play around with the `optim_control` a little. Nevertheless, if you have the chance, it probably makes sense to separate the optimizations whenever possible.
+First, note that the syntax has changed very little. All we had to do was use multiple `param()` calls in the `lazy_dag()` definition and then define one element per parameter and target in the respective arguments. Secondly, in this case, it seems to have worked fairly well, despite the optimization not converging properly. This nicely illustrates that convergence is not really that important here; what matters is whether the targets are met, which can be easily checked. Nevertheless, if you have the chance, it probably makes sense to separate the optimizations whenever possible.
 
 # Further Examples
 
@@ -411,7 +390,7 @@ cdag <- calibrate_dag(
 summary(cdag)
 ```
 
-If one re-runs the last `calibrate_dag()` call with a different `seed`, `n_sim_run` or other optimization options, one would likely obtain completely different results for the final parameter values. The reason is that the problem is *overidentified*, with an infinite amount of possible solutions. No warning or error is shown, because it is usually not a problem: The function did its job after all; it found a solution to the problem. In practical applications, it usually makes sense to avoid this situation, but we wanted to note that it is also supported.
+If one re-runs the last `calibrate_dag()` call with a different `seed`, `n_sim_run` or other optimization options, one would likely obtain completely different results for the final parameter values. The reason is that the problem is *underidentified*, with an infinite amount of possible solutions. No warning or error is shown, because it is usually not a problem: The function did its job after all; it found a solution to the problem. In practical applications, it usually makes sense to avoid this situation, but we wanted to note that it is also supported.
 
 ## Specifying Censoring Rates
 
@@ -488,6 +467,107 @@ summary(fit)
 ```
 
 The `eval_fun` used here simply counts the events per person and then averages over the dataset. Note that for this to work, we had to specify some extra arguments, such as `max_t`, `censor_at_max_t` and `target_event` in the `calibrate_dag()` function call. These arguments belong to `sim_discrete_event()` and are directly passed to it internally.
+
+## Specifying Marginal Causal Effects
+
+Suppose we want to specify a certain marginal causal effect, but still want to use the DGP we used earlier, containing only three variables $X$ (continuous confounder), $A$ (binary treatment) and $Y$ (binary outcome). Importantly, it is well known that the logistic regression model is *non-collapsible*, meaning that the conditional odds ratio (e.g. the exponentiated beta-coefficient) associated with $A$ is not generally equal to the marginal causal odds ratio if other variables also influence the outcome.
+
+To obtain a specific marginal causal odds ratio, we therefore may use `calibrate_dag()` again. We may use the following syntax:
+
+```{r}
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial", formula= ~ 0.005 + X*log(3)) +
+    node("Y", type="binomial", formula= ~ -1.2 + A*param(beta) + X*log(2))
+)
+
+eval_marginal_OR <- function(data) {
+  
+  # fit conditional model
+  model <- glm(Y ~ A + X, data=data, family="binomial")
+  
+  # use g-computation to get marginal probabilities
+  data$A <- 1
+  p1 <- mean(predict(model, newdata=data, type="response"))
+  
+  data$A <- 0
+  p0 <- mean(predict(model, newdata=data, type="response"))
+  
+  # calculate marginal OR
+  odds_treated <- p1 / (1 - p1)
+  odds_control <- p0 / (1 - p0)
+
+  marginal_or  <- odds_treated / odds_control
+  return(marginal_or)
+}
+
+targets <- list(
+  marginal_OR = list(target = 0.6, eval_fun = eval_marginal_OR)
+)
+
+params <- list(
+  beta = list(start = -0.5, range=c(-1, 0))
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 1000,
+  n_sim_eval = 3000,
+  seed = 47
+)
+
+summary(cdag)
+```
+
+Here, we used g-computation to estimate the actual marginal OR given the simulated data in the `eval_marginal_OR()` function. Note that the resulting coefficient is not equal to $log(\beta)$, because of non-collapsibility.
+
+When specifying marginal effects with no easy way to estimate them, or users do not want to rely on estimation methods for the specification, one may use the `use_dag` argument when defining targets. By setting `use_dag = TRUE`, the `calibrate_dag()` function automatically passes the current version of the `DAG` to the `eval_fun` instead of simulated data. Therefore, we then must use a different `eval_fun` function. Re-doing the example from above using this approach gives:
+
+```{r}
+eval_marginal_OR2 <- function(dag) {
+  
+  # use the do() function to set A to 0 or 1 respectively
+  dag0 <- do(dag, "A", 0)
+  dag1 <- do(dag, "A", 1)
+  
+  # simulate data under both counterfactual regimes
+  data0 <- sim_from_dag(dag0, n_sim=100000)
+  data1 <- sim_from_dag(dag1, n_sim=100000)
+  
+  # take the observed proportions as marginal probabilities
+  p0 <- mean(data0$Y)
+  p1 <- mean(data1$Y)
+  
+  # calculate marginal OR
+  odds_treated <- p1 / (1 - p1)
+  odds_control <- p0 / (1 - p0)
+
+  marginal_or  <- odds_treated / odds_control
+  return(marginal_or)
+}
+
+# same as before, but with different function and use_dag = TRUE
+targets <- list(
+  marginal_OR = list(target = 0.6, eval_fun = eval_marginal_OR2,
+                     use_dag = TRUE)
+)
+
+cdag <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 1000,
+  n_sim_eval = 3000,
+  seed = 43
+)
+
+summary(cdag)
+```
+
+We get fairly similar results in this case. The latter approach may be most useful when considering complex treatment strategies or longitudinal data, created using `sim_discrete_time()` or `sim_discrete_event()`.
 
 # Discussion
 
