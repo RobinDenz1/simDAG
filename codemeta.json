@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/RobinDenz1/simDAG",
   "issueTracker": "https://github.com/RobinDenz1/siMDAG/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "1.0.1",
+  "version": "1.0.1.9000",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -223,6 +223,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=survival"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "calibrar",
+      "name": "calibrar",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=calibrar"
     }
   ],
   "softwareRequirements": {
@@ -302,7 +314,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2040.877KB",
+  "fileSize": "2160.638KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

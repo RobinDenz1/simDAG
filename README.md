@@ -15,12 +15,12 @@ coverage](https://codecov.io/gh/RobinDenz1/simDAG/graph/badge.svg)](https://app.
 
 # simDAG <img src="man/figures/logo.png" height="240" align="right" />
 
-**Simulate complex data from explicit data-generating processes in R.**
+**Simulate complex data from explicit data-generating processes in R**
 
 `simDAG` is an R package for generating synthetic data from directed
-acyclic graphs (DAGs). Specify how variables are generated and how they
-depend on one another, then simulate datasets from the resulting
-data-generating process (DGP).
+acyclic graphs (DAGs). Users specify how variables are generated and how
+they depend on one another, and may then simulate datasets from the
+resulting data-generating process (DGP).
 
 Beyond ordinary cross-sectional data, `simDAG` supports complex
 longitudinal processes, time-to-event outcomes, censoring, recurrent and
@@ -58,16 +58,14 @@ outcome depend on $X$, and the outcome also depends on treatment.
 library(simDAG)
 
 dag <- empty_dag() +
-  node("X", type = "rnorm", mean = 0, sd = 1) +
-  node("A", type = "binomial",
-       formula = ~ -0.5 + X * 0.6) +
-  node("Y", type = "binomial",
-       formula = ~ -1 + A * 0.7 + X * 0.4)
+  node("X", type="rnorm", mean=0, sd=1) +
+  node("A", type="binomial",
+       formula= ~ -0.5 + X * 0.6) +
+  node("Y", type= "binomial",
+       formula= ~ -1 + A * 0.7 + X * 0.4)
 
 set.seed(43)
-
-data <- sim_from_dag(dag, n_sim = 10000)
-
+data <- sim_from_dag(dag, n_sim=10000)
 head(data)
 #>              X      A      Y
 #>          <num> <lgcl> <lgcl>
@@ -82,7 +80,7 @@ head(data)
 The DAG below represents the data-generating process: $X$ influences
 both treatment ($A$) and outcome ($Y$), while $A$ also influences $Y$.
 
-<img src="man/figures/README-dag-plot-1.png" width="65%" style="display: block; margin: auto;" />
+<img src="man/figures/README-dag-plot-1.png" width="45%" height="45%" style="display: block; margin: auto;" />
 
 Each node is generated according to its specified distribution or
 conditional model. The order of the nodes and their dependencies define
@@ -92,14 +90,18 @@ processes.
 
 ## What can you simulate?
 
-| Use case                                        | Main functionality                         |
-|-------------------------------------------------|--------------------------------------------|
-| Cross-sectional data from a DAG                 | `sim_from_dag()`                           |
-| Longitudinal data with time-varying variables   | `sim_discrete_time()`                      |
-| Continuous-time event-driven data               | `sim_discrete_event()`                     |
-| Data with dependencies between individuals      | Network functionality                      |
-| Data with custom conditional models             | Custom node types and generation functions |
-| Data with prespecified marginal characteristics | `calibrate_dag()` (development version)    |
+| Use case                                        | Main functionality                             |
+|-------------------------------------------------|------------------------------------------------|
+| Cross-sectional data from a DAG                 | `sim_from_dag()`                               |
+| Longitudinal data with time-varying variables   | `sim_discrete_time()`                          |
+| Continuous-time event-driven data               | `sim_discrete_event()`                         |
+| Data with dependencies between individuals      | `network()` functionality                      |
+| Data with custom conditional models             | Custom `node()` types and generation functions |
+| Data with prespecified marginal characteristics | `calibrate_dag()` (development version)        |
+
+The package implements many node types for user convenience, including
+linear-, logistic-, Poisson- and Cox-, regression models, among many
+others. See `node()` for an overview.
 
 ### Cross-sectional data
 
@@ -154,11 +156,11 @@ and the outcome.
 ``` r
 ldag <- lazy_dag(
   empty_dag() +
-    node("X", type = "rnorm", mean = 0, sd = 1) +
-    node("A", type = "binomial",
-         formula = ~ -0.5 + X * 0.8) +
-    node("Y", type = "binomial",
-         formula = ~ param(intercept_Y) +
+    node("X", type="rnorm", mean=0, sd=1) +
+    node("A", type="binomial",
+         formula= ~ -0.5 + X * 0.8) +
+    node("Y", type= "binomial",
+         formula= ~ param(intercept_Y) +
            A * 0.7 + X * 0.4)
 )
 

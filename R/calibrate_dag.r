@@ -1,7 +1,6 @@
 
 ## automatically find suitable parameters that result in some user-defined
 ## target quantities to be satisfied in the resulting data
-#' @importFrom data.table fcase
 #' @export
 calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
                           n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
