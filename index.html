@@ -73,8 +73,8 @@
 <img src="logo.png" class="logo" alt=""><h1 id="simdag-">simDAG <a class="anchor" aria-label="anchor" href="#simdag-"></a>
 </h1>
 </div>
-<p><strong>Simulate complex data from explicit data-generating processes in R.</strong></p>
-<p><code>simDAG</code> is an R package for generating synthetic data from directed acyclic graphs (DAGs). Specify how variables are generated and how they depend on one another, then simulate datasets from the resulting data-generating process (DGP).</p>
+<p><strong>Simulate complex data from explicit data-generating processes in R</strong></p>
+<p><code>simDAG</code> is an R package for generating synthetic data from directed acyclic graphs (DAGs). Users specify how variables are generated and how they depend on one another, and may then simulate datasets from the resulting data-generating process (DGP).</p>
 <p>Beyond ordinary cross-sectional data, <code>simDAG</code> supports complex longitudinal processes, time-to-event outcomes, censoring, recurrent and competing events, and dependencies between individuals through networks. It additionally implements an enhanced <code>formula</code> interface, allowing specifications of arbitrary interactions, non-linear effects, dependencies on categorical variables and random effects. The development version also supports calibrating conditional model parameters to achieve user-defined target characteristics, including marginal effects.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -95,16 +95,14 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RobinDenz1/simDAG" class="external-link">simDAG</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type <span class="op">=</span> <span class="st">"rnorm"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
-<span>       formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
-<span>       formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">A</span> <span class="op">*</span> <span class="fl">0.7</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.4</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type<span class="op">=</span><span class="st">"binomial"</span>,</span>
+<span>       formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>       formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="va">A</span> <span class="op">*</span> <span class="fl">0.7</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.4</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
-<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sim_from_DAG.html">sim_from_dag</a></span><span class="op">(</span><span class="va">dag</span>, n_sim<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              X      A      Y</span></span>
 <span><span class="co">#&gt;          &lt;num&gt; &lt;lgcl&gt; &lt;lgcl&gt;</span></span>
@@ -115,7 +113,7 @@
 <span><span class="co">#&gt; 5: -0.90409807  FALSE   TRUE</span></span>
 <span><span class="co">#&gt; 6: -0.27743280   TRUE  FALSE</span></span></code></pre></div>
 <p>The DAG below represents the data-generating process: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math> influences both treatment (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>) and outcome (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>), while <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math> also influences <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>.</p>
-<p><img src="reference/figures/README-dag-plot-1.png" width="65%" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-dag-plot-1.png" width="45%" height="45%" style="display: block; margin: auto;"></p>
 <p>Each node is generated according to its specified distribution or conditional model. The order of the nodes and their dependencies define the data-generating process. The same approach extends to much more complex DGPs, including custom generation functions and longitudinal processes.</p>
 </div>
 <div class="section level2">
@@ -123,8 +121,8 @@
 </h2>
 <table class="table">
 <colgroup>
-<col width="52%">
-<col width="47%">
+<col width="50%">
+<col width="49%">
 </colgroup>
 <thead><tr>
 <th>Use case</th>
@@ -145,11 +143,12 @@
 </tr>
 <tr>
 <td>Data with dependencies between individuals</td>
-<td>Network functionality</td>
+<td>
+<code><a href="reference/network.html">network()</a></code> functionality</td>
 </tr>
 <tr>
 <td>Data with custom conditional models</td>
-<td>Custom node types and generation functions</td>
+<td>Custom <code><a href="reference/node.html">node()</a></code> types and generation functions</td>
 </tr>
 <tr>
 <td>Data with prespecified marginal characteristics</td>
@@ -158,6 +157,7 @@
 </tr>
 </tbody>
 </table>
+<p>The package implements many node types for user convenience, including linear-, logistic-, Poisson- and Cox-, regression models, among many others. See <code><a href="reference/node.html">node()</a></code> for an overview.</p>
 <div class="section level3">
 <h3 id="cross-sectional-data">Cross-sectional data<a class="anchor" aria-label="anchor" href="#cross-sectional-data"></a>
 </h3>
@@ -187,11 +187,11 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ldag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lazy_dag.html">lazy_dag</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="reference/empty_dag.html">empty_dag</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type <span class="op">=</span> <span class="st">"rnorm"</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
-<span>         formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type <span class="op">=</span> <span class="st">"binomial"</span>,</span>
-<span>         formula <span class="op">=</span> <span class="op">~</span> <span class="fu">param</span><span class="op">(</span><span class="va">intercept_Y</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"X"</span>, type<span class="op">=</span><span class="st">"rnorm"</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"A"</span>, type<span class="op">=</span><span class="st">"binomial"</span>,</span>
+<span>         formula<span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="reference/node.html">node</a></span><span class="op">(</span><span class="st">"Y"</span>, type<span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>         formula<span class="op">=</span> <span class="op">~</span> <span class="fu">param</span><span class="op">(</span><span class="va">intercept_Y</span><span class="op">)</span> <span class="op">+</span></span>
 <span>           <span class="va">A</span> <span class="op">*</span> <span class="fl">0.7</span> <span class="op">+</span> <span class="va">X</span> <span class="op">*</span> <span class="fl">0.4</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>

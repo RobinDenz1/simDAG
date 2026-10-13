@@ -154,10 +154,10 @@ This function tries to help find suitable conditional parameters, when
 the goal is to fix marginal ones. Instead of defining all conditional
 parameters directly, users may specify arbitrary (potentially marginal)
 global parameters instead and to leave the conditional parameters
-partially unspecified. This function then tries to *calibrate* the
-unspecified parameters, so that the global targets are met. The
-resulting `DAG` can then be used to simulate the data with the desired
-global target properties using
+partially unspecified. It then tries to *calibrate* the unspecified
+parameters, so that the global targets are met. The resulting `DAG` can
+then be used to simulate the data with the desired global target
+properties using
 [`sim_from_dag`](https://robindenz1.github.io/simDAG/reference/sim_from_DAG.md),
 [`sim_discrete_time`](https://robindenz1.github.io/simDAG/reference/sim_discrete_time.md)
 or
@@ -179,14 +179,14 @@ suitable target function would simply be `function(data) {mean(data$Y)}`
 with an associated `target = 0.5`. Additionally, users should give rough
 ranges in which the unspecified parameters may lie.
 
-Internally, root finding (if 1 target and 1 unspecified parameter) or
-numerical optimization (all other cases) is then used to find suitable
-values for the unspecified parameters that satisfy the target properties
-defined by the user. In a nutshell, the function simply simulates a
-large dataset from a given parameter combination, checks the resulting
-target properties and tries again. This idea, although applied in a less
-general setting, is also described by Austin and Stafford (2008) and
-Austin (2023).
+Internally, root finding (if 1 target and 1 unspecified parameter, with
+defined `range`s) or numerical optimization (all other cases) is then
+used to find suitable values for the unspecified parameters that satisfy
+the target properties defined by the user. In a nutshell, the function
+simply simulates a large dataset from a given parameter combination,
+checks the resulting target properties and tries again. This idea,
+although applied in a less general setting, is also described by Austin
+and Stafford (2008) and Austin (2023).
 
 ***Currently supported features***:
 
@@ -194,12 +194,13 @@ Users may use custom functions to define the target properties, so there
 are very few limits to what can be specified. Additionally, any
 parameter in a valid expression that defines a `DAG` may be left
 unspecified. Furthermore, there is no limit put on either the number of
-target properties (denoted \\t\\) or the number of unspecified
+target properties (denoted \\m\\) or the number of unspecified
 parameters (denoted \\p\\), although some care needs to be exercised. If
-\\p \> t\\, there may be multiple different solutions, which is usually
-not problematic, but should be noted. DAGs of any kind (using
-discrete-time varying covariates, continuous-time varying covariates,
-network dependencies, ...) may be used here.
+\\p \> m\\, there may be multiple different solutions, which is usually
+not problematic, but should be noted. If \\m \> p\\, there likely aren't
+any solutions, unless some `targets` are highly correlated. DAGs of any
+kind (using discrete-time varying covariates, continuous-time varying
+covariates, network dependencies, ...) may be used here.
 
 ***Limitations***:
 
@@ -210,9 +211,9 @@ much better than manually searching for a solution. Furthermore, users
 should keep in mind that even if a solution exists and the numeric
 optimization is able to converge to it, that the results are only
 approximate. In most cases, this should be completely fine for
-Monte-Carlo simulation studies. However, if exact simulation
-specifications of marginal parameters are required, this may not be
-sufficient.
+Monte-Carlo simulation studies. However, in some edge cases, if exact
+simulation specifications of marginal parameters are required, this may
+not be sufficient.
 
 ***Convergence***:
 
