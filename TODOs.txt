@@ -4,6 +4,7 @@
 calibrate_dag()
 	- add marginal effect specification with longitudinal data in v_calibrate_dag vignette
 	- allow simpler input for "targets" argument
+	- fix passing of arguments to uniroot(), sim_n_datasets() etc.
 
 ####### New Features: #######
 

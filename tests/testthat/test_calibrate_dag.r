@@ -261,13 +261,20 @@ test_that("target scales are used in the default objective", {
   residuals <- (achieved - c(mean_X = 1, mean_Z = -1)) /
     c(mean_X = 0.25, mean_Z = 1)
 
+  target_values <- c(1, -1)
+  target_scales <- c(0.25, 1)
+  names(target_values) <- c("mean_X", "mean_Z")
+  names(target_scales) <- c("mean_X", "mean_Z")
+
   obj <- get_objective(
     params = params,
     targets = targets,
     lazy_dag = ldag,
     n_sim = 200,
     seed = 123,
-    mode = "loss"
+    mode = "loss",
+    target_values = target_values,
+    target_scales = target_scales
   )
 
   expect_equal(obj, sum(residuals^2), tolerance=1e-12)
@@ -295,6 +302,11 @@ test_that("custom objectives receive scaled residuals", {
   residuals <- (achieved - c(mean_X = 1, mean_Z = -1)) /
     c(mean_X = 0.25, mean_Z = 2)
 
+  target_values <- c(1, -1)
+  target_scales <- c(0.25, 2)
+  names(target_values) <- c("mean_X", "mean_Z")
+  names(target_scales) <- c("mean_X", "mean_Z")
+
   absolute_loss <- get_objective(
     params = params,
     targets = targets,
@@ -302,7 +314,9 @@ test_that("custom objectives receive scaled residuals", {
     n_sim = 200,
     seed = 123,
     objective_fun = function(errors) sum(abs(errors)),
-    mode = "loss"
+    mode = "loss",
+    target_values = target_values,
+    target_scales = target_scales
   )
 
   expect_equal(absolute_loss, sum(abs(residuals)), tolerance=1e-12)
@@ -326,13 +340,20 @@ test_that("the root objective returns a signed residual", {
     seed = 123
   )
 
+  target_values <- c(0.5)
+  target_scales <- c(0.25)
+  names(target_values) <- c("mean_X")
+  names(target_scales) <- c("mean_X")
+
   residual <- get_objective(
     params = params,
     targets = targets,
     lazy_dag = ldag,
     n_sim = 200,
     seed = 123,
-    mode = "root"
+    mode = "root",
+    target_values = target_values,
+    target_scales = target_scales
   )
 
   expect_equal(as.numeric(residual), (as.numeric(achieved) - 0.5) / 0.25,
@@ -347,6 +368,11 @@ test_that("custom objectives must return a finite scalar", {
     mean_X = .mean_target("X", value = 0.5)
   )
 
+  target_values <- c(0.5)
+  target_scales <- c(1)
+  names(target_values) <- c("mean_X")
+  names(target_scales) <- c("mean_X")
+
   expect_error(
     get_objective(
       params = c(mu = 0),
@@ -354,7 +380,10 @@ test_that("custom objectives must return a finite scalar", {
       lazy_dag = ldag,
       n_sim = 100,
       seed = 123,
-      objective_fun = function(errors) c(1, 2)
+      objective_fun = function(errors) c(1, 2),
+      target_values = target_values,
+      target_scales = target_scales,
+      mode = "loss"
     ), "one finite numeric value"
   )
 
@@ -365,7 +394,10 @@ test_that("custom objectives must return a finite scalar", {
       lazy_dag = ldag,
       n_sim = 100,
       seed = 123,
-      objective_fun = function(errors) NA_real_
+      objective_fun = function(errors) NA_real_,
+      target_values = target_values,
+      target_scales = target_scales,
+      mode = "loss"
     ), "one finite numeric value"
   )
 })
@@ -375,17 +407,24 @@ test_that("invalid target scales are rejected", {
   ldag <- .make_normal_ldag()
 
   targets <- list(
-    mean_X = .mean_target("X", value = 0.5, scale = 0)
+    mean_X = .mean_target("X", value=1.25, scale=0)
+  )
+
+  # flat, non-nested specification for one parameter
+  params <- list(
+    start = 0,
+    range = c(-5, 5)
   )
 
   expect_error(
-    get_objective(
-      params = c(mu = 0),
-      targets = targets,
+    calibrate_dag(
       lazy_dag = ldag,
-      n_sim = 100,
+      targets = targets,
+      params = params,
+      n_sim_run = 300,
+      n_sim_eval = 300,
       seed = 123,
-      mode = "loss"
+      optim_control = .small_optim_control()
     ),
     "scales must be finite and strictly positive"
   )

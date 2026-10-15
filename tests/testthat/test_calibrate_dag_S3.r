@@ -168,3 +168,82 @@ test_that("explicit optimization method and scalar evaluation count", {
     summary(x)
   })
 })
+
+## plot method
+set.seed(123444)
+
+ldag <- lazy_dag(
+  empty_dag() +
+    node("X", type="rnorm") +
+    node("A", type="binomial",
+         formula= ~ param(intercept_A) + X * 0.5) +
+    node("Y", type="binomial",
+         formula= ~ param(intercept_Y) + A * 0.7 + X * 0.4)
+)
+
+targets <- list(
+  prevalence_A = list(
+    target = 0.4,
+    eval_fun = function(data) mean(data$A),
+    scale = 0.5
+  ),
+  prevalence_Y = list(
+    target = 0.3,
+    eval_fun = function(data) mean(data$Y)
+  )
+)
+
+params <- list(
+  intercept_A = list(start = 0),
+  intercept_Y = list(start = 0)
+)
+
+fit <- calibrate_dag(
+  lazy_dag = ldag,
+  targets = targets,
+  params = params,
+  n_sim_run = 2000,
+  n_sim_eval = 1000,
+  n_reps_eval = 10,
+  seed = 123,
+  optim_control = list(
+    maxit = 200,
+    trace = 0,
+    ndeps = c(0.05, 0.05),
+    factr = 100
+  )
+)
+
+test_that("plot, defaults", {
+  expect_snapshot_output(plot(fit))
+})
+
+test_that("plot, type='targets'", {
+  expect_snapshot_output(plot(fit, type="targets"))
+})
+
+test_that("plot, type='scaled_targets'", {
+  expect_snapshot_output(plot(fit, type="scaled_targets"))
+})
+
+test_that("plot, type='scaled_errors'", {
+  expect_snapshot_output(plot(fit, type="scaled_errors"))
+})
+
+test_that("plot, errors, but no line at 0", {
+  expect_snapshot_output(plot(fit, type="errors", line_at_0=FALSE))
+})
+
+test_that("plot, type='scaled_errors'", {
+  expect_snapshot_output(plot(fit, type="errors", outliers=FALSE))
+})
+
+test_that("error on wrong type", {
+  expect_error(plot(fit, type="ahhh"))
+})
+
+# NOTE: keep this last
+test_that("error if n_reps_eval < 2", {
+  fit$inputs$n_reps_eval <- 1
+  expect_error(plot(fit))
+})

@@ -38,6 +38,7 @@ reference:
       desc: Automatically select suitable parameters in DAGs
     - contents:
       - calibrate_dag
+      - plot.calibrated_DAG
       - dag_from_data
       
     - title: Simulation

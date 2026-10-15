@@ -104,6 +104,12 @@ If convergence fails or is not satisfactory, multiple strategies may be tried. W
 
 Although not perfect, this procedure is substantially less cumbersome than dealing with regular convergence problems, because in this case the solution is known, e.g. we can directly tell whether the algorithm found a suitable solution or not. If neither of these things work, it may be possible that (1) there is no solution given the parameters, DGP and `targets` or (2) the problem is too complex for simple numerical optimization.
 
+## Evaluation options
+
+There are two ways to evaluate how well the found parameters produce the desired `targets`. First, one may generate a single very large dataset using the determined parameters and estimate the `targets` on that dataset. If the dataset is sufficiently large, this will generally work well for point estimation. However, it may then not be clear whether the observed differences are due to sampling error or because the method actually slightly missed its `targets`. In most cases, the distinction does not really matter: as long as the target is close enough, there is no need to investigate further.
+
+However, if users want substantial accuracy, it may make more sense to perform the evaluation on many generated datasets independently, estimating the `targets` on each dataset. It is then possible to inspect the distribution of the differences between estimated and desired values for convergence. This may be done by setting the `n_reps_eval` argument and using the associated `plot()` method afterwards. Below we focus on the first kind of evaluation.
+
 # A Worked Example
 
 ## Setup

@@ -199,3 +199,27 @@
         Simulations:  10,000 optimization; 1e+05 final evaluation
       ────────────────────────────────────────────────────────────
 
+# plot, defaults
+
+    
+
+# plot, type='targets'
+
+    
+
+# plot, type='scaled_targets'
+
+    
+
+# plot, type='scaled_errors'
+
+    
+
+---
+
+    
+
+# plot, errors, but no line at 0
+
+    
+

@@ -9,7 +9,8 @@ This function may be used to calibrate certain parameters in a partially specifi
 }
 \usage{
 calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
-              n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
+              n_sim_eval=1000000, n_reps_eval=1,
+              seed=stats::runif(1, 0, 100),
               optimizer="auto", optim_method=NULL,
               optim_control=list(maxit=200), objective_fun=NULL,
               ...)
@@ -34,10 +35,13 @@ Parameter specifications may be supplied as named lists or named numeric vectors
 A single positive number, specifying the sample size that should be used when evaluating the \code{targets} during optimization. Higher numbers lead to more stable, reliable and precise estimates, but may take much longer to run. It often makes sense to use a smaller number first, to adjust the starting values with the (perhaps non-converged) results and to then re-run \code{calibrate_dag()} with a much higher value for more precise results.
   }
   \item{n_sim_eval}{
-A single positive number, specifying the sample size used when evaluating the \code{targets} after optimization has finished. This is primarily done to estimate how well the optimization worked and should thus always be a fairly large number for precise results.
+A single positive number, specifying the sample size used when evaluating the \code{targets} after optimization has finished. This is primarily done to estimate how well the optimization worked. To obtain reliable and precise results, it should either be a fairly large number with a single simulation repetition (e.g. \code{n_reps_eval=1}), or a moderate number with a large number of repetitions. The latter has the advantage that sampling distributions can be plotted and confidence intervals can be estimated, but it comes at the cost of higher computation time.
+  }
+  \item{n_reps_eval}{
+A single positive number, specifying how many simulation repetitions should be performed when evaluating the final parameter values. See \code{n_sim_eval}.
   }
   \item{seed}{
-A random number generator seed. If not \code{NULL}, this seed is used on every single evaluation of the underlying changing \code{DAG}, eliminating some random sampling variation. The only exception is the final evaluation using a sample of size \code{n_sim_eval}, which instead uses \code{seed + 1} (if possible), to make the evaluation independent of the optimization.
+A random number generator seed. If not \code{NULL}, this seed is used on every single evaluation of the underlying changing \code{DAG}, eliminating some random sampling variation. The only exception is the final evaluation using a sample of size \code{n_sim_eval}, which instead uses \code{seed + 1} (if possible), to make the evaluation independent of the optimization. Set to \code{NULL} to use an independent dataset during each optimization iteration instead.
   }
   \item{optimizer}{
 A single character string, specifying which optimizer should be used. Allowed values are: \code{"uniroot"} to use \code{\link[stats]{uniroot}}, \code{"optim"} to use \code{\link[stats]{optim}}, \code{"optim2"} to use the \code{\link[calibrar]{optim2}} function from the \pkg{calibrar} package, \code{"optimh"} to use the \code{\link[calibrar]{optimh}} function from the \pkg{calibrar} package and \code{"auto"} (default), which is equal to \code{"uniroot"} whenever possible (e.g. whenever there is one target, one free parameter and defined bounds on that parameter) and equal to \code{"optim"} otherwise.
@@ -69,6 +73,8 @@ Instead of defining a fully specified \code{DAG}, users should define only a par
 
 Internally, root finding (if 1 target and 1 unspecified parameter, with defined \code{range}s) or numerical optimization (all other cases) is then used to find suitable values for the unspecified parameters that satisfy the target properties defined by the user. In a nutshell, the function simply simulates a large dataset from a given parameter combination, checks the resulting target properties and tries again. This idea, although applied in a less general setting, is also described by Austin and Stafford (2008) and Austin (2023).
 
+To inspect the found parameter values and how well those produce the desired targets, users may use the associated \code{summary()} method (see examples). If \code{n_reps_eval > 1}, the associated \code{\link{plot.calibrated_DAG}} method may also be used. To simulate data directly using the resulting parameters, users may use the \code{dag} object returned in the output.
+
 \strong{\emph{Currently supported features}}:
 
 Users may use custom functions to define the target properties, so there are very few limits to what can be specified. Additionally, any parameter in a valid expression that defines a \code{DAG} may be left unspecified. Furthermore, there is no limit put on either the number of target properties (denoted \eqn{m}) or the number of unspecified parameters (denoted \eqn{p}), although some care needs to be exercised. If \eqn{p > m}, there may be multiple different solutions, which is usually not problematic, but should be noted. If \eqn{m > p}, there likely aren't any solutions, unless some \code{targets} are highly correlated. DAGs of any kind (using discrete-time varying covariates, continuous-time varying covariates, network dependencies, ...) may be used here.
@@ -89,7 +95,8 @@ Returns a \code{calibrated_DAG} object. This object is basically just a \code{li
   \item{\code{inputs}: A list containing all user inputs.}
   \item{\code{dag}: A fully specified \code{DAG}, using the best sets of parameter values found to satisfy the user targets. This \code{DAG} may be directly used for simulation purposes.}
   \item{\code{est_params}: The final parameter values after optimization.}
-  \item{\code{target_eval}: A final estimate of the \code{targets}, evaluated on the final \code{DAG}. If the function call was successful, these should be very close to the desired target parameters.}
+  \item{\code{target_eval}: A final estimate of the \code{targets}, evaluated on the final \code{DAG}. If the function call was successful, these should be very close to the desired target parameters. If \code{n_reps_eval > 1}, these correspond to the average over all simulation repetitions.}
+  \item{\code{d_target_eval}: If \code{n_reps_eval > 1} was used, this object includes three \code{data.table}s, including the estimated targets on each simulation run, the differences to the desired values and the scaled differences.}
   \item{\code{optim_obj}: If \code{\link[stats]{optim}}, \code{\link[calibrar]{optim2}} or \code{\link[calibrar]{optimh}} was used, the resulting object from that function call.}
   \item{\code{uniroot}: If \code{\link[stats]{uniroot}} was used, the resulting object from that function call.}
 }

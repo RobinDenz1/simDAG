@@ -80,6 +80,16 @@ head(data)
 The DAG below represents the data-generating process: $X$ influences
 both treatment ($A$) and outcome ($Y$), while $A$ also influences $Y$.
 
+``` r
+plot(
+  dag,
+  layout = "in_circle",
+  node_size = 0.3,
+  node_fill = "grey85",
+  node_text_fontface = "bold"
+)
+```
+
 <img src="man/figures/README-dag-plot-1.png" width="45%" height="45%" style="display: block; margin: auto;" />
 
 Each node is generated according to its specified distribution or

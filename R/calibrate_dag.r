@@ -3,7 +3,8 @@
 ## target quantities to be satisfied in the resulting data
 #' @export
 calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
-                          n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
+                          n_sim_eval=1000000, n_reps_eval=1,
+                          seed=stats::runif(1, 0, 100),
                           optimizer="auto", optim_method=NULL,
                           optim_control=list(maxit=200), objective_fun=NULL,
                           ...) {
@@ -42,7 +43,17 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     FUN.VALUE=numeric(1)
   )
 
-  has_finite_bounds <- any(is.finite(lower) | is.finite(upper))
+  # extract target values
+  target_values <- vapply(
+    X=targets, FUN=function(x) {as.numeric(x$target)}, FUN.VALUE=numeric(1)
+  )
+
+  # extract target scales, with default scale = 1
+  target_scales <- vapply(X=targets, FUN=get_target_scale, FUN.VALUE=numeric(1))
+
+  if (any(!is.finite(target_scales) | target_scales <= 0)) {
+    stop("Target scales must be finite and strictly positive.", call.=FALSE)
+  }
 
   # automatically use uniroot() for the simple, bounded,
   # single-parameter/single-target case under optimizer = "auto"
@@ -83,6 +94,8 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
       n_sim = n_sim_run,
       seed = seed,
       mode = "root",
+      target_values = target_values,
+      target_scales = target_scales,
       ...
     )
 
@@ -96,7 +109,7 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
       requireNamespace("calibrar", quietly=TRUE)
     }
 
-    # default to L-BFGS-B, but permit other optim() methods.
+    # default to L-BFGS-B, but permit other optim() methods
     if (is.null(optim_method) && optimizer %in% c("optim", "optim2")) {
       method <- "L-BFGS-B"
     } else if (is.null(optim_method) && optimizer=="optimh") {
@@ -105,9 +118,9 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
       method <- optim_method
     }
 
-    # methods other than L-BFGS-B and Brent cannot enforce bounds.
-    if (has_finite_bounds && !method %in% c("L-BFGS-B", "Brent") &&
-        optimizer=="optim") {
+    # methods other than L-BFGS-B and Brent cannot enforce bounds
+    if ((any(is.finite(lower) | is.finite(upper))) &&
+        !method %in% c("L-BFGS-B", "Brent") && optimizer=="optim") {
       stop("The selected method `", method, "` does not support parameter ",
            "bounds.", call.=FALSE)
     }
@@ -128,7 +141,9 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
       lazy_dag = lazy_dag,
       targets = targets,
       objective_fun = objective_fun,
-      mode = "loss"
+      mode = "loss",
+      target_values = target_values,
+      target_scales = target_scales
     )
 
     if (method %in% c("L-BFGS-B", "Brent")) {
@@ -155,6 +170,9 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     }
   }
 
+  # creation of final DAG
+  dag <- set_lazy_dag(lazy_dag, params=est_params)
+
   # independent, higher-precision target evaluation
   if (!is.null(seed)) {
     seed_eval <- seed + 1
@@ -162,25 +180,42 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     seed_eval <- NULL
   }
 
-  target_eval <- estimate_targets(
-    lazy_dag = lazy_dag,
-    params = est_params,
-    targets = targets,
-    n_sim = n_sim_eval,
-    seed = seed_eval,
-    ...
-  )
-
-  # creation of final DAG
-  dag <- set_lazy_dag(lazy_dag, params=est_params)
+  # using a single large evaluation
+  if (n_reps_eval==1) {
+    target_eval <- estimate_targets(
+      lazy_dag = lazy_dag,
+      params = est_params,
+      targets = targets,
+      n_sim = n_sim_eval,
+      seed = seed_eval,
+      ...
+    )
+    d_target_eval <- NULL
+  # performing an evaluation Monte-Carlo style
+  } else {
+    ldata <- sim_n_datasets(dag=dag, n_sim=n_sim_eval, n_repeats=n_reps_eval,
+                            seed=seed_eval, ...)
+    target_eval_reps <- lapply(X=ldata, FUN=apply_target_funs, targets=targets,
+                               real_dag=dag)
+    d_target_eval <- get_target_evaluation(
+      target_eval_reps = target_eval_reps,
+      targets = targets,
+      target_values = target_values,
+      target_scales = target_scales
+    )
+    target_eval <- colMeans(d_target_eval$d_target)
+  }
 
   # given user inputs
   inputs <- list(
     lazy_dag = lazy_dag,
     params = params,
     targets = targets,
+    target_values = target_values,
+    target_scales = target_scales,
     n_sim_run = n_sim_run,
     n_sim_eval = n_sim_eval,
+    n_reps_eval = n_reps_eval,
     seed = seed,
     optimizer = optimizer,
     optim_control = optim_control,
@@ -194,7 +229,8 @@ calibrate_dag <- function(lazy_dag, targets, params, n_sim_run=100000,
     est_params = est_params,
     optim_obj = optim_obj,
     uniroot_obj = uniroot_obj,
-    target_eval = target_eval
+    target_eval = target_eval,
+    d_target_eval = d_target_eval
   )
 
   class(out) <- "calibrated_DAG"
@@ -210,6 +246,51 @@ parscale_default <- function(x) {
   } else {
     out <- max(1, abs(x$start))
   }
+  return(out)
+}
+
+## extract scale from element in target list and set to 1 if not found
+get_target_scale <- function(x) {
+  if (is.null(x$scale)) {
+    out <- 1
+  } else {
+    out <- as.numeric(x$scale)
+  }
+  return(out)
+}
+
+## given a list of target evaluations, create three output data.tables
+#' @importFrom data.table rbindlist
+#' @importFrom data.table copy
+#' @importFrom data.table set
+get_target_evaluation <- function(target_eval_reps, targets, target_values,
+                                  target_scales) {
+
+  # get data.table of results
+  d_target <- rbindlist(lapply(target_eval_reps, as.list))
+  colnames(d_target) <- names(targets)
+
+  # get errors
+  d_target_errors <- copy(d_target)
+
+  for (nm in names(target_values)) {
+    set(d_target_errors, j=nm,
+        value=d_target_errors[[nm]] - target_values[[nm]])
+  }
+
+  # get scaled errors
+  d_target_scaled_errors <- copy(d_target_errors)
+
+  for (nm in names(target_values)) {
+    set(d_target_scaled_errors, j=nm,
+        value=d_target_scaled_errors[[nm]] / target_scales[[nm]])
+  }
+
+  out <- list(
+    d_target = d_target,
+    d_target_errors = d_target_errors,
+    d_target_scaled_errors = d_target_scaled_errors
+  )
   return(out)
 }
 
@@ -229,6 +310,15 @@ estimate_targets <- function(lazy_dag, params, targets, n_sim, seed, ...) {
                          seed=seed, ...)[[1]]
 
   # evaluate all target functions
+  out <- apply_target_funs(data=data, targets=targets, real_dag=real_dag)
+
+  return(out)
+}
+
+## given data and a list of targets, apply the contained target functions
+## to the data and return a numeric vector
+apply_target_funs <- function(data, targets, real_dag) {
+
   out <- numeric(length(targets))
   for (i in seq_len(length(targets))) {
     if (!is.null(targets[[i]]$use_dag) && targets[[i]]$use_dag) {
@@ -244,10 +334,9 @@ estimate_targets <- function(lazy_dag, params, targets, n_sim, seed, ...) {
 ## calculates the objective function that we use to find the solution
 ## in the later optim() call
 get_objective <- function(params, targets, lazy_dag, n_sim, seed,
-                          objective_fun=NULL,
-                          mode=c("loss", "root"), ...) {
+                          objective_fun=NULL, target_values, target_scales,
+                          mode, est_targets=NULL, ...) {
 
-  mode <- match.arg(mode)
 
   est_targets <- estimate_targets(
     lazy_dag = lazy_dag,
@@ -258,23 +347,8 @@ get_objective <- function(params, targets, lazy_dag, n_sim, seed,
     ...
   )
 
-  target_values <- vapply(
-    X=targets, FUN=function(x) {as.numeric(x$target)}, FUN.VALUE=numeric(1)
-  )
-
-  # default scale = 1
-  scales <- vapply(
-    X=targets, FUN=function(x) {
-      if (is.null(x$scale)) 1 else as.numeric(x$scale)
-    }, FUN.VALUE=numeric(1)
-  )
-
-  if (any(!is.finite(scales) | scales <= 0)) {
-    stop("Target scales must be finite and strictly positive.", call.=FALSE)
-  }
-
   errors <- est_targets - target_values
-  scaled_errors <- errors / scales
+  scaled_errors <- errors / target_scales
 
   # signed residual required by uniroot()
   if (mode == "root") {

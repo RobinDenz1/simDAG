@@ -267,3 +267,72 @@ print.calibrated_DAG <- function(x, ...) {
 
   invisible(x)
 }
+
+## S3 plot method for calibrated_DAG object
+#' @importFrom data.table melt
+#' @importFrom data.table merge
+#' @importFrom data.table :=
+#' @export
+plot.calibrated_DAG <- function(x, type="errors", xlab=NULL, ylab="auto",
+                                line_at_0=TRUE, ...) {
+
+  value <- variable <- NULL
+
+  requireNamespace("ggplot2", quietly=TRUE)
+
+  if (x$inputs$n_reps_eval==1) {
+    stop("The plot() method may only be used if n_reps_eval > 1 was used in",
+         " the original calibrate_dag() call.", call.=FALSE)
+  }
+
+  # choose what to plot
+  if (type=="targets" | type=="scaled_targets") {
+    plotdata <- x$d_target_eval$d_target
+  } else if (type=="errors") {
+    plotdata <- x$d_target_eval$d_target_errors
+  } else if (type=="scaled_errors") {
+    plotdata <- x$d_target_eval$d_target_scaled_errors
+  } else {
+    stop("'type' must be either 'targets', 'scaled_targets', 'errors', or",
+         " 'scaled_errors', not ", type, ".", call.=FALSE)
+  }
+
+  # transform to long-format
+  plotdata <- melt.data.table(plotdata, measure.vars=colnames(plotdata))
+
+  # apply target scaling if specified
+  if (type=="scaled_targets" && !all(x$inputs$target_scales==1)) {
+    d_scales <- data.table(variable=names(x$inputs$targets),
+                           scale=x$inputs$target_scales)
+    plotdata <- merge(plotdata, d_scales, by="variable", all.x=TRUE)
+    plotdata[, value := value / scale]
+  }
+
+  # default ylab
+  if (ylab=="auto") {
+    ylab <- switch(
+      type,
+      targets = expression(hat(theta)),
+      targets_scaled = expression(hat(theta) / s),
+      errors = expression(hat(theta) - theta),
+      scaled_errors = expression((hat(theta) - theta) / s)
+    )
+  }
+
+  # plot estimates
+  p <- ggplot2::ggplot(data=plotdata,
+                       ggplot2::aes(x=variable, y=value, fill=variable))
+
+
+  if (type %in% c("errors", "scaled_errors")) {
+    p <- p + ggplot2::geom_hline(yintercept=0, linetype="dashed")
+  }
+
+  p <- p +
+    ggplot2::geom_boxplot(...) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position="none") +
+    ggplot2::labs(x=xlab, y=ylab)
+
+  return(p)
+}

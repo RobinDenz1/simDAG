@@ -66,7 +66,7 @@ head(data)
 
 The DAG below represents the data-generating process: $X$ influences both treatment ($A$) and outcome ($Y$), while $A$ also influences $Y$.
 
-```{r, dag-plot, echo=FALSE, fig.width=7, fig.height=5, out.height="45%", out.width="45%", fig.align="center"}
+```{r, dag-plot, fig.width=7, fig.height=5, out.height="45%", out.width="45%", fig.align="center"}
 plot(
   dag,
   layout = "in_circle",
