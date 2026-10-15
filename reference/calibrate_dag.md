@@ -10,7 +10,8 @@ as represented by beta coefficients. See details.
 
 ``` r
 calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
-              n_sim_eval=1000000, seed=stats::runif(1, 0, 100),
+              n_sim_eval=1000000, n_reps_eval=1,
+              seed=stats::runif(1, 0, 100),
               optimizer="auto", optim_method=NULL,
               optim_control=list(maxit=200), objective_fun=NULL,
               ...)
@@ -87,8 +88,19 @@ calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
 
   A single positive number, specifying the sample size used when
   evaluating the `targets` after optimization has finished. This is
-  primarily done to estimate how well the optimization worked and should
-  thus always be a fairly large number for precise results.
+  primarily done to estimate how well the optimization worked. To obtain
+  reliable and precise results, it should either be a fairly large
+  number with a single simulation repetition (e.g. `n_reps_eval=1`), or
+  a moderate number with a large number of repetitions. The latter has
+  the advantage that sampling distributions can be plotted and
+  confidence intervals can be estimated, but it comes at the cost of
+  higher computation time.
+
+- n_reps_eval:
+
+  A single positive number, specifying how many simulation repetitions
+  should be performed when evaluating the final parameter values. See
+  `n_sim_eval`.
 
 - seed:
 
@@ -97,7 +109,8 @@ calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
   some random sampling variation. The only exception is the final
   evaluation using a sample of size `n_sim_eval`, which instead uses
   `seed + 1` (if possible), to make the evaluation independent of the
-  optimization.
+  optimization. Set to `NULL` to use an independent dataset during each
+  optimization iteration instead.
 
 - optimizer:
 
@@ -188,6 +201,14 @@ checks the resulting target properties and tries again. This idea,
 although applied in a less general setting, is also described by Austin
 and Stafford (2008) and Austin (2023).
 
+To inspect the found parameter values and how well those produce the
+desired targets, users may use the associated
+[`summary()`](https://rdrr.io/r/base/summary.html) method (see
+examples). If `n_reps_eval > 1`, the associated
+[`plot.calibrated_DAG`](https://robindenz1.github.io/simDAG/reference/plot.calibrated_DAG.md)
+method may also be used. To simulate data directly using the resulting
+parameters, users may use the `dag` object returned in the output.
+
 ***Currently supported features***:
 
 Users may use custom functions to define the target properties, so there
@@ -241,7 +262,13 @@ Returns a `calibrated_DAG` object. This object is basically just a
 
 - `target_eval`: A final estimate of the `targets`, evaluated on the
   final `DAG`. If the function call was successful, these should be very
-  close to the desired target parameters.
+  close to the desired target parameters. If `n_reps_eval > 1`, these
+  correspond to the average over all simulation repetitions.
+
+- `d_target_eval`: If `n_reps_eval > 1` was used, this object includes
+  three `data.table`s, including the estimated targets on each
+  simulation run, the differences to the desired values and the scaled
+  differences.
 
 - `optim_obj`: If [`optim`](https://rdrr.io/r/stats/optim.html),
   [`optim2`](https://roliveros-ramos.github.io/calibrar/reference/optim2.html)

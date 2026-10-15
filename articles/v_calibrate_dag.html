@@ -298,6 +298,28 @@ possible that (1) there is no solution given the parameters, DGP and
 <code>targets</code> or (2) the problem is too complex for simple
 numerical optimization.</p>
 </div>
+<div class="section level3">
+<h3 id="evaluation-options">Evaluation options<a class="anchor" aria-label="anchor" href="#evaluation-options"></a>
+</h3>
+<p>There are two ways to evaluate how well the found parameters produce
+the desired <code>targets</code>. First, one may generate a single very
+large dataset using the determined parameters and estimate the
+<code>targets</code> on that dataset. If the dataset is sufficiently
+large, this will generally work well for point estimation. However, it
+may then not be clear whether the observed differences are due to
+sampling error or because the method actually slightly missed its
+<code>targets</code>. In most cases, the distinction does not really
+matter: as long as the target is close enough, there is no need to
+investigate further.</p>
+<p>However, if users want substantial accuracy, it may make more sense
+to perform the evaluation on many generated datasets independently,
+estimating the <code>targets</code> on each dataset. It is then possible
+to inspect the distribution of the differences between estimated and
+desired values for convergence. This may be done by setting the
+<code>n_reps_eval</code> argument and using the associated
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method afterwards. Below we focus on the first kind
+of evaluation.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="a-worked-example">A Worked Example<a class="anchor" aria-label="anchor" href="#a-worked-example"></a>

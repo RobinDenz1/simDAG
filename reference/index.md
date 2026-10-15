@@ -83,6 +83,11 @@ Automatically select suitable parameters in DAGs
 
   Calibrate a partially specified `DAG` to match target values
 
+- [`plot(`*`<calibrated_DAG>`*`)`](https://robindenz1.github.io/simDAG/reference/plot.calibrated_DAG.md)
+  :
+
+  Plot a `calibrated_DAG` object
+
 - [`dag_from_data()`](https://robindenz1.github.io/simDAG/reference/dag_from_data.md)
   :
 
