@@ -111,4 +111,13 @@ dag <- empty_dag() +
        formula= ~ 1.5 + age*0.01 + sexTRUE*0.2)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100, sort_dag=FALSE)
+head(sim_dat)
+#>         age    sex      cost
+#>       <num> <lgcl>     <num>
+#> 1: 52.81824  FALSE  2.010315
+#> 2: 50.86212  FALSE  6.142049
+#> 3: 52.92595   TRUE  9.755461
+#> 4: 51.01464  FALSE  8.386133
+#> 5: 43.14107  FALSE  7.033998
+#> 6: 54.15130   TRUE 16.006808
 ```

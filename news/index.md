@@ -21,6 +21,10 @@ New features
   [`node_gamma()`](https://robindenz1.github.io/simDAG/reference/node_gamma.md)
   function, to allow generation of data according to a gamma regression
   model without need of a custom function.
+- Added the
+  [`node_beta()`](https://robindenz1.github.io/simDAG/reference/node_beta.md)
+  function, to allow generation of data according to a beta regression
+  model without need of a custom function.
 
 Bug Fixes
 

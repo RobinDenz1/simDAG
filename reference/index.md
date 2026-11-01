@@ -172,6 +172,8 @@ Functions that can be used as child nodes
   : Generate Data from a Zero-Inflated Count Model
 - [`node_gamma()`](https://robindenz1.github.io/simDAG/reference/node_gamma.md)
   : Generate Data from a Gamma Regression Model
+- [`node_beta()`](https://robindenz1.github.io/simDAG/reference/node_beta.md)
+  : Generate Data from a Beta Regression Model
 - [`node_identity()`](https://robindenz1.github.io/simDAG/reference/node_identity.md)
   : Generate Data based on an expression
 - [`node_mixture()`](https://robindenz1.github.io/simDAG/reference/node_mixture.md)

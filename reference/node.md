@@ -188,6 +188,9 @@ convenience:
 - "[gamma](https://robindenz1.github.io/simDAG/reference/node_gamma.md)":
   A node based on gamma regression.
 
+- "[beta](https://robindenz1.github.io/simDAG/reference/node_beta.md)":
+  A node based on beta regression.
+
 - "[identity](https://robindenz1.github.io/simDAG/reference/node_identity.md)":
   A node that is just some R expression of other nodes.
 

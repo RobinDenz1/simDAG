@@ -127,6 +127,7 @@ directly:
 | [`node_negative_binomial()`](https://robindenz1.github.io/simDAG/reference/node_negative_binomial.md) | A node based on negative binomial regression (count data) |
 | [`node_zeroinfl()`](https://robindenz1.github.io/simDAG/reference/node_zeroinfl.md) | A node based on a zero-inflated poisson / negative binomial regression (count data) |
 | [`node_gamma()`](https://robindenz1.github.io/simDAG/reference/node_gamma.md) | A node based on a gamma regression (strictly positive continuous data) |
+| [`node_beta()`](https://robindenz1.github.io/simDAG/reference/node_beta.md) | A node based on a beta regression (continuous data between 0 and 1) |
 | [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md) | A node based on cox regression (time-to-event data) |
 | [`node_aalen()`](https://robindenz1.github.io/simDAG/reference/node_aalen.md) | A node based on an Aalen additive hazards model (time-to-event data) |
 | [`node_aftreg()`](https://robindenz1.github.io/simDAG/reference/node_rsurv.md) | A node based on accelerated failure time regression (time-to-event data) |
