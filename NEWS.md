@@ -5,6 +5,7 @@ New features
 
 * Added the `calibrate_dag()` function, which allows users to automatically determine conditional parameters in a `DAG`, such as regression coefficients etc., so that some user-defined (usually marginal) targets are met. This would, for example, make it possible to directly specify true marginal causal effects in a `DAG`.
 * Added the `lazy_dag()` and `set_lazy_dag()` functions to allow a more flexible definition of the same `DAG` with different parameter values.
+* Added the `node_gamma()` function, to allow generation of data according to a gamma regression model without need of a custom function.
 
 Bug Fixes
 

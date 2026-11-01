@@ -86,6 +86,7 @@ get_link <- function(node) {
       node$type_str=="gaussian", "identity",
       node$type_str=="binomial", "logit",
       node$type_str=="poisson", "log",
+      node$type_str=="gamma", "log",
       default="identity"
     )
   }
@@ -460,6 +461,32 @@ str_eq_ypreg <- function(node) {
   str_eq_rsurv(node=node, type="ypreg")
 }
 
+## structural equation for gamma child node
+str_eq_gamma <- function(node) {
+
+  link <- get_link(node)
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    mu <- paste0(link$part1,
+                 prep_formula_str_eq(node$formula),
+                 link$part2)
+  } else if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ Gamma()")
+    return(out)
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas,
+                                     parents=node$parents)
+
+    mu <- paste0(link$part1, node$intercept, " + ",
+                 beta_eq, link$part2)
+  }
+
+  out <- paste0(node$name, " ~ Gamma(shape=", node$shape,
+                ", scale=(", mu, ")/", node$shape, ")")
+
+  return(out)
+}
+
 ## structural equation for custom time-varying nodes
 str_eq_td <- function(node) {
   args <- names(node)
@@ -555,7 +582,7 @@ structural_equation <- function(node) {
                              "conditional_distr", "multinomial", "poisson",
                              "negative_binomial", "cox", "identity",
                              "mixture", "aftreg", "ahreg", "ehreg",
-                             "poreg", "ypreg")) {
+                             "poreg", "ypreg", "gamma")) {
       str_eq_fun <- get(paste0("str_eq_", node$type_str))
       out <- str_eq_fun(node)
     } else {

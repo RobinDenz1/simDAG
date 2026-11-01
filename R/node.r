@@ -231,7 +231,11 @@ correct_type_str <- function(type_str) {
   if (type_str %in% c("node_gaussian", "node_binomial", "node_conditional_prob",
                       "node_conditional_distr", "node_multinomial",
                       "node_poisson", "node_negative_binomial", "node_cox",
-                      "node_time_to_event", "node_competing_events")) {
+                      "node_time_to_event", "node_competing_events",
+                      "node_next_time", "node_gamma", "node_polr",
+                      "node_zeroinfl", "node_mixture", "node_aalen",
+                      "node_aftreg", "node_ahreg", "node_ehreg", "node_poreg",
+                      "node_ypreg")) {
     type_str <- gsub("node_", "", type_str)
   }
 
