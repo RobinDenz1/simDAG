@@ -73,6 +73,7 @@ Currently, the following node types are implemented directly for convenience:
   \item{"\link[=node_negative_binomial]{negative_binomial}": A node based on negative binomial regression.}
   \item{"\link[=node_zeroinfl]{zeroinfl}": A node based on a zero-inflated poisson or negative binomial regression.}
   \item{"\link[=node_gamma]{gamma}": A node based on gamma regression.}
+  \item{"\link[=node_beta]{beta}": A node based on beta regression.}
   \item{"\link[=node_identity]{identity}": A node that is just some R expression of other nodes.}
   \item{"\link[=node_mixture]{mixture}": A node that is a mixture of different node definitions.}
   \item{"\link[=node_cox]{cox}": A node based on cox-regression.}

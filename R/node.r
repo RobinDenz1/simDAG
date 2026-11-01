@@ -235,7 +235,7 @@ correct_type_str <- function(type_str) {
                       "node_next_time", "node_gamma", "node_polr",
                       "node_zeroinfl", "node_mixture", "node_aalen",
                       "node_aftreg", "node_ahreg", "node_ehreg", "node_poreg",
-                      "node_ypreg")) {
+                      "node_ypreg", "node_beta")) {
     type_str <- gsub("node_", "", type_str)
   }
 

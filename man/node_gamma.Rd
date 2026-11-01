@@ -62,4 +62,5 @@ dag <- empty_dag() +
        formula= ~ 1.5 + age*0.01 + sexTRUE*0.2)
 
 sim_dat <- sim_from_dag(dag=dag, n_sim=100, sort_dag=FALSE)
+head(sim_dat)
 }

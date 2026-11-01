@@ -59,6 +59,7 @@ get_link_str <- function(link) {
     link=="cauchit", "pcauchy(",
     link=="inverse", "1 / (",
     link=="sqrt", "(",
+    link=="loglog", "exp(-exp(-(",
     default=""
   )
 
@@ -67,6 +68,7 @@ get_link_str <- function(link) {
     link %in% c("logit", "probit", "log", "cauchit", "inverse"), ")",
     link=="cloglog", "))",
     link=="sqrt", ")^2",
+    link=="loglog", ")))",
     default=""
   )
 
@@ -87,6 +89,7 @@ get_link <- function(node) {
       node$type_str=="binomial", "logit",
       node$type_str=="poisson", "log",
       node$type_str=="gamma", "log",
+      node$type_str=="beta", "logit",
       default="identity"
     )
   }
@@ -487,6 +490,33 @@ str_eq_gamma <- function(node) {
   return(out)
 }
 
+## structural equation for beta child node
+str_eq_beta <- function(node) {
+
+  link <- get_link(node)
+
+  if (!is.null(node$formula) && !is_formula(node$formula)) {
+    mu <- paste0(link$part1,
+                 prep_formula_str_eq(node$formula),
+                 link$part2)
+  } else if (is.null(node$intercept)) {
+    out <- paste0(node$name, " ~ Beta()")
+    return(out)
+  } else {
+    beta_eq <- get_beta_plus_parents(betas=node$betas,
+                                     parents=node$parents)
+
+    mu <- paste0(link$part1, node$intercept, " + ",
+                 beta_eq, link$part2)
+  }
+
+  out <- paste0(node$name, " ~ Beta(shape1=(", mu, ")*",
+                node$precision, ", shape2=(1-(", mu, "))*",
+                node$precision, ")")
+
+  return(out)
+}
+
 ## structural equation for custom time-varying nodes
 str_eq_td <- function(node) {
   args <- names(node)
@@ -569,6 +599,7 @@ align_str_equations <- function(str_equations) {
 ## get structural equation e.g. data generation mechanism from a node in
 ## informative string format
 structural_equation <- function(node) {
+
   ## time-varying nodes
   if (node$time_varying) {
     if (node$type_str %in% c("time_to_event", "competing_events")) {
@@ -582,7 +613,7 @@ structural_equation <- function(node) {
                              "conditional_distr", "multinomial", "poisson",
                              "negative_binomial", "cox", "identity",
                              "mixture", "aftreg", "ahreg", "ehreg",
-                             "poreg", "ypreg", "gamma")) {
+                             "poreg", "ypreg", "gamma", "beta")) {
       str_eq_fun <- get(paste0("str_eq_", node$type_str))
       out <- str_eq_fun(node)
     } else {
