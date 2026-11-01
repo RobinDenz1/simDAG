@@ -185,6 +185,9 @@ convenience:
   A node based on a zero-inflated poisson or negative binomial
   regression.
 
+- "[gamma](https://robindenz1.github.io/simDAG/reference/node_gamma.md)":
+  A node based on gamma regression.
+
 - "[identity](https://robindenz1.github.io/simDAG/reference/node_identity.md)":
   A node that is just some R expression of other nodes.
 

@@ -13,7 +13,7 @@ calibrate_dag(lazy_dag, targets, params, n_sim_run=100000,
               n_sim_eval=1000000, n_reps_eval=1,
               seed=stats::runif(1, 0, 100),
               optimizer="auto", optim_method=NULL,
-              optim_control=list(maxit=200), objective_fun=NULL,
+              optim_control=list(), objective_fun=NULL,
               ...)
 ```
 

@@ -17,6 +17,10 @@ New features
   [`set_lazy_dag()`](https://robindenz1.github.io/simDAG/reference/set_lazy_dag.md)
   functions to allow a more flexible definition of the same `DAG` with
   different parameter values.
+- Added the
+  [`node_gamma()`](https://robindenz1.github.io/simDAG/reference/node_gamma.md)
+  function, to allow generation of data according to a gamma regression
+  model without need of a custom function.
 
 Bug Fixes
 
