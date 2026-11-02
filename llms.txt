@@ -12,10 +12,9 @@ longitudinal processes, time-to-event outcomes, censoring, recurrent and
 competing events, and dependencies between individuals through networks.
 It additionally implements an enhanced `formula` interface, allowing
 specifications of arbitrary interactions, non-linear effects,
-dependencies on categorical variables and random effects. The
-development version also supports calibrating conditional model
-parameters to achieve user-defined target characteristics, including
-marginal effects.
+dependencies on categorical variables and random effects. The newest
+version also supports calibrating conditional model parameters to
+achieve user-defined target characteristics, including marginal effects.
 
 ## Installation
 
@@ -26,9 +25,7 @@ Install the current CRAN release:
 install.packages("simDAG")
 ```
 
-To install the development version from GitHub, including the new
-[`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md)
-functionality:
+To install the development version from GitHub:
 
 ``` r
 
@@ -98,7 +95,7 @@ processes.
 | Continuous-time event-driven data | [`sim_discrete_event()`](https://robindenz1.github.io/simDAG/reference/sim_discrete_event.md) |
 | Data with dependencies between individuals | [`network()`](https://robindenz1.github.io/simDAG/reference/network.md) functionality |
 | Data with custom conditional models | Custom [`node()`](https://robindenz1.github.io/simDAG/reference/node.md) types and generation functions |
-| Data with prespecified marginal characteristics | [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md) (development version) |
+| Data with prespecified marginal characteristics | [`calibrate_dag()`](https://robindenz1.github.io/simDAG/reference/calibrate_dag.md) |
 
 The package implements many node types for user convenience, including
 linear-, logistic-, Poisson- and Cox-, regression models, among many

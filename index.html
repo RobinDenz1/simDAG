@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,14 +74,14 @@
 </div>
 <p><strong>Simulate complex data from explicit data-generating processes in R</strong></p>
 <p><code>simDAG</code> is an R package for generating synthetic data from directed acyclic graphs (DAGs). Users specify how variables are generated and how they depend on one another, and may then simulate datasets from the resulting data-generating process (DGP).</p>
-<p>Beyond ordinary cross-sectional data, <code>simDAG</code> supports complex longitudinal processes, time-to-event outcomes, censoring, recurrent and competing events, and dependencies between individuals through networks. It additionally implements an enhanced <code>formula</code> interface, allowing specifications of arbitrary interactions, non-linear effects, dependencies on categorical variables and random effects. The development version also supports calibrating conditional model parameters to achieve user-defined target characteristics, including marginal effects.</p>
+<p>Beyond ordinary cross-sectional data, <code>simDAG</code> supports complex longitudinal processes, time-to-event outcomes, censoring, recurrent and competing events, and dependencies between individuals through networks. It additionally implements an enhanced <code>formula</code> interface, allowing specifications of arbitrary interactions, non-linear effects, dependencies on categorical variables and random effects. The newest version also supports calibrating conditional model parameters to achieve user-defined target characteristics, including marginal effects.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Install the current CRAN release:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"simDAG"</span><span class="op">)</span></span></code></pre></div>
-<p>To install the development version from GitHub, including the new <code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code> functionality:</p>
+<p>To install the development version from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"RobinDenz1/simDAG"</span><span class="op">)</span></span></code></pre></div>
@@ -120,7 +120,7 @@
 <span>  node_fill <span class="op">=</span> <span class="st">"grey85"</span>,</span>
 <span>  node_text_fontface <span class="op">=</span> <span class="st">"bold"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-dag-plot-1.png" width="45%" height="45%" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-dag-plot-1.png" alt="" width="45%" height="45%" style="display: block; margin: auto;"></p>
 <p>Each node is generated according to its specified distribution or conditional model. The order of the nodes and their dependencies define the data-generating process. The same approach extends to much more complex DGPs, including custom generation functions and longitudinal processes.</p>
 </div>
 <div class="section level2">
@@ -129,7 +129,7 @@
 <table class="table">
 <colgroup>
 <col width="50%">
-<col width="49%">
+<col width="50%">
 </colgroup>
 <thead><tr>
 <th>Use case</th>
@@ -159,8 +159,7 @@
 </tr>
 <tr>
 <td>Data with prespecified marginal characteristics</td>
-<td>
-<code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code> (development version)</td>
+<td><code><a href="reference/calibrate_dag.html">calibrate_dag()</a></code></td>
 </tr>
 </tbody>
 </table>

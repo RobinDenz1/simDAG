@@ -154,7 +154,7 @@ this stage). The obtained summary score is then passed to the
 from `FALSE` to `TRUE` for each individual.
 
 For example, consider the situation in which only one time-dependent
-variable is includded. In this case, the simulation time for each
+variable is included. In this case, the simulation time for each
 individual jumps to the generated event time immediately. The variable
 is then set to `TRUE`. Afterwards, the simulation time jumps until the
 end of the `event_duration` (if that duration is `Inf`, the simulation

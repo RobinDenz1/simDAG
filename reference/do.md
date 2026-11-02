@@ -41,7 +41,7 @@ do(dag, names, values)
 Internally this function simply removes the old node definition of all
 nodes in `names` and replaces it with a new node definition that defines
 the node as a constant value, irrespective of the original definition,
-if the corresponding entry in `values` is a signle value. If it is a new
+if the corresponding entry in `values` is a single value. If it is a new
 [`node`](https://robindenz1.github.io/simDAG/reference/node.md) or
 [`node_td`](https://robindenz1.github.io/simDAG/reference/node.md)
 instead, the new definition replaces the old one. The same effect can be

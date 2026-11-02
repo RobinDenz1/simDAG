@@ -35,7 +35,7 @@ set_lazy_dag(lazy_dag, params)
 
   A named list or a named vector, containing one entry per `param()`
   call used in the creation of the `lazy_dag` object. These entries
-  should be scalar values that can be subsituted directly into the DAG
+  should be scalar values that can be substituted directly into the DAG
   definition.
 
 ## Details

@@ -390,7 +390,7 @@ observed value of the target. In this example, the `eval_fun` is simply
 calculating the prevalence of $`Y`$, as shown earlier.
 
 Next, we need to define `start`ing values and (optionally) broad search
-ranges for all unspecified paramaters. Here we could simply use:
+ranges for all unspecified parameters. Here we could simply use:
 
 ``` r
 

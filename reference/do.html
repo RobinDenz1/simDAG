@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simDAG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 
-<p>Internally this function simply removes the old node definition of all nodes in <code>names</code> and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in <code>values</code> is a signle value. If it is a new <code><a href="node.html">node</a></code> or <code><a href="node.html">node_td</a></code> instead, the new definition replaces the old one. The same effect can be created by directly specifying the <code>DAG</code> in this way from the start (see examples).</p>
+<p>Internally this function simply removes the old node definition of all nodes in <code>names</code> and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in <code>values</code> is a single value. If it is a new <code><a href="node.html">node</a></code> or <code><a href="node.html">node_td</a></code> instead, the new definition replaces the old one. The same effect can be created by directly specifying the <code>DAG</code> in this way from the start (see examples).</p>
 <p>This function does not alter the original <code>DAG</code> in place. Instead, it returns a modified version of the <code>DAG</code>. In other words, using only <code>do(dag, names="A", values=3)</code> will not change the <code>dag</code> object.</p>
     </div>
     <div class="section level2">
