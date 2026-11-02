@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
 [![Project Status: Active - The project has reached a stable, usable
@@ -27,10 +28,9 @@ longitudinal processes, time-to-event outcomes, censoring, recurrent and
 competing events, and dependencies between individuals through networks.
 It additionally implements an enhanced `formula` interface, allowing
 specifications of arbitrary interactions, non-linear effects,
-dependencies on categorical variables and random effects. The
-development version also supports calibrating conditional model
-parameters to achieve user-defined target characteristics, including
-marginal effects.
+dependencies on categorical variables and random effects. The newest
+version also supports calibrating conditional model parameters to
+achieve user-defined target characteristics, including marginal effects.
 
 ## Installation
 
@@ -40,8 +40,7 @@ Install the current CRAN release:
 install.packages("simDAG")
 ```
 
-To install the development version from GitHub, including the new
-`calibrate_dag()` functionality:
+To install the development version from GitHub:
 
 ``` r
 install.packages("remotes")
@@ -90,7 +89,7 @@ plot(
 )
 ```
 
-<img src="man/figures/README-dag-plot-1.png" width="45%" height="45%" style="display: block; margin: auto;" />
+<img src="man/figures/README-dag-plot-1.png" alt="" width="45%" height="45%" style="display: block; margin: auto;" />
 
 Each node is generated according to its specified distribution or
 conditional model. The order of the nodes and their dependencies define
@@ -100,14 +99,14 @@ processes.
 
 ## What can you simulate?
 
-| Use case                                        | Main functionality                             |
-|-------------------------------------------------|------------------------------------------------|
-| Cross-sectional data from a DAG                 | `sim_from_dag()`                               |
-| Longitudinal data with time-varying variables   | `sim_discrete_time()`                          |
-| Continuous-time event-driven data               | `sim_discrete_event()`                         |
-| Data with dependencies between individuals      | `network()` functionality                      |
-| Data with custom conditional models             | Custom `node()` types and generation functions |
-| Data with prespecified marginal characteristics | `calibrate_dag()` (development version)        |
+| Use case | Main functionality |
+|----|----|
+| Cross-sectional data from a DAG | `sim_from_dag()` |
+| Longitudinal data with time-varying variables | `sim_discrete_time()` |
+| Continuous-time event-driven data | `sim_discrete_event()` |
+| Data with dependencies between individuals | `network()` functionality |
+| Data with custom conditional models | Custom `node()` types and generation functions |
+| Data with prespecified marginal characteristics | `calibrate_dag()` |
 
 The package implements many node types for user convenience, including
 linear-, logistic-, Poisson- and Cox-, regression models, among many

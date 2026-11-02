@@ -183,7 +183,7 @@ targets <- list(
 
 The `targets` list should contain one list per target property that we want to impose on the `DAG`. Each of these lists should contain a named element called `target`, which defines the precise value we are looking for, and a named element called `eval_fun`. The latter should be a function that can be called on a simulated dataset and then returns the observed value of the target. In this example, the `eval_fun` is simply calculating the prevalence of $Y$, as shown earlier.
 
-Next, we need to define `start`ing values and (optionally) broad search ranges for all unspecified paramaters. Here we could simply use:
+Next, we need to define `start`ing values and (optionally) broad search ranges for all unspecified parameters. Here we could simply use:
 
 ```{r}
 params <- list(

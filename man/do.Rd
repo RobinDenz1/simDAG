@@ -23,7 +23,7 @@ A vector or list of any values or \code{\link{node}} / \code{\link{node_td}} def
 }
 \details{
 
-Internally this function simply removes the old node definition of all nodes in \code{names} and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in \code{values} is a signle value. If it is a new \code{\link{node}} or \code{\link{node_td}} instead, the new definition replaces the old one. The same effect can be created by directly specifying the \code{DAG} in this way from the start (see examples).
+Internally this function simply removes the old node definition of all nodes in \code{names} and replaces it with a new node definition that defines the node as a constant value, irrespective of the original definition, if the corresponding entry in \code{values} is a single value. If it is a new \code{\link{node}} or \code{\link{node_td}} instead, the new definition replaces the old one. The same effect can be created by directly specifying the \code{DAG} in this way from the start (see examples).
 
 This function does not alter the original \code{DAG} in place. Instead, it returns a modified version of the \code{DAG}. In other words, using only \code{do(dag, names="A", values=3)} will not change the \code{dag} object.
 

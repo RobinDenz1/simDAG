@@ -15,7 +15,7 @@ set_lazy_dag(lazy_dag, params)
 A \code{lazy_DAG} object created using the \code{\link{lazy_dag}} function. See \code{?lazy_dag} for more information on how to specify a lazy DAG. See \code{?node} for more information on how to specify a regular \code{DAG}.
   }
   \item{params}{
-A named list or a named vector, containing one entry per \code{param()} call used in the creation of the \code{lazy_dag} object. These entries should be scalar values that can be subsituted directly into the DAG definition.
+A named list or a named vector, containing one entry per \code{param()} call used in the creation of the \code{lazy_dag} object. These entries should be scalar values that can be substituted directly into the DAG definition.
   }
 }
 \details{
