@@ -1,6 +1,19 @@
 # Changelog
 
+## simDAG 1.1.1 (developmental version)
+
+Bug Fixes
+
+- Fixed a bug in the numeric baseline hazard integration done when
+  supplying a custom function to the `surv_dist` argument in
+  [`node_cox()`](https://robindenz1.github.io/simDAG/reference/node_cox.md).
+  The increment calculation for the trapezoid rule was incorrect,
+  leading to overestimated cumulative hazards when the `basehaz_grid`
+  step size was lower than 1.
+
 ## simDAG 1.1.0
+
+CRAN release: 2026-11-02
 
 New features
 

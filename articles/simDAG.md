@@ -1482,8 +1482,8 @@ Haller and Ulm 2014).
 The results in this paper were obtained using `R` 4.6.2 with the
 `data.table` 1.18.6.1 package, the `survival` 3.8.12 package, the
 `igraph` 2.3.4 package, the `ggplot2` 4.0.3 package and the `simDAG`
-1.1.0 package. `R` itself and all packages used are available from the
-Comprehensive `R` Archive Network (CRAN) at
+1.1.0.9000 package. `R` itself and all packages used are available from
+the Comprehensive `R` Archive Network (CRAN) at
 <https://CRAN.R-project.org/>.
 
 ## Acknowledgments
