@@ -99,27 +99,39 @@ add_censoring <- function(times, cens_dist, cens_args, name) {
 ## using numerical integration and linear interpolation
 get_lH0 <- function(f, times) {
 
-  # evaulate f(t) at each value in grid
-  f_vals <- c(0, f(times))
-
-  if (anyNA(f_vals) || any(f_vals < 0)) {
-    stop("Hazards must be positive at all 'times'.", call.=FALSE)
+  # check time grid
+  if (!is.numeric(times) || length(times) < 1L ||
+      anyNA(times) || any(!is.finite(times)) ||
+      any(times <= 0) || any(diff(times) <= 0)) {
+    stop("'times' must be a strictly increasing numeric vector",
+         " containing only finite, positive values.", call.=FALSE)
   }
 
-  # trapezoidal increments for each interval (t_{k-1}, t_k]
-  increments <- (f_vals[-1] + f_vals[-length(f_vals)]) / 2
+  # add time zero to the grid
+  grid <- c(0, times)
 
-  # calculate cum. baseline hazard over given time grid
-  H0 <- cumsum(increments)
+  # evaluate baseline hazard at all grid points
+  h0 <- f(grid)
 
-  # interpolate linearly
-  H0_fun <- stats::approxfun(x=times, y=H0, method="linear", rule=1)
+  if (!is.numeric(h0) || length(h0) != length(grid) ||
+      anyNA(h0) || any(!is.finite(h0)) || any(h0 <= 0)) {
+    stop("'f' must return a vector of finite, strictly positive",
+         " hazard values with the same length as its input.",
+         call.=FALSE)
+  }
 
-  # invert cum. hazard function
-  invH0 <- stats::approxfun(x=H0, y=times, method="linear", rule=2)
+  # calculate cumulative hazard using the trapezoidal rule
+  increments <- diff(grid) * (h0[-length(h0)] + h0[-1]) / 2
 
-  out <- list(H0=H0_fun, invH0=invH0)
-  return(out)
+  H0 <- c(0, cumsum(increments))
+
+  # interpolate cumulative hazard
+  H0_fun <- stats::approxfun(x=grid, y=H0, method="linear", rule=1)
+
+  # interpolate inverse cumulative hazard
+  invH0 <- stats::approxfun(x=H0, y=grid, method="linear", rule=2)
+
+  return(list(H0=H0_fun, invH0=invH0))
 }
 
 ## generate random (left-truncated) survival times from a Cox model given

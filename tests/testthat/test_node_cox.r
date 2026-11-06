@@ -187,7 +187,7 @@ test_that("using time-dependent baseline hazard", {
   set.seed(1234)
   data <- sim_from_dag(dag, n_sim=1000)
 
-  expect_equal(round(mean(data$Y_time), 3), 168.352)
+  expect_equal(round(mean(data$Y_time), 2), 168.06)
 
   # error with non-positive baseline hazard
   fbasehaz2 <- function(t) {
@@ -222,4 +222,45 @@ test_that("using time-dependent baseline hazard", {
 
   set.seed(123344)
   expect_error(data <- sim_from_dag(dag, n_sim=1000))
+})
+
+test_that("baseline hazard integration is correct", {
+
+  times <- c(0.2, 0.5, 1.1, 2.4)
+
+  # constant baseline hazard
+  h0_constant <- function(t) {
+    rep(0.4, length(t))
+  }
+
+  lH0 <- get_lH0(f=h0_constant, times=times)
+
+  expect_equal(lH0$H0(times), 0.4 * times, tolerance=1e-12)
+
+  # linearly increasing baseline hazard
+  h0_linear <- function(t) {
+    0.1 + 0.05 * t
+  }
+
+  lH0 <- get_lH0(f=h0_linear, times=times)
+
+  # analytical cumulative hazard:
+  # H0(t) = 0.1*t + 0.025*t^2
+  expected <- 0.1 * times + 0.025 * times^2
+
+  expect_equal(lH0$H0(times), expected, tolerance=1e-12)
+})
+
+test_that("cumulative hazard is correctly defined at time zero", {
+
+  times <- c(1, 2, 3)
+
+  lH0 <- get_lH0(
+    f=function(t) rep(0.5, length(t)),
+    times=times
+  )
+
+  expect_equal(lH0$H0(0), 0)
+  expect_equal(lH0$H0(0.5), 0.25)
+  expect_equal(lH0$H0(1), 0.5)
 })
